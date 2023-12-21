@@ -9,33 +9,46 @@ namespace Hexagonal.Solution.Template.Application.Tests.Orders.Create;
 
 public class CreateOrderUseCaseFixture : BaseFixture
 {
-    public IValidator<CreateOrderRequest> validator = Substitute.For<IValidator<CreateOrderRequest>>();
-    public ICreateOrderService domainService = Substitute.For<ICreateOrderService>();
+    public Mock<IValidator<CreateOrderRequest>> mockValidator = new();
+    public Mock<ICreateOrderService> mockDomainService = new();
 
     public ICreateOrderUseCase useCase;
 
     public CreateOrderUseCaseFixture()
     {
         useCase = new CreateOrderUseCase(
-            logger,
-            validator,
-            domainService
+            mockLogger.Object,
+            mockValidator.Object,
+            mockDomainService.Object
         );
     }
 
-    public void ClearReceivedCalls()
+    public void ClearInvocations()
     {
-        logger.ClearReceivedCalls();
-        domainService.ClearReceivedCalls();
-        validator.ClearReceivedCalls();
+        mockLogger.Invocations.Clear();
+        mockDomainService.Invocations.Clear();
+        mockValidator.Invocations.Clear();
     }
 
     public void SetSuccessfulValidator(CreateOrderRequest request)
     {
         var validationResult = new ValidationResult();
-        validator
-            .ValidateAsync(request)
-            .Returns(validationResult);
+        mockValidator
+            .Setup(v => v.ValidateAsync(request, cancellationToken))
+            .ReturnsAsync(validationResult);
+    }
+
+    public void SetFailedValidator(CreateOrderRequest request)
+    {
+        var validationResult = new ValidationResult()
+        {
+            Errors = [ 
+                new ValidationFailure("Description", "Description is required")
+            ]
+        };
+        mockValidator
+            .Setup(v => v.ValidateAsync(request, cancellationToken))
+            .ReturnsAsync(validationResult);
     }
 
     public void SetSuccessfulDomainService()
@@ -45,8 +58,17 @@ public class CreateOrderUseCaseFixture : BaseFixture
 
         var result = Result.Ok(order);
 
-        domainService
-            .Handle(Arg.Any<string>(), Arg.Any<List<Item>>())
-            .ReturnsForAnyArgs(result);
+        mockDomainService
+            .Setup(d => d.Handle(It.IsAny<string>(), It.IsAny<List<Item>>()))
+            .Returns(result);
+    }
+
+    public void SetFailedDomainService()
+    {
+        var result = Result.Fail<Order>("Unable to create order");
+
+        mockDomainService
+            .Setup(d => d.Handle(It.IsAny<string>(), It.IsAny<List<Item>>()))
+            .Returns(result);
     }
 }

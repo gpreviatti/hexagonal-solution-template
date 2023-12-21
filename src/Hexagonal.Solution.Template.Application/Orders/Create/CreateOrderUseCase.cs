@@ -32,13 +32,11 @@ public class CreateOrderUseCase(
         if (newOrder.IsFailure)
         {
             logger.Error(newOrder.Message, request);
-            response.Success = false;
             response.Message = newOrder.Message;
             return response;
         }
 
-        response.Data = new OrderDto(newOrder.Value.Id);
-
+        response.Data = new OrderDto(newOrder.Value!.Id);
         logger.Information("Use case was executed with success", response);
 
         return response;

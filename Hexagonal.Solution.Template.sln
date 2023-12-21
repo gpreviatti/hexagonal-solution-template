@@ -7,17 +7,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6A878B68-ADC
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{D499CDEC-C117-4968-A519-21C64757C640}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hexagonal.Solution.Template.Domain", "src\Hexagonal.Solution.Template.Domain\Hexagonal.Solution.Template.Domain.csproj", "{E2990ADA-8398-4769-98E9-EA105130137D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template.Domain", "src\Hexagonal.Solution.Template.Domain\Hexagonal.Solution.Template.Domain.csproj", "{E2990ADA-8398-4769-98E9-EA105130137D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hexagonal.Solution.Template.Application", "src\Hexagonal.Solution.Template.Application\Hexagonal.Solution.Template.Application.csproj", "{3F9D43F2-9555-4771-A81B-9EBDE1A2C7CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template.Application", "src\Hexagonal.Solution.Template.Application\Hexagonal.Solution.Template.Application.csproj", "{3F9D43F2-9555-4771-A81B-9EBDE1A2C7CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hexagonal.Solution.Template.Infrastructure.Data", "src\Hexagonal.Solution.Template.Infrastructure.Data\Hexagonal.Solution.Template.Infrastructure.Data.csproj", "{BAAEEE30-B3D6-4DD1-802D-107F79791DD7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template.Infrastructure.Data", "src\Hexagonal.Solution.Template.Infrastructure.Data\Hexagonal.Solution.Template.Infrastructure.Data.csproj", "{BAAEEE30-B3D6-4DD1-802D-107F79791DD7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hexagonal.Solution.Template.Domain.Tests", "tests\Hexagonal.Solution.Template.Domain.Tests\Hexagonal.Solution.Template.Domain.Tests.csproj", "{68091222-6730-424E-BA00-57DD92F1D197}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template.Domain.Tests", "tests\Hexagonal.Solution.Template.Domain.Tests\Hexagonal.Solution.Template.Domain.Tests.csproj", "{68091222-6730-424E-BA00-57DD92F1D197}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hexagonal.Solution.Template.Application.Tests", "tests\Hexagonal.Solution.Template.Application.Tests\Hexagonal.Solution.Template.Application.Tests.csproj", "{767C79A1-28E6-473B-81C1-0413A977A2CD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hexagonal.Solution.Template.Infrastructure.Gateways", "src\Hexagonal.Solution.Template.Infrastructure.Gateways\Hexagonal.Solution.Template.Infrastructure.Gateways.csproj", "{6A131FD6-6875-4930-B24B-F725B23C650D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template.Application.Tests", "tests\Hexagonal.Solution.Template.Application.Tests\Hexagonal.Solution.Template.Application.Tests.csproj", "{767C79A1-28E6-473B-81C1-0413A977A2CD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,10 +43,6 @@ Global
 		{767C79A1-28E6-473B-81C1-0413A977A2CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{767C79A1-28E6-473B-81C1-0413A977A2CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{767C79A1-28E6-473B-81C1-0413A977A2CD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6A131FD6-6875-4930-B24B-F725B23C650D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6A131FD6-6875-4930-B24B-F725B23C650D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6A131FD6-6875-4930-B24B-F725B23C650D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6A131FD6-6875-4930-B24B-F725B23C650D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -59,7 +53,6 @@ Global
 		{BAAEEE30-B3D6-4DD1-802D-107F79791DD7} = {6A878B68-ADCF-470F-8273-DA5C32E2DB79}
 		{68091222-6730-424E-BA00-57DD92F1D197} = {D499CDEC-C117-4968-A519-21C64757C640}
 		{767C79A1-28E6-473B-81C1-0413A977A2CD} = {D499CDEC-C117-4968-A519-21C64757C640}
-		{6A131FD6-6875-4930-B24B-F725B23C650D} = {6A878B68-ADCF-470F-8273-DA5C32E2DB79}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3AD0BA6E-E14B-401F-B4F6-C7736B01643C}

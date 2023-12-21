@@ -7,7 +7,7 @@ public class BaseFixture
 
     public CancellationToken cancellationToken = CancellationToken.None;
 
-    public ILogger logger = Substitute.For<ILogger>();
+    public Mock<ILogger> mockLogger = new();
 
     public BaseFixture()
     {

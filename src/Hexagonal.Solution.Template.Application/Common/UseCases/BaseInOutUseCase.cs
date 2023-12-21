@@ -27,7 +27,6 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData>(
             if (!validationResult.IsValid)
             {
                 var errors = string.Join(", ", validationResult.Errors);
-                response.Success = false;
                 response.Message = errors;
 
                 logger.Error(errors, response);

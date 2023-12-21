@@ -9,11 +9,11 @@ public class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFixture>
     public CreateOrderUseCaseTest(CreateOrderUseCaseFixture fixture)
     {
         _fixture = fixture;
-        _fixture.ClearReceivedCalls();
+        //_fixture.ClearInvocations();
     }
 
     [Fact]
-    public async Task HandleInternalAsyncStateUnderTestExpectedBehavior()
+    public async Task GivenAValidRequestThenFails()
     {
         // Arrange
         var request = _fixture.autoFixture.Create<CreateOrderRequest>();
@@ -30,8 +30,44 @@ public class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFixture>
         result.Data.Should().NotBeNull();
         result.Success.Should().BeTrue();
         result.Message.Should().BeNullOrEmpty();
+    }
 
-        _fixture.domainService.Received(1);
-        _fixture.logger.Received(1);
+    [Fact]
+    public async Task GivenAInvalidRequestThenFails()
+    {
+        // Arrange
+        var request = _fixture.autoFixture.Create<CreateOrderRequest>();
+        _fixture.SetFailedValidator(request);
+
+        // Act
+        var result = await _fixture.useCase.Handle(
+            request,
+            _fixture.cancellationToken
+        );
+
+        // Assert
+        result.Data.Should().BeNull();
+        result.Success.Should().BeFalse();
+        result.Message.Should().NotBeNullOrEmpty();
+    }
+
+    [Fact]
+    public async Task GivenAValidRequestWhenCreateOrderFailsThenFails()
+    {
+        // Arrange
+        var request = _fixture.autoFixture.Create<CreateOrderRequest>();
+        _fixture.SetSuccessfulValidator(request);
+        _fixture.SetFailedDomainService();
+
+        // Act
+        var result = await _fixture.useCase.Handle(
+            request,
+            _fixture.cancellationToken
+        );
+
+        // Assert
+        result.Data.Should().BeNull();
+        result.Success.Should().BeFalse();
+        result.Message.Should().NotBeNullOrEmpty();
     }
 }
