@@ -1,0 +1,1 @@
+# Hexagonal architecture solution template
