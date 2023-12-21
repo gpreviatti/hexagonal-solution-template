@@ -13,11 +13,16 @@
     <ContentTargetFolders>content</ContentTargetFolders>
     <NoWarn>$(NoWarn);NU5128</NoWarn>
     <NoDefaultExcludes>true</NoDefaultExcludes>
+    <PackageProjectUrl>https://github.com/gpreviatti/hexagonal-solution-template</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
     <Content Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**" />
     <Compile Remove="**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="https:\github.com\gpreviatti\hexagonal-solution-template\blob\main\Readme.md" />
   </ItemGroup>
 
 </Project>
