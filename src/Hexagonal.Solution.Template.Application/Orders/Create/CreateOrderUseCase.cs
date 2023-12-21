@@ -32,7 +32,7 @@ public class CreateOrderUseCase(
         if (newOrder.IsFailure)
         {
             logger.Error(newOrder.Message, request);
-            response.Message = newOrder.Message;
+            response.SetBusinessErrorMessage(newOrder.Message);
             return response;
         }
 

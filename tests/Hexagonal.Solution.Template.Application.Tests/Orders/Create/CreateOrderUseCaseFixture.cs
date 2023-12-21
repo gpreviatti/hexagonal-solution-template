@@ -4,7 +4,6 @@ using Hexagonal.Solution.Template.Application.Orders.Create;
 using Hexagonal.Solution.Template.Domain.Common;
 using Hexagonal.Solution.Template.Domain.Orders;
 using Hexagonal.Solution.Template.Domain.Orders.Services;
-using Moq;
 
 namespace Hexagonal.Solution.Template.Application.Tests.Orders.Create;
 
@@ -77,22 +76,6 @@ public class CreateOrderUseCaseFixture : BaseFixture
     {
         mockDomainService.Verify(
             d => d.Handle(It.IsAny<string>(), It.IsAny<IEnumerable<Item>>()), 
-            Times.Exactly(times)
-        );
-    }
-
-    public void VerifyLoggerError(int times)
-    {
-        //mockLogger.Verify(
-        //    l => l.Error(It.IsAny<string>(), It.IsAny<object[]?>()), 
-        //    Times.Exactly(times)
-        //);
-    }
-
-    public void VerifyLoggerInformation(int times)
-    {
-        mockLogger.Verify(
-            l => l.Information(It.IsAny<string>(), It.IsAny<object[]?>()),
             Times.Exactly(times)
         );
     }

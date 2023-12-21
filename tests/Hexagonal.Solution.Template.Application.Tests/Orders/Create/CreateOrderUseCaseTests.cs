@@ -1,4 +1,6 @@
-﻿using Hexagonal.Solution.Template.Application.Orders.Create;
+﻿using Hexagonal.Solution.Template.Application.Common.Messages;
+using Hexagonal.Solution.Template.Application.Orders;
+using Hexagonal.Solution.Template.Application.Orders.Create;
 
 namespace Hexagonal.Solution.Template.Application.Tests.Orders.Create;
 
@@ -30,9 +32,10 @@ public class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFixture>
         result.Data.Should().NotBeNull();
         result.Success.Should().BeTrue();
         result.Message.Should().BeNullOrEmpty();
+
         _fixture.VerifyDomainService(1);
-        _fixture.VerifyLoggerInformation(1);
-        _fixture.VerifyLoggerError(0);
+        _fixture.VerifyLoggerInformation<BaseResponse<OrderDto>>(1);
+        _fixture.VerifyLoggerError<CreateOrderRequest>(0);
     }
 
     [Fact]
@@ -52,9 +55,10 @@ public class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFixture>
         result.Data.Should().BeNull();
         result.Success.Should().BeFalse();
         result.Message.Should().NotBeNullOrEmpty();
+
         _fixture.VerifyDomainService(0);
-        _fixture.VerifyLoggerInformation(0);
-        _fixture.VerifyLoggerError(1);
+        _fixture.VerifyLoggerInformation<BaseResponse<OrderDto>>(0);
+        _fixture.VerifyLoggerError<CreateOrderRequest>(0);
     }
 
     [Fact]
@@ -75,8 +79,9 @@ public class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFixture>
         result.Data.Should().BeNull();
         result.Success.Should().BeFalse();
         result.Message.Should().NotBeNullOrEmpty();
+
         _fixture.VerifyDomainService(1);
-        _fixture.VerifyLoggerInformation(0);
-        _fixture.VerifyLoggerError(1);
+        _fixture.VerifyLoggerInformation<BaseResponse<OrderDto>>(0);
+        _fixture.VerifyLoggerError<CreateOrderRequest>(1);
     }
 }
