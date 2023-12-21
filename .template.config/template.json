@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Giovanni Brunno Previatti",
+  "identity": "Hexagonal.Solution.Template",
+  "name": "Hexagonal solution template",
+  "description": "Solution template following hexagonal architecture structure best praticies",
+  "shortName": "hexagonal-solution",
+  "sourceName": "Hexagonal.Solution.Template",
+  "classifications": [
+    "common",
+    "template",
+    "hexagonal-architecture"
+  ],
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "preferNameDirectory": true
+}
