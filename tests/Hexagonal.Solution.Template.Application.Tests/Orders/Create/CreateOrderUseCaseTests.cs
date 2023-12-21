@@ -9,11 +9,11 @@ public class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFixture>
     public CreateOrderUseCaseTest(CreateOrderUseCaseFixture fixture)
     {
         _fixture = fixture;
-        //_fixture.ClearInvocations();
+        _fixture.ClearInvocations();
     }
 
     [Fact]
-    public async Task GivenAValidRequestThenFails()
+    public async Task GivenAValidRequestThenPass()
     {
         // Arrange
         var request = _fixture.autoFixture.Create<CreateOrderRequest>();
@@ -30,6 +30,9 @@ public class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFixture>
         result.Data.Should().NotBeNull();
         result.Success.Should().BeTrue();
         result.Message.Should().BeNullOrEmpty();
+        _fixture.VerifyDomainService(1);
+        _fixture.VerifyLoggerInformation(1);
+        _fixture.VerifyLoggerError(0);
     }
 
     [Fact]
@@ -49,6 +52,9 @@ public class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFixture>
         result.Data.Should().BeNull();
         result.Success.Should().BeFalse();
         result.Message.Should().NotBeNullOrEmpty();
+        _fixture.VerifyDomainService(0);
+        _fixture.VerifyLoggerInformation(0);
+        _fixture.VerifyLoggerError(1);
     }
 
     [Fact]
@@ -69,5 +75,8 @@ public class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFixture>
         result.Data.Should().BeNull();
         result.Success.Should().BeFalse();
         result.Message.Should().NotBeNullOrEmpty();
+        _fixture.VerifyDomainService(1);
+        _fixture.VerifyLoggerInformation(0);
+        _fixture.VerifyLoggerError(1);
     }
 }

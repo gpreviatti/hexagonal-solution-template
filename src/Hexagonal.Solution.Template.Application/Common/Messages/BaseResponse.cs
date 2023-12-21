@@ -4,13 +4,18 @@ public record BaseResponse()
 {
     public bool Success { get; set; } = false;
     public string Message { get; set; } = string.Empty;
-};
+}
 
-public record BaseResponse<TResponseData>() where TResponseData : class
+public record BaseResponse<TData>() where TData : class
 {
-    private bool _success;
-
     public string Message { get; set; } = string.Empty;
-    public TResponseData? Data { get; set; } = null;
-    public bool Success { get => _success; private set => _success = Data is not null; }
-};
+
+    public bool Success { get; private set; } = false;
+    public TData? Data { get; private set; }
+
+    public void SetData(TData value)
+    {
+        Data = value;
+        Success = true;
+    }
+}

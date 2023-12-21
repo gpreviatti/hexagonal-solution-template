@@ -36,7 +36,9 @@ public class CreateOrderUseCase(
             return response;
         }
 
-        response.Data = new OrderDto(newOrder.Value!.Id);
+        response.SetData(
+            new(newOrder.Value!.Id)
+        );
         logger.Information("Use case was executed with success", response);
 
         return response;
