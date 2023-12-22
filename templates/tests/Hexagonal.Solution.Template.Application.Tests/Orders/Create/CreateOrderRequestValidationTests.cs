@@ -15,7 +15,7 @@ public class CreateOrderRequestValidationTests(CreateOrderRequestValidationFixtu
         var result = await _fixture.validator.TestValidateAsync(request);
 
         // Assert
-        result.ShouldHaveAnyValidationError();
+        result.ShouldNotHaveAnyValidationErrors();
     }
 
     [Theory(DisplayName = nameof(Given_A_Invalid_Request_Then_Fails))]

@@ -1,27 +1,36 @@
 ﻿{
   "valid": [
     {
-
+      "Description": "Lorem ipsum",
+      "Items": [
+        {
+          "Name": "Computer",
+          "Description": "Awesome computer",
+          "Value": 900
+        }
+      ]
     }
   ],
   "invalid": [
     [
       {
-
+        "Description": "",
+        "Items": [
+          {
+            "Name": "Computer",
+            "Description": "Awesome computer",
+            "Value": 900
+          }
+        ]
       },
-      ""
+      "Description"
     ],
     [
       {
-
+        "Description": "Lorem ipsum",
+        "Items": []
       },
-      ""
-    ],
-    [
-      {
-
-      },
-      ""
+      "Items"
     ]
   ]
 }
