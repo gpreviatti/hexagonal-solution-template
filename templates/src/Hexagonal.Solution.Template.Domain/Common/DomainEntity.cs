@@ -3,7 +3,7 @@ public abstract class DomainEntity
 {
     protected DomainEntity(int id, DateTime? createdAt, DateTime? updatedAt)
     {
-        Id=id;
+        Id = id;
         CreatedAt = createdAt;
         UpdatedAt = updatedAt;
     }
