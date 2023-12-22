@@ -1,0 +1,20 @@
+name: Validate pull request
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v1
+      
+    - name: Build
+      run: dotnet build -c Release
+      
+    - name: Test
+      run: dotnet test ./templates
