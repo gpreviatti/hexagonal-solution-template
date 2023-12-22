@@ -41,6 +41,6 @@ public class CreateOrderUseCase(
         );
         logger.Information("Use case was executed with success", response);
 
-        return response;
+        return await Task.FromResult(response);
     }
 }
