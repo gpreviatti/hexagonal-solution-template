@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Hexagonal.Solution.Template.Infrastructure.Data\Hexagonal.Solution.Template.Infrastructure.Data.csproj" />
+    <ProjectReference Include="..\Hexagonal.Solution.Template.Tests.Common\Hexagonal.Solution.Template.Tests.Common.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,13 +1,14 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 using Hexagonal.Solution.Template.Application.Orders.Create;
+using Hexagonal.Solution.Template.Application.Tests.Common;
 using Hexagonal.Solution.Template.Domain.Common;
 using Hexagonal.Solution.Template.Domain.Orders;
 using Hexagonal.Solution.Template.Domain.Orders.Services;
 
 namespace Hexagonal.Solution.Template.Application.Tests.Orders.Create;
 
-public class CreateOrderUseCaseFixture : BaseFixture
+public class CreateOrderUseCaseFixture : BaseApplicationFixture
 {
     public Mock<IValidator<CreateOrderRequest>> mockValidator = new();
     public Mock<ICreateOrderService> mockDomainService = new();

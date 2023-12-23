@@ -16,7 +16,5 @@ public class OrderDbMapping : BaseDbMapping<Order>
 
         builder.Property(p => p.Items)
             .IsRequired(false);
-
-        builder.HasMany(p => p.Items);
     }
 }

@@ -8,7 +8,7 @@ public class TestContainerSqlServerFixture : IDisposable
 {
     private readonly MsSqlContainer _sqlServerContainer;
     public string connectionString;
-    public MyDbContext gridDbContext;
+    public MyDbContext myDbContext;
 
     public TestContainerSqlServerFixture()
     {
@@ -27,13 +27,7 @@ public class TestContainerSqlServerFixture : IDisposable
                 .UseSqlServer(connectionString)
                 .Options;
 
-        gridDbContext = new MyDbContext(contextOptions);
-
-        RunSeeds().Wait();
-    }
-    public async Task RunSeeds()
-    {
-        Task.CompletedTask.Wait();
+        myDbContext = new MyDbContext(contextOptions);
     }
 
     private string GetConnectionString() =>
@@ -42,6 +36,6 @@ public class TestContainerSqlServerFixture : IDisposable
     public void Dispose()
     {
         _sqlServerContainer.StopAsync().Wait();
-        gridDbContext.Dispose();
+        myDbContext.Dispose();
     }
 }
