@@ -1,7 +1,7 @@
 ﻿using Hexagonal.Solution.Template.Domain.Common;
 using System.Linq.Expressions;
 
-namespace Hexagonal.Solution.Template.Infrastructure.Data.Common;
+namespace Hexagonal.Solution.Template.Application.Common.Repositories;
 public interface IBaseRepository<TEntity> where TEntity : DomainEntity
 {
     Task<TEntity> Add(TEntity entity);

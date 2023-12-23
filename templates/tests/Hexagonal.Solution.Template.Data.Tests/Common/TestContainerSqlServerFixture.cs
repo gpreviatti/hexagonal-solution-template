@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Hexagonal.Solution.Template.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using Testcontainers.MsSql;
 
 namespace Hexagonal.Solution.Template.Data.Tests.Common;
 
@@ -23,8 +21,6 @@ public class TestContainerSqlServerFixture : IDisposable
 
         _sqlServerContainer.StartAsync().Wait();
 
-        RunScripts().Wait();
-
         connectionString = GetConnectionString();
 
         var contextOptions = new DbContextOptionsBuilder<MyDbContext>()
@@ -32,22 +28,12 @@ public class TestContainerSqlServerFixture : IDisposable
                 .Options;
 
         gridDbContext = new MyDbContext(contextOptions);
+
+        RunSeeds().Wait();
     }
-    public async Task RunScripts()
+    public async Task RunSeeds()
     {
-        var scriptMigrations = await File.ReadAllTextAsync("./Migrations/CreateTables.sql");
-        var scriptSeeds = await File.ReadAllTextAsync("./Seeds/Inserts.sql");
-
-        using var connection = new SqlConnection(GetConnectionString());
-        connection.Open();
-
-        using var commandMigrations = new SqlCommand(scriptMigrations, connection);
-        await commandMigrations.ExecuteNonQueryAsync();
-
-        using var commandSeeds = new SqlCommand(scriptSeeds, connection);
-        await commandSeeds.ExecuteNonQueryAsync();
-
-        connection.Close();
+        Task.CompletedTask.Wait();
     }
 
     private string GetConnectionString() =>
