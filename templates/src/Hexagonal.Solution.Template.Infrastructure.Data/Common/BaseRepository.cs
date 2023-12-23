@@ -1,4 +1,5 @@
-﻿using Hexagonal.Solution.Template.Domain.Common;
+﻿using Hexagonal.Solution.Template.Application.Common.Repositories;
+using Hexagonal.Solution.Template.Domain.Common;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
