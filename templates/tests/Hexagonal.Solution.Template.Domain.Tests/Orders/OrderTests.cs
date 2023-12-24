@@ -13,7 +13,10 @@ public class OrderTests
             new(1, "Mouse", "Razer", 100, DateTime.UtcNow),
             new(1, "Headphone", "Logitech", 100, DateTime.UtcNow),
         };
-        var order = new Order(1, "new order", DateTime.UtcNow, items);
+        var order = new Order(1, "new order", DateTime.UtcNow)
+        {
+            Items = items
+        };
 
         /// Act
         order.SetTotal();

@@ -3,10 +3,7 @@
 namespace Hexagonal.Solution.Template.Domain.Orders;
 public class Item : DomainEntity
 {
-    public Item()
-    {
-        
-    }
+    public Item() {}
 
     public Item(
         int id, string name, string description, decimal value, 

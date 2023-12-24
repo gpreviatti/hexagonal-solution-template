@@ -60,7 +60,7 @@ public class CreateOrderUseCaseFixture : BaseApplicationFixture
         var result = Result.Ok(order);
 
         mockDomainService
-            .Setup(d => d.Handle(It.IsAny<string>(), It.IsAny<IEnumerable<Item>>()))
+            .Setup(d => d.Handle(It.IsAny<string>(), It.IsAny<ICollection<Item>>()))
             .Returns(result);
     }
 
@@ -69,14 +69,14 @@ public class CreateOrderUseCaseFixture : BaseApplicationFixture
         var result = Result.Fail<Order>("Unable to create order");
 
         mockDomainService
-            .Setup(d => d.Handle(It.IsAny<string>(), It.IsAny<IEnumerable<Item>>()))
+            .Setup(d => d.Handle(It.IsAny<string>(), It.IsAny<ICollection<Item>>()))
             .Returns(result);
     }
 
     public void VerifyDomainService(int times)
     {
         mockDomainService.Verify(
-            d => d.Handle(It.IsAny<string>(), It.IsAny<IEnumerable<Item>>()), 
+            d => d.Handle(It.IsAny<string>(), It.IsAny<ICollection<Item>>()), 
             Times.Exactly(times)
         );
     }

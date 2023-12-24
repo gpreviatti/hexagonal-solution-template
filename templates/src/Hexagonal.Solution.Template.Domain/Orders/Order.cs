@@ -3,10 +3,8 @@
 namespace Hexagonal.Solution.Template.Domain.Orders;
 public class Order : DomainEntity
 {
-    public Order()
-    {
-        
-    }
+    public Order() {}
+
     public Order(
         int id, string description, 
         DateTime createdAt, DateTime? updatedAt = null
