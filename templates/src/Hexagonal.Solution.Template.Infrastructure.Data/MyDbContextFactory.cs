@@ -3,9 +3,14 @@ using Microsoft.EntityFrameworkCore.Design;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Hexagonal.Solution.Template.Infrastructure.Data;
+
+/// <summary>
+/// This class is used to generate migrations. 
+/// Change the database connection string to your local db connection to generate migrations
+/// </summary>
+[ExcludeFromCodeCoverage]
 public class ContextFactory : IDesignTimeDbContextFactory<MyDbContext>
 {
-    [ExcludeFromCodeCoverage]
     public MyDbContext CreateDbContext(string[] args)
     {
         var builder = new DbContextOptionsBuilder<MyDbContext>();
