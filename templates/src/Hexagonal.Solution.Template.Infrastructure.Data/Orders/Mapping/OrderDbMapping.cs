@@ -16,6 +16,6 @@ public class OrderDbMapping : BaseDbMapping<Order>
 
         builder.HasMany(p => p.Items);
 
-        builder.Navigation(p => p.Items).AutoInclude(false);
+        //builder.Navigation(p => p.Items).AutoInclude(false);
     }
 }

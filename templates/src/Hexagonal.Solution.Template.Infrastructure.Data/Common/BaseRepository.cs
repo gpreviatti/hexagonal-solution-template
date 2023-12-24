@@ -50,7 +50,9 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
     public async Task<bool> CheckExistsByWhereAsNoTrackingAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
         => await dbEntitySet.AsNoTracking().AnyAsync(predicate, cancellationToken);
 
-    public async Task<TEntity?> GetByIdAsync(object id) => await dbEntitySet.FindAsync(id);
+    public async Task<TEntity?> GetByIdAsNoTrackingAsync(object id, CancellationToken cancellationToken) => await dbEntitySet
+        .AsNoTracking()
+        .FirstAsync(e => e.Id.Equals(id), cancellationToken);
 
     public async Task<IList<TEntity>> GetByWhereAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
         => await dbEntitySet.Where(predicate).ToListAsync(cancellationToken);
