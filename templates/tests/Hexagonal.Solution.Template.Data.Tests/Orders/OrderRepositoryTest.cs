@@ -4,12 +4,8 @@ using Hexagonal.Solution.Template.Data.Tests.Common;
 namespace Hexagonal.Solution.Template.Data.Tests.Orders;
 
 [Collection("TestContainerSqlServerCollectionDefinition")]
-public class OrderRepositoryTest : OrderDataTestFixture
+public class OrderRepositoryTest(TestContainerSqlServerFixture fixture) : OrderDataTestFixture(fixture.myDbContext)
 {
-    public OrderRepositoryTest(TestContainerSqlServerFixture fixture) : base(fixture.myDbContext)
-    {
-    }
-
     [Fact]
     public async Task Given_A_Id_Then_Return_Order_With_Success()
     {
