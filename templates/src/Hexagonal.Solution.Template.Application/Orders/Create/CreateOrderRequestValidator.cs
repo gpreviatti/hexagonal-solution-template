@@ -8,6 +8,5 @@ public class CreateOrderRequestValidator : AbstractValidator<CreateOrderRequest>
         RuleFor(r => r.Description).NotEmpty();
         RuleFor(r => r.Items).NotEmpty();
         RuleForEach(r => r.Items).SetValidator(new CreateOrderItemRequestValidator());
-
     }
 }
