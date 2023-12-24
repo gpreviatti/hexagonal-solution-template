@@ -4,13 +4,13 @@ using Hexagonal.Solution.Template.Data.Tests.Common;
 namespace Hexagonal.Solution.Template.Data.Tests.Orders;
 
 [Collection("TestContainerSqlServerCollectionDefinition")]
-public class OrderRepositoryTest : BaseOrderFixture , IClassFixture<TestContainerSqlServerFixture> 
+public class OrderRepositoryTest : IClassFixture<TestContainerSqlServerFixture>
 {
-    private readonly TestContainerSqlServerFixture _testContainerSqlServerFixture;
+    private readonly TestContainerSqlServerFixture _fixture;
 
-    public OrderRepositoryTest(TestContainerSqlServerFixture testContainerSqlServerFixture) : base(testContainerSqlServerFixture.myDbContext)
+    public OrderRepositoryTest(TestContainerSqlServerFixture fixture)
     {
-        _testContainerSqlServerFixture = testContainerSqlServerFixture;
+        _fixture = fixture;
     }
 
     [Fact]
@@ -20,10 +20,11 @@ public class OrderRepositoryTest : BaseOrderFixture , IClassFixture<TestContaine
         var id = 1;
 
         // Act
-        var result = await repository.GetByIdAsync(id);
+        var result = await _fixture.orderRepository.GetByIdAsync(id);
 
 
         // Assert
         result.Should().NotBeNull();
+        result.Items.Should().BeNull();
     }
 }

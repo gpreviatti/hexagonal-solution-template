@@ -14,7 +14,8 @@ public class OrderDbMapping : BaseDbMapping<Order>
         builder.Property(p => p.Total)
             .IsRequired(true);
 
-        builder.Property(p => p.Items)
-            .IsRequired(false);
+        builder.HasMany(p => p.Items);
+
+        builder.Navigation(p => p.Items).AutoInclude(false);
     }
 }

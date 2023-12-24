@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template.Tests.Common", "tests\Hexagonal.Solution.Template.Tests.Common\Hexagonal.Solution.Template.Tests.Common.csproj", "{A1376FF6-1F7E-4D68-967A-121572141BA0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hexagonal.Solution.Template.Data.Tests", "tests\Hexagonal.Solution.Template.Data.Tests\Hexagonal.Solution.Template.Data.Tests.csproj", "{19D31155-9E00-46A0-9E33-4DF0C9822DC6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template.Data.Tests", "tests\Hexagonal.Solution.Template.Data.Tests\Hexagonal.Solution.Template.Data.Tests.csproj", "{19D31155-9E00-46A0-9E33-4DF0C9822DC6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

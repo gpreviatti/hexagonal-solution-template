@@ -13,9 +13,11 @@ public abstract class BaseDbMapping<TEntity> : IEntityTypeConfiguration<TEntity>
         ConfigureDomainEntity(builder);
 
         builder.Property(p => p.CreatedAt)
-            .IsRequired(true);
+            .HasColumnType("DATETIME2")
+            .IsRequired(false);
 
         builder.Property(p => p.UpdatedAt)
+            .HasColumnType("DATETIME2")
             .IsRequired(false);
     }
 
