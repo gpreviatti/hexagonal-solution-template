@@ -22,7 +22,8 @@ public class CreateOrderUseCase(
         var response = new BaseResponse<OrderDto>();
 
         var items = request.Items
-            .Select(i => new Item(default, i.Name, i.Description, i.Value));
+            .Select(i => new Item(default, i.Name, i.Description, i.Value))
+            .ToList();
 
         var newOrder = _createOrderService.Handle(
             request.Description,

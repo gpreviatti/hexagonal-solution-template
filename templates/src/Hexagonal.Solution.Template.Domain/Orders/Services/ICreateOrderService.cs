@@ -3,5 +3,5 @@
 namespace Hexagonal.Solution.Template.Domain.Orders.Services;
 public interface ICreateOrderService
 {
-    Result<Order> Handle(string description, IEnumerable<Item> items);
+    Result<Order> Handle(string description, ICollection<Item> items);
 }

@@ -3,9 +3,12 @@
 namespace Hexagonal.Solution.Template.Domain.Orders.Services;
 public class CreateOrderService : ICreateOrderService
 {
-    public Result<Order> Handle(string description, IEnumerable<Item> items)
+    public Result<Order> Handle(string description, ICollection<Item> items)
     {
-        var newOrder = new Order(default, description, DateTime.UtcNow, items, DateTime.UtcNow);
+        var newOrder = new Order(default, description, DateTime.UtcNow, DateTime.UtcNow)
+        {
+            Items = items
+        };
 
         newOrder.SetTotal();
 
