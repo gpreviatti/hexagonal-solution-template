@@ -23,8 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Hexagonal.Solution.Template.Application\Hexagonal.Solution.Template.Application.csproj" />
-    <ProjectReference Include="..\src\Hexagonal.Solution.Template.Domain\Hexagonal.Solution.Template.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Hexagonal.Solution.Template.Application\Hexagonal.Solution.Template.Application.csproj" />
+    <ProjectReference Include="..\..\src\Hexagonal.Solution.Template.Domain\Hexagonal.Solution.Template.Domain.csproj" />
   </ItemGroup>
 
 </Project>

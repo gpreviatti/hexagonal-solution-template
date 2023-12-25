@@ -5,15 +5,11 @@ using Hexagonal.Solution.Template.Application.Tests.Common;
 using Hexagonal.Solution.Template.Domain.Common;
 using Hexagonal.Solution.Template.Domain.Orders;
 using Hexagonal.Solution.Template.Domain.Orders.Services;
-using Microsoft.Extensions.DependencyInjection;
-using Serilog;
 
 namespace Hexagonal.Solution.Template.Application.Tests.Orders.Create;
 
 public class CreateOrderUseCaseFixture : BaseApplicationFixture
 {
-    public Mock<IServiceProvider> mockServiceProvider = new();
-
     public Mock<IValidator<CreateOrderRequest>> mockValidator = new();
     public Mock<ICreateOrderService> mockDomainService = new();
 
@@ -30,15 +26,11 @@ public class CreateOrderUseCaseFixture : BaseApplicationFixture
     public void MockServiceProviderServices()
     {
         mockServiceProvider
-            .Setup(r => r.GetService<ILogger>())
-            .Returns(mockLogger.Object);
-
-        mockServiceProvider
-            .Setup(r => r.GetService<IValidator<CreateOrderRequest>>())
+            .Setup(r => r.GetService(typeof(IValidator<CreateOrderRequest>)))
             .Returns(mockValidator.Object);
 
         mockServiceProvider
-            .Setup(r => r.GetService<ICreateOrderService>())
+            .Setup(r => r.GetService(typeof(ICreateOrderService)))
             .Returns(mockDomainService.Object);
     }
 

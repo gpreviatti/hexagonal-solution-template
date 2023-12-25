@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template.Application.Tests", "tests\Hexagonal.Solution.Template.Application.Tests\Hexagonal.Solution.Template.Application.Tests.csproj", "{767C79A1-28E6-473B-81C1-0413A977A2CD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template.Architecture.Tests", "Hexagonal.Solution.Template.Architecture.Tests\Hexagonal.Solution.Template.Architecture.Tests.csproj", "{86E5A8D7-3938-4CD8-8305-EF4A926D88D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template.Architecture.Tests", "tests\Hexagonal.Solution.Template.Architecture.Tests\Hexagonal.Solution.Template.Architecture.Tests.csproj", "{86E5A8D7-3938-4CD8-8305-EF4A926D88D2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template.Tests.Common", "tests\Hexagonal.Solution.Template.Tests.Common\Hexagonal.Solution.Template.Tests.Common.csproj", "{A1376FF6-1F7E-4D68-967A-121572141BA0}"
 EndProject
