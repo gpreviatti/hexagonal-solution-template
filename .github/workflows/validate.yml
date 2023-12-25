@@ -12,9 +12,12 @@ jobs:
       
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v1
-      
-    - name: Build
+
+    - name: Build Template Pack Project
       run: dotnet build -c Release
+      
+    - name: Build Template Solution
+      run: dotnet build ./templates -c Release
       
     - name: Test
       run: dotnet test ./templates

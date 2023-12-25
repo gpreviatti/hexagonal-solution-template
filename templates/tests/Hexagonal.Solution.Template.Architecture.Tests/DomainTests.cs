@@ -5,7 +5,7 @@ public class DomainTests
 {
     private static readonly Assembly _domainAssembly = typeof(Result).Assembly;
 
-    [Theory(DisplayName = nameof(Domain_Do_Not_Have_Classes_With_Not_Alloed_Names))]
+    [Theory(DisplayName = nameof(Domain_Do_Not_Have_Classes_With_Not_Allowed_Names))]
     [InlineData("Dto")]
     [InlineData("Dtos")]
     [InlineData("UseCase")]
@@ -17,7 +17,7 @@ public class DomainTests
     [InlineData("Controller")]
     [InlineData("Repository")]
     [InlineData("Query")]
-    public void Domain_Do_Not_Have_Classes_With_Not_Alloed_Names(string notAllowedClassName)
+    public void Domain_Do_Not_Have_Classes_With_Not_Allowed_Names(string notAllowedClassName)
     {
         // Arrange, Act
         var result = Types

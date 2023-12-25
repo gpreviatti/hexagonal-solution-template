@@ -13,15 +13,25 @@ public class CreateOrderUseCaseFixture : BaseApplicationFixture
     public Mock<IValidator<CreateOrderRequest>> mockValidator = new();
     public Mock<ICreateOrderService> mockDomainService = new();
 
+
     public ICreateOrderUseCase useCase;
 
     public CreateOrderUseCaseFixture()
     {
-        useCase = new CreateOrderUseCase(
-            mockLogger.Object,
-            mockValidator.Object,
-            mockDomainService.Object
-        );
+        MockServiceProviderServices();
+
+        useCase = new CreateOrderUseCase(mockServiceProvider.Object);
+    }
+
+    public void MockServiceProviderServices()
+    {
+        mockServiceProvider
+            .Setup(r => r.GetService(typeof(IValidator<CreateOrderRequest>)))
+            .Returns(mockValidator.Object);
+
+        mockServiceProvider
+            .Setup(r => r.GetService(typeof(ICreateOrderService)))
+            .Returns(mockDomainService.Object);
     }
 
     public void ClearInvocations()

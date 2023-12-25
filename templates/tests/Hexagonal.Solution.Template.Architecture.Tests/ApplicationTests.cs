@@ -5,13 +5,13 @@ public class ApplicationTests
 {
     private static readonly Assembly _applicationAssembly = typeof(BaseResponse).Assembly;
 
-    [Theory(DisplayName = nameof(Application_Do_Not_Have_Classes_With_Not_Alloed_Names))]
+    [Theory(DisplayName = nameof(Application_Do_Not_Have_Classes_With_Not_Allowed_Names))]
     [InlineData("Entity")]
     [InlineData("ValueObject")]
     [InlineData("Vo")]
     [InlineData("Service")]
     [InlineData("Controller")]
-    public void Application_Do_Not_Have_Classes_With_Not_Alloed_Names(string notAllowedClassName)
+    public void Application_Do_Not_Have_Classes_With_Not_Allowed_Names(string notAllowedClassName)
     {
         // Arrange, Act
         var result = Types

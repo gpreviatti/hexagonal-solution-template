@@ -1,27 +1,28 @@
 ﻿using FluentValidation;
 using Hexagonal.Solution.Template.Application.Common.Messages;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
 namespace Hexagonal.Solution.Template.Application.Common;
 
 public abstract class BaseInUseCase<TRequest, TResponseData>(
-    ILogger logger,
-    IValidator<TRequest>? validator = null
+    IServiceProvider serviceProvider,
+    IValidator<TRequest> validator = null
 )
     where TRequest : class
     where TResponseData : class
 {
-    private readonly IValidator<TRequest>? _validator = validator;
-    protected readonly ILogger logger = logger;
+    protected readonly ILogger logger = serviceProvider.GetService<ILogger>();
+    private readonly IValidator<TRequest> validator = validator;
 
     public async Task HandleAsync(
         TRequest request, 
         CancellationToken cancellationToken
     )
     {
-        if (_validator != null)
+        if (validator != null)
         {
-            var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+            var validationResult = await validator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid)
             {
                 var errors = string.Join(", ", validationResult.Errors);

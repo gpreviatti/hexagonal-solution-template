@@ -11,15 +11,15 @@ namespace Hexagonal.Solution.Template.Tests.Common.Attributes;
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 public sealed class JsonResourceDataAttribute : DataAttribute
 {
-    private static readonly ConcurrentDictionary<Assembly, ResourceReader> s_resourceReaders = new();
+    private static readonly ConcurrentDictionary<Assembly, ResourceReader> _resourceReaders = new();
 
     private readonly string _resourceName;
-    private readonly string? _propertyName;
+    private readonly string _propertyName;
 
     /// <summary>Load data from a JSON file as the data source for a theory.</summary>
     /// <param name="resourceName">The resource name that contains the JSON content to load.</param>
     /// <param name="propertyName">The name of the property on the JSON file that contains the data for the test.</param>
-    public JsonResourceDataAttribute(string resourceName, string? propertyName = null)
+    public JsonResourceDataAttribute(string resourceName, string propertyName = null)
     {
         _resourceName = resourceName;
         _propertyName = propertyName;
@@ -27,7 +27,7 @@ public sealed class JsonResourceDataAttribute : DataAttribute
 
     public bool UseNewtonsoft { get; set; } = true;
 
-    public override IEnumerable<object?[]> GetData(MethodInfo testMethod)
+    public override IEnumerable<object[]> GetData(MethodInfo testMethod)
     {
         if (testMethod == null || testMethod.DeclaringType == null)
         {
@@ -35,12 +35,12 @@ public sealed class JsonResourceDataAttribute : DataAttribute
         }
 
         var parameters = testMethod.GetParameters().Select(p => p.ParameterType).ToArray();
-        var resourceReader = s_resourceReaders.GetOrAdd(testMethod.DeclaringType.Assembly, x => new ResourceReader(x));
+        var resourceReader = _resourceReaders.GetOrAdd(testMethod.DeclaringType.Assembly, x => new ResourceReader(x));
         string content = resourceReader.GetString(_resourceName);
 
         if (UseNewtonsoft)
         {
-            JObject jObject = JObject.Parse(content);
+            var jObject = JObject.Parse(content);
 
             return Deserialize(
                 string.IsNullOrEmpty(_propertyName)
@@ -50,7 +50,7 @@ public sealed class JsonResourceDataAttribute : DataAttribute
         }
         else
         {
-            JsonDocument jsonDocument = JsonDocument.Parse(content);
+            var jsonDocument = JsonDocument.Parse(content);
 
             return Deserialize(
                 string.IsNullOrEmpty(_propertyName)
@@ -60,18 +60,18 @@ public sealed class JsonResourceDataAttribute : DataAttribute
         }
     }
 
-    private static IEnumerable<object?[]> Deserialize(JToken? token, Type[] parameters)
+    private static IEnumerable<object[]> Deserialize(JToken token, Type[] parameters)
     {
         if (token is null)
-            return Array.Empty<object?[]>();
+            return Array.Empty<object[]>();
 
         if (token is not JArray jArray)
         {
             return new[] { DeserializeData(token, parameters) };
         }
 
-        var list = new List<object?[]>();
-        foreach (JToken element in jArray)
+        var list = new List<object[]>();
+        foreach (var element in jArray)
         {
             list.Add(DeserializeData(element, parameters));
         }
@@ -79,15 +79,15 @@ public sealed class JsonResourceDataAttribute : DataAttribute
         return list;
     }
 
-    private static IEnumerable<object?[]> Deserialize(JsonElement jsonElement, Type[] parameters)
+    private static IEnumerable<object[]> Deserialize(JsonElement jsonElement, Type[] parameters)
     {
         if (jsonElement.ValueKind != JsonValueKind.Array)
         {
             return new[] { DeserializeData(jsonElement, parameters) };
         }
 
-        var list = new List<object?[]>();
-        foreach (JsonElement element in jsonElement.EnumerateArray())
+        var list = new List<object[]>();
+        foreach (var element in jsonElement.EnumerateArray())
         {
             list.Add(DeserializeData(element, parameters));
         }
@@ -95,19 +95,19 @@ public sealed class JsonResourceDataAttribute : DataAttribute
         return list;
     }
 
-    private static object?[] DeserializeData(JToken token, Type[] parameters)
+    private static object[] DeserializeData(JToken token, Type[] parameters)
     {
         if (token is not JArray jArray)
         {
             if (parameters.Length > 1)
                 throw new InvalidOperationException("JSON content must be an array to represent each parameter");
 
-            return new[] { DeserializeParameter(token, parameters[0]) };
+            return [DeserializeParameter(token, parameters[0])];
         }
 
-        var result = new object?[parameters.Length];
+        var result = new object[parameters.Length];
         int index = 0;
-        foreach (JToken element in jArray)
+        foreach (var element in jArray)
         {
             result[index] = DeserializeParameter(element, parameters[index]);
             index++;
@@ -116,19 +116,19 @@ public sealed class JsonResourceDataAttribute : DataAttribute
         return result;
     }
 
-    private static object?[] DeserializeData(JsonElement jsonElement, Type[] parameters)
+    private static object[] DeserializeData(JsonElement jsonElement, Type[] parameters)
     {
         if (jsonElement.ValueKind != JsonValueKind.Array)
         {
             if (parameters.Length > 1)
                 throw new InvalidOperationException("JSON content must be an array to represent each parameter");
 
-            return new[] { DeserializeParameter(jsonElement, parameters[0]) };
+            return [DeserializeParameter(jsonElement, parameters[0])];
         }
 
-        var result = new object?[parameters.Length];
+        var result = new object[parameters.Length];
         int index = 0;
-        foreach (JsonElement element in jsonElement.EnumerateArray())
+        foreach (var element in jsonElement.EnumerateArray())
         {
             result[index] = DeserializeParameter(element, parameters[index]);
             index++;
@@ -137,14 +137,14 @@ public sealed class JsonResourceDataAttribute : DataAttribute
         return result;
     }
 
-    private static object? DeserializeParameter(JToken element, Type parameterType)
+    private static object DeserializeParameter(JToken element, Type parameterType)
     {
         return parameterType == typeof(string) && element.Type != JTokenType.String
             ? element.ToString()
             : element.ToObject(parameterType);
     }
 
-    private static object? DeserializeParameter(JsonElement element, Type parameterType)
+    private static object DeserializeParameter(JsonElement element, Type parameterType)
     {
         return parameterType == typeof(string) && element.ValueKind != JsonValueKind.String
             ? element.GetRawText()
@@ -152,19 +152,14 @@ public sealed class JsonResourceDataAttribute : DataAttribute
     }
 }
 
-public sealed class ResourceReader
+public sealed class ResourceReader(Assembly assembly)
 {
-    private readonly Assembly _thisAssembly;
-    private string[]? _resourceNames;
-
-    public ResourceReader(Assembly assembly)
-    {
-        _thisAssembly = assembly;
-    }
+    private readonly Assembly _thisAssembly = assembly;
+    private string[] _resourceNames;
 
     private string[] ResourceNames => _resourceNames ??= _thisAssembly.GetManifestResourceNames();
 
-    public string GetString(string resourceName, params object?[]? args)
+    public string GetString(string resourceName, params object[] args)
     {
         return args is null || args.Length == 0
             ? LoadEmbeddedResource(FindResourceName(resourceName) ?? resourceName)
@@ -174,7 +169,7 @@ public sealed class ResourceReader
                 args);
     }
 
-    private string? FindResourceName(string partialName) =>
+    private string FindResourceName(string partialName) =>
         Array.Find(ResourceNames, n => n.EndsWith(partialName, StringComparison.Ordinal));
 
     private string LoadEmbeddedResource(string resourceName)

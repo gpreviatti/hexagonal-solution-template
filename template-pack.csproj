@@ -14,15 +14,25 @@
     <NoWarn>$(NoWarn);NU5128</NoWarn>
     <NoDefaultExcludes>true</NoDefaultExcludes>
     <PackageProjectUrl>https://github.com/gpreviatti/hexagonal-solution-template</PackageProjectUrl>
+    <PackageReadmeFile>Readme.md</PackageReadmeFile>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>git://github.com/gpreviatti/hexagonal-solution-template</RepositoryUrl>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageReleaseNotes>
+  ChangeLog:
+  
+  - Improve project documentation
+  - Add IServiceCollection in use cases
+  - Fix Architecture Test directory
+  - Remove ConsoleApp test project
+    </PackageReleaseNotes>
   </PropertyGroup>
+
 
   <ItemGroup>
     <Content Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**" />
     <Compile Remove="**\*" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="https:\github.com\gpreviatti\hexagonal-solution-template\blob\main\Readme.md" />
+    <None Include="README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 
 </Project>
