@@ -4,11 +4,10 @@ using Hexagonal.Solution.Template.Application.Common.Messages;
 using Hexagonal.Solution.Template.Domain.Orders;
 using Hexagonal.Solution.Template.Domain.Orders.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Serilog;
 
 namespace Hexagonal.Solution.Template.Application.Orders.Create;
 public class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<CreateOrderRequest, OrderDto>(
-    serviceProvider.GetService<ILogger>(),
+    serviceProvider,
     serviceProvider.GetService<IValidator<CreateOrderRequest>>()
 ), ICreateOrderUseCase
 {

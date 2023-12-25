@@ -1,18 +1,20 @@
 ﻿using FluentValidation;
 using Hexagonal.Solution.Template.Application.Common.Messages;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
 namespace Hexagonal.Solution.Template.Application.Common;
 
 public abstract class BaseInOutUseCase<TRequest, TResponseData>(
-    ILogger logger,
+    IServiceProvider serviceProvider,
     IValidator<TRequest> validator = null
 )
     where TRequest : class
     where TResponseData : class
 {
+    protected readonly IServiceProvider serviceProvider = serviceProvider;
+    protected readonly ILogger logger = serviceProvider.GetService<ILogger>();
     protected readonly IValidator<TRequest> validator = validator;
-    protected readonly ILogger logger = logger;
 
     public async Task<BaseResponse<TResponseData>> Handle(
         TRequest request, 
