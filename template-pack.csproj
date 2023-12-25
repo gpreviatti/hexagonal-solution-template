@@ -18,16 +18,16 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>git://github.com/gpreviatti/hexagonal-solution-template</RepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageReleaseNotes>
+  ChangeLog:
+  
+  - Improve project documentation
+  - Add IServiceCollection in use cases
+  - Fix Architecture Test directory
+  - Remove ConsoleApp test project
+    </PackageReleaseNotes>
   </PropertyGroup>
 
-  <PackageReleaseNotes>
-ChangeLog:
-
-- Improve project documentation
-- Add IServiceCollection in use cases
-- Fix Architecture Test directory
-- Remove ConsoleApp test project
-  </PackageReleaseNotes>
 
   <ItemGroup>
     <Content Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**" />
