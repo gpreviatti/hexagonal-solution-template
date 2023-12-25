@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Hexagonal.Solution.Template.Application.Common.Messages;
 using Hexagonal.Solution.Template.Application.Orders.Create;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,12 +8,10 @@ public static class ApplicationDependencyInjection
 {
     public static void AddApplicationServices(this IServiceCollection services)
     {
-        // Add Validators from assembly
+        //Add validators from assembly
         services.AddValidatorsFromAssemblyContaining<CreateOrderRequestValidator>();
 
         // Orders
-        services
-            .AddScoped<ICreateOrderUseCase, CreateOrderUseCase>();
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(BaseResponse).Assembly));
     }
-
 }

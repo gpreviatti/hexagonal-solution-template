@@ -8,7 +8,7 @@ public abstract class BaseOutUseCase<TRequest, TResponseData>(
 )
     where TResponseData : class
 {
-    private readonly ILogger logger = logger;
+    protected readonly ILogger logger = logger;
 
     public async Task<BaseResponse<TResponseData>> HandleAsync(CancellationToken cancellationToken)
     {

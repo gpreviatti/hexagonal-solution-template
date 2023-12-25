@@ -11,7 +11,7 @@ public record BaseResponse<TData>() where TData : class
     public string Message { get; private set; } = string.Empty;
 
     public bool Success { get; private set; } = false;
-    public TData? Data { get; private set; }
+    public TData Data { get; private set; }
 
     public void SetBusinessErrorMessage(string message) => Message = message;
     public void SetRequestValidationErrorMessage(string message) => Message = "[RequestValidationError] " + message;

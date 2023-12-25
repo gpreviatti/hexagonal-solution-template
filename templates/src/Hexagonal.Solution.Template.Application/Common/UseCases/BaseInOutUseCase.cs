@@ -6,12 +6,12 @@ namespace Hexagonal.Solution.Template.Application.Common;
 
 public abstract class BaseInOutUseCase<TRequest, TResponseData>(
     ILogger logger,
-    IValidator<TRequest>? validator = null
+    IValidator<TRequest> validator = null
 )
     where TRequest : class
     where TResponseData : class
 {
-    protected readonly IValidator<TRequest>? _validator = validator;
+    protected readonly IValidator<TRequest> validator = validator;
     protected readonly ILogger logger = logger;
 
     public async Task<BaseResponse<TResponseData>> Handle(
@@ -21,9 +21,9 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData>(
     {
         var response = new BaseResponse<TResponseData>();
 
-        if (_validator != null)
+        if (validator != null)
         {
-            var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+            var validationResult = await validator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid)
             {
                 var errors = string.Join(", ", validationResult.Errors);
