@@ -159,7 +159,7 @@ public sealed class ResourceReader(Assembly assembly)
 
     private string[] ResourceNames => _resourceNames ??= _thisAssembly.GetManifestResourceNames();
 
-    public string GetString(string resourceName, params object[]? args)
+    public string GetString(string resourceName, params object[] args)
     {
         return args is null || args.Length == 0
             ? LoadEmbeddedResource(FindResourceName(resourceName) ?? resourceName)
