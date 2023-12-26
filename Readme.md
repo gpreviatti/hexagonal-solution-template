@@ -1,5 +1,8 @@
 # Hexagonal architecture solution template
 
+[![Publish template in Nuget.org](https://github.com/gpreviatti/hexagonal-solution-template/actions/workflows/publish.yml/badge.svg?branch=main)](https://github.com/gpreviatti/hexagonal-solution-template/actions/workflows/publish.yml)
+[![Validate pull request](https://github.com/gpreviatti/hexagonal-solution-template/actions/workflows/validate.yml/badge.svg)](https://github.com/gpreviatti/hexagonal-solution-template/actions/workflows/validate.yml)
+
 This is a dotnet solution template from projects based on hexagonal architecture and best practices
 
 ## Used Technologies
