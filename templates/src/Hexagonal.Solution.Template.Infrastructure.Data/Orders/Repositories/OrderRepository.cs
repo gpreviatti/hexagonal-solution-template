@@ -1,4 +1,4 @@
-﻿using Hexagonal.Solution.Template.Application.Orders.Create;
+﻿using Hexagonal.Solution.Template.Application.Orders;
 using Hexagonal.Solution.Template.Domain.Orders;
 using Hexagonal.Solution.Template.Infrastructure.Data.Common;
 
