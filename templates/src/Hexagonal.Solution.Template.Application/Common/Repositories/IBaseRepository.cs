@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 namespace Hexagonal.Solution.Template.Application.Common.Repositories;
 public interface IBaseRepository<TEntity> where TEntity : DomainEntity
 {
-    Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken);
+    Task AddAsync(TEntity entity, CancellationToken cancellationToken);
     Task AddRangeAsync(TEntity[] entities, CancellationToken cancellationToken);
     Task<TEntity> AddOrUpdateIfNotExistsAsync(TEntity entity, Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken);
     
