@@ -14,3 +14,7 @@ This is a dotnet solution template from projects based on hexagonal architecture
 - Testcontainers
 - Autofixture
 - FluentAssertions
+
+## Advisors and recommendations
+
+- When use the template i recommend you dot not remove Order example scenario until you have you own implementations

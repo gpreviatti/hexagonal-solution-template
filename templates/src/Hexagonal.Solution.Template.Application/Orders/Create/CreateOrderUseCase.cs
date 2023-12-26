@@ -12,6 +12,7 @@ public class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUse
 ), ICreateOrderUseCase
 {
     private readonly ICreateOrderService _createOrderService = serviceProvider.GetService<ICreateOrderService>();
+    private readonly IOrderRepository _orderRepository = serviceProvider.GetService<IOrderRepository>();
 
     public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(
         CreateOrderRequest request, 
@@ -36,11 +37,12 @@ public class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUse
             return response;
         }
 
-        response.SetData(
-            new(newOrder.Value!.Id)
-        );
+        await _orderRepository.AddAsync(newOrder.Value, cancellationToken);
+
+        response.SetData(new(newOrder.Value!.Id));
+
         logger.Information("Use case was executed with success", response);
 
-        return await Task.FromResult(response);
+        return response;
     }
 }

@@ -13,7 +13,7 @@ public abstract class BaseInUseCase<TRequest, TResponseData>(
     where TResponseData : class
 {
     protected readonly ILogger logger = serviceProvider.GetService<ILogger>();
-    private readonly IValidator<TRequest> validator = validator;
+    protected readonly IValidator<TRequest> validator = validator;
 
     public async Task HandleAsync(
         TRequest request, 
@@ -31,7 +31,6 @@ public abstract class BaseInUseCase<TRequest, TResponseData>(
         }
 
         await HandleInternalAsync(request, cancellationToken);
-        logger.Information("Handler executed with success.");
     }
 
     public abstract Task<BaseResponse<TResponseData>> HandleInternalAsync(TRequest request, CancellationToken cancellationToken);

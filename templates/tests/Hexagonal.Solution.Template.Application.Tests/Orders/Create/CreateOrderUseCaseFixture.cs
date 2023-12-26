@@ -12,7 +12,7 @@ public class CreateOrderUseCaseFixture : BaseApplicationFixture
 {
     public Mock<IValidator<CreateOrderRequest>> mockValidator = new();
     public Mock<ICreateOrderService> mockDomainService = new();
-
+    public Mock<IOrderRepository> mockRepository = new();
 
     public ICreateOrderUseCase useCase;
 
@@ -32,6 +32,10 @@ public class CreateOrderUseCaseFixture : BaseApplicationFixture
         mockServiceProvider
             .Setup(r => r.GetService(typeof(ICreateOrderService)))
             .Returns(mockDomainService.Object);
+
+        mockServiceProvider
+            .Setup(r => r.GetService(typeof(IOrderRepository)))
+            .Returns(mockRepository.Object);
     }
 
     public void ClearInvocations()
@@ -39,6 +43,7 @@ public class CreateOrderUseCaseFixture : BaseApplicationFixture
         mockLogger.Invocations.Clear();
         mockDomainService.Invocations.Clear();
         mockValidator.Invocations.Clear();
+        mockRepository.Invocations.Clear();
     }
 
     public void SetSuccessfulValidator(CreateOrderRequest request)
@@ -74,6 +79,17 @@ public class CreateOrderUseCaseFixture : BaseApplicationFixture
             .Returns(result);
     }
 
+    public void SetSuccessfulRepository()
+    {
+        var order = autoFixture
+            .Create<Order>();
+
+        var result = Result.Ok(order);
+
+        mockRepository
+            .Setup(d => d.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()));
+    }
+
     public void SetFailedDomainService()
     {
         var result = Result.Fail<Order>("Unable to create order");
@@ -87,6 +103,14 @@ public class CreateOrderUseCaseFixture : BaseApplicationFixture
     {
         mockDomainService.Verify(
             d => d.Handle(It.IsAny<string>(), It.IsAny<ICollection<Item>>()), 
+            Times.Exactly(times)
+        );
+    }
+
+    public void VerifyRepository(int times)
+    {
+        mockRepository.Verify(
+            d => d.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()),
             Times.Exactly(times)
         );
     }

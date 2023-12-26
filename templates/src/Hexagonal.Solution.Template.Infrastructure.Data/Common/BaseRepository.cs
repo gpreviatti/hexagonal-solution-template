@@ -15,11 +15,8 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
         dbEntitySet = this.dbContext.Set<TEntity>();
     }
 
-    public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken)
-    {
-        await dbEntitySet.AddAsync(entity, cancellationToken);
-        return entity;
-    }
+    public async Task AddAsync(TEntity entity, CancellationToken cancellationToken) 
+        => await dbEntitySet.AddAsync(entity, cancellationToken);
 
     public async Task AddRangeAsync(TEntity[] entities, CancellationToken cancellationToken) =>
         await dbEntitySet.AddRangeAsync(entities, cancellationToken);
