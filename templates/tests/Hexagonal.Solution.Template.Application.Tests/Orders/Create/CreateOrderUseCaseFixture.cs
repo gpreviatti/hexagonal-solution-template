@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
+using Hexagonal.Solution.Template.Application.Orders;
 using Hexagonal.Solution.Template.Application.Orders.Create;
 using Hexagonal.Solution.Template.Application.Tests.Common;
 using Hexagonal.Solution.Template.Domain.Common;
