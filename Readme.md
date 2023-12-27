@@ -33,11 +33,16 @@ dotnet new install Hexagonal.Solution.Template
 After that you can use it to create your project where -n is the name of your solution
 
 ```
-dotnet new Hexagonal.Solution.Template -n HexagonalSolution
+dotnet new hexagonal-solution -n HexagonalSolution
 ```
 
 If you had any doubts about the existing parameters you can also use -h to get more information
 
 ```
-dotnet new Hexagonal.Solution.Template -h
+dotnet new hexagonal-solution -h
+```
+
+If you want to uninstall the template just execute the following command :(
+```
+dotnet new uninstall Hexagonal.Solution.Template
 ```

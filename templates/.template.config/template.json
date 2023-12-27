@@ -25,11 +25,11 @@
       "choices": [
         {
           "choice": "WebApp",
-          "description": "Pre-configured web api"
+          "description": "Pre configured web api"
         },
         {
           "choice": "FunctionApp",
-          "description": "Pre-configured function app"
+          "description": "Pre configured function app"
         }
       ]
     }
@@ -39,7 +39,7 @@
       "modifiers": [
         {
           "condition": "(Hosts != WebApp)",
-          "exclude": "Hexagonal.Solution.Template.Host.WebApp"
+          "exclude": "**/Hexagonal.Solution.Template.Host.WebApp/**"
         }
       ]
     }

@@ -21,8 +21,7 @@
     <PackageReleaseNotes>
         ChangeLog:
   
-        - Improve create order repository
-        - Base use cases general improvements
+        - Add WebApp Host
     </PackageReleaseNotes>
   </PropertyGroup>
 
