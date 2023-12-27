@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
-using Hexagonal.Solution.Template.Application.Common;
 using Hexagonal.Solution.Template.Application.Common.Messages;
+using Hexagonal.Solution.Template.Application.Common.UseCases;
 using Hexagonal.Solution.Template.Domain.Orders;
 using Hexagonal.Solution.Template.Domain.Orders.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,7 +39,11 @@ public class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUse
 
         await _orderRepository.AddAsync(newOrder.Value, cancellationToken);
 
-        response.SetData(new(newOrder.Value!.Id));
+        response.SetData(new(
+            newOrder.Value!.Id,
+            newOrder.Value.Description,
+            newOrder.Value.Total
+        ));
 
         logger.Information("Use case was executed with success", response);
 

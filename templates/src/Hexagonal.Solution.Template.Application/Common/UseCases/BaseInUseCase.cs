@@ -3,7 +3,7 @@ using Hexagonal.Solution.Template.Application.Common.Messages;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
-namespace Hexagonal.Solution.Template.Application.Common;
+namespace Hexagonal.Solution.Template.Application.Common.UseCases;
 
 public abstract class BaseInUseCase<TRequest, TResponseData>(
     IServiceProvider serviceProvider,
