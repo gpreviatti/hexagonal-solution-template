@@ -15,5 +15,33 @@
     "language": "C#",
     "type": "project"
   },
-  "preferNameDirectory": true
+  "preferNameDirectory": true,
+  "symbols": {
+    "Hosts": {
+      "type": "parameter",
+      "description": "Hosts to be created in the project",
+      "datatype": "choice",
+      "allowMultipleValues": true,
+      "choices": [
+        {
+          "choice": "WebApp",
+          "description": "Pre-configured web api"
+        },
+        {
+          "choice": "FunctionApp",
+          "description": "Pre-configured function app"
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "condition": "(Hosts != WebApp)",
+          "exclude": "Hexagonal.Solution.Template.Host.WebApp"
+        }
+      ]
+    }
+  ]
 }
