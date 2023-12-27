@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
-namespace Hexagonal.Solution.Template.Application.Common;
+namespace Hexagonal.Solution.Template.Application.Common.UseCases;
 
 public abstract class BaseOutUseCase<TRequest, TResponseData>(
     IServiceProvider serviceProvider
@@ -10,7 +10,7 @@ public abstract class BaseOutUseCase<TRequest, TResponseData>(
 {
     protected readonly ILogger logger = serviceProvider.GetService<ILogger>();
 
-    public async Task<BaseResponse<TResponseData>> HandleAsync(CancellationToken cancellationToken) 
+    public async Task<BaseResponse<TResponseData>> HandleAsync(CancellationToken cancellationToken)
         => await HandleInternalAsync(cancellationToken);
 
     public abstract Task<BaseResponse<TResponseData>> HandleInternalAsync(CancellationToken cancellationToken);

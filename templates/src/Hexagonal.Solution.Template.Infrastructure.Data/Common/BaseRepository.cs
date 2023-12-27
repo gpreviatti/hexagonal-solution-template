@@ -15,11 +15,19 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
         dbEntitySet = this.dbContext.Set<TEntity>();
     }
 
-    public async Task AddAsync(TEntity entity, CancellationToken cancellationToken) 
-        => await dbEntitySet.AddAsync(entity, cancellationToken);
+    public async Task AddAsync(TEntity entity, CancellationToken cancellationToken)
+    {
+        await dbEntitySet.AddAsync(entity, cancellationToken);
 
-    public async Task AddRangeAsync(TEntity[] entities, CancellationToken cancellationToken) =>
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task AddRangeAsync(TEntity[] entities, CancellationToken cancellationToken)
+    {
         await dbEntitySet.AddRangeAsync(entities, cancellationToken);
+
+        await dbContext.SaveChangesAsync();
+    }
 
     public async Task<TEntity> AddOrUpdateIfNotExistsAsync(TEntity entity, Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
     {
@@ -30,16 +38,32 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
         else
             dbEntitySet.Update(entity);
 
+        await dbContext.SaveChangesAsync();
+
         return entity;
     }
 
 
-    public void Update(TEntity entity) => dbEntitySet.Update(entity);
+    public void Update(TEntity entity)
+    {
+        dbEntitySet.Update(entity);
 
+        dbContext.SaveChanges();
+    }
 
-    public void RemoveAsync(TEntity entity) => dbEntitySet.Remove(entity);
-    public void RemoveRangeAsync(TEntity[] entities) => dbEntitySet.RemoveRange(entities);
+    public void RemoveAsync(TEntity entity)
+    {
+        dbEntitySet.Remove(entity);
 
+        dbContext.SaveChanges();
+    }
+
+    public void RemoveRangeAsync(TEntity[] entities)
+    {
+        dbEntitySet.RemoveRange(entities);
+
+        dbContext.SaveChanges();
+    }
 
     public async Task<bool> CheckExistsByWhereAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
         => await dbEntitySet.AnyAsync(predicate, cancellationToken);
