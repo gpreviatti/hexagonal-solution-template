@@ -31,8 +31,4 @@
     <ProjectReference Include="..\Hexagonal.Solution.Template.Tests.Common\Hexagonal.Solution.Template.Tests.Common.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Orders\GetOne\" />
-  </ItemGroup>
-
 </Project>

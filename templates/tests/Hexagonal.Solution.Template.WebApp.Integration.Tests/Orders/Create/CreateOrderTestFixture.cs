@@ -20,4 +20,9 @@ public class CreateOrderTestFixture : BaseFixture
     }
 
     public CreateOrderRequest SetValidRequest() => autoFixture.Create<CreateOrderRequest>();
+
+    public CreateOrderRequest SetInvalidRequest() => autoFixture
+            .Build<CreateOrderRequest>()
+            .With(r => r.Description, string.Empty)
+            .Create();
 }

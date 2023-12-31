@@ -3,23 +3,23 @@ using Hexagonal.Solution.Template.Application.Orders;
 using Hexagonal.Solution.Template.WebApp.Integration.Tests.Common;
 using System.Net;
 
-namespace Hexagonal.Solution.Template.WebApp.Integration.Tests.Orders.Create;
+namespace Hexagonal.Solution.Template.WebApp.Integration.Tests.Orders.Get;
 
 [Collection("WebApplicationFactoryCollectionDefinition")]
-public class CreateOrderTest(CustomWebApplicationFactory<Program> customWebApplicationFactory) : CreateOrderTestFixture(customWebApplicationFactory)
+public class GetOrderTest(CustomWebApplicationFactory<Program> customWebApplicationFactory) : GetOrderTestFixture(customWebApplicationFactory)
 {
     [Fact(DisplayName = nameof(Given_A_Valid_Request_Then_Pass))]
     public async Task Given_A_Valid_Request_Then_Pass()
     {
         // Arrange
-        var request = SetValidRequest();
+        var id = 1;
 
         // Act
-        var result = await apiHelper.PostAsync(RESOURCE_URL, request);
+        var result = await apiHelper.GetAsync(RESOURCE_URL + "/" + id);
         var response = await apiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
 
         // Assert
-        result.StatusCode.Should().Be(HttpStatusCode.Created);
+        result.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Success.Should().BeTrue();
         response.Data.Should().NotBeNull();
     }
@@ -28,10 +28,10 @@ public class CreateOrderTest(CustomWebApplicationFactory<Program> customWebAppli
     public async Task Given_A_Invalid_Request_Then_Fails()
     {
         // Arrange
-        var request = SetInvalidRequest();
+        var id = 100;
 
         // Act
-        var result = await apiHelper.PostAsync(RESOURCE_URL, request);
+        var result = await apiHelper.GetAsync(RESOURCE_URL + "/" + id);
         var response = await apiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
 
         // Assert
