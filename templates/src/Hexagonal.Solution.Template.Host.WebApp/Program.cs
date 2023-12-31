@@ -2,7 +2,7 @@ using Hexagonal.Solution.Template.Domain;
 using Hexagonal.Solution.Template.Application;
 using Hexagonal.Solution.Template.Infrastructure.Data;
 using Hexagonal.Solution.Template.Host.WebApp.Middlewares;
-using Serilog;
+using Hexagonal.Solution.Template.Infrastructure.Log;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,14 +10,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Host.UseSerilog((context, services, configuration) => configuration
-    .ReadFrom.Configuration(context.Configuration)
-    .ReadFrom.Services(services)
-    .Enrich.FromLogContext());
-
 builder.Services
     .AddDomainServices()
     .AddApplicationServices()
+    .AddInfrastructureLogServices()
     .AddInfrastructureDataServices(builder.Configuration);
 
 var app = builder.Build();

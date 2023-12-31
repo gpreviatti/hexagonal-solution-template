@@ -15,7 +15,7 @@ public class ContextFactory : IDesignTimeDbContextFactory<MyDbContext>
     {
         var builder = new DbContextOptionsBuilder<MyDbContext>();
 
-        builder.UseSqlServer("Server=127.0.0.1,1433;Database=HexagonalArchDb;User Id=sa;Password=yourStrong(!)Password;TrustServerCertificate=true;");
+        builder.UseSqlServer("Server=127.0.0.1,1433;Database=OrderDb;User Id=sa;Password=yourStrong(!)Password;TrustServerCertificate=true;");
 
         return new MyDbContext(builder.Options);
     }
