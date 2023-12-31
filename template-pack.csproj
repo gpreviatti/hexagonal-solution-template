@@ -21,7 +21,9 @@
     <PackageReleaseNotes>
         ChangeLog:
   
-        - Add WebApp Host
+        - Add WebApp tests
+		- Add Function app
+		- Add Log infrastructure project
     </PackageReleaseNotes>
   </PropertyGroup>
 
