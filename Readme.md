@@ -46,3 +46,7 @@ If you want to uninstall the template just execute the following command :(
 ```
 dotnet new uninstall Hexagonal.Solution.Template
 ```
+
+## Official solution template documentation
+
+https://github.com/dotnet/templating/wiki
