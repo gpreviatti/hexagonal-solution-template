@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template.Host.WebApp", "src\Hexagonal.Solution.Template.Host.WebApp\Hexagonal.Solution.Template.Host.WebApp.csproj", "{EB1974DC-D58F-41A8-A965-CC772F2B8CEB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hexagonal.Solution.Template.WebApp.Integration.Tests", "tests\Hexagonal.Solution.Template.WebApp.Integration.Tests\Hexagonal.Solution.Template.WebApp.Integration.Tests.csproj", "{809FE2C8-24A6-482A-8DD8-58D92F9BE203}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +69,10 @@ Global
 		{EB1974DC-D58F-41A8-A965-CC772F2B8CEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB1974DC-D58F-41A8-A965-CC772F2B8CEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB1974DC-D58F-41A8-A965-CC772F2B8CEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{809FE2C8-24A6-482A-8DD8-58D92F9BE203}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{809FE2C8-24A6-482A-8DD8-58D92F9BE203}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{809FE2C8-24A6-482A-8DD8-58D92F9BE203}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{809FE2C8-24A6-482A-8DD8-58D92F9BE203}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -81,6 +87,7 @@ Global
 		{A1376FF6-1F7E-4D68-967A-121572141BA0} = {D499CDEC-C117-4968-A519-21C64757C640}
 		{19D31155-9E00-46A0-9E33-4DF0C9822DC6} = {D499CDEC-C117-4968-A519-21C64757C640}
 		{EB1974DC-D58F-41A8-A965-CC772F2B8CEB} = {6A878B68-ADCF-470F-8273-DA5C32E2DB79}
+		{809FE2C8-24A6-482A-8DD8-58D92F9BE203} = {D499CDEC-C117-4968-A519-21C64757C640}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3AD0BA6E-E14B-401F-B4F6-C7736B01643C}

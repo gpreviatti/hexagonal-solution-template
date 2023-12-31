@@ -7,26 +7,40 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Hexagonal.Solution.Template.Host.WebApp.Controllers;
 [ApiController]
-[Route("order")]
+[Route("orders")]
 public class OrderController(IMediator mediator) : ControllerBase
 {
     private readonly IMediator _mediator = mediator;
 
+    /// <summary>
+    /// Get a specific order
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpGet("{id}")]
-    public async Task<BaseResponse<OrderDto>> Get([FromRoute] int id)
+    [ProducesResponseType<BaseResponse<OrderDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<BaseResponse<OrderDto>>(StatusCodes.Status400BadRequest)]
+    public async Task<OkObjectResult> Get([FromRoute] int id)
     {
         var request = new GetOrderRequest(id);
 
         var response = await _mediator.Send(request);
 
-        return response;
+        return Ok(response);
     }
 
-    [HttpPost()]
-    public async Task<BaseResponse<OrderDto>> Create([FromBody] CreateOrderRequest request)
+    /// <summary>
+    /// Create order
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    [ProducesResponseType<BaseResponse<OrderDto>>(StatusCodes.Status201Created)]
+    [ProducesResponseType<BaseResponse<OrderDto>>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task<CreatedResult> Create([FromBody] CreateOrderRequest request)
     {
         var response = await _mediator.Send(request);
 
-        return response;
+        return Created($"/orders/{response.Data.Id}", response);
     }
 }

@@ -22,7 +22,6 @@ builder.Services
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -38,3 +37,5 @@ app.MapControllers();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.Run();
+
+public partial class Program { }

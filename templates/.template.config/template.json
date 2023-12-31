@@ -40,6 +40,10 @@
         {
           "condition": "(Hosts != WebApp)",
           "exclude": "**/Hexagonal.Solution.Template.Host.WebApp/**"
+        },
+        {
+          "condition": "(Hosts != WebApp)",
+          "exclude": "**/Hexagonal.Solution.Template.WebApp.Integration.Tests/**"
         }
       ]
     }
