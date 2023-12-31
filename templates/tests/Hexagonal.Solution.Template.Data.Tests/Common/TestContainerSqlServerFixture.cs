@@ -14,6 +14,7 @@ public class TestContainerSqlServerFixture : IDisposable
         _sqlServerContainer = new MsSqlBuilder()
             .WithName("sql-server-2022-data-tests")
             .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
+            .WithPortBinding(1433, 1433)
             .WithPassword(Guid.NewGuid().ToString())
             .WithCleanUp(true)
             .WithAutoRemove(true)

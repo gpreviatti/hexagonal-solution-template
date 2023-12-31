@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Hexagonal.Solution.Template.Host.WebApp.Controllers;
 [ApiController]
-[Route("order")]
+[Route("orders")]
 public class OrderController(IMediator mediator) : ControllerBase
 {
     private readonly IMediator _mediator = mediator;
@@ -23,10 +23,10 @@ public class OrderController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost()]
-    public async Task<BaseResponse<OrderDto>> Create([FromBody] CreateOrderRequest request)
+    public async Task<CreatedResult> Create([FromBody] CreateOrderRequest request)
     {
         var response = await _mediator.Send(request);
 
-        return response;
+        return Created("", response);
     }
 }
