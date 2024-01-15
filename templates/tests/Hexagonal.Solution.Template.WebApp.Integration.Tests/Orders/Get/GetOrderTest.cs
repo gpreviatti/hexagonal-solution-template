@@ -1,5 +1,6 @@
 ﻿using Hexagonal.Solution.Template.Application.Common.Messages;
 using Hexagonal.Solution.Template.Application.Orders;
+using Hexagonal.Solution.Template.Host.WebApp;
 using Hexagonal.Solution.Template.WebApp.Integration.Tests.Common;
 using System.Net;
 

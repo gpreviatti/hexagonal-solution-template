@@ -6,19 +6,27 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-var host = new HostBuilder()
-    .ConfigureFunctionsWorkerDefaults()
-    .ConfigureServices((context, services) =>
+namespace Hexagonal.Solution.Template.Host.FunctionApp;
+
+sealed class Program
+{
+    private static void Main(string[] args)
     {
-        services
-            .AddDomainServices()
-            .AddApplicationServices()
-            .AddInfrastructureLogServices()
-            .AddInfrastructureDataServices(context.Configuration);
+        var host = new HostBuilder()
+        .ConfigureFunctionsWorkerDefaults()
+        .ConfigureServices((context, services) =>
+        {
+            services
+                .AddDomainServices()
+                .AddApplicationServices()
+                .AddInfrastructureLogServices()
+                .AddInfrastructureDataServices(context.Configuration);
 
-        services.AddApplicationInsightsTelemetryWorkerService();
-        services.ConfigureFunctionsApplicationInsights();
-    })
-    .Build();
+            services.AddApplicationInsightsTelemetryWorkerService();
+            services.ConfigureFunctionsApplicationInsights();
+        })
+        .Build();
 
-host.Run();
+        host.Run();
+    }
+}

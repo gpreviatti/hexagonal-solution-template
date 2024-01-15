@@ -3,7 +3,7 @@ using Hexagonal.Solution.Template.Application.Orders.Create;
 using Hexagonal.Solution.Template.Tests.Common.Attributes;
 
 namespace Hexagonal.Solution.Template.Application.Tests.Orders.Create;
-public class CreateOrderRequestValidationTests(CreateOrderRequestValidationFixture fixture) : IClassFixture<CreateOrderRequestValidationFixture>
+public sealed class CreateOrderRequestValidationTests(CreateOrderRequestValidationFixture fixture) : IClassFixture<CreateOrderRequestValidationFixture>
 {
     private readonly CreateOrderRequestValidationFixture _fixture = fixture;
 

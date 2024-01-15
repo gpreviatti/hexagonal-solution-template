@@ -27,7 +27,7 @@ public class Result
     public static Result<T> Ok<T>(T value) => new(value, true, string.Empty);
 }
 
-public class Result<T> : Result
+public sealed class Result<T> : Result
 {
     protected internal Result(T value, bool success, string message)
         : base(success, message)

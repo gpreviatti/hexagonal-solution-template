@@ -4,7 +4,7 @@ using Hexagonal.Solution.Template.Application.Common.UseCases;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hexagonal.Solution.Template.Application.Orders.Get;
-public class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<GetOrderRequest, OrderDto>(
+public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<GetOrderRequest, OrderDto>(
     serviceProvider,
     serviceProvider.GetService<IValidator<GetOrderRequest>>()
 ), IGetOrderUseCase

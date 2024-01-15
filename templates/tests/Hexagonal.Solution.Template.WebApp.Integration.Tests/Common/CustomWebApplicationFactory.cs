@@ -9,7 +9,7 @@ using System.Data.Common;
 using Testcontainers.MsSql;
 
 namespace Hexagonal.Solution.Template.WebApp.Integration.Tests.Common;
-public class CustomWebApplicationFactory<TProgram> :  WebApplicationFactory<TProgram>, IDisposable where TProgram : class
+public sealed class CustomWebApplicationFactory<TProgram> :  WebApplicationFactory<TProgram>, IDisposable where TProgram : class
 {
     private MsSqlContainer _sqlServerContainer;
     protected string _connectionString;

@@ -1,9 +1,8 @@
 ﻿using System.Text;
-using System.Text.Encodings.Web;
 using System.Text.Json;
 
 namespace Hexagonal.Solution.Template.WebApp.Integration.Tests.Common;
-public class ApiHelper(HttpClient httpClient)
+public sealed class ApiHelper(HttpClient httpClient)
 {
     public HttpClient httpClient = httpClient;
 

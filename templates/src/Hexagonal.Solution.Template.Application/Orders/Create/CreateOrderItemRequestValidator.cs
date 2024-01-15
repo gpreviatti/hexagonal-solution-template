@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 
 namespace Hexagonal.Solution.Template.Application.Orders.Create;
-public class CreateOrderItemRequestValidator : AbstractValidator<CreateOrderItemRequest>
+public sealed class CreateOrderItemRequestValidator : AbstractValidator<CreateOrderItemRequest>
 {
     public CreateOrderItemRequestValidator()
     {

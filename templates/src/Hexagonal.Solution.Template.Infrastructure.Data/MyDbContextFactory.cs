@@ -9,7 +9,7 @@ namespace Hexagonal.Solution.Template.Infrastructure.Data;
 /// Change the database connection string to your local db connection to generate migrations
 /// </summary>
 [ExcludeFromCodeCoverage]
-public class ContextFactory : IDesignTimeDbContextFactory<MyDbContext>
+public sealed class ContextFactory : IDesignTimeDbContextFactory<MyDbContext>
 {
     public MyDbContext CreateDbContext(string[] args)
     {

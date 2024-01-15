@@ -6,7 +6,7 @@ using Hexagonal.Solution.Template.Domain.Orders.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hexagonal.Solution.Template.Application.Orders.Create;
-public class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<CreateOrderRequest, OrderDto>(
+public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<CreateOrderRequest, OrderDto>(
     serviceProvider,
     serviceProvider.GetService<IValidator<CreateOrderRequest>>()
 ), ICreateOrderUseCase
