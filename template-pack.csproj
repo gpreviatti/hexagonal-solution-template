@@ -24,6 +24,7 @@
         - Add WebApp tests
 		- Add Function app
 		- Add Log infrastructure project
+		- Change sample classes to selead
     </PackageReleaseNotes>
   </PropertyGroup>
 
