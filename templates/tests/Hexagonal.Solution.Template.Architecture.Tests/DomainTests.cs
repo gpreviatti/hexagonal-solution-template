@@ -1,7 +1,7 @@
 ﻿using Hexagonal.Solution.Template.Domain.Common;
 
 namespace Hexagonal.Solution.Template.Architecture.Tests;
-public class DomainTests
+public sealed class DomainTests
 {
     private static readonly Assembly _domainAssembly = typeof(Result).Assembly;
 

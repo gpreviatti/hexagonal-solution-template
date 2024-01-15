@@ -3,7 +3,7 @@ using Hexagonal.Solution.Template.Domain.Orders;
 using Hexagonal.Solution.Template.Infrastructure.Data.Common;
 
 namespace Hexagonal.Solution.Template.Infrastructure.Data.Orders.Mapping;
-public class ItemDbMapping : BaseDbMapping<Item>
+public sealed class ItemDbMapping : BaseDbMapping<Item>
 {
     public override void ConfigureDomainEntity(EntityTypeBuilder<Item> builder)
     {

@@ -4,7 +4,7 @@ using ILogger = Serilog.ILogger;
 
 namespace Hexagonal.Solution.Template.Host.WebApp.Middlewares;
 
-public class ExceptionHandlingMiddleware
+public sealed class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger _logger;

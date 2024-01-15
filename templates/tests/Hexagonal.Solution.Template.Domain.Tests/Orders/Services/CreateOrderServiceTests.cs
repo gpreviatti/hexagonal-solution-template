@@ -3,7 +3,7 @@ using Hexagonal.Solution.Template.Domain.Orders.Services;
 
 namespace Hexagonal.Solution.Template.Domain.Tests.Orders.Services;
 
-public class CreateOrderServiceTest
+public sealed class CreateOrderServiceTest
 {
     private readonly ICreateOrderService _createOrderService;
 

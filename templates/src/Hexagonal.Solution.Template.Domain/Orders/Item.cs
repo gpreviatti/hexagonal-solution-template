@@ -1,7 +1,7 @@
 ﻿using Hexagonal.Solution.Template.Domain.Common;
 
 namespace Hexagonal.Solution.Template.Domain.Orders;
-public class Item : DomainEntity
+public sealed class Item : DomainEntity
 {
     public Item() {}
 

@@ -4,7 +4,7 @@ using Hexagonal.Solution.Template.Data.Tests.Common;
 namespace Hexagonal.Solution.Template.Data.Tests.Orders;
 
 [Collection("DBContextCollectionDefinition")]
-public class OrderRepositoryTest(DbContextFixture fixture) : OrderDataTestFixture(fixture)
+public sealed class OrderRepositoryTest(DbContextFixture fixture) : OrderDataTestFixture(fixture)
 {
     [Fact]
     public async Task Given_A_Id_Then_Return_Order_With_Success()

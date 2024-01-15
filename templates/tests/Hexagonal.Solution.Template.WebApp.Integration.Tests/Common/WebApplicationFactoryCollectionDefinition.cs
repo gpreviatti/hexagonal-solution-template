@@ -1,6 +1,8 @@
-﻿namespace Hexagonal.Solution.Template.WebApp.Integration.Tests.Common;
+﻿using Hexagonal.Solution.Template.Host.WebApp;
+
+namespace Hexagonal.Solution.Template.WebApp.Integration.Tests.Common;
 
 [CollectionDefinition("WebApplicationFactoryCollectionDefinition")]
-public class WebApplicationFactoryCollectionDefinition : IClassFixture<CustomWebApplicationFactory<Program>>
+public sealed class WebApplicationFactoryCollectionDefinition : IClassFixture<CustomWebApplicationFactory<Program>>
 {
 }

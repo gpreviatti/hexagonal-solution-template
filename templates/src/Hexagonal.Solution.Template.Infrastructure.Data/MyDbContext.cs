@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 
 namespace Hexagonal.Solution.Template.Infrastructure.Data;
-public class MyDbContext(
+public sealed class MyDbContext(
     DbContextOptions<MyDbContext> options
 ) : DbContext(options)
 {

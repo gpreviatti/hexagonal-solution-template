@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hexagonal.Solution.Template.Host.WebApp.Controllers;
 [ApiController]
 [Route("orders")]
-public class OrderController(IMediator mediator) : ControllerBase
+public sealed class OrderController(IMediator mediator) : ControllerBase
 {
     private readonly IMediator _mediator = mediator;
 

@@ -1,7 +1,7 @@
 ﻿using Hexagonal.Solution.Template.Domain.Common;
 
 namespace Hexagonal.Solution.Template.Domain.Orders.Services;
-public class CreateOrderService : ICreateOrderService
+public sealed class CreateOrderService : ICreateOrderService
 {
     public Result<Order> Handle(string description, ICollection<Item> items)
     {

@@ -2,4 +2,4 @@
 using MediatR;
 
 namespace Hexagonal.Solution.Template.Application.Orders.Create;
-public record CreateOrderRequest(string Description, CreateOrderItemRequest[] Items) : IRequest<BaseResponse<OrderDto>>;
+public sealed record CreateOrderRequest(string Description, CreateOrderItemRequest[] Items) : IRequest<BaseResponse<OrderDto>>;

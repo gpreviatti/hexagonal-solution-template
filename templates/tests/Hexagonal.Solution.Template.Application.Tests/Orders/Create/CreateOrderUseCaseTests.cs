@@ -4,7 +4,7 @@ using Hexagonal.Solution.Template.Application.Orders.Create;
 
 namespace Hexagonal.Solution.Template.Application.Tests.Orders.Create;
 
-public class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFixture>
+public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFixture>
 {
     private readonly CreateOrderUseCaseFixture _fixture;
 

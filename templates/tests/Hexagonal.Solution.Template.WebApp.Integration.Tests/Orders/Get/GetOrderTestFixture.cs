@@ -1,4 +1,5 @@
 ﻿using Hexagonal.Solution.Template.Application.Tests.Common;
+using Hexagonal.Solution.Template.Host.WebApp;
 using Hexagonal.Solution.Template.WebApp.Integration.Tests.Common;
 
 namespace Hexagonal.Solution.Template.WebApp.Integration.Tests.Orders.Get;

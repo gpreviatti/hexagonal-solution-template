@@ -1,7 +1,7 @@
 ﻿using Hexagonal.Solution.Template.Application.Common.Messages;
 
 namespace Hexagonal.Solution.Template.Architecture.Tests;
-public class ApplicationTests
+public sealed class ApplicationTests
 {
     private static readonly Assembly _applicationAssembly = typeof(BaseResponse).Assembly;
 

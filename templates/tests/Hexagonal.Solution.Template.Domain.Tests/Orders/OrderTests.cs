@@ -1,7 +1,7 @@
 ﻿using Hexagonal.Solution.Template.Domain.Orders;
 
 namespace Hexagonal.Solution.Template.Domain.Tests.Orders;
-public class OrderTests
+public sealed class OrderTests
 {
     [Fact]
     public void GivenAOrderWithItemsThenShouldSetTotalWithSuccess()
