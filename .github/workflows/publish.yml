@@ -22,8 +22,8 @@ jobs:
     - name: Test
       run: dotnet test ./templates
       
-    - name: Pack nugets
-      run: dotnet pack -p:PackageVersion=5.0.${{ github.run_number }}
+    - name: Pack
+      run: dotnet pack -p:PackageVersion=8.0.${{ github.run_number }}
       
     - name: Push to NuGet
       run: dotnet nuget push "./bin/Release/*.nupkg" --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
