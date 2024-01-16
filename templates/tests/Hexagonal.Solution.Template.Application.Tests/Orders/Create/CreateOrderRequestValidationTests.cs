@@ -1,6 +1,6 @@
 ﻿using FluentValidation.TestHelper;
+using GPreviatti.Util.JsonResourceAttribute;
 using Hexagonal.Solution.Template.Application.Orders.Create;
-using Hexagonal.Solution.Template.Tests.Common.Attributes;
 
 namespace Hexagonal.Solution.Template.Application.Tests.Orders.Create;
 public sealed class CreateOrderRequestValidationTests(CreateOrderRequestValidationFixture fixture) : IClassFixture<CreateOrderRequestValidationFixture>

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageType>Template</PackageType>
-    <PackageId>Hexagonal.Solution.Template</PackageId>
+    <PackageId>GPreviatti.Template.Hexagonal.Solution</PackageId>
     <Title>Hexagonal architecture solution template</Title>
     <Authors>Giovanni Brunno Previatti</Authors>
     <Description>Solution following Hexagonal architecture and best praticies.</Description>
@@ -18,14 +18,7 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>git://github.com/gpreviatti/hexagonal-solution-template</RepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>
-        ChangeLog:
-  
-        - Add WebApp tests
-		- Add Function app
-		- Add Log infrastructure project
-		- Change sample classes to selead
-    </PackageReleaseNotes>
+    <PackageReleaseNotes>Improve project namespace</PackageReleaseNotes>
   </PropertyGroup>
 
 
