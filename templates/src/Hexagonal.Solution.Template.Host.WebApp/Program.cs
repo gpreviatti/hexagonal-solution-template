@@ -16,11 +16,7 @@ public sealed class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
-        builder.Services
-            .AddDomainServices()
-            .AddApplicationServices()
-            .AddInfrastructureLogServices()
-            .AddInfrastructureDataServices(builder.Configuration);
+        ConfigureInternalServices(builder.Services, builder.Configuration);
 
         var app = builder.Build();
 
@@ -39,5 +35,14 @@ public sealed class Program
         app.UseMiddleware<ExceptionHandlingMiddleware>();
 
         app.Run();
+    }
+
+    public static void ConfigureInternalServices(IServiceCollection services, IConfiguration configuration)
+    {
+        services
+            .AddDomainServices()
+            .AddApplicationServices()
+            .AddInfrastructureLogServices()
+            .AddInfrastructureDataServices(configuration);
     }
 }
