@@ -1,4 +1,6 @@
 ﻿using Hexagonal.Solution.Template.Domain.Common;
+using Hexagonal.Solution.Template.Domain;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Hexagonal.Solution.Template.Architecture.Tests;
 public sealed class DomainTests
@@ -58,5 +60,20 @@ public sealed class DomainTests
 
         // Assert
         result.IsSuccessful.Should().BeTrue();
+    }
+
+    [Fact(DisplayName = nameof(Domain_Should_Has_Valid_Scopes))]
+    public void Domain_Should_Has_Valid_Scopes()
+    {
+        // Arrange
+        ServiceCollection serviceCollection = new();
+
+        serviceCollection.AddDomainServices();
+
+        // Act
+        var serviceProvider = serviceCollection.BuildServiceProvider(validateScopes: true);
+
+        // Assert
+        serviceProvider.Should().NotBeNull();
     }
 }
