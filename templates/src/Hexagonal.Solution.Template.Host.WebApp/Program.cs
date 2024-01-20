@@ -16,7 +16,7 @@ public sealed class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
-        ConfigureInternalServices(builder.Services, builder.Configuration);
+        AddDependencies(builder.Services, builder.Configuration);
 
         var app = builder.Build();
 
@@ -37,7 +37,7 @@ public sealed class Program
         app.Run();
     }
 
-    public static void ConfigureInternalServices(IServiceCollection services, IConfiguration configuration)
+    public static void AddDependencies(IServiceCollection services, IConfiguration configuration)
     {
         services
             .AddDomainServices()

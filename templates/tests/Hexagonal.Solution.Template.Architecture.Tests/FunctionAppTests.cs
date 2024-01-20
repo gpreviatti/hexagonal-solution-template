@@ -12,7 +12,7 @@ public sealed class FunctionAppTests
         serviceCollection.AddLogging();
         var configuration = new ConfigurationBuilder().Build();
 
-        Host.FunctionApp.Program.ConfigureInternalServices(serviceCollection, configuration);
+        Host.FunctionApp.Program.AddDependencies(serviceCollection, configuration);
 
         // Act
         var serviceProvider = serviceCollection.BuildServiceProvider(

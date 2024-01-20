@@ -12,7 +12,7 @@ public sealed class WebAppTests
         serviceCollection.AddLogging();
         var configuration = new ConfigurationBuilder().Build();
 
-        Host.WebApp.Program.ConfigureInternalServices(serviceCollection, configuration);
+        Host.WebApp.Program.AddDependencies(serviceCollection, configuration);
 
         // Act
         var serviceProvider = serviceCollection.BuildServiceProvider(

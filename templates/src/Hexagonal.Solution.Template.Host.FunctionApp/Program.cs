@@ -17,7 +17,7 @@ public sealed class Program
         .ConfigureFunctionsWorkerDefaults()
         .ConfigureServices((context, services) =>
         {
-            ConfigureInternalServices(services, context.Configuration);
+            AddDependencies(services, context.Configuration);
 
             services.AddApplicationInsightsTelemetryWorkerService();
             services.ConfigureFunctionsApplicationInsights();
@@ -27,7 +27,7 @@ public sealed class Program
         host.Run();
     }
 
-    public static void ConfigureInternalServices(IServiceCollection services, IConfiguration configuration)
+    public static void AddDependencies(IServiceCollection services, IConfiguration configuration)
     {
         services
             .AddDomainServices()
