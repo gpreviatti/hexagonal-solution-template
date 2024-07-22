@@ -7,34 +7,20 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6A878B68-ADC
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{D499CDEC-C117-4968-A519-21C64757C640}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template.Domain", "src\Hexagonal.Solution.Template.Domain\Hexagonal.Solution.Template.Domain.csproj", "{E2990ADA-8398-4769-98E9-EA105130137D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "src\Domain\Domain.csproj", "{E2990ADA-8398-4769-98E9-EA105130137D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template.Application", "src\Hexagonal.Solution.Template.Application\Hexagonal.Solution.Template.Application.csproj", "{3F9D43F2-9555-4771-A81B-9EBDE1A2C7CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "src\Application\Application.csproj", "{3F9D43F2-9555-4771-A81B-9EBDE1A2C7CF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template.Infrastructure.Data", "src\Hexagonal.Solution.Template.Infrastructure.Data\Hexagonal.Solution.Template.Infrastructure.Data.csproj", "{BAAEEE30-B3D6-4DD1-802D-107F79791DD7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonTests", "tests\CommonTests\CommonTests.csproj", "{A1376FF6-1F7E-4D68-967A-121572141BA0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hexagonal.Solution.Template.Infrastructure.Log", "src\Hexagonal.Solution.Template.Infrastructure.Log\Hexagonal.Solution.Template.Infrastructure.Log.csproj", "{2BD199A5-4326-4395-9DAB-941D04D4190F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApp", "src\WebApp\WebApp.csproj", "{EB1974DC-D58F-41A8-A965-CC772F2B8CEB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template.Domain.Tests", "tests\Hexagonal.Solution.Template.Domain.Tests\Hexagonal.Solution.Template.Domain.Tests.csproj", "{68091222-6730-424E-BA00-57DD92F1D197}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "tests\UnitTests\UnitTests.csproj", "{5E16731E-1160-4F78-811C-037EE40C5AC0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template.Application.Tests", "tests\Hexagonal.Solution.Template.Application.Tests\Hexagonal.Solution.Template.Application.Tests.csproj", "{767C79A1-28E6-473B-81C1-0413A977A2CD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "tests\IntegrationTests\IntegrationTests.csproj", "{EA853C22-3BDD-43C0-A150-8C77BBE41058}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template.Architecture.Tests", "tests\Hexagonal.Solution.Template.Architecture.Tests\Hexagonal.Solution.Template.Architecture.Tests.csproj", "{86E5A8D7-3938-4CD8-8305-EF4A926D88D2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "src\Infrastructure\Infrastructure.csproj", "{8C2C5A8B-5CC4-48B3-8266-EBFB68DFC51C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template.Tests.Common", "tests\Hexagonal.Solution.Template.Tests.Common\Hexagonal.Solution.Template.Tests.Common.csproj", "{A1376FF6-1F7E-4D68-967A-121572141BA0}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template.Data.Tests", "tests\Hexagonal.Solution.Template.Data.Tests\Hexagonal.Solution.Template.Data.Tests.csproj", "{19D31155-9E00-46A0-9E33-4DF0C9822DC6}"
-EndProject
-#if (Hosts == "WebApp")
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template.Host.WebApp", "src\Hexagonal.Solution.Template.Host.WebApp\Hexagonal.Solution.Template.Host.WebApp.csproj", "{EB1974DC-D58F-41A8-A965-CC772F2B8CEB}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template.WebApp.Integration.Tests", "tests\Hexagonal.Solution.Template.WebApp.Integration.Tests\Hexagonal.Solution.Template.WebApp.Integration.Tests.csproj", "{809FE2C8-24A6-482A-8DD8-58D92F9BE203}"
-EndProject
-#endif 
-#if (Hosts == "FunctionApp")
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexagonal.Solution.Template.Host.FunctionApp", "src\Hexagonal.Solution.Template.Host.FunctionApp\Hexagonal.Solution.Template.Host.FunctionApp.csproj", "{BECB0E1E-19CE-41E0-9293-670B4070B019}"
-EndProject
-#endif 
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,50 +35,26 @@ Global
 		{3F9D43F2-9555-4771-A81B-9EBDE1A2C7CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F9D43F2-9555-4771-A81B-9EBDE1A2C7CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F9D43F2-9555-4771-A81B-9EBDE1A2C7CF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BAAEEE30-B3D6-4DD1-802D-107F79791DD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BAAEEE30-B3D6-4DD1-802D-107F79791DD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BAAEEE30-B3D6-4DD1-802D-107F79791DD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BAAEEE30-B3D6-4DD1-802D-107F79791DD7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{68091222-6730-424E-BA00-57DD92F1D197}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{68091222-6730-424E-BA00-57DD92F1D197}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{68091222-6730-424E-BA00-57DD92F1D197}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{68091222-6730-424E-BA00-57DD92F1D197}.Release|Any CPU.Build.0 = Release|Any CPU
-		{767C79A1-28E6-473B-81C1-0413A977A2CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{767C79A1-28E6-473B-81C1-0413A977A2CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{767C79A1-28E6-473B-81C1-0413A977A2CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{767C79A1-28E6-473B-81C1-0413A977A2CD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{86E5A8D7-3938-4CD8-8305-EF4A926D88D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{86E5A8D7-3938-4CD8-8305-EF4A926D88D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{86E5A8D7-3938-4CD8-8305-EF4A926D88D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{86E5A8D7-3938-4CD8-8305-EF4A926D88D2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A1376FF6-1F7E-4D68-967A-121572141BA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A1376FF6-1F7E-4D68-967A-121572141BA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1376FF6-1F7E-4D68-967A-121572141BA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1376FF6-1F7E-4D68-967A-121572141BA0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{19D31155-9E00-46A0-9E33-4DF0C9822DC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{19D31155-9E00-46A0-9E33-4DF0C9822DC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{19D31155-9E00-46A0-9E33-4DF0C9822DC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{19D31155-9E00-46A0-9E33-4DF0C9822DC6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2BD199A5-4326-4395-9DAB-941D04D4190F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2BD199A5-4326-4395-9DAB-941D04D4190F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2BD199A5-4326-4395-9DAB-941D04D4190F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2BD199A5-4326-4395-9DAB-941D04D4190F}.Release|Any CPU.Build.0 = Release|Any CPU
-		#if(Hosts == "WebApp")
 		{EB1974DC-D58F-41A8-A965-CC772F2B8CEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EB1974DC-D58F-41A8-A965-CC772F2B8CEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB1974DC-D58F-41A8-A965-CC772F2B8CEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB1974DC-D58F-41A8-A965-CC772F2B8CEB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{809FE2C8-24A6-482A-8DD8-58D92F9BE203}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{809FE2C8-24A6-482A-8DD8-58D92F9BE203}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{809FE2C8-24A6-482A-8DD8-58D92F9BE203}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{809FE2C8-24A6-482A-8DD8-58D92F9BE203}.Release|Any CPU.Build.0 = Release|Any CPU
-		#endif
-		#if (Hosts == "FunctionApp")
-		{BECB0E1E-19CE-41E0-9293-670B4070B019}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BECB0E1E-19CE-41E0-9293-670B4070B019}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BECB0E1E-19CE-41E0-9293-670B4070B019}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BECB0E1E-19CE-41E0-9293-670B4070B019}.Release|Any CPU.Build.0 = Release|Any CPU
-		#endif
+		{5E16731E-1160-4F78-811C-037EE40C5AC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E16731E-1160-4F78-811C-037EE40C5AC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E16731E-1160-4F78-811C-037EE40C5AC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E16731E-1160-4F78-811C-037EE40C5AC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA853C22-3BDD-43C0-A150-8C77BBE41058}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA853C22-3BDD-43C0-A150-8C77BBE41058}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA853C22-3BDD-43C0-A150-8C77BBE41058}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA853C22-3BDD-43C0-A150-8C77BBE41058}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C2C5A8B-5CC4-48B3-8266-EBFB68DFC51C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C2C5A8B-5CC4-48B3-8266-EBFB68DFC51C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C2C5A8B-5CC4-48B3-8266-EBFB68DFC51C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C2C5A8B-5CC4-48B3-8266-EBFB68DFC51C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -100,20 +62,11 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{E2990ADA-8398-4769-98E9-EA105130137D} = {6A878B68-ADCF-470F-8273-DA5C32E2DB79}
 		{3F9D43F2-9555-4771-A81B-9EBDE1A2C7CF} = {6A878B68-ADCF-470F-8273-DA5C32E2DB79}
-		{BAAEEE30-B3D6-4DD1-802D-107F79791DD7} = {6A878B68-ADCF-470F-8273-DA5C32E2DB79}
-		{68091222-6730-424E-BA00-57DD92F1D197} = {D499CDEC-C117-4968-A519-21C64757C640}
-		{767C79A1-28E6-473B-81C1-0413A977A2CD} = {D499CDEC-C117-4968-A519-21C64757C640}
-		{86E5A8D7-3938-4CD8-8305-EF4A926D88D2} = {D499CDEC-C117-4968-A519-21C64757C640}
 		{A1376FF6-1F7E-4D68-967A-121572141BA0} = {D499CDEC-C117-4968-A519-21C64757C640}
-		{19D31155-9E00-46A0-9E33-4DF0C9822DC6} = {D499CDEC-C117-4968-A519-21C64757C640}
-		{2BD199A5-4326-4395-9DAB-941D04D4190F} = {6A878B68-ADCF-470F-8273-DA5C32E2DB79}
-		#if (Hosts == "WebApp")
 		{EB1974DC-D58F-41A8-A965-CC772F2B8CEB} = {6A878B68-ADCF-470F-8273-DA5C32E2DB79}
-		{809FE2C8-24A6-482A-8DD8-58D92F9BE203} = {D499CDEC-C117-4968-A519-21C64757C640}
-		#endif
-		#if (Hosts == "FunctionApp")
-		{BECB0E1E-19CE-41E0-9293-670B4070B019} = {6A878B68-ADCF-470F-8273-DA5C32E2DB79}
-		#endif
+		{5E16731E-1160-4F78-811C-037EE40C5AC0} = {D499CDEC-C117-4968-A519-21C64757C640}
+		{EA853C22-3BDD-43C0-A150-8C77BBE41058} = {D499CDEC-C117-4968-A519-21C64757C640}
+		{8C2C5A8B-5CC4-48B3-8266-EBFB68DFC51C} = {6A878B68-ADCF-470F-8273-DA5C32E2DB79}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3AD0BA6E-E14B-401F-B4F6-C7736B01643C}
