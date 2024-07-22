@@ -12,7 +12,7 @@ public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger lo
 
     public async Task InvokeAsync(HttpContext context)
     {
-        using (Operation.Time("Request was executed"))
+        using (Operation.Time("Request was executed", context.Request.Path))
         {
             try
             {
