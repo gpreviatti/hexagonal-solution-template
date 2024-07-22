@@ -36,7 +36,7 @@
 
     <ItemGroup>
 	    <ProjectReference Include="..\..\src\WebApp\WebApp.csproj" />
-	    <ProjectReference Include="..\Tests.Common\CommonTests.csproj" />
+	    <ProjectReference Include="..\CommonTests\CommonTests.csproj" />
     </ItemGroup>
 
 </Project>
