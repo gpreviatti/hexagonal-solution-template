@@ -1,9 +1,9 @@
+using Application.Common.Messages;
+using Application.Orders;
+using Application.Orders.Create;
 using Application.Orders.Get;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Application.Orders;
-using Application.Common.Messages;
-using Application.Orders.Create;
 
 namespace WebApp.Controllers;
 [ApiController]

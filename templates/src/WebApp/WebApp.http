@@ -1,10 +1,10 @@
-@Hexagonal.Solution.Template.Host.WebApp_HostAddress = https://localhost:7175
+@WebApp_HostAddress = https://localhost:7175
 
-GET {{Hexagonal.Solution.Template.Host.WebApp_HostAddress}}/orders/2
+GET {{WebApp_HostAddress}}/orders/1
 Accept: application/json
 
 ###
-POST {{Hexagonal.Solution.Template.Host.WebApp_HostAddress}}/orders
+POST {{WebApp_HostAddress}}/orders
 Content-Type: application/json
 
 {

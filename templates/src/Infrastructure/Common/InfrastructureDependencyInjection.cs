@@ -9,8 +9,8 @@ public static class InfrastructureDependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services
-            .AddInfrastructureLogServices()
-            .AddInfrastructureDataServices(configuration);
+            .AddLogs()
+            .AddData(configuration);
 
         return services;
     }

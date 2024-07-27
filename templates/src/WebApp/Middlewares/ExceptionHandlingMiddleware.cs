@@ -1,18 +1,18 @@
 ﻿using Application.Common.Messages;
-using SerilogTimings;
+using SerilogTimings.Extensions;
 using System.Net;
 using ILogger = Serilog.ILogger;
 
 namespace WebApp.Middlewares;
 
-public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger logger)
+internal sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger logger)
 {
     private readonly RequestDelegate _next = next;
     private readonly ILogger _logger = logger;
 
     public async Task InvokeAsync(HttpContext context)
     {
-        using (Operation.Time("Request was executed", context.Request.Path))
+        using (_logger.TimeOperation("Request was executed", context.Request.Path))
         {
             try
             {
@@ -23,7 +23,6 @@ public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger lo
                 await HandleExceptionAsync(context, ex);
             }
         }
-
     }
 
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
