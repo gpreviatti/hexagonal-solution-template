@@ -61,4 +61,19 @@ public sealed class DomainTests
         // Assert
         result.IsSuccessful.Should().BeTrue();
     }
+
+    [Fact(DisplayName = nameof(Domain_Should_Has_Valid_Scopes))]
+    public void Domain_Should_Has_Valid_Scopes()
+    {
+        // Arrange
+        ServiceCollection serviceCollection = new();
+
+        serviceCollection.AddDomainServices();
+
+        // Act
+        var serviceProvider = serviceCollection.BuildServiceProvider(validateScopes: true);
+
+        // Assert
+        serviceProvider.Should().NotBeNull();
+    }
 }

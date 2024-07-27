@@ -41,4 +41,19 @@ public sealed class ApplicationTests
         // Assert
         result.IsSuccessful.Should().BeTrue();
     }
+
+    [Fact(DisplayName = nameof(Application_Should_Has_Valid_Scopes))]
+    public void Application_Should_Has_Valid_Scopes()
+    {
+        // Arrange
+        ServiceCollection serviceCollection = new();
+
+        serviceCollection.AddApplicationServices();
+
+        // Act
+        var serviceProvider = serviceCollection.BuildServiceProvider(validateScopes: true);
+
+        // Assert
+        serviceProvider.Should().NotBeNull();
+    }
 }
