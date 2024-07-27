@@ -1,4 +1,6 @@
-﻿using Application.Common.Messages;
+﻿using Application;
+using Application.Common.Messages;
+using Microsoft.Extensions.DependencyInjection;
 using NetArchTest.Rules;
 using System.Reflection;
 

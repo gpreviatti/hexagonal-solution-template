@@ -1,4 +1,6 @@
-﻿using Domain.Common;
+﻿using Domain;
+using Domain.Common;
+using Microsoft.Extensions.DependencyInjection;
 using NetArchTest.Rules;
 using System.Reflection;
 
