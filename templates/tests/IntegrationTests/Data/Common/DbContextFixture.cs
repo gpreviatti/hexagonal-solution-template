@@ -4,13 +4,11 @@ using Domain.Orders;
 using Infrastructure.Data.Orders.Repositories;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using Testcontainers.MsSql;
 
 namespace IntegrationTests.Data.Common;
 
-public class DbContextFixture : IDisposable
+public sealed  class DbContextFixture : IDisposable
 {
-    private MsSqlContainer? _sqlServerContainer;
     private MyDbContext? myDbContext;
     private readonly Fixture? autoFixture = new();
 
@@ -18,25 +16,14 @@ public class DbContextFixture : IDisposable
 
     public DbContextFixture()
     {
-        SetSqlServerTestContainer().Wait();
+        SetSqlServer().Wait();
 
         SetRepositories();
     }
 
-    public async Task SetSqlServerTestContainer()
+    public async Task SetSqlServer()
     {
-        _sqlServerContainer = new MsSqlBuilder()
-           .WithName("sql-server-2022-data-tests")
-           .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
-           .WithPortBinding(1433, 1433)
-           .WithPassword(Guid.NewGuid().ToString())
-           .WithCleanUp(true)
-           .WithAutoRemove(true)
-           .Build();
-
-        await _sqlServerContainer.StartAsync();
-
-        var connectionString = _sqlServerContainer.GetConnectionString().Replace("localhost", "127.0.0.1");
+        var connectionString = "Server=127.0.0.1,1433;User Id=sa;Password=yourStrong(!)Password;TrustServerCertificate=true;";
 
         var contextOptions = new DbContextOptionsBuilder<MyDbContext>()
                 .UseSqlServer(connectionString)
@@ -59,23 +46,16 @@ public class DbContextFixture : IDisposable
 
         var orders = autoFixture
             .Build<Order>()
-        .Without(o => o.Id)
+            .Without(o => o.Id)
             .With(o => o.Items, items)
-        .CreateMany(10);
+            .CreateMany(10);
 
         await myDbContext.AddRangeAsync(orders);
 
         await myDbContext.SaveChangesAsync();
     }
 
-    public void SetRepositories()
-    {
-        orderRepository = new OrderRepository(myDbContext);
-    }
+    public void SetRepositories() => orderRepository = new OrderRepository(myDbContext!);
 
-    public void Dispose()
-    {
-        _sqlServerContainer!.StopAsync().Wait();
-        myDbContext!.Dispose();
-    }
+    public void Dispose() => myDbContext!.Dispose();
 }

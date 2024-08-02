@@ -6,21 +6,16 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Data.Common;
-using Testcontainers.MsSql;
 
 namespace IntegrationTests.WebApp.Common;
 public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram>, IDisposable where TProgram : class
 {
-    private MsSqlContainer? _sqlServerContainer;
-    protected string? _connectionString;
+    protected string? _connectionString = "Server=127.0.0.1,1433;User Id=sa;Password=yourStrong(!)Password;TrustServerCertificate=true;";
 
     public MyDbContext? myDbContext;
     private readonly Fixture? autoFixture = new();
 
-    public CustomWebApplicationFactory()
-    {
-        ConfigureTestSqlServerContainer();
-    }
+    public CustomWebApplicationFactory() => MigrateAndSeedDatabase().Wait();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -39,24 +34,6 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
                 options.UseSqlServer(_connectionString);
             });
         });
-    }
-
-    public void ConfigureTestSqlServerContainer()
-    {
-        _sqlServerContainer = new MsSqlBuilder()
-            .WithName("sql-server-2022-webapp-integration-tests")
-            .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
-            .WithPortBinding(1434, 1433)
-            .WithPassword(Guid.NewGuid().ToString())
-            .WithCleanUp(true)
-            .WithAutoRemove(true)
-            .Build();
-
-        _sqlServerContainer.StartAsync().Wait();
-
-        _connectionString = _sqlServerContainer.GetConnectionString().Replace("localhost", "127.0.0.1");
-
-        MigrateAndSeedDatabase().Wait();
     }
 
     public async Task MigrateAndSeedDatabase()
@@ -88,7 +65,6 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
 
     public new void Dispose()
     {
-        _sqlServerContainer!.StopAsync().Wait();
         myDbContext!.Dispose();
         base.Dispose();
     }

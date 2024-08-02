@@ -18,6 +18,9 @@ jobs:
       
     - name: Build Template Solution
       run: dotnet build ./templates -c Release
-      
+
+    - name: Start Docker Compose
+      uses: docker compose -f ./templates/docker-compose.yml up -d && sleep 15
+
     - name: Test
       run: dotnet test ./templates

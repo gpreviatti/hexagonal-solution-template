@@ -13,7 +13,7 @@ public sealed class OrderRepositoryTest(DbContextFixture fixture) : OrderDataTes
         var id = 1;
 
         // Act
-        var result = await fixture.orderRepository.GetByIdAsNoTrackingAsync(id, cancellationToken);
+        var result = await fixture!.orderRepository!.GetByIdAsNoTrackingAsync(id, cancellationToken);
 
         // Assert
         result.Should().NotBeNull();
