@@ -95,6 +95,7 @@ StyleCopReport.xml
 *.tmp
 *.tmp_proj
 *_wpftmp.csproj
+*.log
 *.tlog
 *.vspscc
 *.vssscc
@@ -482,4 +483,4 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 
-!Log
+!Hexagonal.Solution.Template.Infrastructure.Log

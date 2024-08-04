@@ -95,10 +95,13 @@ StyleCopReport.xml
 *.tmp
 *.tmp_proj
 *_wpftmp.csproj
+*.log
+*.tlog
 *.vspscc
 *.vssscc
 .builds
 *.pidb
+*.svclog
 *.scc
 
 # Chutzpah Test files
@@ -480,4 +483,4 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 
-!Logs
+!Hexagonal.Solution.Template.Infrastructure.Log
