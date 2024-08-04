@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Hexagonal.Solution.Template.Infrastructure.Data.Migrations
+namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class CreateTables : Migration

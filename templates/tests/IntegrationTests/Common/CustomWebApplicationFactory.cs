@@ -1,4 +1,4 @@
-﻿using AutoFixture;
+using AutoFixture;
 using Domain.Orders;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Hosting;
@@ -7,15 +7,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Data.Common;
 
-namespace IntegrationTests.WebApp.Common;
+namespace IntegrationTests.Common;
 public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram>, IDisposable where TProgram : class
 {
     protected string? _connectionString = "Server=127.0.0.1,1433;User Id=sa;Password=yourStrong(!)Password;TrustServerCertificate=true;";
 
-    public MyDbContext? myDbContext;
-    private readonly Fixture? autoFixture = new();
+    public MyDbContext? MyDbContext;
+    private readonly Fixture? _autoFixture = new();
 
-    public CustomWebApplicationFactory() => MigrateAndSeedDatabase().Wait();
+    public CustomWebApplicationFactory() => SeedDatabase().Wait();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -29,43 +29,41 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
 
             services.Remove(dbConnectionDescriptor!);
 
-            services.AddDbContext<MyDbContext>((container, options) =>
-            {
-                options.UseSqlServer(_connectionString);
-            });
+            services.AddDbContext<MyDbContext>((container, options) => options.UseSqlServer(_connectionString));
         });
     }
 
-    public async Task MigrateAndSeedDatabase()
+    public async Task SeedDatabase()
     {
         var contextOptions = new DbContextOptionsBuilder<MyDbContext>()
             .UseSqlServer(_connectionString)
             .Options;
 
-        myDbContext = new(contextOptions);
+        MyDbContext = new(contextOptions);
 
-        myDbContext.Database.Migrate();
+        if (!MyDbContext.Database.CanConnect())
+            throw new InvalidDataException("Unable to connect to database");
 
-        var items = autoFixture!
+        var items = _autoFixture!
             .Build<Item>()
             .Without(i => i.Id)
             .CreateMany(5)
             .ToList();
 
-        var orders = autoFixture
+        var orders = _autoFixture
             .Build<Order>()
-        .Without(o => o.Id)
+            .Without(o => o.Id)
             .With(o => o.Items, items)
-        .CreateMany(10);
+            .CreateMany(10);
 
-        await myDbContext.AddRangeAsync(orders);
+        await MyDbContext.AddRangeAsync(orders);
 
-        await myDbContext.SaveChangesAsync();
+        await MyDbContext.SaveChangesAsync();
     }
 
     public new void Dispose()
     {
-        myDbContext!.Dispose();
+        MyDbContext!.Dispose();
         base.Dispose();
     }
 }

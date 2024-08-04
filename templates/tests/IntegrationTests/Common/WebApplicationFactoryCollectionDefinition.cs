@@ -1,6 +1,6 @@
 ﻿using WebApp;
 
-namespace IntegrationTests.WebApp.Common;
+namespace IntegrationTests.Common;
 
 [CollectionDefinition("WebApplicationFactoryCollectionDefinition")]
 public sealed class WebApplicationFactoryCollectionDefinition : IClassFixture<CustomWebApplicationFactory<Program>>

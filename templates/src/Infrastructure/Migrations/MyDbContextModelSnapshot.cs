@@ -4,28 +4,25 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Hexagonal.Solution.Template.Infrastructure.Data.Migrations
+namespace Infrastructure.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20231223223203_CreateTables")]
-    partial class CreateTables
+    partial class MyDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Hexagonal.Solution.Template.Domain.Orders.Item", b =>
+            modelBuilder.Entity("Domain.Orders.Item", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -63,7 +60,7 @@ namespace Hexagonal.Solution.Template.Infrastructure.Data.Migrations
                     b.ToTable("Item");
                 });
 
-            modelBuilder.Entity("Hexagonal.Solution.Template.Domain.Orders.Order", b =>
+            modelBuilder.Entity("Domain.Orders.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -90,14 +87,14 @@ namespace Hexagonal.Solution.Template.Infrastructure.Data.Migrations
                     b.ToTable("Order");
                 });
 
-            modelBuilder.Entity("Hexagonal.Solution.Template.Domain.Orders.Item", b =>
+            modelBuilder.Entity("Domain.Orders.Item", b =>
                 {
-                    b.HasOne("Hexagonal.Solution.Template.Domain.Orders.Order", null)
+                    b.HasOne("Domain.Orders.Order", null)
                         .WithMany("Items")
                         .HasForeignKey("OrderId");
                 });
 
-            modelBuilder.Entity("Hexagonal.Solution.Template.Domain.Orders.Order", b =>
+            modelBuilder.Entity("Domain.Orders.Order", b =>
                 {
                     b.Navigation("Items");
                 });

@@ -22,4 +22,9 @@
 		<PackageReference Include="SerilogTimings" Version="3.1.0" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Data\Migrations\" />
+	  <Folder Include="Migrations\" />
+	</ItemGroup>
+
 </Project>

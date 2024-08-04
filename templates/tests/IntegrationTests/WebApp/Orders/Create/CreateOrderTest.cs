@@ -1,6 +1,6 @@
 ﻿using Application.Common.Messages;
 using Application.Orders;
-using IntegrationTests.WebApp.Common;
+using IntegrationTests.Common;
 using System.Net;
 using WebApp;
 

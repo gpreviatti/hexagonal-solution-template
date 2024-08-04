@@ -1,6 +1,7 @@
 ﻿using Application.Orders.Create;
 using AutoFixture;
 using CommonTests.Fixtures;
+using IntegrationTests.Common;
 using IntegrationTests.WebApp.Common;
 using WebApp;
 
