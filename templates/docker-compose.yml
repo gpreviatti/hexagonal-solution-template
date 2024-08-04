@@ -1,0 +1,32 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      SA_PASSWORD: "cY5VvZkkh4AzES"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+    networks:
+      - sqlserver_networks
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -U sa -P "cY5VvZkkh4AzES" -C -Q "SELECT 1" || exit 1
+      interval: 3s
+      timeout: 10s
+      retries: 10
+      start_period: 15s
+    ports:
+      - "1433:1433"
+
+  mssqltools:
+    image: mcr.microsoft.com/mssql-tools
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    networks:
+      - sqlserver_networks
+    volumes:
+      - ./scripts/migrations.sql:/tmp/migrations.sql
+    command: ./opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P "cY5VvZkkh4AzES" -C -d master -i ./tmp/migrations.sql
+
+networks:
+    sqlserver_networks:
+      driver: bridge

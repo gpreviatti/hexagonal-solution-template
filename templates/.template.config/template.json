@@ -26,10 +26,6 @@
         {
           "choice": "WebApp",
           "description": "Pre configured web api"
-        },
-        {
-          "choice": "FunctionApp",
-          "description": "Pre configured function app"
         }
       ]
     }
@@ -39,23 +35,11 @@
       "modifiers": [
         {
           "condition": "(Hosts != WebApp)",
-          "exclude": "**/Hexagonal.Solution.Template.Host.WebApp/**"
+          "exclude": "**/WebApp/**"
         },
         {
           "condition": "(Hosts != WebApp)",
-          "exclude": "**/Hexagonal.Solution.Template.WebApp.Integration.Tests/**"
-        },
-        {
-          "condition": "(Hosts != WebApp)",
-          "exclude": "**/Hexagonal.Solution.Template.Architecture.Tests/WebAppTests.cs"
-        },
-        {
-          "condition": "(Hosts != FunctionApp)",
-          "exclude": "**/Hexagonal.Solution.Template.Host.FunctionApp/**"
-        },
-        {
-          "condition": "(Hosts != FunctionApp)",
-          "exclude": "**/Hexagonal.Solution.Template.Architecture.Tests/FunctionAppTests.cs"
+          "exclude": "**/IntegrationTests/**"
         }
       ]
     }

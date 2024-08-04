@@ -1,0 +1,30 @@
+@WebApp_HostAddress = https://localhost:7175
+
+GET {{WebApp_HostAddress}}/orders/1
+Accept: application/json
+
+###
+POST {{WebApp_HostAddress}}/orders
+Content-Type: application/json
+
+{
+  "Description": "John's computer",
+  "Items": [
+    {
+      "Name": "Computer",
+      "Description": "Surface 2",
+      "Value": 1000
+    },
+    {
+      "Name": "Mouse",
+      "Description": "Microsoft mouse",
+      "Value": 99
+    },
+    {
+      "Name": "Keyboard",
+      "Description": "Microsoft keyboard",
+      "Value": 199
+    }
+  ]
+}
+###
