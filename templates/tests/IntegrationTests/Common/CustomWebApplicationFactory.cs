@@ -1,8 +1,11 @@
 using AutoFixture;
 using Domain.Orders;
 using Infrastructure.Data;
+using Infrastructure.DependencyInjection;
+
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Data.Common;
@@ -10,7 +13,7 @@ using System.Data.Common;
 namespace IntegrationTests.Common;
 public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram>, IDisposable where TProgram : class
 {
-    protected string? _connectionString = "Server=127.0.0.1,1433;User Id=sa;Password=yourStrong(!)Password;TrustServerCertificate=true;";
+    protected string? _connectionString = "Server=127.0.0.1,1433;Database=OrderDb;User Id=sa;Password=cY5VvZkkh4AzES;TrustServerCertificate=true;";
 
     public MyDbContext? MyDbContext;
     private readonly Fixture? _autoFixture = new();
@@ -19,7 +22,7 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureServices(services =>
+        builder.ConfigureTestServices(services =>
         {
             var dbContextDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<MyDbContext>));
 

@@ -29,7 +29,7 @@ public class GetOrderTest(CustomWebApplicationFactory<Program> customWebApplicat
     public async Task Given_A_Invalid_Request_Then_Fails()
     {
         // Arrange
-        var id = 100;
+        var id = 9999999;
 
         // Act
         var result = await apiHelper.GetAsync(RESOURCE_URL + "/" + id);
