@@ -20,7 +20,7 @@ jobs:
       run: dotnet build -c Release
 
     - name: Start Docker Compose
-      run: docker compose -f ./templates/docker-compose.yml up -d && sleep 15
+      run: docker compose -f ./templates/docker-compose.yml up -d && sleep 10
       
     - name: Test
       run: dotnet test ./templates
