@@ -15,33 +15,5 @@
     "language": "C#",
     "type": "project"
   },
-  "preferNameDirectory": true,
-  "symbols": {
-    "Hosts": {
-      "type": "parameter",
-      "description": "Hosts to be created in the project",
-      "datatype": "choice",
-      "allowMultipleValues": true,
-      "choices": [
-        {
-          "choice": "WebApp",
-          "description": "Pre configured web api"
-        }
-      ]
-    }
-  },
-  "sources": [
-    {
-      "modifiers": [
-        {
-          "condition": "(Hosts != WebApp)",
-          "exclude": "**/WebApp/**"
-        },
-        {
-          "condition": "(Hosts != WebApp)",
-          "exclude": "**/IntegrationTests/**"
-        }
-      ]
-    }
-  ]
+  "preferNameDirectory": true
 }
