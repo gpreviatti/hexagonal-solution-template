@@ -21,7 +21,7 @@ public class GetOrderTest(CustomWebApplicationFactory<Program> customWebApplicat
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.OK);
-        response.Success.Should().BeTrue();
+        response!.Success.Should().BeTrue();
         response.Data.Should().NotBeNull();
     }
 
@@ -37,7 +37,7 @@ public class GetOrderTest(CustomWebApplicationFactory<Program> customWebApplicat
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        response.Success.Should().BeFalse();
+        response!.Success.Should().BeFalse();
         response.Data.Should().BeNull();
     }
 }

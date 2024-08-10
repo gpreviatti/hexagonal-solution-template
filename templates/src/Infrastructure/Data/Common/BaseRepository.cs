@@ -81,7 +81,7 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
     public async Task<IList<TEntity>> GetByWhereAsNoTrackingAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
         => await dbEntitySet.AsNoTracking().Where(predicate).ToListAsync(cancellationToken);
 
-    public async Task<TEntity> FirstOrDefaultAsNoTrackingAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
+    public async Task<TEntity?> FirstOrDefaultAsNoTrackingAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
         => await dbEntitySet.AsNoTracking().FirstOrDefaultAsync(predicate, cancellationToken);
 
 
