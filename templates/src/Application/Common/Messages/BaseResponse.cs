@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Application.Common.Messages;
+﻿namespace Application.Common.Messages;
 
 public record BaseResponse()
 {

@@ -1,6 +1,6 @@
 using Application;
 using Domain;
-using Infrastructure.DependencyInjection;
+using Infrastructure.Common;
 using WebApp.Middlewares;
 
 namespace WebApp;

@@ -1,6 +1,6 @@
-﻿using FluentValidation.TestHelper;
+﻿using Application.Orders.Create;
+using FluentValidation.TestHelper;
 using GPreviatti.Util.JsonResourceAttribute;
-using Application.Orders.Create;
 
 namespace UnitTests.Application.Orders.Create;
 public sealed class CreateOrderRequestValidationTests(CreateOrderRequestValidationFixture fixture) : IClassFixture<CreateOrderRequestValidationFixture>

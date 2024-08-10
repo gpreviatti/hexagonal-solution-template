@@ -1,10 +1,10 @@
-﻿using FluentValidation;
-using FluentValidation.Results;
-using Application.Orders;
+﻿using Application.Orders;
 using Application.Orders.Create;
 using Domain.Common;
 using Domain.Orders;
 using Domain.Orders.Services;
+using FluentValidation;
+using FluentValidation.Results;
 using UnitTests.Application.Common;
 
 namespace UnitTests.Application.Orders.Create;
