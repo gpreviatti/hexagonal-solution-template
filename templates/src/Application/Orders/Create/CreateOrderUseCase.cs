@@ -1,8 +1,8 @@
 ﻿using Application.Common.Messages;
 using Application.Common.UseCases;
+using Domain.Orders;
 using Domain.Orders.Services;
 using FluentValidation;
-using Domain.Orders;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application.Orders.Create;

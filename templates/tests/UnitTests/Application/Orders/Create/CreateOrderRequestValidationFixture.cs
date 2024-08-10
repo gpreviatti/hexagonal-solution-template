@@ -1,5 +1,5 @@
-﻿using FluentValidation;
-using Application.Orders.Create;
+﻿using Application.Orders.Create;
+using FluentValidation;
 
 namespace UnitTests.Application.Orders.Create;
 public class CreateOrderRequestValidationFixture

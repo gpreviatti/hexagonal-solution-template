@@ -1,5 +1,4 @@
 ﻿using Application.Common.Messages;
-using Application.Orders;
 using MediatR;
 
 namespace Application.Orders.Get;
