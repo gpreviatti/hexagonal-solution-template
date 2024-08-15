@@ -1,7 +1,7 @@
-﻿using Application.Common.Messages;
+﻿using System.Net;
+using Application.Common.Messages;
 using Application.Orders;
 using IntegrationTests.Common;
-using System.Net;
 using WebApp;
 
 namespace IntegrationTests.WebApp.Orders.Get;

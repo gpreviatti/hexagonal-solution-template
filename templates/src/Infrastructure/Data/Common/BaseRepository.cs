@@ -1,7 +1,7 @@
-﻿using Application.Common.Repositories;
+﻿using System.Linq.Expressions;
+using Application.Common.Repositories;
 using Domain.Common;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace Infrastructure.Data.Common;
 public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : DomainEntity

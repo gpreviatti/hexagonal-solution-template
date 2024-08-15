@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 
 namespace Domain.Orders;
+
 public sealed class Order : DomainEntity
 {
     public Order() { }

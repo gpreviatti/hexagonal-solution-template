@@ -1,13 +1,12 @@
+﻿using System.Data.Common;
 using AutoFixture;
 using Domain.Orders;
 using Infrastructure.Data;
-
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System.Data.Common;
 
 namespace IntegrationTests.Common;
 public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram>, IDisposable where TProgram : class
