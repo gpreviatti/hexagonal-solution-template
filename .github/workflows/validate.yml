@@ -19,22 +19,8 @@ jobs:
     - name: Run Stryker Domain
       run: dotnet stryker -tp ./templates/tests/UnitTests/ -f ./templates/tests/UnitTests/stryker-config-domain.json
 
-    - name: Publish Report
-      uses: turing85/publish-report@v2
-      with:
-        checkout: true
-        download-artifact-name: mutation-tests-domain-result
-        report-path: '**/reports/mutation-tests-domain-result.html'
-
     - name: Run Stryker Application
       run: dotnet stryker -tp ./templates/tests/UnitTests/ -f ./templates/tests/UnitTests/stryker-config-application.json
-
-    - name: Publish Report
-      uses: turing85/publish-report@v2
-      with:
-        checkout: true
-        download-artifact-name: mutation-tests-application-result
-        report-path: '**/reports/mutation-tests-application-result.html'
 
     - name: Start Docker Compose
       run: docker compose -f ./templates/docker-compose.yml up -d && sleep 10
