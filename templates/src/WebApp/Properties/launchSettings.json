@@ -4,6 +4,7 @@
     "WebApp Http": {
       "commandName": "Project",
       "dotnetRunMessages": true,
+      "sqlDebugging": true,
       "launchBrowser": false,
       "applicationUrl": "http://localhost:5010",
       "environmentVariables": {
@@ -13,6 +14,7 @@
     "WebApp Https": {
       "commandName": "Project",
       "dotnetRunMessages": true,
+      "sqlDebugging": true,
       "launchBrowser": false,
       "applicationUrl": "https://localhost:7175",
       "environmentVariables": {

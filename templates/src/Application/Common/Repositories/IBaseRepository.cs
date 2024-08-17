@@ -1,5 +1,5 @@
-﻿using Domain.Common;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
+using Domain.Common;
 
 namespace Application.Common.Repositories;
 public interface IBaseRepository<TEntity> where TEntity : DomainEntity

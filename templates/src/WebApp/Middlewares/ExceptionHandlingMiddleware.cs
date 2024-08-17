@@ -1,6 +1,6 @@
-﻿using Application.Common.Messages;
+﻿using System.Net;
+using Application.Common.Messages;
 using SerilogTimings.Extensions;
-using System.Net;
 using ILogger = Serilog.ILogger;
 
 namespace WebApp.Middlewares;

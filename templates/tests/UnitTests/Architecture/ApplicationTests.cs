@@ -1,8 +1,8 @@
-﻿using Application;
+﻿using System.Reflection;
+using Application;
 using Application.Common.Messages;
 using Microsoft.Extensions.DependencyInjection;
 using NetArchTest.Rules;
-using System.Reflection;
 
 namespace UnitTests.Architecture;
 public sealed class ApplicationTests

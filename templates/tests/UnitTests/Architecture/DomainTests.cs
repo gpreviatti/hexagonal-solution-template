@@ -1,8 +1,8 @@
-﻿using Domain;
+﻿using System.Reflection;
+using Domain;
 using Domain.Common;
 using Microsoft.Extensions.DependencyInjection;
 using NetArchTest.Rules;
-using System.Reflection;
 
 namespace UnitTests.Architecture;
 public sealed class DomainTests
