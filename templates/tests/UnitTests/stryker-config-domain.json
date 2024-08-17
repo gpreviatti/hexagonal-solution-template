@@ -1,0 +1,14 @@
+{
+  "stryker-config": {
+    "reporters": [
+      "progress",
+      "html"
+    ],
+    "project": "Domain.csproj",
+    "thresholds": {
+      "high": 80,
+      "low": 70,
+      "break": 60
+    }
+  }
+}
