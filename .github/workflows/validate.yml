@@ -17,6 +17,7 @@ jobs:
       run: dotnet test ./templates/tests/UnitTests
 
   mutant-tests-domain:
+    needs: unit-tests
     runs-on: ubuntu-latest
 
     steps:
@@ -33,6 +34,7 @@ jobs:
       run: dotnet stryker -tp ./templates/tests/UnitTests/ -f ./templates/tests/UnitTests/stryker-config-domain.json
 
   mutant-tests-application:
+    needs: unit-tests
     runs-on: ubuntu-latest
 
     steps:
@@ -49,6 +51,7 @@ jobs:
       run: dotnet stryker -tp ./templates/tests/UnitTests/ -f ./templates/tests/UnitTests/stryker-config-application.json
 
   integration-tests: 
+    needs: unit-tests
     runs-on: ubuntu-latest
 
     steps:
