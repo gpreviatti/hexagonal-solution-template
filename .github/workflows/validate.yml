@@ -69,7 +69,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    needs: [unit-tests, mutant-tests-application, mutant-tests-domain, integration-tests]
+    needs: [mutant-tests-application, mutant-tests-domain, integration-tests]
 
     steps:
     - name: Checkout
