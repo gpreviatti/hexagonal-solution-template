@@ -1,0 +1,18 @@
+{
+  "stryker-config": {
+    "reporters": [
+      "progress",
+      "html"
+    ],
+    "project": "Application.csproj",
+    "thresholds": {
+      "high": 80,
+      "low": 70,
+      "break": 20
+    },
+    "ignore-mutations": [
+      "linq.First",
+      "linq.Sum"
+    ]
+  }
+}

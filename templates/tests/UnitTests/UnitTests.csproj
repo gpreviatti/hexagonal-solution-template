@@ -1,21 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Application\Orders\Create\create-order-request-tests.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Application\Orders\Create\create-order-request-tests.json" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.2">
@@ -34,9 +25,15 @@
     </PackageReference>
   </ItemGroup>
 
-    <ItemGroup>
-	    <ProjectReference Include="..\..\src\WebApp\WebApp.csproj" />
-	    <ProjectReference Include="..\CommonTests\CommonTests.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Domain\Domain.csproj" />
+    <ProjectReference Include="..\..\src\Application\Application.csproj" />
+    <ProjectReference Include="..\CommonTests\CommonTests.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="**\*.json" />
+    <EmbeddedResource Include="**\*.json" Exclude="bin\**;obj\**" />
+  </ItemGroup>
 
 </Project>
