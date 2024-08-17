@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -30,5 +30,10 @@
 		<ProjectReference Include="..\..\src\WebApp\WebApp.csproj" />
 		<ProjectReference Include="..\CommonTests\CommonTests.csproj" />
 	</ItemGroup>
+
+  <ItemGroup>
+    <None Remove="**\*.json" />
+    <EmbeddedResource Include="**\*.json" Exclude="bin\**;obj\**" />
+  </ItemGroup>
 
 </Project>
