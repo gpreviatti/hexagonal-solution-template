@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  test: 
+  unit-tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,25 +15,64 @@ jobs:
 
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v3
-    
+
+    - name: Test
+      run: dotnet test ./templates/tests/UnitTests
+
+  mutant-tests-domain:
+    needs: unit-tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v3
+
     - name: Install Stryker
       run: dotnet tool install -g dotnet-stryker
 
     - name: Run Stryker Domain
       run: dotnet stryker -tp ./templates/tests/UnitTests/ -f ./templates/tests/UnitTests/stryker-config-domain.json
 
+  mutant-tests-application:
+    needs: unit-tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v3
+
+    - name: Install Stryker
+      run: dotnet tool install -g dotnet-stryker
+
     - name: Run Stryker Application
       run: dotnet stryker -tp ./templates/tests/UnitTests/ -f ./templates/tests/UnitTests/stryker-config-application.json
+
+  integration-tests: 
+    needs: unit-tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v3
 
     - name: Start Docker Compose
       run: docker compose -f ./templates/docker-compose.yml up -d && sleep 10
 
     - name: Test
-      run: dotnet test ./templates
+      run: dotnet test ./templates/tests/IntegrationTests
 
   build:
     runs-on: ubuntu-latest
-    needs: test
+    needs: [mutant-tests-application, mutant-tests-domain, integration-tests]
 
     steps:
     - name: Checkout

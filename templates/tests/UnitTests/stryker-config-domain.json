@@ -5,6 +5,7 @@
       "html"
     ],
     "project": "Domain.csproj",
+    "report-file-name": "mutation-tests-domain-result",
     "thresholds": {
       "high": 80,
       "low": 70,

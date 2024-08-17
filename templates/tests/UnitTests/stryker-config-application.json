@@ -5,6 +5,7 @@
       "html"
     ],
     "project": "Application.csproj",
+    "report-file-name": "mutation-tests-application-result",
     "thresholds": {
       "high": 80,
       "low": 70,
