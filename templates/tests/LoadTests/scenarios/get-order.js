@@ -2,19 +2,19 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 export const options = {
-    vus: 10, // Number of virtual users
-    duration: '30s', // Test duration
+  thresholds: {
+    http_req_duration: ['p(90) < 400', 'p(95) < 800', 'p(99.9) < 2000'],
+    http_req_failed: ['rate<0.01'],
+  },
 };
 
-function getOrder() {
-    const res = http.get('http://localhost:3000/orders/123');
-    check(res, {
-        'status is 200': (r) => r.status === 200,
-        'content type is JSON': (r) => r.headers['Content-Type'] === 'application/json; charset=utf-8',
-    });
-}
+export function getOrder() {
+  const res = http.get('https://localhost:7175/orders/1');
 
-export default function () {
-    getOrder();
-    sleep(1); // Sleep for 1 second between requests
+  check(res, {
+    'status is 200': (r) => r.status === 200,
+    'content type is JSON': (r) => r.headers['Content-Type'] === 'application/json; charset=utf-8',
+  });
+
+  sleep(1);
 }
