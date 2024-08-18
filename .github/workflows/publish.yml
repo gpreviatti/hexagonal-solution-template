@@ -34,7 +34,7 @@ jobs:
 
   pack:
     needs: [mutant-tests-application, mutant-tests-domain, integration-tests]
-    uses: gpreviatti/github-actions-templates/pack.yml@main
+    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-pack.yml@main
     with:
       package_version: "8.0.${{ github.run_number }}"
     secrets:
