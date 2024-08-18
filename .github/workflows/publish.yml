@@ -7,27 +7,27 @@ on:
 
 jobs:
   unit-tests:
-    uses: gpreviatti/github-actions-templates/unit-test.yml@main
+    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet/unit-test.yml@main
     with:
       test_project_path: "./templates/tests/UnitTests/"
 
   mutant-tests-domain:
     needs: unit-tests
-    uses: gpreviatti/github-actions-templates/mutation-test.yml@main
+    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet/mutation-test.yml@main
     with:
       test_project_path: "./templates/tests/UnitTests/"
       stryker_config_path: "./templates/tests/UnitTests/stryker-config-domain.json"
 
   mutant-tests-application:
     needs: unit-tests
-    uses: gpreviatti/github-actions-templates/mutation-test.yml@main
+    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet/mutation-test.yml@main
     with:
       test_project_path: "./templates/tests/UnitTests/"
       stryker_config_path: "./templates/tests/UnitTests/stryker-config-application.json"
 
   integration-tests: 
     needs: unit-tests
-    uses: gpreviatti/github-actions-templates/integration-test.yml@main
+    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet/integration-test.yml@main
     with:
       docker_compose_file_path: "./templates/docker-compose.yml"
       test_project_path: "./templates/tests/IntegrationTests"
