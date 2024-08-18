@@ -2,6 +2,10 @@ name: Unit Tests 🧪
 
 on:
   workflow_call:
+    inputs:
+      test_project_path:
+        required: true
+        type: string
 
 jobs:
   unit-tests:
@@ -12,4 +16,4 @@ jobs:
     - uses: actions/setup-dotnet@v4
 
     - name: Test
-      run: dotnet test ./templates/tests/UnitTests
+      run: dotnet test ${{ inputs.test_project_path }}
