@@ -1,16 +1,15 @@
 name: Mutation Tests 👾
 
 on:
-  workflow_call:
-    
-  inputs:
-    test_project_path:
-      required: true
-      type: string
+  workflow_call:  
+    inputs:
+      test_project_path:
+        required: true
+        type: string
 
-    stryker_config_path: 
-      required: true
-      type: string
+      stryker_config_path: 
+        required: true
+        type: string
 
 jobs:
   mutation-tests:
