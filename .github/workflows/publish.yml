@@ -34,7 +34,7 @@ jobs:
 
   pack:
     needs: [mutant-tests-application, mutant-tests-domain, integration-tests]
-    uses: gpreviatti/hexagonal-solution-template/.github/workflows/integration-test.yml@main
+    uses: gpreviatti/hexagonal-solution-template/.github/workflows/pack.yml@main
     with:
       package_version: "8.0.${{ github.run_number }}"
     secrets:
