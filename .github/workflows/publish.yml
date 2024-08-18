@@ -5,6 +5,8 @@ on:
     branches:
       - main
 
+  workflow_dispatch:
+
 jobs:
   unit-tests:
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet/unit-test.yml@main
