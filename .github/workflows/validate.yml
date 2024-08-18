@@ -4,79 +4,38 @@ on: [pull_request]
 
 jobs:
   unit-tests:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v3
-
-    - name: Test
-      run: dotnet test ./templates/tests/UnitTests
+    uses: gpreviatti/hexagonal-solution-template/.github/workflows/unit-test.yml@main
+    with:
+      test_project_path: "./templates/tests/UnitTests/"
 
   mutant-tests-domain:
     needs: unit-tests
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v3
-
-    - name: Install Stryker
-      run: dotnet tool install -g dotnet-stryker
-
-    - name: Run Stryker Domain
-      run: dotnet stryker -tp ./templates/tests/UnitTests/ -f ./templates/tests/UnitTests/stryker-config-domain.json
+    uses: gpreviatti/hexagonal-solution-template/.github/workflows/mutation-test.yml@main
+    with:
+      test_project_path: "./templates/tests/UnitTests/"
+      stryker_config_path: "./templates/tests/UnitTests/stryker-config-domain.json"
 
   mutant-tests-application:
     needs: unit-tests
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v3
-
-    - name: Install Stryker
-      run: dotnet tool install -g dotnet-stryker
-
-    - name: Run Stryker Application
-      run: dotnet stryker -tp ./templates/tests/UnitTests/ -f ./templates/tests/UnitTests/stryker-config-application.json
+    uses: gpreviatti/hexagonal-solution-template/.github/workflows/mutation-test.yml@main
+    with:
+      test_project_path: "./templates/tests/UnitTests/"
+      stryker_config_path: "./templates/tests/UnitTests/stryker-config-application.json"
 
   integration-tests: 
     needs: unit-tests
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v3
-
-    - name: Start Docker Compose
-      run: docker compose -f ./templates/docker-compose.yml up -d && sleep 10
-
-    - name: Test
-      run: dotnet test ./templates/tests/IntegrationTests
+    uses: gpreviatti/hexagonal-solution-template/.github/workflows/integration-test.yml@main
+    with:
+      docker_compose_file_path: "./templates/docker-compose.yml"
+      test_project_path: "./templates/tests/IntegrationTests"
 
   build:
     runs-on: ubuntu-latest
     needs: [mutant-tests-application, mutant-tests-domain, integration-tests]
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      
-    - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-dotnet@v4
 
     - name: Build Template Pack Project
       run: dotnet build -c Release

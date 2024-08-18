@@ -14,9 +14,10 @@ This is a dotnet solution template from projects based on hexagonal architecture
 - EntityFrameworkCore.SqlServer
 - Xunit
 - Moq
-- Testcontainers
 - Autofixture
 - FluentAssertions
+- docker and docker compose
+- k6
 
 ## Advisors and recommendations
 

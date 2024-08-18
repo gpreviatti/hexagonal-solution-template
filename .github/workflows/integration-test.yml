@@ -1,0 +1,23 @@
+on:
+  workflow_call:
+    inputs:
+      docker_compose_file_path:
+        required: true
+        type: string
+      test_project_path:
+        required: true
+        type: string
+
+jobs:
+  integration-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-dotnet@v4
+
+    - name: Start Docker Compose
+      run: docker compose -f ${{ inputs.docker_compose_file_path }} up -d && sleep 10
+
+    - name: Test
+      run: dotnet test ${{ inputs.test_project_path}}
