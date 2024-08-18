@@ -3,17 +3,19 @@ name: Mutation Tests 👾
 on:
   workflow_call:
     
-inputs:
-  test_project_path:
-    required: true
-    type: string
-  stryker_config_path: 
-    required: true
-    type: string
+  inputs:
+    test_project_path:
+      required: true
+      type: string
+
+    stryker_config_path: 
+      required: true
+      type: string
 
 jobs:
   mutation-tests:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
