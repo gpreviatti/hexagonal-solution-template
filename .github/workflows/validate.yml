@@ -4,7 +4,7 @@ on: [pull_request]
 
 jobs:
   unit-tests:
-    uses: ./workflows/unit-test.yml@feature/imp-load-tests
+    uses: ./.github/workflows/unit-test.yml@feature/imp-load-tests
 
   mutant-tests-domain:
     needs: unit-tests
