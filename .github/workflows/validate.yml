@@ -8,7 +8,7 @@ jobs:
 
   mutant-tests-domain:
     needs: unit-tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest@${{ github.head_ref || github.ref_name }} 
 
     steps:
     - uses: actions/checkout@v4
