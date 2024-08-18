@@ -7,11 +7,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-dotnet@v3
 
     - name: Test
       run: dotnet test ./templates/tests/UnitTests
@@ -21,11 +18,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-dotnet@v3
 
     - name: Install Stryker
       run: dotnet tool install -g dotnet-stryker
@@ -38,11 +32,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-dotnet@v3
 
     - name: Install Stryker
       run: dotnet tool install -g dotnet-stryker
@@ -55,11 +46,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-dotnet@v3
 
     - name: Start Docker Compose
       run: docker compose -f ./templates/docker-compose.yml up -d && sleep 10
@@ -72,17 +60,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-dotnet@v3
 
     - name: Start Docker Compose
       run: docker compose -f ./templates/docker-compose.yml up -d && sleep 10
 
     - name: Start project
-      run: dotnet run --launch-profile "WebApp Https"
+      run: dotnet run --urls="https://localhost:7175"
 
     - uses: grafana/setup-k6-action@v1
     - uses: grafana/run-k6-action@v1
@@ -92,14 +77,11 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    needs: [mutant-tests-application, mutant-tests-domain, integration-tests]
+    needs: [mutant-tests-application, mutant-tests-domain, integration-tests, load-tests]
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      
-    - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-dotnet@v3
 
     - name: Build Template Pack Project
       run: dotnet build -c Release
