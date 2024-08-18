@@ -4,7 +4,7 @@ on: [pull_request]
 
 jobs:
   unit-tests:
-    uses: gpreviatti/hexagonal-solution-template/.github/workflows/unit-test.yml@feature/imp-load-tests
+    uses: gpreviatti/hexagonal-solution-template/.github/workflows/unit-test.yml@${{ github.ref }}
 
   mutant-tests-domain:
     needs: unit-tests
