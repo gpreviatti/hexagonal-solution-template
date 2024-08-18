@@ -4,7 +4,7 @@ on: [pull_request]
 
 jobs:
   unit-tests:
-    uses: ./unit-test.yml@${{ github.head_ref || github.ref_name }} 
+    uses: ./unit-test.yml@feature/imp-load-tests
 
   mutant-tests-domain:
     needs: unit-tests
