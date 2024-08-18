@@ -4,11 +4,11 @@ on: [pull_request]
 
 jobs:
   unit-tests:
-    uses: ./unit-test.yml
+    uses: ./unit-test.yml@${{ github.head_ref || github.ref_name }} 
 
   mutant-tests-domain:
     needs: unit-tests
-    runs-on: ubuntu-latest@${{ github.head_ref || github.ref_name }} 
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
