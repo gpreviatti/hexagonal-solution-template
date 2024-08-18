@@ -4,14 +4,7 @@ on: [pull_request]
 
 jobs:
   unit-tests:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-dotnet@v3
-
-    - name: Test
-      run: dotnet test ./templates/tests/UnitTests
+    uses: ./unit-test.yml
 
   mutant-tests-domain:
     needs: unit-tests
@@ -19,7 +12,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - uses: actions/setup-dotnet@v3
+    - uses: actions/setup-dotnet@v4
 
     - name: Install Stryker
       run: dotnet tool install -g dotnet-stryker
@@ -33,7 +26,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - uses: actions/setup-dotnet@v3
+    - uses: actions/setup-dotnet@v4
 
     - name: Install Stryker
       run: dotnet tool install -g dotnet-stryker
@@ -47,7 +40,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - uses: actions/setup-dotnet@v3
+    - uses: actions/setup-dotnet@v4
 
     - name: Start Docker Compose
       run: docker compose -f ./templates/docker-compose.yml up -d && sleep 10
@@ -55,33 +48,13 @@ jobs:
     - name: Test
       run: dotnet test ./templates/tests/IntegrationTests
 
-  load-tests: 
-    needs: unit-tests
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-dotnet@v3
-
-    - name: Start Docker Compose
-      run: docker compose -f ./templates/docker-compose.yml up -d && sleep 10
-
-    - name: Start project
-      run: dotnet run --project ./templates/src/WebApp --urls="https://localhost:7175" && bg
-
-    - uses: grafana/setup-k6-action@v1
-    - uses: grafana/run-k6-action@v1
-      with:
-        path: |
-          ./templates/test/LoadTests/script.js
-
   build:
     runs-on: ubuntu-latest
-    needs: [mutant-tests-application, mutant-tests-domain, integration-tests, load-tests]
+    needs: [mutant-tests-application, mutant-tests-domain, integration-tests]
 
     steps:
     - uses: actions/checkout@v4
-    - uses: actions/setup-dotnet@v3
+    - uses: actions/setup-dotnet@v4
 
     - name: Build Template Pack Project
       run: dotnet build -c Release

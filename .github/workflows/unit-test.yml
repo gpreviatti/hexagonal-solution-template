@@ -1,0 +1,15 @@
+name: Unit Tests 🧪
+
+on:
+  workflow_call:
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-dotnet@v4
+
+    - name: Test
+      run: dotnet test ./templates/tests/UnitTests

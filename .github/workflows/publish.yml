@@ -14,7 +14,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
 
     - name: Test
       run: dotnet test ./templates/tests/UnitTests
@@ -28,7 +28,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
 
     - name: Install Stryker
       run: dotnet tool install -g dotnet-stryker
@@ -45,7 +45,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
 
     - name: Install Stryker
       run: dotnet tool install -g dotnet-stryker
@@ -62,7 +62,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
 
     - name: Start Docker Compose
       run: docker compose -f ./templates/docker-compose.yml up -d && sleep 10
@@ -79,7 +79,7 @@ jobs:
       uses: actions/checkout@v4
       
     - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       
     - name: Build
       run: dotnet build -c Release
