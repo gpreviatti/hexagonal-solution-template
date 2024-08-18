@@ -67,7 +67,7 @@ jobs:
       run: docker compose -f ./templates/docker-compose.yml up -d && sleep 10
 
     - name: Start project
-      run: dotnet run --project ./templates/src/WebApp --urls="https://localhost:7175"
+      run: dotnet run --project ./templates/src/WebApp --urls="https://localhost:7175" > /dev/null
 
     - uses: grafana/setup-k6-action@v1
     - uses: grafana/run-k6-action@v1
