@@ -4,21 +4,13 @@ on: [pull_request]
 
 jobs:
   unit-tests:
-    uses: gpreviatti/hexagonal-solution-template/.github/workflows/unit-test.yml@${{github.ref}}
+    uses: gpreviatti/hexagonal-solution-template/.github/workflows/unit-test.yml@feature/imp-load-tests
 
   mutant-tests-domain:
-    needs: unit-tests
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-dotnet@v4
-
-    - name: Install Stryker
-      run: dotnet tool install -g dotnet-stryker
-
-    - name: Run Stryker Domain
-      run: dotnet stryker -tp ./templates/tests/UnitTests/ -f ./templates/tests/UnitTests/stryker-config-domain.json
+    uses: gpreviatti/hexagonal-solution-template/.github/workflows/mutation-test.yml@feature/imp-load-tests
+    with:
+      test_project_path: ./templates/tests/UnitTests/
+      stryker_config_path: ./templates/tests/UnitTests/stryker-config-domain.json
 
   mutant-tests-application:
     needs: unit-tests
