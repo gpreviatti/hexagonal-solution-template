@@ -3,17 +3,15 @@ name: Validate pull request
 on: [pull_request]
 
 jobs:
-  unit-tests:
-    uses: gpreviatti/hexagonal-solution-template/.github/workflows/unit-test.yml@feature/imp-load-tests
-    with:
-      test_project_path: "./templates/tests/UnitTests/"
+  uses: gpreviatti/hexagonal-solution-template/.github/workflows/unit-test.yml@feature/imp-load-tests
+  with:
+    test_project_path: "./templates/tests/UnitTests/"
 
-  mutant-tests-domain:
-    needs: unit-tests
-    uses: gpreviatti/hexagonal-solution-template/.github/workflows/mutation-test.yml@feature/imp-load-tests
-    with:
-      test_project_path: "./templates/tests/UnitTests/"
-      stryker_config_path: "./templates/tests/UnitTests/stryker-config-domain.json"
+  uses: gpreviatti/hexagonal-solution-template/.github/workflows/mutation-test.yml@feature/imp-load-tests
+  needs: unit-tests
+  with:
+    test_project_path: "./templates/tests/UnitTests/"
+    stryker_config_path: "./templates/tests/UnitTests/stryker-config-domain.json"
 
   mutant-tests-application:
     needs: unit-tests
