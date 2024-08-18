@@ -3,43 +3,31 @@ name: Validate pull request
 on: [pull_request]
 
 jobs:
-  uses: gpreviatti/hexagonal-solution-template/.github/workflows/unit-test.yml@feature/imp-load-tests
-  with:
-    test_project_path: "./templates/tests/UnitTests/"
+  unit-tests:
+    uses: gpreviatti/hexagonal-solution-template/.github/workflows/unit-test.yml@${{ github.github_ref_name }}
+    with:
+      test_project_path: "./templates/tests/UnitTests/"
 
-  uses: gpreviatti/hexagonal-solution-template/.github/workflows/mutation-test.yml@feature/imp-load-tests
-  needs: unit-tests
-  with:
-    test_project_path: "./templates/tests/UnitTests/"
-    stryker_config_path: "./templates/tests/UnitTests/stryker-config-domain.json"
+  mutant-tests-domain:
+    needs: unit-tests
+    uses: gpreviatti/hexagonal-solution-template/.github/workflows/mutation-test.yml@${{ github.github_ref_name }}
+    with:
+      test_project_path: "./templates/tests/UnitTests/"
+      stryker_config_path: "./templates/tests/UnitTests/stryker-config-domain.json"
 
   mutant-tests-application:
     needs: unit-tests
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-dotnet@v4
-
-    - name: Install Stryker
-      run: dotnet tool install -g dotnet-stryker
-
-    - name: Run Stryker Application
-      run: dotnet stryker -tp ./templates/tests/UnitTests/ -f ./templates/tests/UnitTests/stryker-config-application.json
+    uses: gpreviatti/hexagonal-solution-template/.github/workflows/mutation-test.yml@${{ github.github_ref_name }}
+    with:
+      test_project_path: "./templates/tests/UnitTests/"
+      stryker_config_path: "./templates/tests/UnitTests/stryker-config-application.json"
 
   integration-tests: 
     needs: unit-tests
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-dotnet@v4
-
-    - name: Start Docker Compose
-      run: docker compose -f ./templates/docker-compose.yml up -d && sleep 10
-
-    - name: Test
-      run: dotnet test ./templates/tests/IntegrationTests
+    uses: gpreviatti/hexagonal-solution-template/.github/workflows/integration-test.yml@${{ github.github_ref_name }}
+    with:
+      docker_compose_file_path: "./templates/docker-compose.yml"
+      test_project_path: "./templates/tests/IntegrationTests"
 
   build:
     runs-on: ubuntu-latest
