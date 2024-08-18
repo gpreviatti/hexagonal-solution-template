@@ -3,6 +3,7 @@ IF NOT EXISTS(SELECT * FROM sys.databases WHERE name = 'OrderDb')
     CREATE DATABASE [OrderDb]
 END
 GO
+
 USE [OrderDb]
 GO
 

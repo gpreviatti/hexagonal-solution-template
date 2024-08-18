@@ -14,9 +14,8 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
     protected string? _connectionString = "Server=127.0.0.1,1433;Database=OrderDb;User Id=sa;Password=cY5VvZkkh4AzES;TrustServerCertificate=true;";
 
     public MyDbContext? MyDbContext;
-    private readonly Fixture? _autoFixture = new();
 
-    public CustomWebApplicationFactory() => SeedDatabase().Wait();
+    public CustomWebApplicationFactory() => SetDbContext();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -34,7 +33,7 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
         });
     }
 
-    public async Task SeedDatabase()
+    public void SetDbContext()
     {
         var contextOptions = new DbContextOptionsBuilder<MyDbContext>()
             .UseSqlServer(_connectionString)
@@ -44,22 +43,6 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
 
         if (!MyDbContext.Database.CanConnect())
             throw new InvalidDataException("Unable to connect to database");
-
-        var items = _autoFixture!
-            .Build<Item>()
-            .Without(i => i.Id)
-            .CreateMany(5)
-            .ToList();
-
-        var orders = _autoFixture
-            .Build<Order>()
-            .Without(o => o.Id)
-            .With(o => o.Items, items)
-            .CreateMany(10);
-
-        await MyDbContext.AddRangeAsync(orders);
-
-        await MyDbContext.SaveChangesAsync();
     }
 
     public new void Dispose()

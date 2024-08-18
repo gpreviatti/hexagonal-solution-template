@@ -25,7 +25,15 @@ services:
       - sqlserver_networks
     volumes:
       - ./scripts/migrations.sql:/tmp/migrations.sql
-    command: ./opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P "cY5VvZkkh4AzES" -C -d master -i ./tmp/migrations.sql
+      - ./scripts/seeds.sql:/tmp/seeds.sql
+    command:
+      - /bin/bash
+      - -c
+      - |
+        ./opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P "cY5VvZkkh4AzES" -C -d master -i ./tmp/migrations.sql &&
+        ./opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P "cY5VvZkkh4AzES" -C -d master -i ./tmp/seeds.sql
+
+
 
 networks:
     sqlserver_networks:
