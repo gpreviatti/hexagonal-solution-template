@@ -70,7 +70,7 @@ jobs:
     - name: Test
       run: dotnet test ./templates/tests/IntegrationTests
 
-  build:
+  pack:
     runs-on: ubuntu-latest
     needs: [mutant-tests-application, mutant-tests-domain, integration-tests]
 
