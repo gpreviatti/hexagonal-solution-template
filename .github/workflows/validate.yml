@@ -6,6 +6,7 @@ on:
 
 jobs:
   validate:
+    name: Validate Template
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate.yml@v1
     with:
       unit_test_project_path: "./templates/tests/UnitTests/"
@@ -17,6 +18,6 @@ jobs:
   build:
     needs: validate
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-build.yml@v1
-    name: Build Solution
+    name: Build Template Solution
     with:
       solution_path: "./templates"

@@ -9,6 +9,7 @@ on:
 
 jobs:
   validate:
+    name: Validate Template
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate.yml@v1
     with:
       unit_test_project_path: "./templates/tests/UnitTests/"
@@ -18,6 +19,7 @@ jobs:
       docker_compose_file_path: "./templates/docker-compose.yml"
 
   pack:
+    name: Build and Publish Template Package
     needs: [validate]
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-pack.yml@v1
     with:
