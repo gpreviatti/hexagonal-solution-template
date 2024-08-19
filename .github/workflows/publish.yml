@@ -1,10 +1,6 @@
 name: Publish template in Nuget.org
 
-on:
-  push:
-    branches:
-      - main
-
+on: 
   workflow_dispatch:
 
 jobs:
