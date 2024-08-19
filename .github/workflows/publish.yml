@@ -8,35 +8,18 @@ on:
   workflow_dispatch:
 
 jobs:
-  unit-tests:
-    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-unit-test.yml@main
+  validate:
+    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate.yml@v1
     with:
-      test_project_path: "./templates/tests/UnitTests/"
-
-  mutant-tests-domain:
-    needs: unit-tests
-    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-mutation-test.yml@main
-    with:
-      test_project_path: "./templates/tests/UnitTests/"
-      stryker_config_path: "./templates/tests/UnitTests/stryker-config-domain.json"
-
-  mutant-tests-application:
-    needs: unit-tests
-    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-mutation-test.yml@main
-    with:
-      test_project_path: "./templates/tests/UnitTests/"
-      stryker_config_path: "./templates/tests/UnitTests/stryker-config-application.json"
-
-  integration-tests: 
-    needs: unit-tests
-    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-integration-test.yml@main
-    with:
+      unit_test_project_path: "./templates/tests/UnitTests/"
+      domain_stryker_config_path: "./templates/tests/UnitTests/stryker-config-domain.json"
+      application_stryker_config_path: "./templates/tests/UnitTests/stryker-config-application.json"
+      integration_test_project_path: "./templates/tests/IntegrationTests"
       docker_compose_file_path: "./templates/docker-compose.yml"
-      test_project_path: "./templates/tests/IntegrationTests"
 
   pack:
-    needs: [mutant-tests-application, mutant-tests-domain, integration-tests]
-    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-pack.yml@main
+    needs: [validate]
+    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-pack.yml@v1
     with:
       package_version: "8.0.${{ github.run_number }}"
     secrets:
