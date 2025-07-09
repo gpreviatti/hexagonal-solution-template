@@ -21,6 +21,14 @@ public class CreateOrderUseCaseFixture : BaseApplicationFixture<Order, CreateOrd
         base.ClearInvocations();
     }
 
+    public CreateOrderRequest SetValidRequest()
+    {
+        var items = autoFixture
+            .CreateMany<CreateOrderItemRequest>(1);
+
+        return new CreateOrderRequest(Guid.NewGuid(), "AwesomeComputer", [.. items]);
+    }
+
     public void SetSuccessfulRepository()
     {
         var order = autoFixture

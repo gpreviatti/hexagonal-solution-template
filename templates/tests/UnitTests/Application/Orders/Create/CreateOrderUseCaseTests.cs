@@ -18,7 +18,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
     public async Task GivenAValidRequestThenPass()
     {
         // Arrange
-        var request = _fixture.autoFixture.Create<CreateOrderRequest>();
+        var request = _fixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
         _fixture.SetSuccessfulRepository();
 
