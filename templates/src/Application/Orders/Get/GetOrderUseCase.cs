@@ -1,18 +1,15 @@
 ﻿using Application.Common.Messages;
-using Application.Common.Repositories;
 using Application.Common.UseCases;
 using Domain.Orders;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application.Orders.Get;
-public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<GetOrderRequest, OrderDto>(
+public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<GetOrderRequest, OrderDto, Order>(
     serviceProvider,
     serviceProvider.GetService<IValidator<GetOrderRequest>>()
 ), IGetOrderUseCase
 {
-    private readonly IBaseRepository<Order> _orderRepository = serviceProvider.GetRequiredService<IBaseRepository<Order>>();
-
     public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(
         GetOrderRequest request,
         CancellationToken cancellationToken
@@ -20,7 +17,7 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
     {
         var response = new BaseResponse<OrderDto>();
 
-        var order = await _orderRepository
+        var order = await _repository
             .GetByIdAsNoTrackingAsync(request.Id, cancellationToken);
 
         response.SetData(new(

@@ -16,8 +16,8 @@ public sealed class Program
         builder.Services.AddSwaggerGen();
 
         builder.Services
-            .AddDomainServices()
-            .AddApplicationServices()
+            .AddDomain()
+            .AddApplication()
             .AddInfrastructure(builder.Configuration);
 
         var app = builder.Build();

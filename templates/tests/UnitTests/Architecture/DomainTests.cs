@@ -70,7 +70,7 @@ public sealed class DomainTests
         // Arrange
         ServiceCollection serviceCollection = new();
 
-        serviceCollection.AddDomainServices();
+        serviceCollection.AddDomain();
 
         // Act
         var serviceProvider = serviceCollection.BuildServiceProvider(validateScopes: true);

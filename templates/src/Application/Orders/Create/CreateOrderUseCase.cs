@@ -1,5 +1,4 @@
 ﻿using Application.Common.Messages;
-using Application.Common.Repositories;
 using Application.Common.UseCases;
 using Domain.Orders;
 using Domain.Orders.Services;
@@ -7,13 +6,12 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application.Orders.Create;
-public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<CreateOrderRequest, OrderDto>(
+public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<CreateOrderRequest, OrderDto, Order>(
     serviceProvider,
     serviceProvider.GetService<IValidator<CreateOrderRequest>>()
 ), ICreateOrderUseCase
 {
     private readonly ICreateOrderService _createOrderService = serviceProvider.GetRequiredService<ICreateOrderService>();
-    private readonly IBaseRepository<Order> _orderRepository = serviceProvider.GetRequiredService<IBaseRepository<Order>>();
 
     public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(
         CreateOrderRequest request,
@@ -38,7 +36,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
             return response;
         }
 
-        await _orderRepository.AddAsync(newOrder.Value, cancellationToken);
+        await _repository.AddAsync(newOrder.Value, cancellationToken);
 
         response.SetData(new(
             newOrder.Value!.Id,

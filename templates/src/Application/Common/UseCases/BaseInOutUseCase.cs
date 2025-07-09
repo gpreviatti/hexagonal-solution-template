@@ -1,20 +1,24 @@
 ﻿using Application.Common.Messages;
+using Application.Common.Repositories;
+using Domain.Common;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
 namespace Application.Common.UseCases;
 
-public abstract class BaseInOutUseCase<TRequest, TResponseData>(
+public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity>(
     IServiceProvider serviceProvider,
     IValidator<TRequest> validator = null
 )
     where TRequest : class
     where TResponseData : class
+    where TEntity : DomainEntity
 {
     protected readonly IServiceProvider serviceProvider = serviceProvider;
-    protected readonly ILogger logger = serviceProvider.GetService<ILogger>();
+    protected readonly ILogger logger = serviceProvider.GetRequiredService<ILogger>();
     protected readonly IValidator<TRequest> validator = validator;
+    protected readonly IBaseRepository<TEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<TEntity>>();
 
     public async Task<BaseResponse<TResponseData>> Handle(
         TRequest request,

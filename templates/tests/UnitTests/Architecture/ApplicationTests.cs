@@ -50,7 +50,7 @@ public sealed class ApplicationTests
         // Arrange
         ServiceCollection serviceCollection = new();
 
-        serviceCollection.AddApplicationServices();
+        serviceCollection.AddApplication();
 
         // Act
         var serviceProvider = serviceCollection.BuildServiceProvider(validateScopes: true);

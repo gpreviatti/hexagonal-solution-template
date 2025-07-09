@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Application.Common.Repositories;
+using Domain.Orders;
+using Infrastructure.Data.Common;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,6 +12,8 @@ internal static class InfrastructureDataDependencyInjection
     {
         services
             .AddDbContext<MyDbContext>(context => context.UseSqlServer(configuration.GetConnectionString("OrderDb")));
+
+        services.AddScoped<IBaseRepository<Order>, BaseRepository<Order>>();
 
         return services;
     }
