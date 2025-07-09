@@ -6,24 +6,34 @@ public sealed class Order : DomainEntity
 {
     public Order() { }
 
-    public Order(
-        int id, string description,
-        DateTime createdAt, DateTime? updatedAt = null
+    public bool Create(
+        string description,
+        ICollection<Item> items = null
     )
     {
-        Id = id;
         Description = description;
-        CreatedAt = createdAt;
-        UpdatedAt = updatedAt;
+        CreatedAt = DateTime.UtcNow;
+        UpdatedAt = DateTime.UtcNow;
+        Items = items ?? [];
+
+        SetTotal();
+
+        return true;
     }
 
     public string Description { get; set; }
     public decimal Total { get; set; }
-    public ICollection<Item> Items { get; set; } = new List<Item>();
+    public ICollection<Item> Items { get; set; } = [];
 
-    public void SetTotal()
+    private void SetTotal()
     {
         UpdatedAt = DateTime.UtcNow;
+        if (Items == null || Items.Count == 0)
+        {
+            Total = 0;
+            return;
+        }
+
         Total = Items.Sum(item => item.Value);
     }
 }

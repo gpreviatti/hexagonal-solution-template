@@ -2,4 +2,8 @@
 using MediatR;
 
 namespace Application.Orders.Create;
-public sealed record CreateOrderRequest(string Description, CreateOrderItemRequest[] Items) : IRequest<BaseResponse<OrderDto>>;
+public sealed record CreateOrderRequest(
+    Guid CorrelationId,
+    string Description,
+    CreateOrderItemRequest[] Items
+) : BaseRequest(CorrelationId), IRequest<BaseResponse<OrderDto>>;

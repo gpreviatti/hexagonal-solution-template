@@ -15,9 +15,9 @@ public record BaseResponse<TData>() where TData : class
 
     public TData Data { get; set; }
 
-    public void SetBusinessErrorMessage(string message) => Message = message;
-    public void SetRequestValidationErrorMessage(string message) => Message = "[RequestValidationError] " + message;
-    public void SetSystemErrorMessage(string message) => Message = "[SystemError] " + message;
+    public void SetBusinessErrorMessage(string className, string methodName, Guid correlationId, string message) => Message = $"[{className}] | [{methodName}] | [{correlationId}] | [BusinessError] | " + message;
+    public void SetRequestValidationErrorMessage(string className, string methodName, Guid correlationId, string message) => Message = $"[{className}] | [{methodName}] | [{correlationId}] | [RequestValidationError] " + message;
+    public void SetSystemErrorMessage(string className, string methodName, Guid correlationId, string message) => Message = $"[{className}] | [{methodName}] | [{correlationId}] | [SystemError] " + message;
 
     public void SetData(TData value)
     {

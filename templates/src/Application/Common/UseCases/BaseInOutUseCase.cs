@@ -11,7 +11,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity>(
     IServiceProvider serviceProvider,
     IValidator<TRequest> validator = null
 )
-    where TRequest : class
+    where TRequest : BaseRequest
     where TResponseData : class
     where TEntity : DomainEntity
 {
@@ -20,11 +20,14 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity>(
     protected readonly IValidator<TRequest> validator = validator;
     protected readonly IBaseRepository<TEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<TEntity>>();
 
+    private const string ClassName = nameof(BaseInOutUseCase<TRequest, TResponseData, TEntity>);
+
     public async Task<BaseResponse<TResponseData>> Handle(
         TRequest request,
         CancellationToken cancellationToken
     )
     {
+        string methodName = nameof(Handle);
         var response = new BaseResponse<TResponseData>();
 
         if (validator != null)
@@ -32,10 +35,10 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity>(
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid)
             {
-                var errors = string.Join(", ", validationResult.Errors);
-                response.SetRequestValidationErrorMessage(errors);
+                string errors = string.Join(", ", validationResult.Errors);
+                response.SetRequestValidationErrorMessage(ClassName, methodName, request.CorrelationId, errors);
 
-                logger.Error(errors, response);
+                logger.Error("[{ClassName}] | [{methodName}] | [{CorrelationId}] | [{errors}]", ClassName, methodName, request.CorrelationId, errors, response);
                 return response;
             }
         }

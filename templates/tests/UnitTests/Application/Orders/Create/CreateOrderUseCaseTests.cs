@@ -20,7 +20,6 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         // Arrange
         var request = _fixture.autoFixture.Create<CreateOrderRequest>();
         _fixture.SetSuccessfulValidator(request);
-        _fixture.SetSuccessfulDomainService();
         _fixture.SetSuccessfulRepository();
 
         // Act
@@ -34,7 +33,6 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         result.Success.Should().BeTrue();
         result.Message.Should().BeNullOrEmpty();
 
-        _fixture.VerifyDomainService(1);
         _fixture.VerifyLoggerInformation<BaseResponse<OrderDto>>(1);
         _fixture.VerifyRepository(1);
         _fixture.VerifyLoggerError<CreateOrderRequest>(0);
@@ -58,7 +56,6 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         result.Success.Should().BeFalse();
         result.Message.Should().NotBeNullOrEmpty();
 
-        _fixture.VerifyDomainService(0);
         _fixture.VerifyLoggerInformation<BaseResponse<OrderDto>>(0);
         _fixture.VerifyRepository(0);
         _fixture.VerifyLoggerError<CreateOrderRequest>(0);
@@ -70,7 +67,6 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         // Arrange
         var request = _fixture.autoFixture.Create<CreateOrderRequest>();
         _fixture.SetSuccessfulValidator(request);
-        _fixture.SetFailedDomainService();
 
         // Act
         var result = await _fixture.useCase.Handle(
@@ -83,7 +79,6 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         result.Success.Should().BeFalse();
         result.Message.Should().NotBeNullOrEmpty();
 
-        _fixture.VerifyDomainService(1);
         _fixture.VerifyLoggerInformation<BaseResponse<OrderDto>>(0);
         _fixture.VerifyRepository(0);
         _fixture.VerifyLoggerError<CreateOrderRequest>(1);

@@ -13,17 +13,30 @@ public sealed class OrderTests
             new(1, "Mouse", "Razer", 100, DateTime.UtcNow),
             new(1, "Headphone", "Logitech", 100, DateTime.UtcNow),
         };
-        var order = new Order(1, "new order", DateTime.UtcNow)
-        {
-            Items = items
-        };
+        var order = new Order();
 
         /// Act
-        order.SetTotal();
+        var result = order.Create("Amazing Computer", items);
 
         // Assert
+        result.Should().BeTrue();
         order.Total.Should().NotBe(0);
         order.UpdatedAt.Should().NotBeNull();
         order.Total.Should().Be(items.Sum(i => i.Value));
+    }
+
+    [Fact]
+    public void GivenAOrderWithoutItemsThenShouldSetTotalAsZeroWithSuccess()
+    {
+        /// Arrange
+        var order = new Order();
+
+        /// Act
+        var result = order.Create("Amazing Computer");
+
+        // Assert
+        result.Should().BeTrue();
+        order.Total.Should().Be(0);
+        order.UpdatedAt.Should().NotBeNull();
     }
 }

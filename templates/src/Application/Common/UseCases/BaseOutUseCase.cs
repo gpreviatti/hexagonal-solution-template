@@ -6,11 +6,10 @@ using Serilog;
 
 namespace Application.Common.UseCases;
 
-public abstract class BaseOutUseCase<TRequest, TResponseData, TEntity>(
+public abstract class BaseOutUseCase<TResponseData, TEntity>(
     IServiceProvider serviceProvider
 ) where TResponseData : class
   where TEntity : DomainEntity
-  where TRequest : class
 {
     protected readonly ILogger logger = serviceProvider.GetService<ILogger>();
     protected readonly IBaseRepository<TEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<TEntity>>();

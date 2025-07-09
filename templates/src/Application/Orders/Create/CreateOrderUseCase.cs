@@ -1,7 +1,6 @@
 ﻿using Application.Common.Messages;
 using Application.Common.UseCases;
 using Domain.Orders;
-using Domain.Orders.Services;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,40 +10,43 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
     serviceProvider.GetService<IValidator<CreateOrderRequest>>()
 ), ICreateOrderUseCase
 {
-    private readonly ICreateOrderService _createOrderService = serviceProvider.GetRequiredService<ICreateOrderService>();
+    private const string ClassName = nameof(CreateOrderUseCase);
 
     public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(
         CreateOrderRequest request,
         CancellationToken cancellationToken
     )
     {
+        string methodName = nameof(HandleInternalAsync);
+        Guid correlationId = request.CorrelationId;
+
+        logger.Information("[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Start to execute use case", ClassName, methodName, correlationId);
+
         var response = new BaseResponse<OrderDto>();
 
         var items = request.Items
             .Select(i => new Item(default, i.Name, i.Description, i.Value))
             .ToList();
 
-        var newOrder = _createOrderService.Handle(
-            request.Description,
-            items
-        );
+        var newOrder = new Order();
+        bool createResult = newOrder.Create(request.Description, items);
 
-        if (newOrder.IsFailure)
+        if (createResult)
         {
-            logger.Error(newOrder.Message, request);
-            response.SetBusinessErrorMessage(newOrder.Message);
+            logger.Warning("[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Unable to create order", ClassName, methodName, correlationId);
+            response.SetBusinessErrorMessage(ClassName, methodName, correlationId, "Unable to create order");
             return response;
         }
 
-        await _repository.AddAsync(newOrder.Value, cancellationToken);
+        await _repository.AddAsync(newOrder, cancellationToken);
 
         response.SetData(new(
-            newOrder.Value!.Id,
-            newOrder.Value.Description,
-            newOrder.Value.Total
+            newOrder.Id,
+            newOrder.Description,
+            newOrder.Total
         ));
 
-        logger.Information("Use case was executed with success", response);
+        logger.Information("[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Use case was executed with success", ClassName, methodName, correlationId);
 
         return response;
     }

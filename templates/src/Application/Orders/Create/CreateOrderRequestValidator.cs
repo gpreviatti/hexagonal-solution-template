@@ -5,6 +5,7 @@ public sealed class CreateOrderRequestValidator : AbstractValidator<CreateOrderR
 {
     public CreateOrderRequestValidator()
     {
+        RuleFor(r => r.CorrelationId).NotEmpty();
         RuleFor(r => r.Description).NotEmpty();
         RuleFor(r => r.Items).NotEmpty();
         RuleForEach(r => r.Items).SetValidator(new CreateOrderItemRequestValidator());

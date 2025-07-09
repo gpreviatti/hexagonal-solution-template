@@ -2,5 +2,4 @@
 using MediatR;
 
 namespace Application.Orders.Create;
-public interface ICreateOrderUseCase : IRequestHandler<CreateOrderRequest, BaseResponse<OrderDto>>
-{ }
+public interface ICreateOrderUseCase : IRequestHandler<CreateOrderRequest, BaseResponse<OrderDto>> { }
