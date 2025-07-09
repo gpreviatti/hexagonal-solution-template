@@ -10,8 +10,8 @@ public interface IBaseRepository<TEntity> where TEntity : DomainEntity
 
     void Update(TEntity entity);
 
-    void RemoveAsync(TEntity entity);
-    void RemoveRangeAsync(TEntity[] entities);
+    void RemoveAsync(TEntity entity, CancellationToken cancellationToken);
+    void RemoveRangeAsync(TEntity[] entities, CancellationToken cancellationToken);
 
     Task<bool> CheckExistsByWhereAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken);
     Task<bool> CheckExistsByWhereAsNoTrackingAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken);

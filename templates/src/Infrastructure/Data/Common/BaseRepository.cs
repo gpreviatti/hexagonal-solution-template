@@ -19,14 +19,14 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
     {
         await dbEntitySet.AddAsync(entity, cancellationToken);
 
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task AddRangeAsync(TEntity[] entities, CancellationToken cancellationToken)
     {
         await dbEntitySet.AddRangeAsync(entities, cancellationToken);
 
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<TEntity> AddOrUpdateIfNotExistsAsync(TEntity entity, Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
@@ -38,7 +38,7 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
         else
             dbEntitySet.Update(entity);
 
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         return entity;
     }
@@ -51,18 +51,18 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
         dbContext.SaveChanges();
     }
 
-    public void RemoveAsync(TEntity entity)
+    public void RemoveAsync(TEntity entity, CancellationToken cancellationToken)
     {
         dbEntitySet.Remove(entity);
 
-        dbContext.SaveChanges();
+        dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public void RemoveRangeAsync(TEntity[] entities)
+    public void RemoveRangeAsync(TEntity[] entities, CancellationToken cancellationToken)
     {
         dbEntitySet.RemoveRange(entities);
 
-        dbContext.SaveChanges();
+        dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<bool> CheckExistsByWhereAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
