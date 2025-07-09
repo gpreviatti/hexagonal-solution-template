@@ -17,12 +17,12 @@ public sealed class OrderController(IMediator mediator) : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpGet("{id}")]
+    [HttpGet("{id}/{correlationId}")]
     [ProducesResponseType<BaseResponse<OrderDto>>(StatusCodes.Status200OK)]
     [ProducesResponseType<BaseResponse<OrderDto>>(StatusCodes.Status400BadRequest)]
-    public async Task<OkObjectResult> Get([FromRoute] int id)
+    public async Task<OkObjectResult> Get([FromRoute] int id, [FromRoute] Guid correlationId)
     {
-        var request = new GetOrderRequest(id);
+        var request = new GetOrderRequest(correlationId, id);
 
         var response = await _mediator.Send(request);
 

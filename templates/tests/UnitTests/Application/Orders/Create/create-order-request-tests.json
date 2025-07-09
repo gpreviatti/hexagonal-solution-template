@@ -1,10 +1,10 @@
 ﻿{
   "valid": [
     {
+      "CorrelationId": "e20efa10-1739-458b-a8ff-c834faa070f6",
       "Description": "Lorem ipsum",
       "Items": [
         {
-            "CorrelationId": "e20efa10-1739-458b-a8ff-c834faa070f6",
             "Name": "Computer",
             "Description": "Awesome computer",
             "Value": 900
@@ -29,6 +29,7 @@
         [
             {
                 "Description": "",
+                "CorrelationId": "e20efa10-1739-458b-a8ff-c834faa070f6",
                 "Items": [
                     {
                         "Name": "Computer",
@@ -42,6 +43,7 @@
         [
             {
                 "Description": "Lorem ipsum",
+                "CorrelationId": "e20efa10-1739-458b-a8ff-c834faa070f6",
                 "Items": []
             },
             "Items"
