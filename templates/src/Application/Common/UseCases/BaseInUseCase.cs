@@ -17,7 +17,7 @@ public abstract class BaseInUseCase<TRequest, TResponseData, TEntity>(
 {
     protected readonly ILogger logger = serviceProvider.GetService<ILogger>();
     protected readonly IValidator<TRequest> validator = validator;
-    protected readonly IBaseRepository<DomainEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<DomainEntity>>();
+    protected readonly IBaseRepository<TEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<TEntity>>();
 
     public async Task HandleAsync(
         TRequest request,

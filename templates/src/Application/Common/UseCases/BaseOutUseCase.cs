@@ -13,7 +13,7 @@ public abstract class BaseOutUseCase<TRequest, TResponseData, TEntity>(
   where TRequest : class
 {
     protected readonly ILogger logger = serviceProvider.GetService<ILogger>();
-    protected readonly IBaseRepository<DomainEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<DomainEntity>>();
+    protected readonly IBaseRepository<TEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<TEntity>>();
 
     public async Task<BaseResponse<TResponseData>> HandleAsync(CancellationToken cancellationToken)
         => await HandleInternalAsync(cancellationToken);
