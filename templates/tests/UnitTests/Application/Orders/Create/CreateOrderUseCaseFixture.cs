@@ -1,19 +1,15 @@
-﻿using Application.Orders;
-using Application.Orders.Create;
+﻿using Application.Orders.Create;
 using Domain.Common;
 using Domain.Orders;
 using Domain.Orders.Services;
-using FluentValidation;
-using FluentValidation.Results;
 using UnitTests.Application.Common;
 
 namespace UnitTests.Application.Orders.Create;
 
-public class CreateOrderUseCaseFixture : BaseApplicationFixture
+public class CreateOrderUseCaseFixture : BaseApplicationFixture<Order, CreateOrderRequest>
 {
-    public Mock<IValidator<CreateOrderRequest>> mockValidator = new();
+
     public Mock<ICreateOrderService> mockDomainService = new();
-    public Mock<IOrderRepository> mockRepository = new();
 
     public ICreateOrderUseCase useCase;
 
@@ -24,48 +20,18 @@ public class CreateOrderUseCaseFixture : BaseApplicationFixture
         useCase = new CreateOrderUseCase(mockServiceProvider.Object);
     }
 
-    public void MockServiceProviderServices()
+    public new void MockServiceProviderServices()
     {
-        mockServiceProvider
-            .Setup(r => r.GetService(typeof(IValidator<CreateOrderRequest>)))
-            .Returns(mockValidator.Object);
-
+        base.MockServiceProviderServices();
         mockServiceProvider
             .Setup(r => r.GetService(typeof(ICreateOrderService)))
             .Returns(mockDomainService.Object);
-
-        mockServiceProvider
-            .Setup(r => r.GetService(typeof(IOrderRepository)))
-            .Returns(mockRepository.Object);
     }
 
-    public void ClearInvocations()
+    public new void ClearInvocations()
     {
-        mockLogger.Invocations.Clear();
+        base.ClearInvocations();
         mockDomainService.Invocations.Clear();
-        mockValidator.Invocations.Clear();
-        mockRepository.Invocations.Clear();
-    }
-
-    public void SetSuccessfulValidator(CreateOrderRequest request)
-    {
-        var validationResult = new ValidationResult();
-        mockValidator
-            .Setup(v => v.ValidateAsync(request, cancellationToken))
-            .ReturnsAsync(validationResult);
-    }
-
-    public void SetFailedValidator(CreateOrderRequest request)
-    {
-        var validationResult = new ValidationResult()
-        {
-            Errors = [
-                new ValidationFailure("Description", "Description is required")
-            ]
-        };
-        mockValidator
-            .Setup(v => v.ValidateAsync(request, cancellationToken))
-            .ReturnsAsync(validationResult);
     }
 
     public void SetSuccessfulDomainService()
@@ -87,8 +53,7 @@ public class CreateOrderUseCaseFixture : BaseApplicationFixture
 
         var result = Result.Ok(order);
 
-        mockRepository
-            .Setup(d => d.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()));
+        MockRepository(result);
     }
 
     public void SetFailedDomainService()
@@ -104,14 +69,6 @@ public class CreateOrderUseCaseFixture : BaseApplicationFixture
     {
         mockDomainService.Verify(
             d => d.Handle(It.IsAny<string>(), It.IsAny<ICollection<Item>>()),
-            Times.Exactly(times)
-        );
-    }
-
-    public void VerifyRepository(int times)
-    {
-        mockRepository.Verify(
-            d => d.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()),
             Times.Exactly(times)
         );
     }

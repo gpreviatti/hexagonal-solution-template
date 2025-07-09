@@ -1,5 +1,7 @@
 ﻿using Application.Common.Messages;
+using Application.Common.Repositories;
 using Application.Common.UseCases;
+using Domain.Orders;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,7 +11,7 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
     serviceProvider.GetService<IValidator<GetOrderRequest>>()
 ), IGetOrderUseCase
 {
-    private readonly IOrderRepository _orderRepository = serviceProvider.GetService<IOrderRepository>();
+    private readonly IBaseRepository<Order> _orderRepository = serviceProvider.GetRequiredService<IBaseRepository<Order>>();
 
     public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(
         GetOrderRequest request,

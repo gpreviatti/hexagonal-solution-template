@@ -1,4 +1,5 @@
 ﻿using Application.Common.Messages;
+using Application.Common.Repositories;
 using Application.Common.UseCases;
 using Domain.Orders;
 using Domain.Orders.Services;
@@ -11,8 +12,8 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
     serviceProvider.GetService<IValidator<CreateOrderRequest>>()
 ), ICreateOrderUseCase
 {
-    private readonly ICreateOrderService _createOrderService = serviceProvider.GetService<ICreateOrderService>();
-    private readonly IOrderRepository _orderRepository = serviceProvider.GetService<IOrderRepository>();
+    private readonly ICreateOrderService _createOrderService = serviceProvider.GetRequiredService<ICreateOrderService>();
+    private readonly IBaseRepository<Order> _orderRepository = serviceProvider.GetRequiredService<IBaseRepository<Order>>();
 
     public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(
         CreateOrderRequest request,
