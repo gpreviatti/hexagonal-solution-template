@@ -30,9 +30,9 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
             .ToList();
 
         var newOrder = new Order();
-        bool createResult = newOrder.Create(request.Description, items);
+        var createResult = newOrder.Create(request.Description, items);
 
-        if (!createResult)
+        if (createResult.IsFailure)
         {
             logger.Warning("[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Unable to create order", ClassName, methodName, correlationId);
             response.SetBusinessErrorMessage(ClassName, methodName, correlationId, "Unable to create order");

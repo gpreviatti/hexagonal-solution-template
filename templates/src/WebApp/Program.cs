@@ -1,6 +1,6 @@
 ﻿using Application;
 using Domain;
-using Infrastructure.Common;
+using Infrastructure;
 using WebApp.Middlewares;
 
 namespace WebApp;

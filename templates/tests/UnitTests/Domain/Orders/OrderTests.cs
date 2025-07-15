@@ -19,7 +19,7 @@ public sealed class OrderTests
         var result = order.Create("Amazing Computer", items);
 
         // Assert
-        result.Should().BeTrue();
+        result.Success.Should().BeTrue();
         order.Total.Should().NotBe(0);
         order.UpdatedAt.Should().NotBeNull();
         order.Total.Should().Be(items.Sum(i => i.Value));
@@ -35,7 +35,7 @@ public sealed class OrderTests
         var result = order.Create("Amazing Computer");
 
         // Assert
-        result.Should().BeTrue();
+        result.Success.Should().BeTrue();
         order.Total.Should().Be(0);
         order.UpdatedAt.Should().NotBeNull();
     }

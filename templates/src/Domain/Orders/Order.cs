@@ -6,7 +6,7 @@ public sealed class Order : DomainEntity
 {
     public Order() { }
 
-    public bool Create(
+    public Result Create(
         string description,
         ICollection<Item> items = null
     )
@@ -18,7 +18,7 @@ public sealed class Order : DomainEntity
 
         SetTotal();
 
-        return true;
+        return Result.Ok();
     }
 
     public string Description { get; set; }
