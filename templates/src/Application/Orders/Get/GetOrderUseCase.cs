@@ -2,13 +2,14 @@
 using Application.Common.UseCases;
 using Domain.Orders;
 using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application.Orders.Get;
 public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<GetOrderRequest, OrderDto, Order>(
     serviceProvider,
     serviceProvider.GetService<IValidator<GetOrderRequest>>()
-), IGetOrderUseCase
+), IRequestHandler<GetOrderRequest, BaseResponse<OrderDto>>
 {
     public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(
         GetOrderRequest request,

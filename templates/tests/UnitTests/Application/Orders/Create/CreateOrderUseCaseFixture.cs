@@ -7,13 +7,13 @@ namespace UnitTests.Application.Orders.Create;
 
 public class CreateOrderUseCaseFixture : BaseApplicationFixture<Order, CreateOrderRequest>
 {
-    public ICreateOrderUseCase useCase;
+    public CreateOrderUseCase useCase;
 
     public CreateOrderUseCaseFixture()
     {
         MockServiceProviderServices();
 
-        useCase = new CreateOrderUseCase(mockServiceProvider.Object);
+        useCase = new(mockServiceProvider.Object);
     }
 
     public new void ClearInvocations()
