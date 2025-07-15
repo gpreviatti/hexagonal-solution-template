@@ -18,7 +18,11 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>git://github.com/gpreviatti/hexagonal-solution-template</RepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>Improve project namespace</PackageReleaseNotes>
+    <PackageReleaseNotes>
+      - Simplify repository
+      - Remove domain services
+      - Remove unnecessary files
+    </PackageReleaseNotes>
   </PropertyGroup>
 
 
