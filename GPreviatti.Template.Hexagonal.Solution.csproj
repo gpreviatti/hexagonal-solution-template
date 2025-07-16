@@ -20,6 +20,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>
       - Simplify repository
+      - Simplify use cases
       - Remove domain services
       - Remove unnecessary files
       - Update libraries
