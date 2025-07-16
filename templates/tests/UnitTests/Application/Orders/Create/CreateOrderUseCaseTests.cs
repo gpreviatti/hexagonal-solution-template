@@ -29,9 +29,9 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         );
 
         // Assert
-        result.Data.Should().NotBeNull();
-        result.Success.Should().BeTrue();
-        result.Message.Should().BeNullOrEmpty();
+        Assert.NotNull(result);
+        Assert.True(result.Success);
+        Assert.Null(result.Message);
 
         _fixture.VerifyLoggerInformation<BaseResponse<OrderDto>>(1);
         _fixture.VerifyRepository(1);
@@ -52,9 +52,9 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         );
 
         // Assert
-        result.Data.Should().BeNull();
-        result.Success.Should().BeFalse();
-        result.Message.Should().NotBeNullOrEmpty();
+        Assert.NotNull(result.Data);
+        Assert.False(result.Success);
+        Assert.NotEmpty(result.Message);
 
         _fixture.VerifyLoggerInformation<BaseResponse<OrderDto>>(0);
         _fixture.VerifyRepository(0);
@@ -75,9 +75,9 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         );
 
         // Assert
-        result.Data.Should().BeNull();
-        result.Success.Should().BeFalse();
-        result.Message.Should().NotBeNullOrEmpty();
+        Assert.NotNull(result.Data);
+        Assert.False(result.Success);
+        Assert.NotEmpty(result.Message);
 
         _fixture.VerifyLoggerInformation<BaseResponse<OrderDto>>(0);
         _fixture.VerifyRepository(0);

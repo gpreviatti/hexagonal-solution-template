@@ -27,7 +27,7 @@ public sealed class ApplicationTests
             .GetResult();
 
         // Assert
-        result.IsSuccessful.Should().BeTrue();
+        Assert.True(result.IsSuccessful);
     }
 
     [Fact(DisplayName = nameof(Application_Do_Not_Have_Infrastructure_Dependency))]
@@ -41,7 +41,7 @@ public sealed class ApplicationTests
             .GetResult();
 
         // Assert
-        result.IsSuccessful.Should().BeTrue();
+        Assert.True(result.IsSuccessful);
     }
 
     [Fact(DisplayName = nameof(Application_Should_Has_Valid_Scopes))]
@@ -56,6 +56,6 @@ public sealed class ApplicationTests
         var serviceProvider = serviceCollection.BuildServiceProvider(validateScopes: true);
 
         // Assert
-        serviceProvider.Should().NotBeNull();
+        Assert.NotNull(serviceProvider);
     }
 }

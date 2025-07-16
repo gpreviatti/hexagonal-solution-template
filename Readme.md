@@ -7,7 +7,6 @@ This is a dotnet solution template from projects based on hexagonal architecture
 
 ## Used Technologies
 
-- MediatR
 - FluenValidation
 - Serilog
 - EntityFrameworkCore
@@ -15,7 +14,6 @@ This is a dotnet solution template from projects based on hexagonal architecture
 - Xunit
 - Moq
 - Autofixture
-- FluentAssertions
 - docker and docker compose
 - k6
 

@@ -19,10 +19,13 @@ public sealed class OrderTests
         var result = order.Create("Amazing Computer", items);
 
         // Assert
-        result.Success.Should().BeTrue();
-        order.Total.Should().NotBe(0);
-        order.UpdatedAt.Should().NotBeNull();
-        order.Total.Should().Be(items.Sum(i => i.Value));
+        Assert.NotNull(order);
+        Assert.NotNull(result);
+        Assert.NotNull(order.UpdatedAt);
+        Assert.True(result.Success);
+        Assert.NotEqual(0, order.Total);
+        Assert.NotNull(order.UpdatedAt);
+        Assert.Equal(items.Sum(i => i.Value), order.Total);
     }
 
     [Fact]
@@ -35,8 +38,12 @@ public sealed class OrderTests
         var result = order.Create("Amazing Computer");
 
         // Assert
-        result.Success.Should().BeTrue();
-        order.Total.Should().Be(0);
-        order.UpdatedAt.Should().NotBeNull();
+        Assert.NotNull(order);
+        Assert.NotNull(result);
+        Assert.NotNull(order.UpdatedAt);
+        Assert.NotEqual(0, order.Total);
+        Assert.True(result.Success);
+        Assert.Equal(0, order.Total);
+        Assert.NotNull(order.UpdatedAt);
     }
 }

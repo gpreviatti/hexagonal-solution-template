@@ -23,6 +23,7 @@
       - Remove domain services
       - Remove unnecessary files
       - Update libraries
+      - Remove fluent assertions
     </PackageReleaseNotes>
   </PropertyGroup>
 

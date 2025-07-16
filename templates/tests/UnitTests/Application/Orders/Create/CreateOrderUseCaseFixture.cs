@@ -12,7 +12,6 @@ public class CreateOrderUseCaseFixture : BaseApplicationFixture<Order, CreateOrd
     public CreateOrderUseCaseFixture()
     {
         MockServiceProviderServices();
-
         useCase = new(mockServiceProvider.Object);
     }
 

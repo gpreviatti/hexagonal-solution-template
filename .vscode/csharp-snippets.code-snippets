@@ -1,7 +1,7 @@
 {
-	"Create Use Case": {
+	"Create Use Case Class": {
 		"scope": "c#,csharp",
-		"prefix": "new-usecase-class",
+		"prefix": "hst-new-usecase-class",
 		"body": [
 			"using Application.Common.Messages;",
 			"using Application.Common.UseCases;",
@@ -34,9 +34,9 @@
 		],
 		"description": "Create a new use case class"
 	},
-	"Create Use Case Unit Tests": {
+	"Create Use Case Unit Tests Class": {
 		"scope": "c#,csharp",
-		"prefix": "new-usecase-test-class",
+		"prefix": "hst-new-usecase-test-class",
 		"body": [
 			"using Application.Common.Messages;",
 			"using Application.$3;",
@@ -78,9 +78,43 @@
 		],
 		"description": "Create unit tests for a new use case class"
 	},
+	"Create Use Case Unit Tests Class Fixture": {
+		"scope": "c#,csharp",
+		"prefix": "hst-new-usecase-test-class-fixture",
+		"body": [
+			"using Domain.Common;",
+			"using UnitTests.Application.Common;",
+			"",
+			"namespace UnitTests.Application.$1;",
+			"",
+			"public class $2Fixture : BaseApplicationFixture<$3, $4>",
+			"{",
+			"    private readonly Mock<IServiceProvider> mockServiceProvider;",
+			"    public $2 useCase;",
+			"",
+			"    public $2Fixture()",
+			"    {",
+			"        MockServiceProviderServices();",
+			"        useCase = new(mockServiceProvider.Object);",
+			"    }",
+			"",
+			"    public new void ClearInvocations()",
+			"    {",
+			"        base.ClearInvocations();",
+			"    }",
+			"    public $4 SetValidRequest() => new $4();",
+			"",
+			"    public void SetSuccessfulRepository()",
+			"    {",
+			"        $5",
+			"    }",
+			"}"
+		],
+		"description": "Create unit tests for a new use case class fixture"
+	},
 	"Create Unit Test Method": {
 		"scope": "c#,csharp",
-		"prefix": "new-test-method",
+		"prefix": "hst-new-test-method",
 		"body": [
 			"[Fact]",
 			"public async Task $1()",
