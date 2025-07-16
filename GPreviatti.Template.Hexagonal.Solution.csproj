@@ -22,6 +22,7 @@
       - Simplify repository
       - Remove domain services
       - Remove unnecessary files
+      - Update libraries
     </PackageReleaseNotes>
   </PropertyGroup>
 
