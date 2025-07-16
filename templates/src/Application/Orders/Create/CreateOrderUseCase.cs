@@ -2,14 +2,13 @@
 using Application.Common.UseCases;
 using Domain.Orders;
 using FluentValidation;
-using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application.Orders.Create;
 public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<CreateOrderRequest, OrderDto, Order>(
     serviceProvider,
     serviceProvider.GetService<IValidator<CreateOrderRequest>>()
-), IRequestHandler<CreateOrderRequest, BaseResponse<OrderDto>>
+), ICreateOrderUseCase
 {
     private const string ClassName = nameof(CreateOrderUseCase);
 

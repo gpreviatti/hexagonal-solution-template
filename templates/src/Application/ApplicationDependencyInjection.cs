@@ -1,5 +1,6 @@
 ﻿using Application.Common.Messages;
 using Application.Orders.Create;
+using Application.Orders.Get;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,7 +13,8 @@ public static class ApplicationDependencyInjection
         services.AddValidatorsFromAssemblyContaining<CreateOrderRequestValidator>();
 
         // Orders
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(BaseResponse).Assembly));
+        services.AddScoped<IGetOrderUserCase, GetOrderUseCase>();
+        services.AddScoped<ICreateOrderUseCase, CreateOrderUseCase>();
 
         return services;
     }

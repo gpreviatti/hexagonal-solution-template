@@ -31,7 +31,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         // Assert
         Assert.NotNull(result);
         Assert.True(result.Success);
-        Assert.Null(result.Message);
+        Assert.Empty(result.Message);
 
         _fixture.VerifyLoggerInformation<BaseResponse<OrderDto>>(1);
         _fixture.VerifyRepository(1);

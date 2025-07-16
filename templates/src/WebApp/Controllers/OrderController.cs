@@ -2,15 +2,15 @@
 using Application.Orders;
 using Application.Orders.Create;
 using Application.Orders.Get;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.Controllers;
 [ApiController]
 [Route("orders")]
-public sealed class OrderController(IMediator mediator) : ControllerBase
+public sealed class OrderController(IServiceProvider serviceProvider) : ControllerBase
 {
-    private readonly IMediator _mediator = mediator;
+    private readonly IGetOrderUserCase _getOrderUserCase = serviceProvider.GetRequiredService<IGetOrderUserCase>();
+    private readonly ICreateOrderUseCase _createOrderUseCase = serviceProvider.GetRequiredService<ICreateOrderUseCase>();
 
     /// <summary>
     /// Get a specific order
@@ -24,7 +24,7 @@ public sealed class OrderController(IMediator mediator) : ControllerBase
     {
         var request = new GetOrderRequest(correlationId, id);
 
-        var response = await _mediator.Send(request);
+        var response = await _getOrderUserCase.Handle(request, CancellationToken.None);
 
         return Ok(response);
     }
@@ -39,7 +39,7 @@ public sealed class OrderController(IMediator mediator) : ControllerBase
     [HttpPost]
     public async Task<CreatedResult> Create([FromBody] CreateOrderRequest request)
     {
-        var response = await _mediator.Send(request);
+        var response = await _createOrderUseCase.Handle(request, CancellationToken.None);
 
         return Created($"/orders/{response.Data.Id}", response);
     }

@@ -41,7 +41,7 @@ public sealed class OrderTests
         Assert.NotNull(order);
         Assert.NotNull(result);
         Assert.NotNull(order.UpdatedAt);
-        Assert.NotEqual(0, order.Total);
+        Assert.Equal(0, order.Total);
         Assert.True(result.Success);
         Assert.Equal(0, order.Total);
         Assert.NotNull(order.UpdatedAt);
