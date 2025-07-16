@@ -20,9 +20,10 @@ public class GetOrderTest(CustomWebApplicationFactory<Program> customWebApplicat
         var response = await apiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
 
         // Assert
-        result.StatusCode.Should().Be(HttpStatusCode.OK);
-        response!.Success.Should().BeTrue();
-        response.Data.Should().NotBeNull();
+        Assert.NotNull(result);
+        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+        Assert.True(response!.Success);
+        Assert.NotNull(response.Data);
     }
 
     [Fact(DisplayName = nameof(Given_A_Invalid_Request_Then_Fails))]
@@ -36,8 +37,9 @@ public class GetOrderTest(CustomWebApplicationFactory<Program> customWebApplicat
         var response = await apiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
 
         // Assert
-        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        response!.Success.Should().BeFalse();
-        response.Data.Should().BeNull();
+        Assert.NotNull(result);
+        Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.False(response!.Success);
+        Assert.Null(response.Data);
     }
 }
