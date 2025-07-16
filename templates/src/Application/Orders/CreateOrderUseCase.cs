@@ -4,7 +4,41 @@ using Domain.Orders;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Application.Orders.Create;
+namespace Application.Orders;
+
+public sealed record CreateOrderRequest(
+    Guid CorrelationId,
+    string Description,
+    CreateOrderItemRequest[] Items
+) : BaseRequest(CorrelationId);
+
+public sealed record CreateOrderItemRequest(string Name, string Description, decimal Value);
+
+public sealed class CreateOrderItemRequestValidator : AbstractValidator<CreateOrderItemRequest>
+{
+    public CreateOrderItemRequestValidator()
+    {
+        RuleFor(r => r.Name).NotEmpty();
+        RuleFor(r => r.Value).NotEmpty();
+    }
+}
+
+public sealed class CreateOrderRequestValidator : AbstractValidator<CreateOrderRequest>
+{
+    public CreateOrderRequestValidator()
+    {
+        RuleFor(r => r.CorrelationId).NotEmpty();
+        RuleFor(r => r.Description).NotEmpty();
+        RuleFor(r => r.Items).NotEmpty();
+        RuleForEach(r => r.Items).SetValidator(new CreateOrderItemRequestValidator());
+    }
+}
+
+public interface ICreateOrderUseCase
+{
+    Task<BaseResponse<OrderDto>> Handle(CreateOrderRequest request, CancellationToken cancellationToken);
+}
+
 public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<CreateOrderRequest, OrderDto, Order>(
     serviceProvider,
     serviceProvider.GetService<IValidator<CreateOrderRequest>>()

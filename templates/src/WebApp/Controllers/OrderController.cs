@@ -1,7 +1,5 @@
 ﻿using Application.Common.Messages;
 using Application.Orders;
-using Application.Orders.Create;
-using Application.Orders.Get;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.Controllers;

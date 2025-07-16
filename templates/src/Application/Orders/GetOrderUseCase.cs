@@ -4,7 +4,23 @@ using Domain.Orders;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Application.Orders.Get;
+namespace Application.Orders;
+
+public sealed record GetOrderRequest(Guid CorrelationId, int Id) : BaseRequest(CorrelationId);
+
+public sealed class GetOrderRequestValidator : AbstractValidator<GetOrderRequest>
+{
+    public GetOrderRequestValidator()
+    {
+        RuleFor(r => r.Id).NotEmpty();
+    }
+}
+
+public interface IGetOrderUserCase
+{
+    Task<BaseResponse<OrderDto>> Handle(GetOrderRequest request, CancellationToken cancellationToken);
+}
+
 public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<GetOrderRequest, OrderDto, Order>(
     serviceProvider,
     serviceProvider.GetService<IValidator<GetOrderRequest>>()

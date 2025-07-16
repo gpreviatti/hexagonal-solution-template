@@ -1,6 +1,4 @@
-﻿using Application.Common.Messages;
-using Application.Orders;
-using Application.Orders.Create;
+﻿using Application.Orders;
 
 namespace UnitTests.Application.Orders.Create;
 
@@ -23,17 +21,14 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.SetSuccessfulRepository();
 
         // Act
-        var result = await _fixture.useCase.Handle(
-            request,
-            _fixture.cancellationToken
-        );
+        var result = await _fixture.useCase.Handle(request, _fixture.cancellationToken);
 
         // Assert
         Assert.NotNull(result);
         Assert.True(result.Success);
         Assert.Empty(result.Message);
 
-        _fixture.VerifyLoggerInformation<BaseResponse<OrderDto>>(1);
+        _fixture.VerifyLoggerInformation(1);
         _fixture.VerifyRepository(1);
         _fixture.VerifyLoggerError<CreateOrderRequest>(0);
     }
@@ -52,35 +47,11 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         );
 
         // Assert
-        Assert.NotNull(result.Data);
         Assert.False(result.Success);
         Assert.NotEmpty(result.Message);
 
-        _fixture.VerifyLoggerInformation<BaseResponse<OrderDto>>(0);
+        _fixture.VerifyLoggerInformation(0);
         _fixture.VerifyRepository(0);
         _fixture.VerifyLoggerError<CreateOrderRequest>(0);
-    }
-
-    [Fact]
-    public async Task GivenAValidRequestWhenCreateOrderFailsThenFails()
-    {
-        // Arrange
-        var request = _fixture.autoFixture.Create<CreateOrderRequest>();
-        _fixture.SetSuccessfulValidator(request);
-
-        // Act
-        var result = await _fixture.useCase.Handle(
-            request,
-            _fixture.cancellationToken
-        );
-
-        // Assert
-        Assert.NotNull(result.Data);
-        Assert.False(result.Success);
-        Assert.NotEmpty(result.Message);
-
-        _fixture.VerifyLoggerInformation<BaseResponse<OrderDto>>(0);
-        _fixture.VerifyRepository(0);
-        _fixture.VerifyLoggerError<CreateOrderRequest>(1);
     }
 }

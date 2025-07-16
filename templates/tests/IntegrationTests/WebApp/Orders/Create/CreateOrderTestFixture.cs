@@ -1,4 +1,4 @@
-﻿using Application.Orders.Create;
+﻿using Application.Orders;
 using AutoFixture;
 using CommonTests.Fixtures;
 using IntegrationTests.Common;

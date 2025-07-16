@@ -6,6 +6,7 @@ using FluentValidation.Results;
 using Serilog;
 
 namespace UnitTests.Application.Common;
+
 public class BaseApplicationFixture<TEntity, TRequest> : BaseFixture where TEntity : DomainEntity where TRequest : class
 {
     public Mock<IServiceProvider> mockServiceProvider = new();
@@ -67,10 +68,10 @@ public class BaseApplicationFixture<TEntity, TRequest> : BaseFixture where TEnti
         );
     }
 
-    public void VerifyLoggerInformation<TLoggerObjectType>(int times)
+    public void VerifyLoggerInformation(int times)
     {
         mockLogger.Verify(
-            l => l.Information(It.IsAny<string>(), It.IsAny<TLoggerObjectType>()),
+            l => l.Information(It.IsAny<string>()),
             Times.Exactly(times)
         );
     }

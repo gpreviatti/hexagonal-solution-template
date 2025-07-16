@@ -1,6 +1,4 @@
-﻿using Application.Common.Messages;
-using Application.Orders.Create;
-using Application.Orders.Get;
+﻿using Application.Orders;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 

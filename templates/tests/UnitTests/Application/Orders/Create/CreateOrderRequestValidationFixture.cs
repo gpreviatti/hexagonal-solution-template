@@ -1,4 +1,4 @@
-﻿using Application.Orders.Create;
+﻿using Application.Orders;
 using FluentValidation;
 
 namespace UnitTests.Application.Orders.Create;
