@@ -5,7 +5,7 @@
 		"body": [
 			"using Application.Common.Messages;",
 			"using Application.Common.UseCases;",
-			"using Domain.$1;",
+			"using Domain.$3;",
 			"using FluentValidation;",
 			"using Microsoft.Extensions.DependencyInjection;",
 			"",
