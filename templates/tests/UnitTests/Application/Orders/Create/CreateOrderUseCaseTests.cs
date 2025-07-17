@@ -28,9 +28,14 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         Assert.True(result.Success);
         Assert.Empty(result.Message);
 
-        _fixture.VerifyLoggerInformation(1, "Use case was executed with success");
+        _fixture.VerifyStartUseCaseLog("BaseInOutUseCase", request.CorrelationId);
+        _fixture.VerifyFinishUseCaseLog(nameof(CreateOrderUseCase), request.CorrelationId);
+
+        _fixture.mockLogger.Verify(l => l.Warning(
+            "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Unable to create order",
+            nameof(CreateOrderUseCase), "HandleInternalAsync", request.CorrelationId
+        ), Times.Never);
         _fixture.VerifyRepository(1);
-        _fixture.VerifyLoggerWarning(0, "Unable to create order");
     }
 
     [Fact]
@@ -50,8 +55,12 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         Assert.False(result.Success);
         Assert.NotEmpty(result.Message);
 
-        _fixture.VerifyLoggerInformation(0, "Use case was executed with success");
+        _fixture.VerifyStartUseCaseLog("BaseInOutUseCase", request.CorrelationId);
+        _fixture.VerifyFinishUseCaseLog(nameof(CreateOrderUseCase), request.CorrelationId, 0);
+        _fixture.mockLogger.Verify(l => l.Warning(
+            "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Unable to create order",
+            nameof(CreateOrderUseCase), "HandleInternalAsync", request.CorrelationId
+        ), Times.Never);
         _fixture.VerifyRepository(0);
-        _fixture.VerifyLoggerWarning(0, "Unable to create order");
     }
 }

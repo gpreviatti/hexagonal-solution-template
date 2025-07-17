@@ -5,6 +5,7 @@ using FluentValidation;
 using FluentValidation.Results;
 using Serilog;
 
+
 namespace UnitTests.Application.Common;
 
 public class BaseApplicationFixture<TEntity, TRequest> : BaseFixture where TEntity : DomainEntity where TRequest : class
@@ -60,13 +61,21 @@ public class BaseApplicationFixture<TEntity, TRequest> : BaseFixture where TEnti
             .ReturnsAsync(validationResult);
     }
 
+    public void VerifyStartUseCaseLog(string className, Guid correlationId, int times = 1) => mockLogger.Verify(
+        l => l.Information(
+            "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Start to execute use case",
+            className, "Handle", correlationId
+        ),
+        Times.Exactly(times)
+    );
 
-    public void VerifyLoggerInformation(int times, string message) =>
-        mockLogger.Verify(l => l.Information($"**{message}**"), Times.Exactly(times));
-    public void VerifyLoggerWarning(int times, string message) =>
-        mockLogger.Verify(l => l.Warning($"**{message}**"), Times.Exactly(times));
-    public void VerifyLoggerError(int times, string message) =>
-        mockLogger.Verify(l => l.Error($"**{message}**"), Times.Exactly(times));
+    public void VerifyFinishUseCaseLog(string className, Guid correlationId, int times = 1) => mockLogger.Verify(
+        l => l.Information(
+            "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Use case was executed with success",
+            className, "HandleInternalAsync", correlationId
+        ),
+        Times.Exactly(times)
+    );
 
     public void VerifyRepository(int times)
     {
