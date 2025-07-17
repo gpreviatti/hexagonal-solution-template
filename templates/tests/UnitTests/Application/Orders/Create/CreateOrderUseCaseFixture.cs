@@ -1,4 +1,5 @@
-﻿using Application.Orders;
+﻿using Application.Common.UseCases;
+using Application.Orders;
 using Domain.Common;
 using Domain.Orders;
 using UnitTests.Application.Common;
@@ -7,7 +8,7 @@ namespace UnitTests.Application.Orders.Create;
 
 public class CreateOrderUseCaseFixture : BaseApplicationFixture<Order, CreateOrderRequest>
 {
-    public ICreateOrderUseCase useCase;
+    public IBaseInOutUseCase<CreateOrderRequest, OrderDto> useCase;
 
     public CreateOrderUseCaseFixture()
     {

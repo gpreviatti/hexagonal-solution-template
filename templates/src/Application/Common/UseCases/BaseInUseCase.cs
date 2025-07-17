@@ -7,23 +7,33 @@ using Serilog;
 
 namespace Application.Common.UseCases;
 
-public abstract class BaseInUseCase<TRequest, TResponseData, TEntity>(
+public interface IBaseInUseCase<TRequest, TEntity>
+    where TRequest : BaseRequest
+    where TEntity : DomainEntity
+{
+    Task HandleAsync(TRequest request, CancellationToken cancellationToken);
+}
+
+public abstract class BaseInUseCase<TRequest, TEntity>(
     IServiceProvider serviceProvider,
     IValidator<TRequest> validator = null
-)
-    where TRequest : class
-    where TResponseData : class
+) : IBaseInUseCase<TRequest, TEntity>
+    where TRequest : BaseRequest
     where TEntity : DomainEntity
 {
     protected readonly ILogger logger = serviceProvider.GetService<ILogger>();
     protected readonly IValidator<TRequest> validator = validator;
     protected readonly IBaseRepository<TEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<TEntity>>();
+    private const string ClassName = nameof(BaseInUseCase<TRequest, TEntity>);
 
     public async Task HandleAsync(
         TRequest request,
         CancellationToken cancellationToken
     )
     {
+        string methodName = nameof(HandleAsync);
+        logger.Information("[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Start to execute use case", ClassName, methodName, request.CorrelationId);
+
         if (validator != null)
         {
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
@@ -37,5 +47,5 @@ public abstract class BaseInUseCase<TRequest, TResponseData, TEntity>(
         await HandleInternalAsync(request, cancellationToken);
     }
 
-    public abstract Task<BaseResponse<TResponseData>> HandleInternalAsync(TRequest request, CancellationToken cancellationToken);
+    public abstract Task HandleInternalAsync(TRequest request, CancellationToken cancellationToken);
 }

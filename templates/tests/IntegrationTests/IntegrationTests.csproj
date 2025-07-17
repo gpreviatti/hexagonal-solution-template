@@ -21,7 +21,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-	<PackageReference Include="Testcontainers.MsSql" Version="4.6.0" />
 	<PackageReference Include="AutoFixture" Version="4.18.1" />
   </ItemGroup>
 

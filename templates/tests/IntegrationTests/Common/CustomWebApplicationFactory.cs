@@ -1,6 +1,4 @@
 ﻿using System.Data.Common;
-using AutoFixture;
-using Domain.Orders;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;

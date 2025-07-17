@@ -6,10 +6,18 @@ using Serilog;
 
 namespace Application.Common.UseCases;
 
+public interface IBaseOutUseCase<TResponseData, TEntity>
+    where TResponseData : class
+    where TEntity : DomainEntity
+{
+    Task<BaseResponse<TResponseData>> HandleAsync(CancellationToken cancellationToken);
+}
+
 public abstract class BaseOutUseCase<TResponseData, TEntity>(
     IServiceProvider serviceProvider
-) where TResponseData : class
-  where TEntity : DomainEntity
+) : IBaseOutUseCase<TResponseData, TEntity>
+    where TResponseData : class
+    where TEntity : DomainEntity
 {
     protected readonly ILogger logger = serviceProvider.GetService<ILogger>();
     protected readonly IBaseRepository<TEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<TEntity>>();

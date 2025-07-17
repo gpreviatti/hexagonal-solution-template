@@ -1,14 +1,16 @@
 ﻿using Application.Common.Messages;
+using Application.Common.UseCases;
 using Application.Orders;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.Controllers;
+
 [ApiController]
 [Route("orders")]
 public sealed class OrderController(IServiceProvider serviceProvider) : ControllerBase
 {
-    private readonly IGetOrderUserCase _getOrderUserCase = serviceProvider.GetRequiredService<IGetOrderUserCase>();
-    private readonly ICreateOrderUseCase _createOrderUseCase = serviceProvider.GetRequiredService<ICreateOrderUseCase>();
+    private readonly IBaseInOutUseCase<GetOrderRequest, OrderDto> _getOrderUseCase = serviceProvider.GetRequiredService<IBaseInOutUseCase<GetOrderRequest, OrderDto>>();
+    private readonly IBaseInOutUseCase<CreateOrderRequest, OrderDto> _createOrderUseCase = serviceProvider.GetRequiredService<IBaseInOutUseCase<CreateOrderRequest, OrderDto>>();
 
     /// <summary>
     /// Get a specific order
@@ -22,7 +24,7 @@ public sealed class OrderController(IServiceProvider serviceProvider) : Controll
     {
         var request = new GetOrderRequest(correlationId, id);
 
-        var response = await _getOrderUserCase.Handle(request, CancellationToken.None);
+        var response = await _getOrderUseCase.Handle(request, CancellationToken.None);
 
         return Ok(response);
     }

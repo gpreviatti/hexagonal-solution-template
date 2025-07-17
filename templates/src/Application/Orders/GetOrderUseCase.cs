@@ -16,21 +16,19 @@ public sealed class GetOrderRequestValidator : AbstractValidator<GetOrderRequest
     }
 }
 
-public interface IGetOrderUserCase
-{
-    Task<BaseResponse<OrderDto>> Handle(GetOrderRequest request, CancellationToken cancellationToken);
-}
-
 public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<GetOrderRequest, OrderDto, Order>(
     serviceProvider,
     serviceProvider.GetService<IValidator<GetOrderRequest>>()
-), IGetOrderUserCase
+)
 {
+    private const string ClassName = nameof(GetOrderUseCase);
+
     public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(
         GetOrderRequest request,
         CancellationToken cancellationToken
     )
     {
+        string methodName = nameof(HandleInternalAsync);
         var response = new BaseResponse<OrderDto>();
 
         var order = await _repository
@@ -42,7 +40,7 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
             order.Total
         ));
 
-        logger.Information("Use case was executed with success", response);
+        logger.Information("[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Use case was executed with success", ClassName, methodName, request.CorrelationId);
 
         return response;
     }

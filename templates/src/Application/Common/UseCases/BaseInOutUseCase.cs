@@ -7,10 +7,17 @@ using Serilog;
 
 namespace Application.Common.UseCases;
 
+public interface IBaseInOutUseCase<TRequest, TResponseData>
+    where TRequest : BaseRequest
+    where TResponseData : class
+{
+    Task<BaseResponse<TResponseData>> Handle(TRequest request, CancellationToken cancellationToken);
+}
+
 public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity>(
     IServiceProvider serviceProvider,
     IValidator<TRequest> validator = null
-)
+) : IBaseInOutUseCase<TRequest, TResponseData>
     where TRequest : BaseRequest
     where TResponseData : class
     where TEntity : DomainEntity
@@ -28,6 +35,8 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity>(
     )
     {
         string methodName = nameof(Handle);
+        logger.Information("[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Start to execute use case", ClassName, methodName, request.CorrelationId);
+
         var response = new BaseResponse<TResponseData>();
 
         if (validator != null)

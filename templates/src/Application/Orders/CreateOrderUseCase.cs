@@ -6,11 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Application.Orders;
 
-public sealed record CreateOrderRequest(
-    Guid CorrelationId,
-    string Description,
-    CreateOrderItemRequest[] Items
-) : BaseRequest(CorrelationId);
+public sealed record CreateOrderRequest(Guid CorrelationId, string Description, CreateOrderItemRequest[] Items) : BaseRequest(CorrelationId);
 
 public sealed record CreateOrderItemRequest(string Name, string Description, decimal Value);
 
@@ -34,15 +30,10 @@ public sealed class CreateOrderRequestValidator : AbstractValidator<CreateOrderR
     }
 }
 
-public interface ICreateOrderUseCase
-{
-    Task<BaseResponse<OrderDto>> Handle(CreateOrderRequest request, CancellationToken cancellationToken);
-}
-
 public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<CreateOrderRequest, OrderDto, Order>(
     serviceProvider,
     serviceProvider.GetService<IValidator<CreateOrderRequest>>()
-), ICreateOrderUseCase
+)
 {
     private const string ClassName = nameof(CreateOrderUseCase);
 
@@ -53,8 +44,6 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
     {
         string methodName = nameof(HandleInternalAsync);
         Guid correlationId = request.CorrelationId;
-
-        logger.Information("[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Start to execute use case", ClassName, methodName, correlationId);
 
         var response = new BaseResponse<OrderDto>();
 
