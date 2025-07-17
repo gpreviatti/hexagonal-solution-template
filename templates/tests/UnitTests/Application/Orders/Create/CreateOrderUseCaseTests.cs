@@ -28,9 +28,9 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         Assert.True(result.Success);
         Assert.Empty(result.Message);
 
-        _fixture.VerifyLoggerInformation(1);
+        _fixture.VerifyLoggerInformation(1, "Use case was executed with success");
         _fixture.VerifyRepository(1);
-        _fixture.VerifyLoggerError<CreateOrderRequest>(0);
+        _fixture.VerifyLoggerWarning(0, "Unable to create order");
     }
 
     [Fact]
@@ -50,8 +50,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         Assert.False(result.Success);
         Assert.NotEmpty(result.Message);
 
-        _fixture.VerifyLoggerInformation(0);
+        _fixture.VerifyLoggerInformation(0, "Use case was executed with success");
         _fixture.VerifyRepository(0);
-        _fixture.VerifyLoggerError<CreateOrderRequest>(0);
+        _fixture.VerifyLoggerWarning(0, "Unable to create order");
     }
 }

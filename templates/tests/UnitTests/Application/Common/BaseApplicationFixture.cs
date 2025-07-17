@@ -60,21 +60,13 @@ public class BaseApplicationFixture<TEntity, TRequest> : BaseFixture where TEnti
             .ReturnsAsync(validationResult);
     }
 
-    public void VerifyLoggerError<TLoggerObjectType>(int times)
-    {
-        mockLogger.Verify(
-            l => l.Error(It.IsAny<string>(), It.IsAny<TLoggerObjectType>()),
-            Times.Exactly(times)
-        );
-    }
 
-    public void VerifyLoggerInformation(int times)
-    {
-        mockLogger.Verify(
-            l => l.Information(It.IsAny<string>()),
-            Times.Exactly(times)
-        );
-    }
+    public void VerifyLoggerInformation(int times, string message) =>
+        mockLogger.Verify(l => l.Information($"**{message}**"), Times.Exactly(times));
+    public void VerifyLoggerWarning(int times, string message) =>
+        mockLogger.Verify(l => l.Warning($"**{message}**"), Times.Exactly(times));
+    public void VerifyLoggerError(int times, string message) =>
+        mockLogger.Verify(l => l.Error($"**{message}**"), Times.Exactly(times));
 
     public void VerifyRepository(int times)
     {
