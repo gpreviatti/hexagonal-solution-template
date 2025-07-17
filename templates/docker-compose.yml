@@ -33,8 +33,6 @@ services:
         ./opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P "cY5VvZkkh4AzES" -C -d master -i ./tmp/migrations.sql &&
         ./opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P "cY5VvZkkh4AzES" -C -d master -i ./tmp/seeds.sql
 
-
-
 networks:
     sqlserver_networks:
       driver: bridge

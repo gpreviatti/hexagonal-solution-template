@@ -4,7 +4,8 @@ using Domain.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data.Common;
-public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : DomainEntity
+
+public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : DomainEntity
 {
     protected readonly DbContext dbContext;
     protected readonly DbSet<TEntity> dbEntitySet;
