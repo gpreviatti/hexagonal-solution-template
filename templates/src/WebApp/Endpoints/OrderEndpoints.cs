@@ -4,18 +4,21 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.Endpoints;
 
-public static class OrderEndpoints
+internal static class OrderEndpoints
 {
     public static WebApplication MapOrderEndpoints(this WebApplication app)
     {
-        app.MapGet("/orders/{id}/{correlationId}", async (
-            IBaseInOutUseCase<GetOrderRequest, OrderDto> useCase,
+        var orders = app.MapGroup("/orders")
+            .WithTags("Orders");
+
+        orders.MapGet("/{id}/{correlationId}", async (
+            [FromServices] IBaseInOutUseCase<GetOrderRequest, OrderDto> useCase,
             int id,
             Guid correlationId
         ) => Results.Ok(await useCase.Handle(new(correlationId, id), CancellationToken.None)));
 
-        app.MapPost("/orders", async (
-            IBaseInOutUseCase<CreateOrderRequest, OrderDto> useCase,
+        orders.MapPost("/", async (
+            [FromServices] IBaseInOutUseCase<CreateOrderRequest, OrderDto> useCase,
             [FromBody] CreateOrderRequest request
         ) =>
         {
