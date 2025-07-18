@@ -8,16 +8,16 @@ internal static class OrderEndpoints
 {
     public static WebApplication MapOrderEndpoints(this WebApplication app)
     {
-        var orders = app.MapGroup("/orders")
+        var ordersGroup = app.MapGroup("/orders")
             .WithTags("Orders");
 
-        orders.MapGet("/{id}/{correlationId}", async (
+        ordersGroup.MapGet("/{id}/{correlationId}", async (
             [FromServices] IBaseInOutUseCase<GetOrderRequest, OrderDto> useCase,
             int id,
             Guid correlationId
         ) => Results.Ok(await useCase.Handle(new(correlationId, id), CancellationToken.None)));
 
-        orders.MapPost("/", async (
+        ordersGroup.MapPost("/", async (
             [FromServices] IBaseInOutUseCase<CreateOrderRequest, OrderDto> useCase,
             [FromBody] CreateOrderRequest request
         ) =>
