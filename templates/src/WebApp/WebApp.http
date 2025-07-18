@@ -1,6 +1,6 @@
 @WebApp_HostAddress = https://localhost:7175
 
-GET {{WebApp_HostAddress}}/orders/1
+GET {{WebApp_HostAddress}}/orders/1/e1e2ef94-a49c-4f23-8148-5af97a25e06f
 Accept: application/json
 
 ###

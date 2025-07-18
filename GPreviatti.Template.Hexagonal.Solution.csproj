@@ -25,6 +25,7 @@
       - Remove unnecessary files
       - Update libraries
       - Remove fluent assertions
+      - Update project to use minimal apis
     </PackageReleaseNotes>
   </PropertyGroup>
 

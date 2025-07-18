@@ -7,10 +7,10 @@ namespace Infrastructure.Data.Common;
 
 public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : DomainEntity
 {
-    protected readonly DbContext dbContext;
+    protected readonly MyDbContext dbContext;
     protected readonly DbSet<TEntity> dbEntitySet;
 
-    public BaseRepository(DbContext dbContext)
+    public BaseRepository(MyDbContext dbContext)
     {
         this.dbContext = dbContext;
         dbEntitySet = this.dbContext.Set<TEntity>();
