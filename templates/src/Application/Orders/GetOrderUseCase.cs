@@ -38,7 +38,7 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
             o => o.Items
         );
 
-        if (order is null)
+        if (order is null || order.Equals(default(Order)))
         {
             logger.Warning(DefaultApplicationMessages.DefaultApplicationMessage + "Order not found.", ClassName, methodName, request.CorrelationId);
             response.SetMessage("Order not found.");

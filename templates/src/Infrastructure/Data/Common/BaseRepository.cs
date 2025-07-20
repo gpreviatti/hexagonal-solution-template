@@ -71,7 +71,7 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
     public async Task<bool> CheckExistsByWhereAsNoTrackingAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
         => await dbEntitySet.AsNoTracking().AnyAsync(predicate, cancellationToken);
 
-    public async Task<TEntity?> GetByIdAsNoTrackingAsync(
+    public async Task<TEntity> GetByIdAsNoTrackingAsync(
         int id,
         CancellationToken cancellationToken,
         params Expression<Func<TEntity, object>>[] includes
@@ -81,7 +81,7 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
 
         query = SetIncludes(includes, query);
 
-        return await query.FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
+        return await query.FirstOrDefaultAsync(o => o.Id == id, cancellationToken) ?? default!;
     }
     public async Task<IList<TEntity>> GetByWhereAsync(
         Expression<Func<TEntity, bool>> predicate,
