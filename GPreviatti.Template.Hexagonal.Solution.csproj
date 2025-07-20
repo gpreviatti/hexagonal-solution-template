@@ -19,7 +19,7 @@
     <RepositoryUrl>git://github.com/gpreviatti/hexagonal-solution-template</RepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>
-      - Simplify repository
+      - Simplify repository and add include parameter
       - Simplify use cases
       - Remove domain services
       - Remove unnecessary files
