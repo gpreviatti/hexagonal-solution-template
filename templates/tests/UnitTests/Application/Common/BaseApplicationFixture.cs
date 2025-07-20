@@ -37,8 +37,11 @@ public class BaseApplicationFixture<TEntity, TRequest> : BaseFixture where TEnti
         mockValidator.Invocations.Clear();
     }
 
-    public void MockRepository<TResult>(TResult result) => mockRepository
+    public void MockRepository<TResult>(TResult result)
+    {
+        mockRepository
         .Setup(d => d.AddAsync(It.IsAny<TEntity>(), It.IsAny<CancellationToken>()));
+    }
 
     public void SetSuccessfulValidator(TRequest request)
     {
