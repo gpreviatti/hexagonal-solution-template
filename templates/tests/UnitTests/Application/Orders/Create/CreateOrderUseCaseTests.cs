@@ -29,10 +29,8 @@ public sealed class CreateOrderUseCaseFixture : BaseApplicationFixture<Order, Cr
         return new CreateOrderRequest(Guid.NewGuid(), "AwesomeComputer", [.. items]);
     }
 
-    public CreateOrderRequest SetInvalidRequestWithNoItems()
-    {
-        return new CreateOrderRequest(Guid.NewGuid(), "AwesomeComputer", []);
-    }
+    public static CreateOrderRequest SetInvalidRequestWithNoItems() =>
+        new(Guid.NewGuid(), "AwesomeComputer", []);
 
     public void SetSuccessfulRepository()
     {
@@ -110,7 +108,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
     public async Task GivenAInvalidRequestThenFailsWhenThereIsNoItems()
     {
         // Arrange
-        var request = _fixture.SetInvalidRequestWithNoItems();
+        var request = CreateOrderUseCaseFixture.SetInvalidRequestWithNoItems();
         _fixture.SetFailedValidator(request);
 
         // Act
