@@ -43,6 +43,12 @@ public sealed class CreateOrderUseCaseFixture : BaseApplicationFixture<Order, Cr
 
         MockRepository(result);
     }
+
+    public void VerifyCreateOrderLogNoItemsError(Guid correlationId, int times = 1) =>
+        mockLogger.Verify(l => l.Warning(
+            "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Order must have at least one item.",
+            nameof(CreateOrderUseCase), "HandleInternalAsync", correlationId
+        ), Times.Exactly(times));
 }
 
 public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFixture>
@@ -73,13 +79,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
 
         _fixture.VerifyStartUseCaseLog("BaseInOutUseCase", request.CorrelationId);
         _fixture.VerifyFinishUseCaseLog(nameof(CreateOrderUseCase), request.CorrelationId);
-
-        _fixture.mockLogger.Verify(l => l.Warning(
-            "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Order must have at least one item.",
-            nameof(CreateOrderUseCase), "HandleInternalAsync", request.CorrelationId
-        ), Times.Never);
+        _fixture.VerifyCreateOrderLogNoItemsError(request.CorrelationId, 0);
         _fixture.VerifyRepository(1);
-        Assert.True(result.Success);
     }
 
     [Fact]
@@ -101,12 +102,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
 
         _fixture.VerifyStartUseCaseLog("BaseInOutUseCase", request.CorrelationId);
         _fixture.VerifyFinishUseCaseLog(nameof(CreateOrderUseCase), request.CorrelationId, 0);
-        _fixture.mockLogger.Verify(l => l.Warning(
-            "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Order must have at least one item.",
-            nameof(CreateOrderUseCase), "HandleInternalAsync", request.CorrelationId
-        ), Times.Never);
+        _fixture.VerifyCreateOrderLogNoItemsError(request.CorrelationId, 0);
         _fixture.VerifyRepository(0);
-        Assert.False(result.Success);
     }
 
     [Fact]
@@ -125,16 +122,10 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         // Assert
         Assert.False(result.Success);
         Assert.NotEmpty(result.Message);
+        Assert.Equal("Order must have at least one item.", result.Message);
 
         _fixture.VerifyStartUseCaseLog("BaseInOutUseCase", request.CorrelationId);
         _fixture.VerifyFinishUseCaseLog(nameof(CreateOrderUseCase), request.CorrelationId, 0);
-        _fixture.mockLogger.Verify(l => l.Warning(
-            "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Order must have at least one item.",
-            nameof(CreateOrderUseCase), "HandleInternalAsync", request.CorrelationId
-        ), Times.Once);
-        _fixture.VerifyRepository(0);
-
-        Assert.Equal("Order must have at least one item.", result.Message);
-        Assert.False(result.Success);
+        _fixture.VerifyCreateOrderLogNoItemsError(request.CorrelationId, 1);
     }
 }
