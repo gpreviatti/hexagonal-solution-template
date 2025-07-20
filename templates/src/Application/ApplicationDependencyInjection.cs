@@ -1,4 +1,4 @@
-﻿using Application.Common.Messages;
+﻿using Application.Common.Requests;
 using Application.Common.UseCases;
 using Application.Orders;
 using FluentValidation;

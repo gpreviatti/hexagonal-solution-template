@@ -1,2 +1,2 @@
-﻿namespace Application.Common.Messages;
+﻿namespace Application.Common.Requests;
 public record BaseRequest(Guid CorrelationId);

@@ -1,4 +1,5 @@
 ﻿using Application.Common.Messages;
+using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Orders;
 using FluentValidation;
@@ -56,12 +57,19 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
 
         if (createResult.IsFailure)
         {
-            logger.Warning("[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Unable to create order", ClassName, methodName, correlationId);
-            response.SetBusinessErrorMessage(ClassName, methodName, correlationId, "Unable to create order");
+            logger.Warning(DefaultApplicationMessages.DefaultApplicationMessage + createResult.Message, ClassName, methodName, correlationId);
+            response.SetMessage(createResult.Message);
             return response;
         }
 
-        await _repository.AddAsync(newOrder, cancellationToken);
+        var addResult = await _repository.AddAsync(newOrder, cancellationToken);
+
+        if (addResult == 0)
+        {
+            logger.Warning(DefaultApplicationMessages.DefaultApplicationMessage + "Failed to create order.", ClassName, methodName, correlationId);
+            response.SetMessage("Failed to create order.");
+            return response;
+        }
 
         response.SetData(new(
             newOrder.Id,
@@ -69,7 +77,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
             newOrder.Total
         ));
 
-        logger.Information("[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Use case was executed with success", ClassName, methodName, correlationId);
+        logger.Information(DefaultApplicationMessages.FinishedExecutingUseCase, ClassName, methodName, correlationId);
 
         return response;
     }

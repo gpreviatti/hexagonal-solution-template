@@ -71,7 +71,7 @@ public class BaseApplicationFixture<TEntity, TRequest> : BaseFixture where TEnti
 
     public void VerifyFinishUseCaseLog(string className, Guid correlationId, int times = 1) => mockLogger.Verify(
         l => l.Information(
-            "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Use case was executed with success",
+            "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Finished executing use case with success",
             className, "HandleInternalAsync", correlationId
         ),
         Times.Exactly(times)

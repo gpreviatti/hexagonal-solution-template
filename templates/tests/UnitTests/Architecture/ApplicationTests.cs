@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using Application;
-using Application.Common.Messages;
+using Application.Common.Requests;
 using Microsoft.Extensions.DependencyInjection;
 using NetArchTest.Rules;
 

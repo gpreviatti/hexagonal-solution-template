@@ -16,6 +16,9 @@ public sealed class Order : DomainEntity
         UpdatedAt = DateTime.UtcNow;
         Items = items ?? [];
 
+        if (Items.Count == 0)
+            return Result.Fail("Order must have at least one item.");
+
         SetTotal();
 
         return Result.Ok();

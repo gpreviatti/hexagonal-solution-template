@@ -18,9 +18,9 @@ public class Result
     public string Message { get; }
     public bool IsFailure => !Success;
 
-    public static Result Fail(string message) => new(false, "[BusinessError]" + message);
+    public static Result Fail(string message) => new(false, message);
 
-    public static Result<T> Fail<T>(string message) => new(default!, false, "[BusinessError] " + message);
+    public static Result<T> Fail<T>(string message) => new(default!, false, message);
 
     public static Result Ok() => new(true, string.Empty);
 

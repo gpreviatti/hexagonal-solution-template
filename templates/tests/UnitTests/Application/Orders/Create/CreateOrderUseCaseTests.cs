@@ -1,6 +1,49 @@
-﻿using Application.Orders;
+﻿using Application.Common.UseCases;
+using Application.Orders;
+using Domain.Common;
+using Domain.Orders;
+using UnitTests.Application.Common;
 
 namespace UnitTests.Application.Orders.Create;
+
+public sealed class CreateOrderUseCaseFixture : BaseApplicationFixture<Order, CreateOrderRequest>
+{
+    public IBaseInOutUseCase<CreateOrderRequest, OrderDto> useCase;
+
+    public CreateOrderUseCaseFixture()
+    {
+        MockServiceProviderServices();
+        useCase = new CreateOrderUseCase(mockServiceProvider.Object);
+    }
+
+    public new void ClearInvocations()
+    {
+        base.ClearInvocations();
+    }
+
+    public CreateOrderRequest SetValidRequest()
+    {
+        var items = autoFixture
+            .CreateMany<CreateOrderItemRequest>(1);
+
+        return new CreateOrderRequest(Guid.NewGuid(), "AwesomeComputer", [.. items]);
+    }
+
+    public CreateOrderRequest SetInvalidRequestWithNoItems()
+    {
+        return new CreateOrderRequest(Guid.NewGuid(), "AwesomeComputer", []);
+    }
+
+    public void SetSuccessfulRepository()
+    {
+        var order = autoFixture
+            .Create<Order>();
+
+        var result = Result.Ok(order);
+
+        MockRepository(result);
+    }
+}
 
 public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFixture>
 {
@@ -32,17 +75,18 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyFinishUseCaseLog(nameof(CreateOrderUseCase), request.CorrelationId);
 
         _fixture.mockLogger.Verify(l => l.Warning(
-            "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Unable to create order",
+            "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Order must have at least one item.",
             nameof(CreateOrderUseCase), "HandleInternalAsync", request.CorrelationId
         ), Times.Never);
         _fixture.VerifyRepository(1);
+        Assert.True(result.Success);
     }
 
     [Fact]
     public async Task GivenAInvalidRequestThenFails()
     {
         // Arrange
-        var request = _fixture.autoFixture.Create<CreateOrderRequest>();
+        var request = _fixture.SetValidRequest();
         _fixture.SetFailedValidator(request);
 
         // Act
@@ -58,9 +102,39 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyStartUseCaseLog("BaseInOutUseCase", request.CorrelationId);
         _fixture.VerifyFinishUseCaseLog(nameof(CreateOrderUseCase), request.CorrelationId, 0);
         _fixture.mockLogger.Verify(l => l.Warning(
-            "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Unable to create order",
+            "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Order must have at least one item.",
             nameof(CreateOrderUseCase), "HandleInternalAsync", request.CorrelationId
         ), Times.Never);
         _fixture.VerifyRepository(0);
+        Assert.False(result.Success);
+    }
+
+    [Fact]
+    public async Task GivenAInvalidRequestThenFailsWhenThereIsNoItems()
+    {
+        // Arrange
+        var request = _fixture.SetInvalidRequestWithNoItems();
+        _fixture.SetFailedValidator(request);
+
+        // Act
+        var result = await _fixture.useCase.Handle(
+            request,
+            _fixture.cancellationToken
+        );
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.NotEmpty(result.Message);
+
+        _fixture.VerifyStartUseCaseLog("BaseInOutUseCase", request.CorrelationId);
+        _fixture.VerifyFinishUseCaseLog(nameof(CreateOrderUseCase), request.CorrelationId, 0);
+        _fixture.mockLogger.Verify(l => l.Warning(
+            "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Order must have at least one item.",
+            nameof(CreateOrderUseCase), "HandleInternalAsync", request.CorrelationId
+        ), Times.Once);
+        _fixture.VerifyRepository(0);
+
+        Assert.Equal("Order must have at least one item.", result.Message);
+        Assert.False(result.Success);
     }
 }

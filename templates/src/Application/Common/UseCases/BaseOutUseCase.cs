@@ -1,5 +1,5 @@
-﻿using Application.Common.Messages;
-using Application.Common.Repositories;
+﻿using Application.Common.Repositories;
+using Application.Common.Requests;
 using Domain.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;

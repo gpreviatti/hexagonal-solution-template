@@ -16,18 +16,18 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
         dbEntitySet = this.dbContext.Set<TEntity>();
     }
 
-    public async Task AddAsync(TEntity entity, CancellationToken cancellationToken)
+    public async Task<int> AddAsync(TEntity entity, CancellationToken cancellationToken)
     {
         await dbEntitySet.AddAsync(entity, cancellationToken);
 
-        await dbContext.SaveChangesAsync(cancellationToken);
+        return await dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task AddRangeAsync(TEntity[] entities, CancellationToken cancellationToken)
+    public async Task<int> AddRangeAsync(TEntity[] entities, CancellationToken cancellationToken)
     {
         await dbEntitySet.AddRangeAsync(entities, cancellationToken);
 
-        await dbContext.SaveChangesAsync(cancellationToken);
+        return await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<TEntity> AddOrUpdateIfNotExistsAsync(TEntity entity, Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
@@ -44,26 +44,25 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
         return entity;
     }
 
-
-    public void Update(TEntity entity)
+    public int Update(TEntity entity)
     {
         dbEntitySet.Update(entity);
 
-        dbContext.SaveChanges();
+        return dbContext.SaveChanges();
     }
 
-    public void RemoveAsync(TEntity entity, CancellationToken cancellationToken)
+    public async Task<int> RemoveAsync(TEntity entity, CancellationToken cancellationToken)
     {
         dbEntitySet.Remove(entity);
 
-        dbContext.SaveChangesAsync(cancellationToken);
+        return await dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public void RemoveRangeAsync(TEntity[] entities, CancellationToken cancellationToken)
+    public async Task<int> RemoveRangeAsync(TEntity[] entities, CancellationToken cancellationToken)
     {
         dbEntitySet.RemoveRange(entities);
 
-        dbContext.SaveChangesAsync(cancellationToken);
+        return await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<bool> CheckExistsByWhereAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)

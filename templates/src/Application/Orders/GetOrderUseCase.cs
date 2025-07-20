@@ -1,4 +1,5 @@
 ﻿using Application.Common.Messages;
+using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Orders;
 using FluentValidation;
@@ -34,13 +35,20 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
         var order = await _repository
             .GetByIdAsNoTrackingAsync(request.Id, cancellationToken);
 
+        if (order is null)
+        {
+            logger.Warning(DefaultApplicationMessages.DefaultApplicationMessage + "Order not found.", ClassName, methodName, request.CorrelationId);
+            response.SetMessage("Order not found.");
+            return response;
+        }
+
         response.SetData(new(
             order.Id,
             order.Description,
             order.Total
         ));
 
-        logger.Information("[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Use case was executed with success", ClassName, methodName, request.CorrelationId);
+        logger.Information(DefaultApplicationMessages.FinishedExecutingUseCase, ClassName, methodName, request.CorrelationId);
 
         return response;
     }

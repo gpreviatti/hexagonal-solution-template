@@ -1,6 +1,7 @@
 ﻿using Domain.Orders;
 
 namespace UnitTests.Domain.Orders;
+
 public sealed class OrderTests
 {
     [Fact]
@@ -23,27 +24,25 @@ public sealed class OrderTests
         Assert.NotNull(result);
         Assert.NotNull(order.UpdatedAt);
         Assert.True(result.Success);
+        Assert.Empty(result.Message);
         Assert.NotEqual(0, order.Total);
         Assert.NotNull(order.UpdatedAt);
         Assert.Equal(items.Sum(i => i.Value), order.Total);
     }
 
     [Fact]
-    public void GivenAOrderWithoutItemsThenShouldSetTotalAsZeroWithSuccess()
+    public void GivenAOrderWithNoItemsThenShouldReturnFailure()
     {
         /// Arrange
         var order = new Order();
 
         /// Act
-        var result = order.Create("Amazing Computer");
+        var result = order.Create("Amazing Computer", Array.Empty<Item>());
 
         // Assert
         Assert.NotNull(order);
         Assert.NotNull(result);
-        Assert.NotNull(order.UpdatedAt);
-        Assert.Equal(0, order.Total);
-        Assert.True(result.Success);
-        Assert.Equal(0, order.Total);
-        Assert.NotNull(order.UpdatedAt);
+        Assert.True(result.IsFailure);
+        Assert.Equal("Order must have at least one item.", result.Message);
     }
 }

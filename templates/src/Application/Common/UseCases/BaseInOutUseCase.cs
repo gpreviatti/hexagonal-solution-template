@@ -1,9 +1,10 @@
-﻿using Application.Common.Messages;
+﻿using Application.Common.Requests;
 using Application.Common.Repositories;
 using Domain.Common;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using Application.Common.Messages;
 
 namespace Application.Common.UseCases;
 
@@ -35,7 +36,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity>(
     )
     {
         string methodName = nameof(Handle);
-        logger.Information("[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Start to execute use case", ClassName, methodName, request.CorrelationId);
+        logger.Information(DefaultApplicationMessages.StartToExecuteUseCase, ClassName, methodName, request.CorrelationId);
 
         var response = new BaseResponse<TResponseData>();
 
@@ -45,9 +46,9 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity>(
             if (!validationResult.IsValid)
             {
                 string errors = string.Join(", ", validationResult.Errors);
-                response.SetRequestValidationErrorMessage(ClassName, methodName, request.CorrelationId, errors);
+                response.SetMessage(errors);
 
-                logger.Error("[{ClassName}] | [{methodName}] | [{CorrelationId}] | [{errors}]", ClassName, methodName, request.CorrelationId, errors, response);
+                logger.Error(DefaultApplicationMessages.ValidationErrors, ClassName, methodName, request.CorrelationId, errors, response);
                 return response;
             }
         }

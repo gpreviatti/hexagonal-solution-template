@@ -4,14 +4,14 @@ using Domain.Common;
 namespace Application.Common.Repositories;
 public interface IBaseRepository<TEntity> where TEntity : DomainEntity
 {
-    Task AddAsync(TEntity entity, CancellationToken cancellationToken);
-    Task AddRangeAsync(TEntity[] entities, CancellationToken cancellationToken);
+    Task<int> AddAsync(TEntity entity, CancellationToken cancellationToken);
+    Task<int> AddRangeAsync(TEntity[] entities, CancellationToken cancellationToken);
     Task<TEntity> AddOrUpdateIfNotExistsAsync(TEntity entity, Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken);
 
-    void Update(TEntity entity);
+    int Update(TEntity entity);
 
-    void RemoveAsync(TEntity entity, CancellationToken cancellationToken);
-    void RemoveRangeAsync(TEntity[] entities, CancellationToken cancellationToken);
+    Task<int> RemoveAsync(TEntity entity, CancellationToken cancellationToken);
+    Task<int> RemoveRangeAsync(TEntity[] entities, CancellationToken cancellationToken);
 
     Task<bool> CheckExistsByWhereAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken);
     Task<bool> CheckExistsByWhereAsNoTrackingAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken);
