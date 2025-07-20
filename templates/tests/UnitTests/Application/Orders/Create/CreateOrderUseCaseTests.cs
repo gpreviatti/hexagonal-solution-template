@@ -1,7 +1,6 @@
 ﻿using Application.Common.Messages;
 using Application.Common.UseCases;
 using Application.Orders;
-using Domain.Common;
 using Domain.Orders;
 using UnitTests.Application.Common;
 
@@ -33,19 +32,15 @@ public sealed class CreateOrderUseCaseFixture : BaseApplicationFixture<Order, Cr
     public static CreateOrderRequest SetInvalidRequestWithNoItems() =>
         new(Guid.NewGuid(), "AwesomeComputer", []);
 
-    public void SetSuccessfulRepository()
-    {
-        var order = autoFixture
-            .Create<Order>();
-
-        var result = Result.Ok(order);
-
-        MockRepository(result);
-    }
-
     public void VerifyCreateOrderLogNoItemsError(Guid correlationId, int times = 1) =>
         mockLogger.Verify(l => l.Warning(
             DefaultApplicationMessages.DefaultApplicationMessage + "Order must have at least one item.",
+            nameof(CreateOrderUseCase), "HandleInternalAsync", correlationId
+        ), Times.Exactly(times));
+
+    public void VerifyFailedToCreateOrderLog(Guid correlationId, int times = 1) =>
+        mockLogger.Verify(l => l.Warning(
+            DefaultApplicationMessages.DefaultApplicationMessage + "Failed to create order.",
             nameof(CreateOrderUseCase), "HandleInternalAsync", correlationId
         ), Times.Exactly(times));
 }
@@ -66,7 +61,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         // Arrange
         var request = _fixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
-        _fixture.SetSuccessfulRepository();
+        _fixture.SetSuccessfulAddAsync();
 
         // Act
         var result = await _fixture.useCase.Handle(request, _fixture.cancellationToken);
@@ -79,6 +74,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyStartUseCaseLog("BaseInOutUseCase", request.CorrelationId);
         _fixture.VerifyFinishUseCaseLog(nameof(CreateOrderUseCase), request.CorrelationId);
         _fixture.VerifyCreateOrderLogNoItemsError(request.CorrelationId, 0);
+        _fixture.VerifyFailedToCreateOrderLog(request.CorrelationId, 0);
         _fixture.VerifyRepository(1);
     }
 
@@ -102,6 +98,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyStartUseCaseLog("BaseInOutUseCase", request.CorrelationId);
         _fixture.VerifyFinishUseCaseLog(nameof(CreateOrderUseCase), request.CorrelationId, 0);
         _fixture.VerifyCreateOrderLogNoItemsError(request.CorrelationId, 0);
+        _fixture.VerifyFailedToCreateOrderLog(request.CorrelationId, 0);
         _fixture.VerifyRepository(0);
     }
 
@@ -110,7 +107,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
     {
         // Arrange
         var request = CreateOrderUseCaseFixture.SetInvalidRequestWithNoItems();
-        _fixture.SetFailedValidator(request);
+        _fixture.SetSuccessfulValidator(request);
 
         // Act
         var result = await _fixture.useCase.Handle(
@@ -126,5 +123,33 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyStartUseCaseLog("BaseInOutUseCase", request.CorrelationId);
         _fixture.VerifyFinishUseCaseLog(nameof(CreateOrderUseCase), request.CorrelationId, 0);
         _fixture.VerifyCreateOrderLogNoItemsError(request.CorrelationId, 1);
+        _fixture.VerifyFailedToCreateOrderLog(request.CorrelationId, 0);
+        _fixture.VerifyRepository(0);
+    }
+
+    [Fact]
+    public async Task GivenAValidRequestThenFailsWhenRepositoryReturnsZero()
+    {
+        // Arrange
+        var request = _fixture.SetValidRequest();
+        _fixture.SetSuccessfulValidator(request);
+        _fixture.SetFailedAddAsync();
+
+        // Act
+        var result = await _fixture.useCase.Handle(
+            request,
+            _fixture.cancellationToken
+        );
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.NotEmpty(result.Message);
+        Assert.Equal("Failed to create order.", result.Message);
+
+        _fixture.VerifyStartUseCaseLog("BaseInOutUseCase", request.CorrelationId);
+        _fixture.VerifyFinishUseCaseLog(nameof(CreateOrderUseCase), request.CorrelationId, 0);
+        _fixture.VerifyRepository(1);
+        _fixture.VerifyCreateOrderLogNoItemsError(request.CorrelationId, 0);
+        _fixture.VerifyFailedToCreateOrderLog(request.CorrelationId, 1);
     }
 }

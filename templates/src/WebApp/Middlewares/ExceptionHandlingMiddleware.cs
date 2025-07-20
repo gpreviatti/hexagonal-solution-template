@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using Application.Common.Messages;
+using Application.Common.Requests;
 using SerilogTimings.Extensions;
 using ILogger = Serilog.ILogger;
 

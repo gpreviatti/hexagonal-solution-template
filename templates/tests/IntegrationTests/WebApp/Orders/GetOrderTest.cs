@@ -1,10 +1,28 @@
 ﻿using System.Net;
-using Application.Common.Messages;
+using Application.Common.Requests;
 using Application.Orders;
+using CommonTests.Fixtures;
 using IntegrationTests.Common;
+using IntegrationTests.WebApp.Common;
 using WebApp;
 
-namespace IntegrationTests.WebApp.Orders.Get;
+namespace IntegrationTests.WebApp.Orders;
+
+public class GetOrderTestFixture : BaseFixture
+{
+    public CustomWebApplicationFactory<Program> customWebApplicationFactory;
+
+    public ApiHelper apiHelper;
+
+    public string RESOURCE_URL = "orders/{0}/{1}";
+
+    public GetOrderTestFixture(CustomWebApplicationFactory<Program> customWebApplicationFactory)
+    {
+        this.customWebApplicationFactory = customWebApplicationFactory;
+
+        apiHelper = new ApiHelper(this.customWebApplicationFactory.CreateClient());
+    }
+}
 
 [Collection("WebApplicationFactoryCollectionDefinition")]
 public class GetOrderTest(CustomWebApplicationFactory<Program> customWebApplicationFactory) : GetOrderTestFixture(customWebApplicationFactory)
@@ -14,9 +32,10 @@ public class GetOrderTest(CustomWebApplicationFactory<Program> customWebApplicat
     {
         // Arrange
         var id = 1;
+        var url = string.Format(RESOURCE_URL, id, Guid.NewGuid());
 
         // Act
-        var result = await apiHelper.GetAsync(RESOURCE_URL + "/" + id);
+        var result = await apiHelper.GetAsync(url);
         var response = await apiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
 
         // Assert
@@ -31,14 +50,15 @@ public class GetOrderTest(CustomWebApplicationFactory<Program> customWebApplicat
     {
         // Arrange
         var id = 9999999;
+        var url = string.Format(RESOURCE_URL, id, Guid.NewGuid());
 
         // Act
-        var result = await apiHelper.GetAsync(RESOURCE_URL + "/" + id);
+        var result = await apiHelper.GetAsync(url);
         var response = await apiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         Assert.False(response!.Success);
         Assert.Null(response.Data);
     }

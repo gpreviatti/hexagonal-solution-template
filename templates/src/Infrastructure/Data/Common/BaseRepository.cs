@@ -71,18 +71,56 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
     public async Task<bool> CheckExistsByWhereAsNoTrackingAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
         => await dbEntitySet.AsNoTracking().AnyAsync(predicate, cancellationToken);
 
-    public async Task<TEntity> GetByIdAsNoTrackingAsync(object id, CancellationToken cancellationToken) => await dbEntitySet
-        .AsNoTracking()
-        .FirstAsync(e => e.Id.Equals(id), cancellationToken);
+    public async Task<TEntity?> GetByIdAsNoTrackingAsync(
+        int id,
+        CancellationToken cancellationToken,
+        params Expression<Func<TEntity, object>>[] includes
+    )
+    {
+        IQueryable<TEntity> query = dbEntitySet.AsNoTracking();
 
-    public async Task<IList<TEntity>> GetByWhereAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
-        => await dbEntitySet.Where(predicate).ToListAsync(cancellationToken);
+        query = SetIncludes(includes, query);
 
-    public async Task<IList<TEntity>> GetByWhereAsNoTrackingAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
-        => await dbEntitySet.AsNoTracking().Where(predicate).ToListAsync(cancellationToken);
+        return await query.FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
+    }
+    public async Task<IList<TEntity>> GetByWhereAsync(
+        Expression<Func<TEntity, bool>> predicate,
+        CancellationToken cancellationToken,
+        params Expression<Func<TEntity, object>>[] includes
+    )
+    {
+        IQueryable<TEntity> query = dbEntitySet.AsNoTracking();
 
-    public async Task<TEntity> FirstOrDefaultAsNoTrackingAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
-        => await dbEntitySet.AsNoTracking().FirstOrDefaultAsync(predicate, cancellationToken) ?? default!;
+        query = SetIncludes(includes, query);
+
+        return await query.Where(predicate).ToListAsync(cancellationToken);
+    }
+
+    public async Task<IList<TEntity>> GetByWhereAsNoTrackingAsync(
+        Expression<Func<TEntity, bool>> predicate,
+        CancellationToken cancellationToken,
+        params Expression<Func<TEntity, object>>[] includes
+    )
+    {
+        IQueryable<TEntity> query = dbEntitySet.AsNoTracking();
+
+        query = SetIncludes(includes, query);
+
+        return await query.Where(predicate).ToListAsync(cancellationToken);
+    }
+
+    public async Task<TEntity> FirstOrDefaultAsNoTrackingAsync(
+        Expression<Func<TEntity, bool>> predicate,
+        CancellationToken cancellationToken,
+        params Expression<Func<TEntity, object>>[] includes
+    )
+    {
+        IQueryable<TEntity> query = dbEntitySet.AsNoTracking();
+
+        query = SetIncludes(includes, query);
+
+        return await query.FirstOrDefaultAsync(predicate, cancellationToken) ?? default!;
+    }
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken)
     {
@@ -103,5 +141,17 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
     {
         if (dbContext.Database.CurrentTransaction != null)
             await dbContext.Database.CurrentTransaction.RollbackAsync(cancellationToken);
+    }
+
+    private static IQueryable<TEntity> SetIncludes(
+        Expression<Func<TEntity, object>>[] includes,
+        IQueryable<TEntity> query
+    )
+    {
+        if (includes != null && includes.Length > 0)
+            foreach (var include in includes)
+                query = query.Include(include);
+
+        return query;
     }
 }

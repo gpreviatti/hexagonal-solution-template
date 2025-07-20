@@ -23,7 +23,11 @@ public sealed class OrderRepositoryTest : IClassFixture<OrderDataTestFixture>
         var id = 1;
 
         // Act
-        var result = await _fixture!.Repository!.GetByIdAsNoTrackingAsync(id, _fixture.cancellationToken);
+        var result = await _fixture!.Repository!.GetByIdAsNoTrackingAsync(
+            id,
+            _fixture.cancellationToken,
+            o => o.Items
+        );
 
         // Assert
         Assert.NotNull(result);
