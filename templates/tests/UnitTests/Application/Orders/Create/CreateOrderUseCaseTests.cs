@@ -1,4 +1,5 @@
-﻿using Application.Common.UseCases;
+﻿using Application.Common.Messages;
+using Application.Common.UseCases;
 using Application.Orders;
 using Domain.Common;
 using Domain.Orders;
@@ -44,7 +45,7 @@ public sealed class CreateOrderUseCaseFixture : BaseApplicationFixture<Order, Cr
 
     public void VerifyCreateOrderLogNoItemsError(Guid correlationId, int times = 1) =>
         mockLogger.Verify(l => l.Warning(
-            "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Order must have at least one item.",
+            DefaultApplicationMessages.DefaultApplicationMessage + "Order must have at least one item.",
             nameof(CreateOrderUseCase), "HandleInternalAsync", correlationId
         ), Times.Exactly(times));
 }
