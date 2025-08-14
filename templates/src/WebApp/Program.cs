@@ -1,6 +1,7 @@
 ﻿using Application;
 using Domain;
 using Infrastructure;
+using Serilog;
 using WebApp.Endpoints;
 using WebApp.Middlewares;
 
@@ -26,6 +27,8 @@ public sealed class Program
         app.MapOrderEndpoints();
 
         app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+        app.UseSerilogRequestLogging();
 
         app.Run();
     }

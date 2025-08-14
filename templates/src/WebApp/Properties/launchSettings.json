@@ -1,25 +1,25 @@
 ﻿{
   "$schema": "http://json.schemastore.org/launchsettings.json",
-  "profiles": {
-    "WebApp Http": {
-      "commandName": "Project",
-      "dotnetRunMessages": true,
-      "sqlDebugging": true,
-      "launchBrowser": false,
-      "applicationUrl": "http://localhost:5010",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "WebApp Https": {
-      "commandName": "Project",
-      "dotnetRunMessages": true,
-      "sqlDebugging": true,
-      "launchBrowser": false,
-      "applicationUrl": "https://localhost:7175",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+    "profiles": {
+        "WebApp Http [Development]": {
+            "commandName": "Project",
+            "dotnetRunMessages": true,
+            "sqlDebugging": true,
+            "launchBrowser": false,
+            "applicationUrl": "http://localhost:5010",
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        },
+        "WebApp Https [Development]": {
+            "commandName": "Project",
+            "dotnetRunMessages": true,
+            "sqlDebugging": true,
+            "launchBrowser": false,
+            "applicationUrl": "https://localhost:7175",
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        }
     }
-  }
 }

@@ -1,21 +1,17 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using Serilog.Events;
-using Serilog.Sinks.SystemConsole.Themes;
 
 namespace Infrastructure.Logs;
 
 internal static class InfrastructureLogDependencyInjection
 {
-    public static IServiceCollection AddLogs(this IServiceCollection services)
+    public static IServiceCollection AddLogs(this IServiceCollection services, IConfiguration configuration)
     {
-        var logger = new LoggerConfiguration()
-            .MinimumLevel.Information()
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-            .WriteTo.Console(theme: AnsiConsoleTheme.Code)
-            .CreateLogger();
-
-        services.AddSingleton<ILogger>(logger);
+        services.AddSerilog((services, lc) => lc
+            .ReadFrom.Configuration(configuration)
+            .ReadFrom.Services(services)
+            .Enrich.FromLogContext());
 
         return services;
     }
