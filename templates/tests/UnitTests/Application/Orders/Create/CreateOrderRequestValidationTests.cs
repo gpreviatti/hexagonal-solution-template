@@ -1,38 +1,52 @@
 ﻿using Application.Orders;
 using FluentValidation;
 using FluentValidation.TestHelper;
-using GPreviatti.Util.JsonResourceAttribute;
 
 namespace UnitTests.Application.Orders.Create;
 
 public sealed class CreateOrderRequestValidationFixture
 {
     public IValidator<CreateOrderRequest> validator = new CreateOrderRequestValidator();
+
+    public CreateOrderRequest GetValidRequest() => new(Guid.NewGuid(), "new order", [
+        new("item1", "description1", 10.0m),
+        new("item2", "description2", 20.0m)
+    ]);
 }
 
 public sealed class CreateOrderRequestValidationTests(CreateOrderRequestValidationFixture fixture) : IClassFixture<CreateOrderRequestValidationFixture>
 {
     private readonly CreateOrderRequestValidationFixture _fixture = fixture;
 
-    [Theory(DisplayName = nameof(Given_A_Valid_Request_Then_Pass))]
-    [JsonResourceData("create-order-request-tests.json", "valid")]
-    public async Task Given_A_Valid_Request_Then_Pass(CreateOrderRequest request)
+    [Fact(DisplayName = nameof(Given_A_Valid_Request_Then_Pass))]
+    public async Task Given_A_Valid_Request_Then_Pass()
     {
-        // Arrange, Act
+        // Arrange
+        var request = _fixture.GetValidRequest();
+
+        // Act
         var result = await _fixture.validator.TestValidateAsync(request);
 
         // Assert
         result.ShouldNotHaveAnyValidationErrors();
     }
 
-    [Theory(DisplayName = nameof(Given_A_Invalid_Request_Then_Fails))]
-    [JsonResourceData("create-order-request-tests.json", "invalid")]
-    public async Task Given_A_Invalid_Request_Then_Fails(CreateOrderRequest request, string propertyName)
+    [Fact(DisplayName = nameof(Given_A_Invalid_Request_Then_Fails))]
+    public async Task Given_A_Invalid_Request_Then_Fails()
     {
-        // Arrange, Act
+        // Arrange
+        var request = _fixture.GetValidRequest() with
+        {
+            CorrelationId = Guid.Empty,
+            Description = string.Empty,
+            Items = []
+        };
+        // Act
         var result = await _fixture.validator.TestValidateAsync(request);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(propertyName);
+        result.ShouldHaveValidationErrorFor("CorrelationId");
+        result.ShouldHaveValidationErrorFor("Description");
+        result.ShouldHaveValidationErrorFor("Items");
     }
 }
