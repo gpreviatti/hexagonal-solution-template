@@ -8,7 +8,7 @@ This is a dotnet solution template from projects based on hexagonal architecture
 ## Used Technologies
 
 - FluenValidation
-- Serilog
+- OpenTelemetry
 - EntityFrameworkCore
 - EntityFrameworkCore.SqlServer
 - Xunit
@@ -16,6 +16,7 @@ This is a dotnet solution template from projects based on hexagonal architecture
 - Autofixture
 - docker and docker compose
 - k6
+- GitHub actions
 
 ## Advisors and recommendations
 
