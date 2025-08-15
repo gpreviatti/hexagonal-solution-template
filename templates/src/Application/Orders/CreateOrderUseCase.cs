@@ -4,6 +4,7 @@ using Application.Common.UseCases;
 using Domain.Orders;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Orders;
 
@@ -31,7 +32,7 @@ public sealed class CreateOrderRequestValidator : AbstractValidator<CreateOrderR
     }
 }
 
-public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<CreateOrderRequest, OrderDto, Order>(
+public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<CreateOrderRequest, OrderDto, Order, CreateOrderUseCase>(
     serviceProvider,
     serviceProvider.GetService<IValidator<CreateOrderRequest>>()
 )
@@ -57,7 +58,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
 
         if (createResult.IsFailure)
         {
-            logger.Warning(DefaultApplicationMessages.DefaultApplicationMessage + createResult.Message, ClassName, methodName, correlationId);
+            logger.LogWarning(DefaultApplicationMessages.DefaultApplicationMessage + createResult.Message, ClassName, methodName, correlationId);
             response.SetMessage(createResult.Message);
             return response;
         }
@@ -66,7 +67,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
 
         if (addResult == 0)
         {
-            logger.Warning(DefaultApplicationMessages.DefaultApplicationMessage + "Failed to create order.", ClassName, methodName, correlationId);
+            logger.LogWarning(DefaultApplicationMessages.DefaultApplicationMessage + "Failed to create order.", ClassName, methodName, correlationId);
             response.SetMessage("Failed to create order.");
             return response;
         }
@@ -77,7 +78,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
             newOrder.Total
         ));
 
-        logger.Information(DefaultApplicationMessages.FinishedExecutingUseCase, ClassName, methodName, correlationId);
+        logger.LogInformation(DefaultApplicationMessages.FinishedExecutingUseCase, ClassName, methodName, correlationId);
 
         return response;
     }

@@ -1,5 +1,4 @@
-﻿using Application.Common.Requests;
-using Application.Common.UseCases;
+﻿using Application.Common.UseCases;
 using Application.Orders;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,8 +12,8 @@ public static class ApplicationDependencyInjection
         services.AddValidatorsFromAssemblyContaining<CreateOrderRequestValidator>();
 
         // Orders
-        services.AddScoped<IBaseInOutUseCase<GetOrderRequest, OrderDto>, GetOrderUseCase>();
-        services.AddScoped<IBaseInOutUseCase<CreateOrderRequest, OrderDto>, CreateOrderUseCase>();
+        services.AddScoped<IBaseInOutUseCase<GetOrderRequest, OrderDto, GetOrderUseCase>, GetOrderUseCase>();
+        services.AddScoped<IBaseInOutUseCase<CreateOrderRequest, OrderDto, CreateOrderUseCase>, CreateOrderUseCase>();
 
 
         return services;

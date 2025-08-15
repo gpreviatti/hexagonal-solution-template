@@ -1,19 +1,17 @@
 ﻿using Application.Common.Messages;
-using Application.Common.UseCases;
 using Application.Orders;
 using Domain.Orders;
+using Microsoft.Extensions.Logging;
 using UnitTests.Application.Common;
 
 namespace UnitTests.Application.Orders.Create;
 
-public sealed class CreateOrderUseCaseFixture : BaseApplicationFixture<Order, CreateOrderRequest>
+public sealed class CreateOrderUseCaseFixture : BaseApplicationFixture<Order, CreateOrderRequest, CreateOrderUseCase>
 {
-    public IBaseInOutUseCase<CreateOrderRequest, OrderDto> useCase;
-
     public CreateOrderUseCaseFixture()
     {
         MockServiceProviderServices();
-        useCase = new CreateOrderUseCase(mockServiceProvider.Object);
+        useCase = new(mockServiceProvider.Object);
     }
 
     public new void ClearInvocations()
@@ -33,13 +31,13 @@ public sealed class CreateOrderUseCaseFixture : BaseApplicationFixture<Order, Cr
         new(Guid.NewGuid(), "AwesomeComputer", []);
 
     public void VerifyCreateOrderLogNoItemsError(Guid correlationId, int times = 1) =>
-        mockLogger.Verify(l => l.Warning(
+        mockLogger.Verify(l => l.LogWarning(
             DefaultApplicationMessages.DefaultApplicationMessage + "Order must have at least one item.",
             nameof(CreateOrderUseCase), "HandleInternalAsync", correlationId
         ), Times.Exactly(times));
 
     public void VerifyFailedToCreateOrderLog(Guid correlationId, int times = 1) =>
-        mockLogger.Verify(l => l.Warning(
+        mockLogger.Verify(l => l.LogWarning(
             DefaultApplicationMessages.DefaultApplicationMessage + "Failed to create order.",
             nameof(CreateOrderUseCase), "HandleInternalAsync", correlationId
         ), Times.Exactly(times));

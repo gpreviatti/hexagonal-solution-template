@@ -3,22 +3,26 @@ using CommonTests.Fixtures;
 using Domain.Common;
 using FluentValidation;
 using FluentValidation.Results;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 
 namespace UnitTests.Application.Common;
 
-public class BaseApplicationFixture<TEntity, TRequest> : BaseFixture where TEntity : DomainEntity where TRequest : class
+public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture 
+    where TEntity : DomainEntity
+    where TRequest : class
+    where TUseCase : class
 {
     public Mock<IServiceProvider> mockServiceProvider = new();
-    public Mock<ILogger> mockLogger = new();
+    public Mock<ILogger<TUseCase>> mockLogger = new();
     public Mock<IBaseRepository<TEntity>> mockRepository = new();
     public Mock<IValidator<TRequest>> mockValidator = new();
+    public TUseCase? useCase;
 
     public void MockServiceProviderServices()
     {
         mockServiceProvider
-            .Setup(r => r.GetService(typeof(ILogger)))
+            .Setup(r => r.GetService(typeof(ILogger<TUseCase>)))
             .Returns(mockLogger.Object);
 
         mockServiceProvider
@@ -67,7 +71,7 @@ public class BaseApplicationFixture<TEntity, TRequest> : BaseFixture where TEnti
     }
 
     public void VerifyStartUseCaseLog(string className, Guid correlationId, int times = 1) => mockLogger.Verify(
-        l => l.Information(
+        l => l.LogInformation(
             "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Start to execute use case",
             className, "Handle", correlationId
         ),
@@ -75,7 +79,7 @@ public class BaseApplicationFixture<TEntity, TRequest> : BaseFixture where TEnti
     );
 
     public void VerifyFinishUseCaseLog(string className, Guid correlationId, int times = 1) => mockLogger.Verify(
-        l => l.Information(
+        l => l.LogInformation(
             "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Finished executing use case with success",
             className, "HandleInternalAsync", correlationId
         ),

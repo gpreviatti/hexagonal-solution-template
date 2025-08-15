@@ -3,32 +3,34 @@ using Application.Common.Repositories;
 using Domain.Common;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using Serilog;
 using Application.Common.Messages;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Common.UseCases;
 
-public interface IBaseInOutUseCase<TRequest, TResponseData>
+public interface IBaseInOutUseCase<TRequest, TResponseData, TUseCase>
     where TRequest : BaseRequest
     where TResponseData : class
+    where TUseCase : class
 {
     Task<BaseResponse<TResponseData>> Handle(TRequest request, CancellationToken cancellationToken);
 }
 
-public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity>(
+public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCase>(
     IServiceProvider serviceProvider,
     IValidator<TRequest> validator = null
-) : IBaseInOutUseCase<TRequest, TResponseData>
+) : IBaseInOutUseCase<TRequest, TResponseData, TUseCase>
     where TRequest : BaseRequest
     where TResponseData : class
     where TEntity : DomainEntity
+    where TUseCase : class
 {
     protected readonly IServiceProvider serviceProvider = serviceProvider;
-    protected readonly ILogger logger = serviceProvider.GetRequiredService<ILogger>();
+    protected readonly ILogger<TUseCase> logger = serviceProvider.GetRequiredService<ILogger<TUseCase>>();
     protected readonly IValidator<TRequest> validator = validator;
     protected readonly IBaseRepository<TEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<TEntity>>();
 
-    private const string ClassName = nameof(BaseInOutUseCase<TRequest, TResponseData, TEntity>);
+    private const string ClassName = nameof(BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCase>);
 
     public async Task<BaseResponse<TResponseData>> Handle(
         TRequest request,
@@ -36,7 +38,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity>(
     )
     {
         string methodName = nameof(Handle);
-        logger.Information(DefaultApplicationMessages.StartToExecuteUseCase, ClassName, methodName, request.CorrelationId);
+        logger.LogInformation(DefaultApplicationMessages.StartToExecuteUseCase, ClassName, methodName, request.CorrelationId);
 
         var response = new BaseResponse<TResponseData>();
 
@@ -48,7 +50,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity>(
                 string errors = string.Join(", ", validationResult.Errors);
                 response.SetMessage(errors);
 
-                logger.Error(DefaultApplicationMessages.ValidationErrors, ClassName, methodName, request.CorrelationId, errors, response);
+                logger.LogError(DefaultApplicationMessages.ValidationErrors, ClassName, methodName, request.CorrelationId, errors, response);
                 return response;
             }
         }

@@ -1,18 +1,20 @@
 ﻿using Infrastructure.Data;
-using Infrastructure.Logs;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Infrastructure.OpenTelemetry;
 
 namespace Infrastructure;
 public static class InfrastructureDependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static WebApplicationBuilder AddInfrastructure(this WebApplicationBuilder builder)
     {
-        services
-            .AddLogs(configuration)
+        var configuration = builder.Configuration;
+
+        builder.Services
             .AddData(configuration);
 
+        builder.AddOpenTelemetry();
 
-        return services;
+        return builder;
     }
 }
