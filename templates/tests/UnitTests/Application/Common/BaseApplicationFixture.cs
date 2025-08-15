@@ -67,15 +67,8 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
             .ReturnsAsync(validationResult);
     }
 
-    public void VerifyStartUseCaseLog(int times = 1) => mockLogger.VerifyLog(
-        l => l.LogInformation("*Start to execute use case*"),
-        Times.Exactly(times)
-    );
-
-    public void VerifyFinishUseCaseLog(int times = 1) => mockLogger.VerifyLog(
-        l => l.LogInformation("*Finished executing use case with success*"),
-        Times.Exactly(times)
-    );
+    public void VerifyStartUseCaseLog(int times = 1) => VerifyLogInformation("Start to execute use case", times);
+    public void VerifyFinishUseCaseLog(int times = 1) => VerifyLogInformation("Finished executing use case with success", times);
 
     public void VerifyLogInformation(string message, int times = 1) => mockLogger.VerifyLog(
         l => l.LogInformation($"*{message}*"),
