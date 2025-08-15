@@ -3,7 +3,7 @@
   "author": "Giovanni Brunno Previatti",
   "identity": "Hexagonal.Solution.Template",
   "name": "Hexagonal solution template",
-  "description": "Solution template following hexagonal architecture structure best praticies",
+  "description": "Solution template following hexagonal architecture structure best practices",
   "shortName": "hexagonal-solution",
   "sourceName": "Hexagonal.Solution.Template",
   "classifications": [
