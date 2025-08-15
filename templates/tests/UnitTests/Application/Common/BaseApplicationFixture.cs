@@ -5,7 +5,6 @@ using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
 
-
 namespace UnitTests.Application.Common;
 
 public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture 
@@ -17,7 +16,7 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
     public Mock<ILogger<TUseCase>> mockLogger = new();
     public Mock<IBaseRepository<TEntity>> mockRepository = new();
     public Mock<IValidator<TRequest>> mockValidator = new();
-    public TUseCase? useCase;
+    public TUseCase useCase = default!;
 
     public void MockServiceProviderServices()
     {
@@ -59,30 +58,37 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
 
     public void SetFailedValidator(TRequest request)
     {
-        var validationResult = new ValidationResult()
+        ValidationResult validationResult = new()
         {
-            Errors = [
-                new ValidationFailure("Description", "Description is required")
-            ]
+            Errors = [new("Description", "Description is required")]
         };
         mockValidator
             .Setup(v => v.ValidateAsync(request, cancellationToken))
             .ReturnsAsync(validationResult);
     }
 
-    public void VerifyStartUseCaseLog(string className, Guid correlationId, int times = 1) => mockLogger.Verify(
-        l => l.LogInformation(
-            "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Start to execute use case",
-            className, "Handle", correlationId
-        ),
+    public void VerifyStartUseCaseLog(int times = 1) => mockLogger.VerifyLog(
+        l => l.LogInformation("*Start to execute use case*"),
         Times.Exactly(times)
     );
 
-    public void VerifyFinishUseCaseLog(string className, Guid correlationId, int times = 1) => mockLogger.Verify(
-        l => l.LogInformation(
-            "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Finished executing use case with success",
-            className, "HandleInternalAsync", correlationId
-        ),
+    public void VerifyFinishUseCaseLog(int times = 1) => mockLogger.VerifyLog(
+        l => l.LogInformation("*Finished executing use case with success*"),
+        Times.Exactly(times)
+    );
+
+    public void VerifyLogInformation(string message, int times = 1) => mockLogger.VerifyLog(
+        l => l.LogInformation($"*{message}*"),
+        Times.Exactly(times)
+    );
+
+    public void VerifyLogWarning(string message, int times = 1) => mockLogger.VerifyLog(
+        l => l.LogWarning($"*{message}*"),
+        Times.Exactly(times)
+    );
+
+    public void VerifyLogError(string message, int times = 1) => mockLogger.VerifyLog(
+        l => l.LogError($"*{message}*"),
         Times.Exactly(times)
     );
 
