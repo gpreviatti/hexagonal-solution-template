@@ -1,3 +1,5 @@
+name: hexagonal-solution-template
+
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2019-latest
@@ -6,7 +8,7 @@ services:
       ACCEPT_EULA: "Y"
       MSSQL_PID: "Developer"
     networks:
-      - sqlserver_networks
+      - hexagonal_solution_template_network
     healthcheck:
       test: /opt/mssql-tools18/bin/sqlcmd -U sa -P "cY5VvZkkh4AzES" -C -Q "SELECT 1" || exit 1
       interval: 3s
@@ -22,7 +24,7 @@ services:
       sqlserver:
         condition: service_healthy
     networks:
-      - sqlserver_networks
+      - hexagonal_solution_template_network
     volumes:
       - ./scripts/migrations.sql:/tmp/migrations.sql
       - ./scripts/seeds.sql:/tmp/seeds.sql
@@ -33,6 +35,16 @@ services:
         ./opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P "cY5VvZkkh4AzES" -C -d master -i ./tmp/migrations.sql &&
         ./opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P "cY5VvZkkh4AzES" -C -d master -i ./tmp/seeds.sql
 
+  aspire-dashboard:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:9
+    networks:
+      - hexagonal_solution_template_network
+    ports:
+      - "18888:18888"
+      - "18889:18889"
+    environment:
+      - DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS=true
+
 networks:
-    sqlserver_networks:
-      driver: bridge
+  hexagonal_solution_template_network:
+    driver: bridge

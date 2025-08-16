@@ -8,6 +8,7 @@ POST {{WebApp_HostAddress}}/orders
 Content-Type: application/json
 
 {
+  "CorrelationId": "{{$guid}}",
   "Description": "John's computer",
   "Items": [
     {

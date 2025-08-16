@@ -1,7 +1,7 @@
 ﻿using Application;
 using Domain;
 using Infrastructure;
-using Serilog;
+using Infrastructure.OpenTelemetry;
 using WebApp.Endpoints;
 using WebApp.Middlewares;
 
@@ -17,8 +17,9 @@ public sealed class Program
 
         builder.Services
             .AddDomain()
-            .AddApplication()
-            .AddInfrastructure(builder.Configuration);
+            .AddApplication();
+
+        builder.AddInfrastructure();
 
         var app = builder.Build();
 
@@ -27,8 +28,6 @@ public sealed class Program
         app.MapOrderEndpoints();
 
         app.UseMiddleware<ExceptionHandlingMiddleware>();
-
-        app.UseSerilogRequestLogging();
 
         app.Run();
     }

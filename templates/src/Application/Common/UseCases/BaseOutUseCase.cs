@@ -1,26 +1,29 @@
 ﻿using Application.Common.Repositories;
 using Application.Common.Requests;
+using Application.Common.Services;
 using Domain.Common;
 using Microsoft.Extensions.DependencyInjection;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Common.UseCases;
 
-public interface IBaseOutUseCase<TResponseData, TEntity>
+public interface IBaseOutUseCase<TResponseData, TEntity, TUseCase>
     where TResponseData : class
     where TEntity : DomainEntity
 {
     Task<BaseResponse<TResponseData>> HandleAsync(CancellationToken cancellationToken);
 }
 
-public abstract class BaseOutUseCase<TResponseData, TEntity>(
+public abstract class BaseOutUseCase<TResponseData, TEntity, TUseCase>(
     IServiceProvider serviceProvider
-) : IBaseOutUseCase<TResponseData, TEntity>
+) : IBaseOutUseCase<TResponseData, TEntity, TUseCase>
     where TResponseData : class
     where TEntity : DomainEntity
+    where TUseCase : class
 {
-    protected readonly ILogger logger = serviceProvider.GetService<ILogger>();
+    protected readonly ILogger<TUseCase> logger = serviceProvider.GetService<ILogger<TUseCase>>();
     protected readonly IBaseRepository<TEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<TEntity>>();
+    protected readonly IHybridCacheService _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
 
     public async Task<BaseResponse<TResponseData>> HandleAsync(CancellationToken cancellationToken)
         => await HandleInternalAsync(cancellationToken);

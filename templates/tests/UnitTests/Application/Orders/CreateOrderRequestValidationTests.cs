@@ -2,7 +2,7 @@
 using FluentValidation;
 using FluentValidation.TestHelper;
 
-namespace UnitTests.Application.Orders.Create;
+namespace UnitTests.Application.Orders;
 
 public sealed class CreateOrderRequestValidationFixture
 {

@@ -1,4 +1,4 @@
-namespace Application.Common.Messages;
+namespace Application.Common.Constants;
 
 public static class DefaultApplicationMessages
 {

@@ -3,28 +3,32 @@ using Application.Common.Repositories;
 using Domain.Common;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using Serilog;
+using Microsoft.Extensions.Logging;
+using Application.Common.Services;
 
 namespace Application.Common.UseCases;
 
-public interface IBaseInUseCase<TRequest, TEntity>
+public interface IBaseInUseCase<TRequest, TEntity, TUseCase>
     where TRequest : BaseRequest
     where TEntity : DomainEntity
+    where TUseCase : class
 {
     Task HandleAsync(TRequest request, CancellationToken cancellationToken);
 }
 
-public abstract class BaseInUseCase<TRequest, TEntity>(
+public abstract class BaseInUseCase<TRequest, TEntity, TUseCase>(
     IServiceProvider serviceProvider,
     IValidator<TRequest> validator = null
-) : IBaseInUseCase<TRequest, TEntity>
+) : IBaseInUseCase<TRequest, TEntity, TUseCase>
     where TRequest : BaseRequest
     where TEntity : DomainEntity
+    where TUseCase : class
 {
-    protected readonly ILogger logger = serviceProvider.GetService<ILogger>();
+    protected readonly ILogger<TUseCase> logger = serviceProvider.GetService<ILogger<TUseCase>>();
     protected readonly IValidator<TRequest> validator = validator;
     protected readonly IBaseRepository<TEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<TEntity>>();
-    private const string ClassName = nameof(BaseInUseCase<TRequest, TEntity>);
+    protected readonly IHybridCacheService _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
+    private const string ClassName = nameof(BaseInUseCase<TRequest, TEntity, TUseCase>);
 
     public async Task HandleAsync(
         TRequest request,
@@ -32,7 +36,7 @@ public abstract class BaseInUseCase<TRequest, TEntity>(
     )
     {
         string methodName = nameof(HandleAsync);
-        logger.Information("[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Start to execute use case", ClassName, methodName, request.CorrelationId);
+        logger.LogInformation("[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Start to execute use case", ClassName, methodName, request.CorrelationId);
 
         if (validator != null)
         {
@@ -40,7 +44,7 @@ public abstract class BaseInUseCase<TRequest, TEntity>(
             if (!validationResult.IsValid)
             {
                 var errors = string.Join(", ", validationResult.Errors);
-                logger.Error(errors);
+                logger.LogError(errors);
             }
         }
 

@@ -1,9 +1,10 @@
-﻿using Application.Common.Messages;
+﻿using Application.Common.Constants;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Orders;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Orders;
 
@@ -17,7 +18,7 @@ public sealed class GetOrderRequestValidator : AbstractValidator<GetOrderRequest
     }
 }
 
-public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<GetOrderRequest, OrderDto, Order>(
+public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<GetOrderRequest, OrderDto, Order, GetOrderUseCase>(
     serviceProvider,
     serviceProvider.GetService<IValidator<GetOrderRequest>>()
 )
@@ -32,15 +33,15 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
         string methodName = nameof(HandleInternalAsync);
         var response = new BaseResponse<OrderDto>();
 
-        var order = await _repository.GetByIdAsNoTrackingAsync(
-            request.Id,
-            cancellationToken,
-            o => o.Items
+        var order = await _cache.GetOrCreateAsync(
+            $"Order-{request.Id}",
+            async cancellationToken => await _repository.GetByIdAsNoTrackingAsync(request.Id, cancellationToken, o => o.Items),
+            cancellationToken
         );
 
         if (order is null || order.Equals(default(Order)))
         {
-            logger.Warning(DefaultApplicationMessages.DefaultApplicationMessage + "Order not found.", ClassName, methodName, request.CorrelationId);
+            logger.LogWarning(DefaultApplicationMessages.DefaultApplicationMessage + "Order not found.", ClassName, methodName, request.CorrelationId);
             response.SetMessage("Order not found.");
             return response;
         }
@@ -51,7 +52,9 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
             order.Total
         ));
 
-        logger.Information(DefaultApplicationMessages.FinishedExecutingUseCase, ClassName, methodName, request.CorrelationId);
+        logger.LogInformation(DefaultApplicationMessages.FinishedExecutingUseCase, ClassName, methodName, request.CorrelationId);
+
+        Metrics.OrderRetrieved.Add(1);
 
         return response;
     }

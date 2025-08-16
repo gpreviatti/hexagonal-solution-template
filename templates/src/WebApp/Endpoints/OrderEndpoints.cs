@@ -12,17 +12,20 @@ internal static class OrderEndpoints
             .WithTags("Orders");
 
         ordersGroup.MapGet("/{id}/{correlationId}", async (
-            [FromServices] IBaseInOutUseCase<GetOrderRequest, OrderDto> useCase,
+            [FromServices] IBaseInOutUseCase<GetOrderRequest, OrderDto, GetOrderUseCase> useCase,
             int id,
             Guid correlationId
         ) => Results.Ok(await useCase.Handle(new(correlationId, id), CancellationToken.None)));
 
         ordersGroup.MapPost("/", async (
-            [FromServices] IBaseInOutUseCase<CreateOrderRequest, OrderDto> useCase,
+            [FromServices] IBaseInOutUseCase<CreateOrderRequest, OrderDto, CreateOrderUseCase> useCase,
             [FromBody] CreateOrderRequest request
         ) =>
         {
             var response = await useCase.Handle(request, CancellationToken.None);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
 
             return Results.Created($"/orders/{response.Data.Id}", response);
         });
