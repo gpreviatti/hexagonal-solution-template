@@ -52,7 +52,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
                 string errors = string.Join(", ", validationResult.Errors);
                 response.SetMessage(errors);
 
-                logger.LogError(DefaultApplicationMessages.ValidationErrors, ClassName, methodName, request.CorrelationId, errors, response);
+                logger.LogError(DefaultApplicationMessages.ValidationErrors, ClassName, methodName, request.CorrelationId, errors);
                 return response;
             }
         }
