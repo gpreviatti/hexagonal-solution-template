@@ -41,7 +41,7 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
                 options.Endpoint = openTelemetryEndpoint;
                 options.Protocol = openTelemetryProtocol;
             });
-            metrics.AddMeter(Metrics.Meter.Name);
+            metrics.AddMeter(DefaultConfigurations.Meter.Name);
         })
         .WithTracing(tracing =>
         {
