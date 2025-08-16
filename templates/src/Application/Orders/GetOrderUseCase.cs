@@ -33,10 +33,10 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
         string methodName = nameof(HandleInternalAsync);
         var response = new BaseResponse<OrderDto>();
 
-        var order = await _repository.GetByIdAsNoTrackingAsync(
-            request.Id,
-            cancellationToken,
-            o => o.Items
+        var order = await _cache.GetOrCreateAsync(
+            $"Order-{request.Id}",
+            async cancellationToken => await _repository.GetByIdAsNoTrackingAsync(request.Id, cancellationToken, o => o.Items),
+            cancellationToken
         );
 
         if (order is null || order.Equals(default(Order)))

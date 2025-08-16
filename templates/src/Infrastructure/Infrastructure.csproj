@@ -23,6 +23,7 @@
 		<PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.12.0" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.12.0" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.12.0-beta.2" />
+		<PackageReference Include="Microsoft.Extensions.Caching.Hybrid" Version="9.8.0" />
 	</ItemGroup>
 
 	<ItemGroup>

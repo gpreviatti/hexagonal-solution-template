@@ -17,6 +17,7 @@ This is a dotnet solution template from projects based on hexagonal architecture
 - docker and docker compose
 - k6
 - GitHub actions
+- HybridCache
 
 ## Advisors and recommendations
 

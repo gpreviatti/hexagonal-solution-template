@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Infrastructure.OpenTelemetry;
+using Infrastructure.Cache;
 
 namespace Infrastructure;
 public static class InfrastructureDependencyInjection
@@ -11,7 +12,8 @@ public static class InfrastructureDependencyInjection
         var configuration = builder.Configuration;
 
         builder.Services
-            .AddData(configuration);
+            .AddData(configuration)
+            .AddCache();
 
         builder.AddOpenTelemetry();
 

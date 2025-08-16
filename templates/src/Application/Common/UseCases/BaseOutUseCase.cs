@@ -1,5 +1,6 @@
 ﻿using Application.Common.Repositories;
 using Application.Common.Requests;
+using Application.Common.Services;
 using Domain.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -22,6 +23,7 @@ public abstract class BaseOutUseCase<TResponseData, TEntity, TUseCase>(
 {
     protected readonly ILogger<TUseCase> logger = serviceProvider.GetService<ILogger<TUseCase>>();
     protected readonly IBaseRepository<TEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<TEntity>>();
+    protected readonly IHybridCacheService _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
 
     public async Task<BaseResponse<TResponseData>> HandleAsync(CancellationToken cancellationToken)
         => await HandleInternalAsync(cancellationToken);

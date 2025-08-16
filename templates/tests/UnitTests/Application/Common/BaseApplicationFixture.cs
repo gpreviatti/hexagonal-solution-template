@@ -1,4 +1,5 @@
 ﻿using Application.Common.Repositories;
+using Application.Common.Services;
 using CommonTests.Fixtures;
 using Domain.Common;
 using FluentValidation;
@@ -7,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace UnitTests.Application.Common;
 
-public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture 
+public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
     where TEntity : DomainEntity
     where TRequest : class
     where TUseCase : class
@@ -16,6 +17,7 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
     public Mock<ILogger<TUseCase>> mockLogger = new();
     public Mock<IBaseRepository<TEntity>> mockRepository = new();
     public Mock<IValidator<TRequest>> mockValidator = new();
+    public Mock<IHybridCacheService> mockCache = new();
     public TUseCase useCase = default!;
 
     public void MockServiceProviderServices()
@@ -31,6 +33,10 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
         mockServiceProvider
             .Setup(r => r.GetService(typeof(IBaseRepository<TEntity>)))
             .Returns(mockRepository.Object);
+
+        mockServiceProvider
+            .Setup(r => r.GetService(typeof(IHybridCacheService)))
+            .Returns(mockCache.Object);
     }
 
     public void ClearInvocations()
@@ -38,6 +44,7 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
         mockLogger.Invocations.Clear();
         mockRepository.Invocations.Clear();
         mockValidator.Invocations.Clear();
+        mockCache.Invocations.Clear();
     }
 
     public void SetSuccessfulAddAsync() => mockRepository
@@ -67,6 +74,18 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
             .ReturnsAsync(validationResult);
     }
 
+    public void SetValidGetOrCreateAsync<TResult>(TResult result) => mockCache.Setup(c => c.GetOrCreateAsync(
+        It.IsAny<string>(),
+        It.IsAny<Func<CancellationToken, ValueTask<TResult>>>(),
+        It.IsAny<CancellationToken>()
+    )).ReturnsAsync(result);
+
+    public void SetInvalidGetOrCreateAsync<TResult>() => mockCache.Setup(c => c.GetOrCreateAsync(
+        It.IsAny<string>(),
+        It.IsAny<Func<CancellationToken, ValueTask<TResult>>>(),
+        It.IsAny<CancellationToken>()
+    ));
+
     public void VerifyStartUseCaseLog(int times = 1) => VerifyLogInformation("Start to execute use case", times);
     public void VerifyFinishUseCaseLog(int times = 1) => VerifyLogInformation("Finished executing use case with success", times);
 
@@ -89,6 +108,18 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
     {
         mockRepository.Verify(
             d => d.AddAsync(It.IsAny<TEntity>(), It.IsAny<CancellationToken>()),
+            Times.Exactly(times)
+        );
+    }
+    
+    public void VerifyCache(int times)
+    {
+        mockCache.Verify(
+            c => c.GetOrCreateAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<CancellationToken, ValueTask<TEntity>>>(),
+                It.IsAny<CancellationToken>()
+            ),
             Times.Exactly(times)
         );
     }

@@ -3,7 +3,7 @@ using Domain.Orders;
 using Microsoft.Extensions.Logging;
 using UnitTests.Application.Common;
 
-namespace UnitTests.Application.Orders.Create;
+namespace UnitTests.Application.Orders;
 
 public sealed class CreateOrderUseCaseFixture : BaseApplicationFixture<Order, CreateOrderRequest, CreateOrderUseCase>
 {
