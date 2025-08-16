@@ -3,8 +3,8 @@ using Application.Common.Repositories;
 using Domain.Common;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using Application.Common.Messages;
 using Microsoft.Extensions.Logging;
+using Application.Common.Constants;
 
 namespace Application.Common.UseCases;
 

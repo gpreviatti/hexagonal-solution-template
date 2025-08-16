@@ -24,6 +24,9 @@ internal static class OrderEndpoints
         {
             var response = await useCase.Handle(request, CancellationToken.None);
 
+            if (!response.Success)
+                return Results.BadRequest(response);
+
             return Results.Created($"/orders/{response.Data.Id}", response);
         });
 

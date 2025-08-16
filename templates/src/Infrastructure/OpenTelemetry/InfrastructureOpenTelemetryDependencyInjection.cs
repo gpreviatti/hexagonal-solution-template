@@ -1,3 +1,4 @@
+using Application.Common.Constants;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -15,12 +16,6 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
     {
         var configuration = builder.Configuration;
 
-        var serviceName = configuration["ServiceName"];
-        if (string.IsNullOrWhiteSpace(serviceName))
-        {
-            throw new ArgumentNullException("ServiceName configuration is missing.");
-        }
-
         var openTelemetryEndpoint = new Uri(configuration["OpenTelemetry:Endpoint"]!);
         if (string.IsNullOrWhiteSpace(openTelemetryEndpoint.ToString()))
         {
@@ -35,7 +30,7 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
         };
 
         builder.Services.AddOpenTelemetry()
-        .ConfigureResource(resource => resource.AddService(serviceName))
+        .ConfigureResource(resource => resource.AddService(DefaultConfigurations.ApplicationName))
         .WithMetrics(metrics =>
         {
             metrics
@@ -46,6 +41,7 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
                 options.Endpoint = openTelemetryEndpoint;
                 options.Protocol = openTelemetryProtocol;
             });
+            metrics.AddMeter(Metrics.Meter.Name);
         })
         .WithTracing(tracing =>
         {

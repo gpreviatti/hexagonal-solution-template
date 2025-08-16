@@ -1,4 +1,4 @@
-﻿using Application.Common.Messages;
+﻿using Application.Common.Constants;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Orders;
@@ -53,6 +53,8 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
         ));
 
         logger.LogInformation(DefaultApplicationMessages.FinishedExecutingUseCase, ClassName, methodName, request.CorrelationId);
+
+        Metrics.OrderRetrieved.Add(1);
 
         return response;
     }
