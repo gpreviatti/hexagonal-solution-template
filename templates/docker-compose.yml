@@ -45,6 +45,13 @@ services:
     environment:
       - DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS=true
 
+  redis:
+    image: redis:8
+    ports:
+      - "6379:6379"
+    networks:
+      - hexagonal_solution_template_network
+
 networks:
   hexagonal_solution_template_network:
     driver: bridge

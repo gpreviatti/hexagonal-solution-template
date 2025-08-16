@@ -21,7 +21,7 @@
     <PackageReleaseNotes>
       - Add OpenTelemetry support
       - Remove Serilog to use Microsoft.Extensions.Logging
-      - Add HybridCache to use MemoryCache
+      - Add HybridCache to use MemoryCache and Redis
     </PackageReleaseNotes>
   </PropertyGroup>
 

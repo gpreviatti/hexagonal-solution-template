@@ -13,7 +13,7 @@ public static class InfrastructureDependencyInjection
 
         builder.Services
             .AddData(configuration)
-            .AddCache();
+            .AddCache(configuration);
 
         builder.AddOpenTelemetry();
 

@@ -16,6 +16,7 @@ This is a dotnet solution template from projects based on hexagonal architecture
 - Autofixture
 - docker and docker compose
 - k6
+- Stryker
 - GitHub actions
 - HybridCache
 
