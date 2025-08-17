@@ -1,8 +1,8 @@
 ﻿using Application;
 using Domain;
 using Infrastructure;
-using Infrastructure.OpenTelemetry;
 using WebApp.Endpoints;
+using WebApp.HealthChecks;
 using WebApp.Middlewares;
 
 namespace WebApp;
@@ -15,6 +15,8 @@ public sealed class Program
 
         builder.Services.AddEndpointsApiExplorer();
 
+        builder.Services.AddCustomHealthChecks(builder.Configuration);
+
         builder.Services
             .AddDomain()
             .AddApplication();
@@ -26,6 +28,8 @@ public sealed class Program
         app.UseHttpsRedirection();
 
         app.MapOrderEndpoints();
+
+        app.UseCustomHealthChecks();
 
         app.UseMiddleware<ExceptionHandlingMiddleware>();
 

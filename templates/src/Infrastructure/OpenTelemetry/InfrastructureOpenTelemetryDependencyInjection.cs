@@ -35,13 +35,13 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
         {
             metrics
             .AddAspNetCoreInstrumentation()
+            .AddMeter(DefaultConfigurations.Meter.Name)
             .AddHttpClientInstrumentation();
             metrics.AddOtlpExporter(options =>
             {
                 options.Endpoint = openTelemetryEndpoint;
                 options.Protocol = openTelemetryProtocol;
             });
-            metrics.AddMeter(Metrics.Meter.Name);
         })
         .WithTracing(tracing =>
         {
@@ -60,6 +60,7 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
                         options.SetDbStatementForStoredProcedure = true;
                     }
                 )
+                .AddRedisInstrumentation()
                 .AddOtlpExporter(options =>
                 {
                     options.Endpoint = openTelemetryEndpoint;

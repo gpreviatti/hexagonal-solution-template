@@ -1,4 +1,5 @@
-﻿using Application.Common.Constants;
+﻿using System.Diagnostics.Metrics;
+using Application.Common.Constants;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Orders;
@@ -24,6 +25,8 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
 )
 {
     private const string ClassName = nameof(GetOrderUseCase);
+    public static Counter<int> OrderRetrieved = DefaultConfigurations.Meter
+        .CreateCounter<int>("order.retrieved", "orders", "Number of orders retrieved");
 
     public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(
         GetOrderRequest request,
@@ -54,7 +57,7 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
 
         logger.LogInformation(DefaultApplicationMessages.FinishedExecutingUseCase, ClassName, methodName, request.CorrelationId);
 
-        Metrics.OrderRetrieved.Add(1);
+        OrderRetrieved.Add(1);
 
         return response;
     }

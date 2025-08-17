@@ -19,9 +19,7 @@
     <RepositoryUrl>git://github.com/gpreviatti/hexagonal-solution-template</RepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>
-      - Add OpenTelemetry support
-      - Remove Serilog to use Microsoft.Extensions.Logging
-      - Add HybridCache to use MemoryCache and Redis
+      - Add HealthChecks
     </PackageReleaseNotes>
   </PropertyGroup>
 
