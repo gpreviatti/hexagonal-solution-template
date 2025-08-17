@@ -2,6 +2,7 @@
 using System.Text.Json;
 using Application;
 using Domain;
+using HealthChecks.UI.Client;
 using Infrastructure;
 using Infrastructure.Data;
 using Infrastructure.OpenTelemetry;
@@ -38,7 +39,8 @@ public sealed class Program
 
         app.UseHealthChecks("/health", new HealthCheckOptions()
         {
-            Predicate = _ => true
+            Predicate = _ => true,
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         });
 
         app.UseMiddleware<ExceptionHandlingMiddleware>();
