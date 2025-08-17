@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 namespace WebApp.HealthChecks;
 
-public static class HealthCheckExtensions
+internal static class HealthCheckExtensions
 {
     public static IServiceCollection AddCustomHealthChecks(
         this IServiceCollection services,

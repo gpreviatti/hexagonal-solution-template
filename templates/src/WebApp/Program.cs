@@ -1,8 +1,6 @@
 ﻿using Application;
 using Domain;
-using HealthChecks.UI.Client;
 using Infrastructure;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using WebApp.Endpoints;
 using WebApp.HealthChecks;
 using WebApp.Middlewares;
