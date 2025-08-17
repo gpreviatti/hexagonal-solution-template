@@ -1,5 +1,6 @@
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace WebApp.HealthChecks;
 
@@ -11,6 +12,7 @@ internal static class HealthCheckExtensions
     )
     {
         services.AddHealthChecks()
+            .AddCheck("self", () => HealthCheckResult.Healthy())
             .AddSqlServer(
                 configuration.GetConnectionString("OrderDb")!,
                 name: "SqlServer",
@@ -33,6 +35,11 @@ internal static class HealthCheckExtensions
         {
             Predicate = _ => true,
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        });
+
+        app.UseHealthChecks("/live", new HealthCheckOptions
+        {
+            Predicate = r => r.Name.Contains("self")
         });
 
         app.UseHealthChecks("/ready", new HealthCheckOptions
