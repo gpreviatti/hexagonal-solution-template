@@ -1,7 +1,11 @@
-﻿using Application;
+﻿using System.Net.Mime;
+using System.Text.Json;
+using Application;
 using Domain;
 using Infrastructure;
+using Infrastructure.Data;
 using Infrastructure.OpenTelemetry;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using WebApp.Endpoints;
 using WebApp.Middlewares;
 
@@ -16,6 +20,11 @@ public sealed class Program
         builder.Services.AddEndpointsApiExplorer();
 
         builder.Services
+            .AddHealthChecks()
+            .AddSqlServer(builder.Configuration.GetConnectionString("OrderDb")!, name: "SqlServer")
+            .AddRedis(builder.Configuration.GetConnectionString("RedisConnectionString")!, name: "Redis");
+
+        builder.Services
             .AddDomain()
             .AddApplication();
 
@@ -26,6 +35,11 @@ public sealed class Program
         app.UseHttpsRedirection();
 
         app.MapOrderEndpoints();
+
+        app.UseHealthChecks("/health", new HealthCheckOptions()
+        {
+            Predicate = _ => true
+        });
 
         app.UseMiddleware<ExceptionHandlingMiddleware>();
 
