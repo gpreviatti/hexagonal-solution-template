@@ -27,6 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		docker-compose.yml = docker-compose.yml
 		scripts\migrations.sql = scripts\migrations.sql
+		scripts\seeds.sql = scripts\seeds.sql
 	EndProjectSection
 EndProject
 Global

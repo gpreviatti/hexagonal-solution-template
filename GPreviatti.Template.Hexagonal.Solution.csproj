@@ -7,7 +7,7 @@
     <Authors>Giovanni Brunno Previatti</Authors>
     <Description>Solution following Hexagonal architecture and best praticies.</Description>
     <PackageTags>template;hexagonal-architecture;clean-architecture;ddd;net8</PackageTags>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <IncludeContentInPack>true</IncludeContentInPack>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <ContentTargetFolders>content</ContentTargetFolders>
