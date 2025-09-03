@@ -21,6 +21,7 @@
 		<PackageReference Include="Microsoft.Extensions.Caching.Hybrid" Version="9.8.0" />
 
 		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.12.0" />
+		<PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.12.0" />
 		<PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.12.0" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.12.0" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.StackExchangeRedis" Version="1.12.0-beta.2" />
