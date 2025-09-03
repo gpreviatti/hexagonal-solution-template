@@ -61,6 +61,7 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
                     }
                 )
                 .AddRedisInstrumentation()
+                .AddConsoleExporter()
                 .AddOtlpExporter(options =>
                 {
                     options.Endpoint = openTelemetryEndpoint;
@@ -68,7 +69,9 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
                 });
         });
 
-        builder.Logging.AddOpenTelemetry(logging => logging.AddOtlpExporter(
+        builder.Logging.AddOpenTelemetry(logging => logging
+        .AddConsoleExporter()
+        .AddOtlpExporter(
             options =>
             {
                 options.Endpoint = openTelemetryEndpoint;
