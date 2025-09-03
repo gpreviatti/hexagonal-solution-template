@@ -13,12 +13,14 @@ jobs:
       application_stryker_config_path: "./templates/tests/UnitTests/stryker-config-application.json"
       integration_test_project_path: "./templates/tests/IntegrationTests"
       docker_compose_file_path: "./templates/docker-compose.yml"
+      dotnet_version: "9.x"
 
   pack:
     name: Build and Publish Template Package
     needs: [validate]
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-pack.yml@v1
     with:
-      package_version: "8.4.${{ github.run_number }}"
+      package_version: "9.0.0"
+      dotnet_version: "9.x"
     secrets:
       nuget_api_key: ${{secrets.NUGET_API_KEY}}

@@ -5,19 +5,19 @@ namespace UnitTests.Domain.Orders;
 public sealed class OrderTests
 {
     [Fact]
-    public void GivenAOrderWithItemsThenShouldSetTotalWithSuccess()
+    public void SetTotalWithItemsThenShouldSetWithSuccess()
     {
         /// Arrange
         var items = new List<Item>()
         {
-            new(1, "Computer", "Desktop", 900, DateTime.UtcNow),
-            new(1, "Mouse", "Razer", 100, DateTime.UtcNow),
-            new(1, "Headphone", "Logitech", 100, DateTime.UtcNow),
+            new("Computer", "Desktop", 900),
+            new("Mouse", "Razer", 100),
+            new("Headphone", "Logitech", 100),
         };
-        var order = new Order();
+        Order order = new("Amazing Computer", items);
 
         /// Act
-        var result = order.Create("Amazing Computer", items);
+        var result = order.SetTotal();
 
         // Assert
         Assert.NotNull(order);
@@ -31,13 +31,13 @@ public sealed class OrderTests
     }
 
     [Fact]
-    public void GivenAOrderWithNoItemsThenShouldReturnFailure()
+    public void SetTotalWithNoItemsThenShouldReturnFailure()
     {
         /// Arrange
-        var order = new Order();
+        Order order = new("Amazing Computer", Array.Empty<Item>());
 
         /// Act
-        var result = order.Create("Amazing Computer", Array.Empty<Item>());
+        var result = order.SetTotal();
 
         // Assert
         Assert.NotNull(order);

@@ -53,12 +53,11 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
         var response = new BaseResponse<OrderDto>();
 
         var items = request.Items
-            .Select(i => new Item(default, i.Name, i.Description, i.Value))
+            .Select(i => new Item(i.Name, i.Description, i.Value))
             .ToList();
 
-        var newOrder = new Order();
-        var createResult = newOrder.Create(request.Description, items);
-
+        var newOrder = new Order(request.Description, items);
+        var createResult = newOrder.SetTotal();
         if (createResult.IsFailure)
         {
             logger.LogWarning(DefaultApplicationMessages.DefaultApplicationMessage + createResult.Message, ClassName, methodName, correlationId);

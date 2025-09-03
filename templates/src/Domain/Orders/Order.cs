@@ -4,39 +4,26 @@ namespace Domain.Orders;
 
 public sealed class Order : DomainEntity
 {
-    public Order() { }
+    public Order() {}
 
-    public Result Create(
-        string description,
-        ICollection<Item> items = null
-    )
+    public Order(string description, ICollection<Item> items) : base(DateTime.UtcNow)
     {
         Description = description;
-        CreatedAt = DateTime.UtcNow;
-        UpdatedAt = DateTime.UtcNow;
-        Items = items ?? [];
-
-        if (Items.Count == 0)
-            return Result.Fail("Order must have at least one item.");
-
-        SetTotal();
-
-        return Result.Ok();
+        Items = items;
     }
 
-    public string Description { get; set; }
-    public decimal Total { get; set; }
-    public ICollection<Item> Items { get; set; } = [];
+    public string Description { get; private set; }
+    public decimal Total { get; private set; }
+    public ICollection<Item> Items { get; private set; } = [];
 
-    private void SetTotal()
+    public Result SetTotal()
     {
-        UpdatedAt = DateTime.UtcNow;
         if (Items == null || Items.Count == 0)
-        {
-            Total = 0;
-            return;
-        }
+            return Result.Fail("Order must have at least one item.");
 
         Total = Items.Sum(item => item.Value);
+        SetUpdatedAt();
+
+        return Result.Ok();
     }
 }
