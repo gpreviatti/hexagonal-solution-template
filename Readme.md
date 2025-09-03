@@ -10,7 +10,7 @@ This is a dotnet solution template from projects based on hexagonal architecture
 - FluenValidation
 - OpenTelemetry
 - EntityFrameworkCore
-- EntityFrameworkCore.SqlServer
+- SqlServer
 - Xunit
 - Moq
 - Autofixture
@@ -19,6 +19,8 @@ This is a dotnet solution template from projects based on hexagonal architecture
 - Stryker
 - GitHub actions
 - HybridCache
+- Open Telemetry
+- Seq
 
 ## Advisors and recommendations
 
