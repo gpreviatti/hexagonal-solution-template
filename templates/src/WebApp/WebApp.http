@@ -47,7 +47,7 @@ Content-Type: application/json
 {
   "CorrelationId": "{{$guid}}",
   "PageNumber": 1,
-  "PageSize": 5300,
+  "PageSize": 10,
   "SearchByValues": {
     "Description": "client"
   }

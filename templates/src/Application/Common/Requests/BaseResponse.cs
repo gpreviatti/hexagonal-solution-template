@@ -1,12 +1,44 @@
 ﻿namespace Application.Common.Requests;
 
-public record BaseResponse(bool Success = false, string Message = "");
+public record BaseResponse
+{
+    public BaseResponse(bool success, string message = "")
+    {
+        Success = success;
+        Message = message;
+    }
+    public BaseResponse() {}
 
-public record BaseResponse<TData>(TData Data, bool Success = false, string Message = "") : BaseResponse(Success, Message) where TData : class;
+    public bool Success { get; set; }
+    public string Message { get; set; }
+}
 
-public sealed record BasePaginatedResponse<TData>(
-    int TotalPages = 0, int TotalRecords = 0,
-    IEnumerable<TData> Data = null,
-    bool Success = true, string Message = ""
-) : BaseResponse<IEnumerable<TData>>(Data, Success, Message)
-    where TData : class;
+public record BaseResponse<TData> : BaseResponse where TData : class
+{
+    public BaseResponse(){}
+
+    public BaseResponse(TData data, bool success = false, string message = "") : base(success, message)
+    {
+        Data = data;
+    }
+
+    public TData Data { get; set; }
+}
+
+public sealed record BasePaginatedResponse<TData> : BaseResponse<IEnumerable<TData>> where TData : class
+{
+    public BasePaginatedResponse() {}
+
+    public BasePaginatedResponse(
+        int totalPages = 0, int totalRecords = 0,
+        IEnumerable<TData> data = null,
+        bool success = true, string message = ""
+    ) : base(data, success, message)
+    {
+        TotalPages = totalPages;
+        TotalRecords = totalRecords;
+    }
+
+    public int TotalPages { get; set; } = 0;
+    public int TotalRecords { get; set; } = 0;
+}
