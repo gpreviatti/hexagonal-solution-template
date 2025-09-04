@@ -36,6 +36,16 @@ public interface IBaseRepository<TEntity> where TEntity : DomainEntity
         CancellationToken cancellationToken,
         params Expression<Func<TEntity, object>>[] includes
     );
+    Task<(IList<TEntity> Items, int TotalRecords)> GetAllPaginatedAsync(
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken,
+        string sortBy = null,
+        bool sortDescending = false,
+        string searchPropertyName = null,
+        string searchValue = null,
+        params Expression<Func<TEntity, object>>[] includes
+    );
 
     Task BeginTransactionAsync(CancellationToken cancellationToken);
     Task CommitTransactionAsync(CancellationToken cancellationToken);

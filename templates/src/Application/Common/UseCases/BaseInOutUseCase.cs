@@ -10,11 +10,8 @@ using Application.Common.Services;
 namespace Application.Common.UseCases;
 
 public interface IBaseInOutUseCase<TRequest, TResponseData, TUseCase>
-    where TRequest : BaseRequest
-    where TResponseData : class
-    where TUseCase : class
 {
-    Task<BaseResponse<TResponseData>> Handle(TRequest request, CancellationToken cancellationToken);
+    Task<TResponseData> Handle(TRequest request, CancellationToken cancellationToken);
 }
 
 public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCase>(
@@ -22,7 +19,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
     IValidator<TRequest> validator = null
 ) : IBaseInOutUseCase<TRequest, TResponseData, TUseCase>
     where TRequest : BaseRequest
-    where TResponseData : class
+    where TResponseData : BaseResponse
     where TEntity : DomainEntity
     where TUseCase : class
 {
@@ -31,10 +28,9 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
     protected readonly IValidator<TRequest> validator = validator;
     protected readonly IBaseRepository<TEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<TEntity>>();
     protected readonly IHybridCacheService _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
-
     private const string ClassName = nameof(BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCase>);
 
-    public async Task<BaseResponse<TResponseData>> Handle(
+    public async Task<TResponseData> Handle(
         TRequest request,
         CancellationToken cancellationToken
     )
@@ -42,23 +38,23 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
         string methodName = nameof(Handle);
         logger.LogInformation(DefaultApplicationMessages.StartToExecuteUseCase, ClassName, methodName, request.CorrelationId);
 
-        var response = new BaseResponse<TResponseData>();
-
         if (validator != null)
         {
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid)
             {
+                BaseResponse response = new();
+
                 string errors = string.Join(", ", validationResult.Errors);
                 response.SetMessage(errors);
 
                 logger.LogError(DefaultApplicationMessages.ValidationErrors, ClassName, methodName, request.CorrelationId, errors);
-                return response;
+                return response as TResponseData;
             }
         }
 
         return await HandleInternalAsync(request, cancellationToken);
     }
 
-    public abstract Task<BaseResponse<TResponseData>> HandleInternalAsync(TRequest request, CancellationToken cancellationToken);
+    public abstract Task<TResponseData> HandleInternalAsync(TRequest request, CancellationToken cancellationToken);
 }
