@@ -11,7 +11,8 @@ GET {{WebApp_HostAddress}}/live
 GET {{WebApp_HostAddress}}/ready
 
 ###
-GET {{WebApp_HostAddress}}/orders/1/{{$guid}}
+GET {{WebApp_HostAddress}}/orders/1
+CorrelationId: {{$guid}}
 Accept: application/json
 
 ###

@@ -12,10 +12,10 @@ internal static class OrderEndpoints
         var ordersGroup = app.MapGroup("/orders")
             .WithTags("Orders");
 
-        ordersGroup.MapGet("/{id}/{correlationId}", async (
+        ordersGroup.MapGet("/{id}", async (
             [FromServices] IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>, GetOrderUseCase> useCase,
+            [FromHeader] Guid correlationId,
             int id,
-            Guid correlationId,
             CancellationToken cancellationToken
         ) =>
         {
