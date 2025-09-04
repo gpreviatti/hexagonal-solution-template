@@ -11,7 +11,7 @@ GET {{WebApp_HostAddress}}/live
 GET {{WebApp_HostAddress}}/ready
 
 ###
-GET {{WebApp_HostAddress}}/orders/1/e1e2ef94-a49c-4f23-8148-5af97a25e06f
+GET {{WebApp_HostAddress}}/orders/1/{{$guid}}
 Accept: application/json
 
 ###
@@ -40,3 +40,15 @@ Content-Type: application/json
   ]
 }
 ###
+
+POST {{WebApp_HostAddress}}/orders/paginated
+Content-Type: application/json
+
+{
+  "CorrelationId": "{{$guid}}",
+  "PageNumber": 1,
+  "PageSize": 5,
+  "SearchByValues": {
+    "Description": "client"
+  }
+}

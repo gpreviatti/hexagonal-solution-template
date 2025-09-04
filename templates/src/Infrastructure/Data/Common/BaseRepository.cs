@@ -167,6 +167,10 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
                 ? query.OrderByDescending(e => EF.Property<object>(e, sortBy))
                 : query.OrderBy(e => EF.Property<object>(e, sortBy));
         }
+        else
+        {
+            query = query.OrderBy(e => e.CreatedAt);
+        }
 
         var totalRecords = await query.CountAsync(cancellationToken);
 
