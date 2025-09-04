@@ -24,7 +24,6 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) : Base
     )
     {
         string methodName = nameof(HandleInternalAsync);
-        BasePaginatedResponse<OrderDto> response = new();
 
         var (orders, totalRecords) = await _repository.GetAllPaginatedAsync(
             request.Page,
@@ -43,8 +42,7 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) : Base
                 methodName,
                 request.CorrelationId
             );
-            response.SetMessage("No orders found.");
-            return response;
+            return new(0, 0, [], false, "No orders found.");
         }
 
         var totalPages = (int)Math.Ceiling(totalRecords / (double)request.PageSize);
@@ -55,13 +53,6 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) : Base
             o.Total
         ));
 
-        response.SetData(
-            totalRecords,
-            request.PageSize,
-            orderDtos,
-            success: true
-        );
-
         logger.LogInformation(
             DefaultApplicationMessages.FinishedExecutingUseCase,
             ClassName,
@@ -71,6 +62,11 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) : Base
 
         OrdersListed.Add(1);
 
-        return response;
+        return new(
+            totalPages,
+            totalRecords,
+            orderDtos,
+            true
+        );
     }
 }

@@ -25,8 +25,7 @@ internal sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<
     {
         _logger.LogError(exception, "[{ClassName}] | [{Method}] | {Message}", _className, nameof(HandleExceptionAsync), exception.Message);
 
-        BaseResponse response = new();
-        response.SetMessage(exception.Message, false);
+        BaseResponse response = new(false, exception.Message);
 
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)HttpStatusCode.BadRequest;

@@ -50,8 +50,6 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
         string methodName = nameof(HandleInternalAsync);
         Guid correlationId = request.CorrelationId;
 
-        var response = new BaseResponse<OrderDto>();
-
         var items = request.Items
             .Select(i => new Item(i.Name, i.Description, i.Value))
             .ToList();
@@ -61,8 +59,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
         if (createResult.IsFailure)
         {
             logger.LogWarning(DefaultApplicationMessages.DefaultApplicationMessage + createResult.Message, ClassName, methodName, correlationId);
-            response.SetMessage(createResult.Message);
-            return response;
+            return new(null, false, createResult.Message);
         }
 
         var addResult = await _repository.AddAsync(newOrder, cancellationToken);
@@ -70,20 +67,17 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
         if (addResult == 0)
         {
             logger.LogWarning(DefaultApplicationMessages.DefaultApplicationMessage + "Failed to create order.", ClassName, methodName, correlationId);
-            response.SetMessage("Failed to create order.");
-            return response;
+            return new(null, false, "Failed to create order.");
         }
-
-        response.SetData(new(
-            newOrder.Id,
-            newOrder.Description,
-            newOrder.Total
-        ), success: true);
 
         logger.LogInformation(DefaultApplicationMessages.FinishedExecutingUseCase, ClassName, methodName, correlationId);
 
         OrderCreated.Add(1);
 
-        return response;
+        return new(new(
+            newOrder.Id,
+            newOrder.Description,
+            newOrder.Total
+        ), true);
     }
 }

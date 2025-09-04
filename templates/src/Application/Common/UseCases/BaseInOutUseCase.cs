@@ -48,11 +48,8 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
             {
                 string errors = string.Join(", ", validationResult.Errors);
                 logger.LogError(DefaultApplicationMessages.ValidationErrors, ClassName, HandleMethodName, request.CorrelationId, errors);
-
-                var response = Activator.CreateInstance<TResponseData>();
-                response.SetMessage(errors);
-
-                return response;
+                
+                return new BaseResponse(false, errors) as TResponseData;
             }
         }
 
