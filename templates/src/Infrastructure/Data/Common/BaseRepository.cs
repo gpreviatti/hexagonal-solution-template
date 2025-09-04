@@ -170,10 +170,13 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
 
         var totalRecords = await query.CountAsync(cancellationToken);
 
-        foreach (var searchByValue in searchByValues)
-        {
-            query = query.Where(e => EF.Property<string>(e, searchByValue.Key)
-                .Contains(searchByValue.Value.ToLowerInvariant()));
+        if (searchByValues != null && searchByValues.Any())
+        {    
+            foreach (var searchByValue in searchByValues)
+            {
+                query = query.Where(e => EF.Property<string>(e, searchByValue.Key)
+                    .Contains(searchByValue.Value.ToLowerInvariant()));
+            }
         }
 
         var items = await query

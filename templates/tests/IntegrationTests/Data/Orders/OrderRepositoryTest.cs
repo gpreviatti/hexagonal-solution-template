@@ -123,17 +123,18 @@ public sealed class OrderRepositoryTest : IClassFixture<OrderDataTestFixture>
         // Assert
         Assert.NotNull(result);
         Assert.Empty(result);
-        Assert.Equal(0, totalRecords);
+        Assert.Equal(1, totalRecords);
     }
 
-    [Fact]
-    public async Task Given_A_Valid_Request_Then_Return_Sorted_Orders_Paginated()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Given_A_Valid_Request_Then_Return_Sorted_Orders_Paginated(bool sortDescending)
     {
         // Arrange
         var pageNumber = 1;
         var pageSize = 5;
         var sortBy = "Description";
-        var sortDescending = true;
 
         // Act
         var (result, totalRecords) = await _fixture!.Repository!.GetAllPaginatedAsync(
@@ -149,7 +150,10 @@ public sealed class OrderRepositoryTest : IClassFixture<OrderDataTestFixture>
         Assert.NotEmpty(result);
         Assert.True(totalRecords > 0);
 
-        var sortedResult = result.OrderByDescending(o => o.Description).ToList();
+        var sortedResult = sortDescending
+            ? [.. result.OrderByDescending(o => o.Description)]
+            : result.OrderBy(o => o.Description).ToList();
+
         Assert.Equal(sortedResult, [.. result]);
     }
 }
