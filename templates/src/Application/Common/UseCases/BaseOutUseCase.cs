@@ -1,4 +1,5 @@
-﻿using Application.Common.Repositories;
+﻿using Application.Common.Constants;
+using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Common.Services;
 using Domain.Common;
@@ -24,9 +25,15 @@ public abstract class BaseOutUseCase<TResponseData, TEntity, TUseCase>(
     protected readonly ILogger<TUseCase> logger = serviceProvider.GetService<ILogger<TUseCase>>();
     protected readonly IBaseRepository<TEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<TEntity>>();
     protected readonly IHybridCacheService _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
+    private const string ClassName = nameof(BaseOutUseCase<TResponseData, TEntity, TUseCase>);
+    private const string HandleMethodName = nameof(HandleAsync);
 
     public async Task<TResponseData> HandleAsync(CancellationToken cancellationToken)
-        => await HandleInternalAsync(cancellationToken);
+    {
+        logger.LogInformation(DefaultApplicationMessages.StartToExecuteUseCase, ClassName, HandleMethodName, Guid.NewGuid());
+
+        return await HandleInternalAsync(cancellationToken);
+    }
 
     public abstract Task<TResponseData> HandleInternalAsync(CancellationToken cancellationToken);
 }

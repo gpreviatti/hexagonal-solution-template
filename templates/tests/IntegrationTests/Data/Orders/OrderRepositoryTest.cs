@@ -82,7 +82,7 @@ public sealed class OrderRepositoryTest : IClassFixture<OrderDataTestFixture>
         // Arrange
         var pageNumber = 1;
         var pageSize = 5;
-        var valueToSearch = "xpto";
+        var valueToSearch = "client";
         var searchByValues = new Dictionary<string, string> {
             { "Description", valueToSearch }
         };

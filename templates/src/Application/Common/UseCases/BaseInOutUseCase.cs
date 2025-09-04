@@ -32,14 +32,14 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
     protected readonly IBaseRepository<TEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<TEntity>>();
     protected readonly IHybridCacheService _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
     private const string ClassName = nameof(BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCase>);
+    private const string HandleMethodName = nameof(HandleAsync);
 
     public async Task<TResponseData> HandleAsync(
         TRequest request,
         CancellationToken cancellationToken
     )
     {
-        string methodName = nameof(HandleAsync);
-        logger.LogInformation(DefaultApplicationMessages.StartToExecuteUseCase, ClassName, methodName, request.CorrelationId);
+        logger.LogInformation(DefaultApplicationMessages.StartToExecuteUseCase, ClassName, HandleMethodName, request.CorrelationId);
 
         if (validator != null)
         {
@@ -47,7 +47,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
             if (!validationResult.IsValid)
             {
                 string errors = string.Join(", ", validationResult.Errors);
-                logger.LogError(DefaultApplicationMessages.ValidationErrors, ClassName, methodName, request.CorrelationId, errors);
+                logger.LogError(DefaultApplicationMessages.ValidationErrors, ClassName, HandleMethodName, request.CorrelationId, errors);
 
                 var response = Activator.CreateInstance<TResponseData>();
                 response.SetMessage(errors);
