@@ -19,7 +19,10 @@
     <RepositoryUrl>git://github.com/gpreviatti/hexagonal-solution-template</RepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>
-      - Add HealthChecks
+      - Add new use case GetAllOrders with pagination, filtering and sorting.
+      - Update item seed data to fix typo in product name.
+      - Adjust logging method names in base use case classes for consistency.
+      - Bump version to 9.1.0.
     </PackageReleaseNotes>
   </PropertyGroup>
 
