@@ -2,9 +2,9 @@
 
 public record BaseResponse()
 {
-    public bool Success { get; private set; } = false;
+    public bool Success { get; set; } = false;
 
-    public string Message { get; private set; } = string.Empty;
+    public string Message { get; set; } = string.Empty;
 
     public void SetSuccess(bool? value) => Success = value ?? false;
     public void SetMessage(string message, bool? success = null)
@@ -16,7 +16,7 @@ public record BaseResponse()
 
 public record BaseResponse<TData>() : BaseResponse() where TData : class 
 {
-    public TData Data { get; private set; }
+    public TData Data { get; set; }
 
     public virtual void SetData(TData value, string message = null, bool? success = null)
     {
@@ -29,8 +29,8 @@ public record BaseResponse<TData>() : BaseResponse() where TData : class
 public sealed record BasePaginatedResponse<TData>() : BaseResponse<IEnumerable<TData>>()
     where TData : class
 {
-    public int TotalPages { get; private set; } = 0;
-    public int TotalRecords { get; private set; } = 0;
+    public int TotalPages { get; set; } = 0;
+    public int TotalRecords { get; set; } = 0;
 
     public void SetData(
         int totalRecords,
