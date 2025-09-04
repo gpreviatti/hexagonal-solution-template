@@ -1,3 +1,4 @@
+using Application.Common.Requests;
 using Application.Common.UseCases;
 using Application.Orders;
 using Microsoft.AspNetCore.Mvc;
@@ -12,23 +13,32 @@ internal static class OrderEndpoints
             .WithTags("Orders");
 
         ordersGroup.MapGet("/{id}/{correlationId}", async (
-            [FromServices] IBaseInOutUseCase<GetOrderRequest, OrderDto, GetOrderUseCase> useCase,
+            [FromServices] IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>, GetOrderUseCase> useCase,
             int id,
-            Guid correlationId
-        ) => Results.Ok(await useCase.Handle(new(correlationId, id), CancellationToken.None)));
+            Guid correlationId,
+            CancellationToken cancellationToken
+        ) => Results.Ok(await useCase.Handle(new(correlationId, id), cancellationToken)));
 
         ordersGroup.MapPost("/", async (
-            [FromServices] IBaseInOutUseCase<CreateOrderRequest, OrderDto, CreateOrderUseCase> useCase,
-            [FromBody] CreateOrderRequest request
+            [FromServices] IBaseInOutUseCase<CreateOrderRequest, BaseResponse<OrderDto>, CreateOrderUseCase> useCase,
+            [FromBody] CreateOrderRequest request,
+            CancellationToken cancellationToken
         ) =>
         {
-            var response = await useCase.Handle(request, CancellationToken.None);
+            var response = await useCase.Handle(request, cancellationToken);
 
             if (!response.Success)
                 return Results.BadRequest(response);
 
             return Results.Created($"/orders/{response.Data.Id}", response);
         });
+
+        ordersGroup.MapGet("/", async (
+            [FromServices] IBaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<OrderDto>,
+            GetAllOrdersUseCase> useCase,
+            BasePaginatedRequest request,
+            CancellationToken cancellationToken
+        ) => Results.Ok(await useCase.Handle(request, cancellationToken)));
 
         return app;
     }
