@@ -59,7 +59,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyFinishUseCaseLog();
         _fixture.VerifyOrderNotFoundLog(0);
-        _fixture.VerifyCache(1);
+        _fixture.VerifyCache<Order>(1);
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyFinishUseCaseLog(0);
         _fixture.VerifyOrderNotFoundLog(0);
-        _fixture.VerifyCache(0);
+        _fixture.VerifyCache<Order>(0);
     }
 
     [Fact]
@@ -108,6 +108,6 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyFinishUseCaseLog(0);
         _fixture.VerifyOrderNotFoundLog(1);
-        _fixture.VerifyCache(1);
+        _fixture.VerifyCache<Order>(1);
     }
 }

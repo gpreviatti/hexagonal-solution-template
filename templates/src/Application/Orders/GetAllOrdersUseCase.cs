@@ -24,7 +24,7 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) : Base
     )
     {
         string methodName = nameof(HandleInternalAsync);
-        var response = new BasePaginatedResponse<OrderDto>();
+        BasePaginatedResponse<OrderDto> response = new();
 
         var cacheKey = $"Orders-Page-{request.Page}-Size-{request.PageSize}";
 
@@ -65,7 +65,8 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) : Base
         response.SetData(
             totalRecords,
             request.PageSize,
-            orderDtos
+            orderDtos,
+            success: true
         );
 
         logger.LogInformation(

@@ -33,7 +33,7 @@ public sealed class CreateOrderRequestValidator : AbstractValidator<CreateOrderR
     }
 }
 
-public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<CreateOrderRequest, OrderDto, Order, CreateOrderUseCase>(
+public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<CreateOrderRequest, BaseResponse<OrderDto>, Order, CreateOrderUseCase>(
     serviceProvider,
     serviceProvider.GetService<IValidator<CreateOrderRequest>>()
 )
@@ -78,7 +78,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
             newOrder.Id,
             newOrder.Description,
             newOrder.Total
-        ));
+        ), success: true);
 
         logger.LogInformation(DefaultApplicationMessages.FinishedExecutingUseCase, ClassName, methodName, correlationId);
 

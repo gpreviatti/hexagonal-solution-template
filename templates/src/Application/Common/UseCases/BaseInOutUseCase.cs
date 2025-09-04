@@ -10,6 +10,9 @@ using Application.Common.Services;
 namespace Application.Common.UseCases;
 
 public interface IBaseInOutUseCase<TRequest, TResponseData, TUseCase>
+    where TRequest : BaseRequest
+    where TResponseData : BaseResponse
+    where TUseCase : class
 {
     Task<TResponseData> Handle(TRequest request, CancellationToken cancellationToken);
 }
@@ -43,13 +46,13 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid)
             {
-                BaseResponse response = new();
-
                 string errors = string.Join(", ", validationResult.Errors);
+                logger.LogError(DefaultApplicationMessages.ValidationErrors, ClassName, methodName, request.CorrelationId, errors);
+
+                var response = Activator.CreateInstance<TResponseData>();
                 response.SetMessage(errors);
 
-                logger.LogError(DefaultApplicationMessages.ValidationErrors, ClassName, methodName, request.CorrelationId, errors);
-                return response as TResponseData;
+                return response;
             }
         }
 

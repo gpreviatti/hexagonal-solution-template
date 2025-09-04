@@ -6,13 +6,11 @@ public record BaseResponse()
 
     public string Message { get; private set; } = string.Empty;
 
-    public void SetSuccess(bool? value) => Success = value ?? true;
-    public void SetMessage(string message)
+    public void SetSuccess(bool? value) => Success = value ?? false;
+    public void SetMessage(string message, bool? success = null)
     {
-        Message = message;
-
-        if (!string.IsNullOrWhiteSpace(message))
-            Success = false;
+        Message = message ?? string.Empty;
+        SetSuccess(success);
     }
 }
 
@@ -23,8 +21,8 @@ public record BaseResponse<TData>() : BaseResponse() where TData : class
     public virtual void SetData(TData value, string message = null, bool? success = null)
     {
         Data = value;
-        SetSuccess(success);
         SetMessage(message);
+        SetSuccess(success);
     }
 }
 

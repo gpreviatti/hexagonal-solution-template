@@ -143,14 +143,14 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
             await dbContext.Database.CurrentTransaction.RollbackAsync(cancellationToken);
     }
 
-    public async Task<(IList<TEntity> Items, int TotalRecords)> GetAllPaginatedAsync(
+    public async Task<(IEnumerable<TEntity> Items, int TotalRecords)> GetAllPaginatedAsync(
         int page,
         int pageSize,
         CancellationToken cancellationToken,
-        string? sortBy = null,
+        string sortBy = null!,
         bool sortDescending = false,
-        string? searchPropertyName = null,
-        string? searchValue = null,
+        string searchPropertyName = null!,
+        string searchValue = null!,
         params Expression<Func<TEntity, object>>[] includes
     )
     {

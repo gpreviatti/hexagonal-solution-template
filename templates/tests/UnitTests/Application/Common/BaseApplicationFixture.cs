@@ -1,4 +1,5 @@
-﻿using Application.Common.Repositories;
+﻿using System.Linq.Expressions;
+using Application.Common.Repositories;
 using Application.Common.Services;
 using CommonTests.Fixtures;
 using Domain.Common;
@@ -86,6 +87,28 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
         It.IsAny<CancellationToken>()
     ));
 
+    public void SetValidGetAllPaginatedAsync(IEnumerable<TEntity> orders, int totalRecords) => mockRepository.Setup(r => r.GetAllPaginatedAsync(
+        It.IsAny<int>(),
+        It.IsAny<int>(),
+        It.IsAny<CancellationToken>(),
+        It.IsAny<string>(),
+        It.IsAny<bool>(),
+        It.IsAny<string>(),
+        It.IsAny<string>(),
+        It.IsAny<Expression<Func<TEntity, object>>>()
+    )).ReturnsAsync((orders, totalRecords));
+
+    public void SetInvalidGetAllPaginatedAsync<T>() where T : class => mockRepository.Setup(r => r.GetAllPaginatedAsync(
+        It.IsAny<int>(),
+        It.IsAny<int>(),
+        It.IsAny<CancellationToken>(),
+        It.IsAny<string>(),
+        It.IsAny<bool>(),
+        It.IsAny<string>(),
+        It.IsAny<string>(),
+        It.IsAny<Expression<Func<TEntity, object>>>()
+    )).ReturnsAsync((null, 0));
+
     public void VerifyStartUseCaseLog(int times = 1) => VerifyLogInformation("Start to execute use case", times);
     public void VerifyFinishUseCaseLog(int times = 1) => VerifyLogInformation("Finished executing use case with success", times);
 
@@ -112,12 +135,12 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
         );
     }
     
-    public void VerifyCache(int times)
+    public void VerifyCache<TResult>(int times)
     {
         mockCache.Verify(
             c => c.GetOrCreateAsync(
                 It.IsAny<string>(),
-                It.IsAny<Func<CancellationToken, ValueTask<TEntity>>>(),
+                It.IsAny<Func<CancellationToken, ValueTask<TResult>>>(),
                 It.IsAny<CancellationToken>()
             ),
             Times.Exactly(times)

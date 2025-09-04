@@ -6,7 +6,7 @@ using UnitTests.Application.Common;
 
 namespace UnitTests.Application.Orders;
 
-public sealed class GetAllOrdersUseCaseFixture : BaseApplicationFixture<Order, GetAllOrdersRequest, GetAllOrdersUseCase>
+public sealed class GetAllOrdersUseCaseFixture : BaseApplicationFixture<Order, BasePaginatedRequest, GetAllOrdersUseCase>
 {
     public GetAllOrdersUseCaseFixture()
     {
@@ -42,10 +42,10 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         // Arrange
         var request = _fixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
-        var expectedOrders = _fixture.autoFixture.CreateMany<Order>(5).ToList();
+        var expectedOrders = _fixture.autoFixture.CreateMany<Order>(5);
         var totalRecords = 20;
 
-        _fixture.SetValidGetAllPaginatedAsync(expectedOrders, totalRecords);
+        _fixture.SetValidGetOrCreateAsync<(IEnumerable<Order>, int)>((expectedOrders, totalRecords));
 
         // Act
         var result = await _fixture.useCase.Handle(request, _fixture.cancellationToken);
@@ -55,14 +55,14 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         Assert.True(result.Success);
         Assert.Empty(result.Message);
         Assert.NotNull(result.Data);
-        Assert.Equal(expectedOrders.Count, result.Data.Data.Count());
-        Assert.Equal(2, result.Data.TotalPages);
-        Assert.Equal(totalRecords, result.Data.TotalRecords);
+        Assert.Equal(expectedOrders.Count(), result.Data.Count());
+        Assert.Equal(2, result.TotalPages);
+        Assert.Equal(totalRecords, result.TotalRecords);
 
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyFinishUseCaseLog();
         _fixture.VerifyNoOrdersFoundLog(0);
-        _fixture.VerifyCache(1);
+        _fixture.VerifyCache<(IEnumerable<Order>, int)>(1);
     }
 
     [Fact]
@@ -71,7 +71,7 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         // Arrange
         var request = _fixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
-        _fixture.SetInvalidGetAllPaginatedAsync<Order>();
+        _fixture.SetInvalidGetOrCreateAsync<(IEnumerable<Order>, int)>();
 
         // Act
         var result = await _fixture.useCase.Handle(request, _fixture.cancellationToken);
@@ -84,7 +84,7 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyFinishUseCaseLog(0);
         _fixture.VerifyNoOrdersFoundLog(1);
-        _fixture.VerifyCache(1);
+        _fixture.VerifyCache<(IEnumerable<Order>, int)>(1);
     }
 
     [Fact]
@@ -104,6 +104,6 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyFinishUseCaseLog(0);
         _fixture.VerifyNoOrdersFoundLog(0);
-        _fixture.VerifyCache(0);
+        _fixture.VerifyCache<(IEnumerable<Order>, int)>(0);
     }
 }

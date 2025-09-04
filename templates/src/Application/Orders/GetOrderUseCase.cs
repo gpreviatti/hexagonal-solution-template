@@ -53,7 +53,7 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
             order.Id,
             order.Description,
             order.Total
-        ));
+        ), success: true);
 
         logger.LogInformation(DefaultApplicationMessages.FinishedExecutingUseCase, ClassName, methodName, request.CorrelationId);
 
