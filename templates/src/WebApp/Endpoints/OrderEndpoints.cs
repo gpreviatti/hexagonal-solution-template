@@ -17,7 +17,12 @@ internal static class OrderEndpoints
             int id,
             Guid correlationId,
             CancellationToken cancellationToken
-        ) => Results.Ok(await useCase.HandleAsync(new(correlationId, id), cancellationToken)));
+        ) =>
+        {
+            var response = await useCase.HandleAsync(new(correlationId, id), cancellationToken);
+
+            return response.Success ? Results.Ok(response) : Results.NotFound(response);
+        });
 
         ordersGroup.MapPost("/", async (
             [FromServices] IBaseInOutUseCase<CreateOrderRequest, BaseResponse<OrderDto>, CreateOrderUseCase> useCase,
@@ -27,17 +32,19 @@ internal static class OrderEndpoints
         {
             var response = await useCase.HandleAsync(request, cancellationToken);
 
-            if (!response.Success)
-                return Results.BadRequest(response);
-
-            return Results.Created($"/orders/{response.Data.Id}", response);
+            return response.Success ? Results.Created($"/orders/{response.Data.Id}", response) : Results.BadRequest(response);
         });
 
         ordersGroup.MapPost("/paginated", async (
             [FromServices] IBaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<OrderDto>, GetAllOrdersUseCase> useCase,
             [FromBody] BasePaginatedRequest request,
             CancellationToken cancellationToken
-        ) => Results.Ok(await useCase.HandleAsync(request, cancellationToken)));
+        ) =>
+        {
+            var response = await useCase.HandleAsync(request, cancellationToken);
+
+            return response.Success ? Results.Ok(response) : Results.BadRequest(response);
+        });
 
         return app;
     }

@@ -68,7 +68,7 @@ public class GetAllOrdersTest(CustomWebApplicationFactory<Program> customWebAppl
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+        Assert.Equal(HttpStatusCode.BadGateway, result.StatusCode);
         Assert.False(response!.Success);
         Assert.Contains("Page must be greater than 0", response.Message);
     }
@@ -85,7 +85,7 @@ public class GetAllOrdersTest(CustomWebApplicationFactory<Program> customWebAppl
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+        Assert.Equal(HttpStatusCode.BadGateway, result.StatusCode);
         Assert.False(response!.Success);
         Assert.Contains("PageSize must be greater than 0", response.Message);
     }

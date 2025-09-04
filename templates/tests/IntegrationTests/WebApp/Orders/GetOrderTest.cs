@@ -58,7 +58,7 @@ public class GetOrderTest(CustomWebApplicationFactory<Program> customWebApplicat
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
         Assert.False(response!.Success);
         Assert.Null(response.Data);
     }
