@@ -26,20 +26,13 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) : Base
         string methodName = nameof(HandleInternalAsync);
         BasePaginatedResponse<OrderDto> response = new();
 
-        var cacheKey = $"Orders-Page-{request.Page}-Size-{request.PageSize}";
-
-        var (orders, totalRecords) = await _cache.GetOrCreateAsync(
-            cacheKey,
-            async cancellationToken => await _repository.GetAllPaginatedAsync(
-                request.Page,
-                request.PageSize,
-                cancellationToken,
-                request.SortBy,
-                request.SortDescending,
-                request.SearchBy,
-                request.SearchByValue
-            ),
-            cancellationToken
+        var (orders, totalRecords) = await _repository.GetAllPaginatedAsync(
+            request.Page,
+            request.PageSize,
+            cancellationToken,
+            request.SortBy,
+            request.SortDescending,
+            request.SearchByValues
         );
 
         if (orders is null || !orders.Any())

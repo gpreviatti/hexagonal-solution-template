@@ -14,14 +14,6 @@ public sealed class GetAllOrdersUseCaseFixture : BaseApplicationFixture<Order, B
         useCase = new(mockServiceProvider.Object);
     }
 
-    public new void ClearInvocations()
-    {
-        base.ClearInvocations();
-    }
-
-    public BasePaginatedRequest SetValidRequest() =>
-        new(Guid.NewGuid(), 1, 10);
-
     public void VerifyNoOrdersFoundLog(int times = 1) =>
         mockLogger.VerifyLog(l => l.LogWarning("*No orders found.*"), Times.Exactly(times));
 }
@@ -40,12 +32,12 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
     public async Task GivenAValidRequestThenPass()
     {
         // Arrange
-        var request = _fixture.SetValidRequest();
+        var totalRecords = 5;
+        var request = _fixture.SetValidBasePaginatedRequest();
         _fixture.SetSuccessfulValidator(request);
-        var expectedOrders = _fixture.autoFixture.CreateMany<Order>(5);
-        var totalRecords = 20;
+        var expectedOrders = _fixture.autoFixture.CreateMany<Order>(totalRecords);
 
-        _fixture.SetValidGetOrCreateAsync<(IEnumerable<Order>, int)>((expectedOrders, totalRecords));
+        _fixture.SetValidGetAllPaginatedAsyncNoIncludes(expectedOrders, totalRecords);
 
         // Act
         var result = await _fixture.useCase.Handle(request, _fixture.cancellationToken);
@@ -56,22 +48,22 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         Assert.Empty(result.Message);
         Assert.NotNull(result.Data);
         Assert.Equal(expectedOrders.Count(), result.Data.Count());
-        Assert.Equal(2, result.TotalPages);
+        Assert.Equal(1, result.TotalPages);
         Assert.Equal(totalRecords, result.TotalRecords);
 
         _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyFinishUseCaseLog();
+        _fixture.VerifyGetAllPaginatedNoIncludes(1);
         _fixture.VerifyNoOrdersFoundLog(0);
-        _fixture.VerifyCache<(IEnumerable<Order>, int)>(1);
+        _fixture.VerifyFinishUseCaseLog();
     }
 
     [Fact]
     public async Task GivenAValidRequestWhenNoOrdersFoundThenFails()
     {
         // Arrange
-        var request = _fixture.SetValidRequest();
+        var request = _fixture.SetValidBasePaginatedRequest();
         _fixture.SetSuccessfulValidator(request);
-        _fixture.SetInvalidGetOrCreateAsync<(IEnumerable<Order>, int)>();
+        _fixture.SetInvalidGetAllPaginatedAsync();
 
         // Act
         var result = await _fixture.useCase.Handle(request, _fixture.cancellationToken);
@@ -82,16 +74,16 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         Assert.Equal("No orders found.", result.Message);
 
         _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyFinishUseCaseLog(0);
+        _fixture.VerifyGetAllPaginatedNoIncludes(1);
         _fixture.VerifyNoOrdersFoundLog(1);
-        _fixture.VerifyCache<(IEnumerable<Order>, int)>(1);
+        _fixture.VerifyFinishUseCaseLog(0);
     }
 
     [Fact]
     public async Task GivenAInvalidRequestThenFails()
     {
         // Arrange
-        var request = _fixture.SetValidRequest();
+        var request = _fixture.SetValidBasePaginatedRequest();
         _fixture.SetFailedValidator(request);
 
         // Act
@@ -102,8 +94,8 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         Assert.NotEmpty(result.Message);
 
         _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyFinishUseCaseLog(0);
+        _fixture.VerifyGetAllPaginatedNoIncludes(0);
         _fixture.VerifyNoOrdersFoundLog(0);
-        _fixture.VerifyCache<(IEnumerable<Order>, int)>(0);
+        _fixture.VerifyFinishUseCaseLog(0);
     }
 }

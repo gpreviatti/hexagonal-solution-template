@@ -9,8 +9,7 @@ public sealed record BasePaginatedRequest(
     int PageSize = 10,
     string SortBy = null,
     bool SortDescending = false,
-    string SearchBy = null,
-    string SearchByValue = null
+    Dictionary<string, string> SearchByValues = null
 ) : BaseRequest(CorrelationId);
 
 public sealed class BasePaginatedRequestValidator : AbstractValidator<BasePaginatedRequest>
@@ -26,10 +25,5 @@ public sealed class BasePaginatedRequestValidator : AbstractValidator<BasePagina
             .WithMessage("PageSize must be greater than 0")
             .LessThanOrEqualTo(100)
             .WithMessage("PageSize must be less than or equal to 100");
-
-        RuleFor(r => r.SearchBy)
-            .NotEmpty()
-            .When(r => !string.IsNullOrWhiteSpace(r.SearchByValue))
-            .WithMessage("SearchBy must be provided when SearchByValue is specified");
     }
 }

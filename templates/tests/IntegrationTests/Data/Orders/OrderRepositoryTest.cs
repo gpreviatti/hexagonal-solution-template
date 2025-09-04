@@ -82,23 +82,24 @@ public sealed class OrderRepositoryTest : IClassFixture<OrderDataTestFixture>
         // Arrange
         var pageNumber = 1;
         var pageSize = 5;
-        var searchBy = "Description";
-        var searchByValue = "xpto";
+        var valueToSearch = "xpto";
+        var searchByValues = new Dictionary<string, string> {
+            { "Description", valueToSearch }
+        };
 
         // Act
         var (result, totalRecords) = await _fixture!.Repository!.GetAllPaginatedAsync(
             pageNumber,
             pageSize,
             _fixture.cancellationToken,
-            searchBy: searchBy,
-            searchByValue: searchByValue
+            searchByValues: searchByValues
         );
 
         // Assert
         Assert.NotNull(result);
         Assert.NotEmpty(result);
         Assert.True(totalRecords > 0);
-        Assert.All(result, o => Assert.Contains(searchByValue.ToLowerInvariant(), o.Description.ToLowerInvariant()));
+        Assert.All(result, o => Assert.Contains(valueToSearch.ToLowerInvariant(), o.Description.ToLowerInvariant()));
     }
 
     [Fact]
@@ -107,16 +108,16 @@ public sealed class OrderRepositoryTest : IClassFixture<OrderDataTestFixture>
         // Arrange
         var pageNumber = 1;
         var pageSize = 5;
-        var searchBy = "Description";
-        var searchByValue = "non-existing-description";
+        var searchByValues = new Dictionary<string, string> {
+            { "Description", "non-existing-description" }
+        };
 
         // Act
         var (result, totalRecords) = await _fixture!.Repository!.GetAllPaginatedAsync(
             pageNumber,
             pageSize,
             _fixture.cancellationToken,
-            searchBy: searchBy,
-            searchByValue: searchByValue
+            searchByValues: searchByValues
         );
 
         // Assert

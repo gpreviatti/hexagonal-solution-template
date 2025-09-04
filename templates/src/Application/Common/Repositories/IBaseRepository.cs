@@ -42,8 +42,7 @@ public interface IBaseRepository<TEntity> where TEntity : DomainEntity
         CancellationToken cancellationToken,
         string sortBy = null,
         bool sortDescending = false,
-        string searchBy = null,
-        string searchByValue = null,
+        Dictionary<string, string> searchByValues = null,
         params Expression<Func<TEntity, object>>[] includes
     );
 
