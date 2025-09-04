@@ -8,16 +8,16 @@ using Microsoft.Extensions.Logging;
 namespace Application.Common.UseCases;
 
 public interface IBaseOutUseCase<TResponseData, TEntity, TUseCase>
-    where TResponseData : class
+    where TResponseData : BaseResponse
     where TEntity : DomainEntity
 {
-    Task<BaseResponse<TResponseData>> HandleAsync(CancellationToken cancellationToken);
+    Task<TResponseData> HandleAsync(CancellationToken cancellationToken);
 }
 
 public abstract class BaseOutUseCase<TResponseData, TEntity, TUseCase>(
     IServiceProvider serviceProvider
 ) : IBaseOutUseCase<TResponseData, TEntity, TUseCase>
-    where TResponseData : class
+    where TResponseData : BaseResponse
     where TEntity : DomainEntity
     where TUseCase : class
 {
@@ -25,8 +25,8 @@ public abstract class BaseOutUseCase<TResponseData, TEntity, TUseCase>(
     protected readonly IBaseRepository<TEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<TEntity>>();
     protected readonly IHybridCacheService _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
 
-    public async Task<BaseResponse<TResponseData>> HandleAsync(CancellationToken cancellationToken)
+    public async Task<TResponseData> HandleAsync(CancellationToken cancellationToken)
         => await HandleInternalAsync(cancellationToken);
 
-    public abstract Task<BaseResponse<TResponseData>> HandleInternalAsync(CancellationToken cancellationToken);
+    public abstract Task<TResponseData> HandleInternalAsync(CancellationToken cancellationToken);
 }
