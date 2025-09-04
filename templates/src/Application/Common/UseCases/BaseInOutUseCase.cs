@@ -14,7 +14,7 @@ public interface IBaseInOutUseCase<TRequest, TResponseData, TUseCase>
     where TResponseData : BaseResponse
     where TUseCase : class
 {
-    Task<TResponseData> Handle(TRequest request, CancellationToken cancellationToken);
+    Task<TResponseData> HandleAsync(TRequest request, CancellationToken cancellationToken);
 }
 
 public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCase>(
@@ -33,12 +33,12 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
     protected readonly IHybridCacheService _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
     private const string ClassName = nameof(BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCase>);
 
-    public async Task<TResponseData> Handle(
+    public async Task<TResponseData> HandleAsync(
         TRequest request,
         CancellationToken cancellationToken
     )
     {
-        string methodName = nameof(Handle);
+        string methodName = nameof(HandleAsync);
         logger.LogInformation(DefaultApplicationMessages.StartToExecuteUseCase, ClassName, methodName, request.CorrelationId);
 
         if (validator != null)

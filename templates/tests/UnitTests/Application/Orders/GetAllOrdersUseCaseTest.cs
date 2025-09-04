@@ -40,7 +40,7 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         _fixture.SetValidGetAllPaginatedAsyncNoIncludes(expectedOrders, totalRecords);
 
         // Act
-        var result = await _fixture.useCase.Handle(request, _fixture.cancellationToken);
+        var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
 
         // Assert
         Assert.NotNull(result);
@@ -66,7 +66,7 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         _fixture.SetInvalidGetAllPaginatedAsync();
 
         // Act
-        var result = await _fixture.useCase.Handle(request, _fixture.cancellationToken);
+        var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
 
         // Assert
         Assert.False(result.Success);
@@ -87,7 +87,7 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         _fixture.SetFailedValidator(request);
 
         // Act
-        var result = await _fixture.useCase.Handle(request, _fixture.cancellationToken);
+        var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
 
         // Assert
         Assert.False(result.Success);
