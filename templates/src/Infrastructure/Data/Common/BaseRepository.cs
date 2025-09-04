@@ -149,8 +149,8 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
         CancellationToken cancellationToken,
         string sortBy = null!,
         bool sortDescending = false,
-        string searchPropertyName = null!,
-        string searchValue = null!,
+        string searchBy = null!,
+        string searchByValue = null!,
         params Expression<Func<TEntity, object>>[] includes
     )
     {
@@ -171,10 +171,10 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
 
         var totalRecords = await query.CountAsync(cancellationToken);
 
-        if (!string.IsNullOrWhiteSpace(searchPropertyName) && !string.IsNullOrWhiteSpace(searchValue))
+        if (!string.IsNullOrWhiteSpace(searchBy) && !string.IsNullOrWhiteSpace(searchByValue))
         {
-            query = query.Where(e => EF.Property<string>(e, searchPropertyName)
-                .Contains(searchValue, StringComparison.OrdinalIgnoreCase));
+            query = query.Where(e => EF.Property<string>(e, searchBy)
+                .Contains(searchByValue.ToLowerInvariant()));
         }
         
         var items = await query

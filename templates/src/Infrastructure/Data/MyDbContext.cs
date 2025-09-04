@@ -8,6 +8,7 @@ public sealed class MyDbContext(
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        
         modelBuilder.ApplyConfiguration(new OrderDbMapping());
         modelBuilder.ApplyConfiguration(new ItemDbMapping());
     }

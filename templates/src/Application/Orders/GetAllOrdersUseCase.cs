@@ -36,8 +36,8 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) : Base
                 cancellationToken,
                 request.SortBy,
                 request.SortDescending,
-                request.SearchPropertyName,
-                request.SearchValue
+                request.SearchBy,
+                request.SearchByValue
             ),
             cancellationToken
         );
