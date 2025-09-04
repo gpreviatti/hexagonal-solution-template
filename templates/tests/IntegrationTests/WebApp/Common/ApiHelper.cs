@@ -11,6 +11,19 @@ public sealed class ApiHelper(HttpClient httpClient)
         PropertyNameCaseInsensitive = true
     };
 
+    public void AddHeaders(Dictionary<string, string> headers)
+    {
+        foreach (var header in headers)
+        {
+            if (httpClient.DefaultRequestHeaders.Contains(header.Key))
+            {
+                httpClient.DefaultRequestHeaders.Remove(header.Key);
+            }
+
+            httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+        }
+    }
+
     public async Task<HttpResponseMessage> GetAsync(string resourceUrl) =>
         await httpClient.GetAsync(resourceUrl);
 
