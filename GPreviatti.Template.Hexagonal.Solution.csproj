@@ -23,6 +23,7 @@
       - Update item seed data to fix typo in product name.
       - Adjust logging method names in base use case classes for consistency.
       - Bump version to 9.1.0.
+      - Add Seq as monitoring tool.
     </PackageReleaseNotes>
   </PropertyGroup>
 

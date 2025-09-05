@@ -52,17 +52,20 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
                 options.Protocol = exporterProtocol;
                 options.Endpoint = new Uri(Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_TRACES_ENDPOINT")!);
             })
+        )
+        .WithLogging(logging => logging
+            .AddConsoleExporter()
+            .AddOtlpExporter(options =>
+            {
+                options.Protocol = exporterProtocol;
+                options.Endpoint = new Uri(Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_LOGS_ENDPOINT")!);
+            })
         );
 
         builder.Services.AddLogging(logging => logging.AddOpenTelemetry(openTelemetryLoggerOptions =>
         {
             openTelemetryLoggerOptions.IncludeScopes = true;
             openTelemetryLoggerOptions.IncludeFormattedMessage = true;
-            openTelemetryLoggerOptions.AddOtlpExporter(options =>
-            {
-                options.Protocol = exporterProtocol;
-                options.Endpoint = new Uri(Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_LOGS_ENDPOINT")!);
-            });
         }));
 
         return builder;
