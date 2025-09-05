@@ -14,9 +14,23 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
 {
     public static WebApplicationBuilder AddOpenTelemetry(this WebApplicationBuilder builder)
     {
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
         var exporterProtocol = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_PROTOCOL")?.ToLower() == "grpc"
             ? OtlpExportProtocol.Grpc
             : OtlpExportProtocol.HttpProtobuf;
+        var exporterMetricsEndpoint = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_METRICS_ENDPOINT");
+        var exporterTracesEndpoint = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_TRACES_ENDPOINT");
+        var exporterLogsEndpoint = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_LOGS_ENDPOINT");
+
+        if (
+            string.Compare(environment, "IntegrationTests", true) == 0 ||
+            string.IsNullOrWhiteSpace(exporterLogsEndpoint) ||
+            string.IsNullOrWhiteSpace(exporterMetricsEndpoint) ||
+            string.IsNullOrWhiteSpace(exporterTracesEndpoint)
+        )
+        {
+            return builder;
+        }
 
         builder.Services.AddOpenTelemetry()
         .ConfigureResource(resource => resource.AddEnvironmentVariableDetector())
@@ -27,7 +41,7 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
             .AddOtlpExporter(options =>
             {
                 options.Protocol = exporterProtocol;
-                options.Endpoint = new Uri(Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_METRICS_ENDPOINT")!);
+                options.Endpoint = new Uri(exporterMetricsEndpoint);
             })
         )
         .WithTracing(tracing => tracing
@@ -50,7 +64,7 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
             .AddOtlpExporter(options =>
             {
                 options.Protocol = exporterProtocol;
-                options.Endpoint = new Uri(Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_TRACES_ENDPOINT")!);
+                options.Endpoint = new Uri(exporterTracesEndpoint!);
             })
         )
         .WithLogging(logging => logging
@@ -58,7 +72,7 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
             .AddOtlpExporter(options =>
             {
                 options.Protocol = exporterProtocol;
-                options.Endpoint = new Uri(Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_LOGS_ENDPOINT")!);
+                options.Endpoint = new Uri(exporterLogsEndpoint!);
             })
         );
 
