@@ -12,7 +12,8 @@ internal sealed class OrderDbMapping : BaseDbMapping<Order>
             .IsRequired(true);
 
         builder.Property(p => p.Total)
-            .IsRequired(true);
+            .IsRequired(true)
+            .HasPrecision(18, 2);
 
         builder.HasMany(p => p.Items);
 

@@ -1,25 +1,44 @@
 ﻿namespace Application.Common.Requests;
 
-public record BaseResponse()
+public record BaseResponse
 {
-    public bool Success { get; set; } = false;
+    public BaseResponse(bool success, string message = "")
+    {
+        Success = success;
+        Message = message;
+    }
+    public BaseResponse() {}
 
-    public string Message { get; set; } = string.Empty;
+    public bool Success { get; set; }
+    public string Message { get; set; }
 }
 
-public record BaseResponse<TData>() where TData : class
+public record BaseResponse<TData> : BaseResponse where TData : class
 {
-    public string Message { get; set; } = string.Empty;
+    public BaseResponse(){}
 
-    public bool Success { get; set; } = false;
+    public BaseResponse(TData data, bool success = false, string message = "") : base(success, message)
+    {
+        Data = data;
+    }
 
     public TData Data { get; set; }
+}
 
-    public void SetMessage(string message) => Message = message;
+public sealed record BasePaginatedResponse<TData> : BaseResponse<IEnumerable<TData>> where TData : class
+{
+    public BasePaginatedResponse() {}
 
-    public void SetData(TData value)
+    public BasePaginatedResponse(
+        int totalPages = 0, int totalRecords = 0,
+        IEnumerable<TData> data = null,
+        bool success = true, string message = ""
+    ) : base(data, success, message)
     {
-        Data = value;
-        Success = true;
+        TotalPages = totalPages;
+        TotalRecords = totalRecords;
     }
+
+    public int TotalPages { get; set; } = 0;
+    public int TotalRecords { get; set; } = 0;
 }

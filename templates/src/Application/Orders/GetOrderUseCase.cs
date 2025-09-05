@@ -19,7 +19,7 @@ public sealed class GetOrderRequestValidator : AbstractValidator<GetOrderRequest
     }
 }
 
-public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<GetOrderRequest, OrderDto, Order, GetOrderUseCase>(
+public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>, Order, GetOrderUseCase>(
     serviceProvider,
     serviceProvider.GetService<IValidator<GetOrderRequest>>()
 )
@@ -34,7 +34,6 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
     )
     {
         string methodName = nameof(HandleInternalAsync);
-        var response = new BaseResponse<OrderDto>();
 
         var order = await _cache.GetOrCreateAsync(
             $"Order-{request.Id}",
@@ -45,20 +44,17 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
         if (order is null || order.Equals(default(Order)))
         {
             logger.LogWarning(DefaultApplicationMessages.DefaultApplicationMessage + "Order not found.", ClassName, methodName, request.CorrelationId);
-            response.SetMessage("Order not found.");
-            return response;
+            return new(null, false, "Order not found.");
         }
-
-        response.SetData(new(
-            order.Id,
-            order.Description,
-            order.Total
-        ));
 
         logger.LogInformation(DefaultApplicationMessages.FinishedExecutingUseCase, ClassName, methodName, request.CorrelationId);
 
         OrderRetrieved.Add(1);
 
-        return response;
+        return new(new(
+            order.Id,
+            order.Description,
+            order.Total
+        ), true);
     }
 }

@@ -8,7 +8,17 @@
             "launchBrowser": false,
             "applicationUrl": "http://localhost:5010",
             "environmentVariables": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "LOGGING__LOGLEVEL__DEFAULT": "Debug",
+                "LOGGING__LOGLEVEL__MICROSOFT": "Information",
+                "LOGGING__LOGLEVEL__MICROSOFT_HOSTING_LIFETIME": "Information",
+                "OTEL_SERVICE_NAME": "Hexagonal.Solution.Template.WebApp",
+                "OTEL_EXPORTER_OTLP_ENDPOINT": "http://localhost:5341/ingest/otlp/v1",
+                "OTEL_EXPORTER_OTLP_TRACES_ENDPOINT": "http://localhost:5341/ingest/otlp/v1/traces",
+                "OTEL_EXPORTER_OTLP_METRICS_ENDPOINT": "http://localhost:5341/ingest/otlp/v1/metrics",
+                "OTEL_EXPORTER_OTLP_LOGS_ENDPOINT": "http://localhost:5341/ingest/otlp/v1/logs",
+                "OTEL_EXPORTER_OTLP_PROTOCOL": "http/protobuf",
+                "OTEL_RESOURCE_ATTRIBUTES": "service.namespace=development",
             }
         },
         "WebApp Https [Development]": {
@@ -18,7 +28,17 @@
             "launchBrowser": false,
             "applicationUrl": "https://localhost:7175",
             "environmentVariables": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "LOGGING__LOGLEVEL__DEFAULT": "Debug",
+                "LOGGING__LOGLEVEL__MICROSOFT": "Information",
+                "LOGGING__LOGLEVEL__MICROSOFT_HOSTING_LIFETIME": "Information",
+                "OTEL_SERVICE_NAME": "Hexagonal.Solution.Template.WebApp",
+                "OTEL_EXPORTER_OTLP_ENDPOINT": "http://localhost:5341/ingest/otlp/v1",
+                "OTEL_EXPORTER_OTLP_TRACES_ENDPOINT": "http://localhost:5341/ingest/otlp/v1/traces",
+                "OTEL_EXPORTER_OTLP_METRICS_ENDPOINT": "http://localhost:5341/ingest/otlp/v1/metrics",
+                "OTEL_EXPORTER_OTLP_LOGS_ENDPOINT": "http://localhost:5341/ingest/otlp/v1/logs",
+                "OTEL_EXPORTER_OTLP_PROTOCOL": "http/protobuf",
+                "OTEL_RESOURCE_ATTRIBUTES": "service.namespace=development",
             }
         }
     }

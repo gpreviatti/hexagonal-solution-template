@@ -55,7 +55,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.SetSuccessfulAddAsync();
 
         // Act
-        var result = await _fixture.useCase.Handle(request, _fixture.cancellationToken);
+        var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
 
         // Assert
         Assert.NotNull(result);
@@ -66,7 +66,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyFinishUseCaseLog();
         _fixture.VerifyCreateOrderLogNoItemsError(0);
         _fixture.VerifyFailedToCreateOrderLog(0);
-        _fixture.VerifyRepository(1);
+        _fixture.VerifyAddAsync(1);
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.SetFailedValidator(request);
 
         // Act
-        var result = await _fixture.useCase.Handle(
+        var result = await _fixture.useCase.HandleAsync(
             request,
             _fixture.cancellationToken
         );
@@ -90,7 +90,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyFinishUseCaseLog(0);
         _fixture.VerifyCreateOrderLogNoItemsError(0);
         _fixture.VerifyFailedToCreateOrderLog(0);
-        _fixture.VerifyRepository(0);
+        _fixture.VerifyAddAsync(0);
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.SetSuccessfulValidator(request);
 
         // Act
-        var result = await _fixture.useCase.Handle(
+        var result = await _fixture.useCase.HandleAsync(
             request,
             _fixture.cancellationToken
         );
@@ -115,7 +115,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyFinishUseCaseLog(0);
         _fixture.VerifyCreateOrderLogNoItemsError(1);
         _fixture.VerifyFailedToCreateOrderLog(0);
-        _fixture.VerifyRepository(0);
+        _fixture.VerifyAddAsync(0);
     }
 
     [Fact]
@@ -127,7 +127,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.SetFailedAddAsync();
 
         // Act
-        var result = await _fixture.useCase.Handle(
+        var result = await _fixture.useCase.HandleAsync(
             request,
             _fixture.cancellationToken
         );
@@ -139,7 +139,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
 
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyFinishUseCaseLog(0);
-        _fixture.VerifyRepository(1);
+        _fixture.VerifyAddAsync(1);
         _fixture.VerifyCreateOrderLogNoItemsError(0);
         _fixture.VerifyFailedToCreateOrderLog(1);
     }

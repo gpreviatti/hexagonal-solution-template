@@ -18,7 +18,7 @@ GO
 
 IF NOT EXISTS (SELECT TOP 1 * FROM [Item] WHERE [Id] = 1 ) BEGIN
     INSERT INTO [Item] ([Id], [Name], [Description], [Value], [OrderId], [CreatedAt], [UpdatedAt])
-    VALUES (1, 'Graphocs Card 4090 Super', 'Nvidia Graphics Cards 24GB RX 4090 Super', 999.00, 1, GETDATE(), GETDATE());
+    VALUES (1, 'Graphics Card 4090 Super', 'Nvidia Graphics Cards 24GB RX 4090 Super', 999.00, 1, GETDATE(), GETDATE());
 END
 GO
 

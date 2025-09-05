@@ -143,6 +143,54 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
             await dbContext.Database.CurrentTransaction.RollbackAsync(cancellationToken);
     }
 
+    public async Task<(IEnumerable<TEntity> Items, int TotalRecords)> GetAllPaginatedAsync(
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken,
+        string sortBy = null!,
+        bool sortDescending = false,
+        Dictionary<string, string> searchByValues = null!,
+        params Expression<Func<TEntity, object>>[] includes
+    )
+    {
+        IQueryable<TEntity> query = dbEntitySet.AsNoTracking();
+
+        if (includes != null && includes.Length > 0)
+        {
+            foreach (var include in includes)
+                query = query.Include(include);
+        }
+
+        if (!string.IsNullOrWhiteSpace(sortBy))
+        {
+            query = sortDescending
+                ? query.OrderByDescending(e => EF.Property<object>(e, sortBy))
+                : query.OrderBy(e => EF.Property<object>(e, sortBy));
+        }
+        else
+        {
+            query = query.OrderBy(e => e.CreatedAt);
+        }
+
+        var totalRecords = await query.CountAsync(cancellationToken);
+
+        if (searchByValues != null && searchByValues.Any())
+        {    
+            foreach (var searchByValue in searchByValues)
+            {
+                query = query.Where(e => EF.Property<string>(e, searchByValue.Key)
+                    .Contains(searchByValue.Value.ToLowerInvariant()));
+            }
+        }
+
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return (items, totalRecords);
+    }
+
     private static IQueryable<TEntity> SetIncludes(
         Expression<Func<TEntity, object>>[] includes,
         IQueryable<TEntity> query

@@ -45,7 +45,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.SetValidGetOrCreateAsync(expectedOrder);
 
         // Act
-        var result = await _fixture.useCase.Handle(request, _fixture.cancellationToken);
+        var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
 
         // Assert
         Assert.NotNull(result);
@@ -59,7 +59,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyFinishUseCaseLog();
         _fixture.VerifyOrderNotFoundLog(0);
-        _fixture.VerifyCache(1);
+        _fixture.VerifyCache<Order>(1);
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.SetFailedValidator(request);
 
         // Act
-        var result = await _fixture.useCase.Handle(
+        var result = await _fixture.useCase.HandleAsync(
             request,
             _fixture.cancellationToken
         );
@@ -82,7 +82,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyFinishUseCaseLog(0);
         _fixture.VerifyOrderNotFoundLog(0);
-        _fixture.VerifyCache(0);
+        _fixture.VerifyCache<Order>(0);
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.SetInvalidGetOrCreateAsync<Order>();
 
         // Act
-        var result = await _fixture.useCase.Handle(
+        var result = await _fixture.useCase.HandleAsync(
             request,
             _fixture.cancellationToken
         );
@@ -108,6 +108,6 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyFinishUseCaseLog(0);
         _fixture.VerifyOrderNotFoundLog(1);
-        _fixture.VerifyCache(1);
+        _fixture.VerifyCache<Order>(1);
     }
 }

@@ -29,14 +29,14 @@ public abstract class BaseInUseCase<TRequest, TEntity, TUseCase>(
     protected readonly IBaseRepository<TEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<TEntity>>();
     protected readonly IHybridCacheService _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
     private const string ClassName = nameof(BaseInUseCase<TRequest, TEntity, TUseCase>);
+    private const string HandleMethodName = nameof(HandleAsync);
 
     public async Task HandleAsync(
         TRequest request,
         CancellationToken cancellationToken
     )
     {
-        string methodName = nameof(HandleAsync);
-        logger.LogInformation("[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Start to execute use case", ClassName, methodName, request.CorrelationId);
+        logger.LogInformation("[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Start to execute use case", ClassName, HandleMethodName, request.CorrelationId);
 
         if (validator != null)
         {

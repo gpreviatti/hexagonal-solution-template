@@ -14,71 +14,74 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
 {
     public static WebApplicationBuilder AddOpenTelemetry(this WebApplicationBuilder builder)
     {
-        var configuration = builder.Configuration;
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        var exporterProtocol = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_PROTOCOL")?.ToLower() == "grpc"
+            ? OtlpExportProtocol.Grpc
+            : OtlpExportProtocol.HttpProtobuf;
+        var exporterMetricsEndpoint = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_METRICS_ENDPOINT");
+        var exporterTracesEndpoint = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_TRACES_ENDPOINT");
+        var exporterLogsEndpoint = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_LOGS_ENDPOINT");
 
-        var openTelemetryEndpoint = new Uri(configuration["OpenTelemetry:Endpoint"]!);
-        if (string.IsNullOrWhiteSpace(openTelemetryEndpoint.ToString()))
+        if (
+            string.Compare(environment, "IntegrationTests", true) == 0 ||
+            string.IsNullOrWhiteSpace(exporterLogsEndpoint) ||
+            string.IsNullOrWhiteSpace(exporterMetricsEndpoint) ||
+            string.IsNullOrWhiteSpace(exporterTracesEndpoint)
+        )
         {
-            throw new ArgumentNullException("OpenTelemetry:Endpoint configuration is missing.");
+            return builder;
         }
 
-        var openTelemetryProtocol = configuration["OpenTelemetry:Protocol"]!.ToLowerInvariant() switch
-        {
-            "http/protobuf" => OtlpExportProtocol.HttpProtobuf,
-            "grpc" => OtlpExportProtocol.Grpc,
-            _ => OtlpExportProtocol.Grpc
-        };
-
         builder.Services.AddOpenTelemetry()
-        .ConfigureResource(resource => resource.AddService(DefaultConfigurations.ApplicationName))
-        .WithMetrics(metrics =>
-        {
-            metrics
+        .ConfigureResource(resource => resource.AddEnvironmentVariableDetector())
+        .WithMetrics(metrics => metrics
             .AddAspNetCoreInstrumentation()
             .AddMeter(DefaultConfigurations.Meter.Name)
-            .AddHttpClientInstrumentation();
-            metrics.AddOtlpExporter(options =>
+            .AddHttpClientInstrumentation()
+            .AddOtlpExporter(options =>
             {
-                options.Endpoint = openTelemetryEndpoint;
-                options.Protocol = openTelemetryProtocol;
-            });
-        })
-        .WithTracing(tracing =>
-        {
-            tracing
-                .AddAspNetCoreInstrumentation()
-                .AddHttpClientInstrumentation(
-                    options =>
-                    {
-                        options.RecordException = true;
-                    }
-                )
-                .AddEntityFrameworkCoreInstrumentation(
-                    options =>
-                    {
-                        options.SetDbStatementForText = true;
-                        options.SetDbStatementForStoredProcedure = true;
-                    }
-                )
-                .AddRedisInstrumentation()
-                .AddConsoleExporter()
-                .AddOtlpExporter(options =>
+                options.Protocol = exporterProtocol;
+                options.Endpoint = new Uri(exporterMetricsEndpoint);
+            })
+        )
+        .WithTracing(tracing => tracing
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation(
+                options =>
                 {
-                    options.Endpoint = openTelemetryEndpoint;
-                    options.Protocol = openTelemetryProtocol;
-                });
-        });
-
-        builder.Logging.AddOpenTelemetry(logging => logging
-        .AddConsoleExporter()
-        .AddOtlpExporter(
-            options =>
+                    options.RecordException = true;
+                }
+            )
+            .AddEntityFrameworkCoreInstrumentation(
+                options =>
+                {
+                    options.SetDbStatementForText = true;
+                    options.SetDbStatementForStoredProcedure = true;
+                }
+            )
+            .AddRedisInstrumentation()
+            .AddConsoleExporter()
+            .AddOtlpExporter(options =>
             {
-                options.Endpoint = openTelemetryEndpoint;
-                options.Protocol = openTelemetryProtocol;
-            }
-        ));
-        
+                options.Protocol = exporterProtocol;
+                options.Endpoint = new Uri(exporterTracesEndpoint!);
+            })
+        )
+        .WithLogging(logging => logging
+            .AddConsoleExporter()
+            .AddOtlpExporter(options =>
+            {
+                options.Protocol = exporterProtocol;
+                options.Endpoint = new Uri(exporterLogsEndpoint!);
+            })
+        );
+
+        builder.Services.AddLogging(logging => logging.AddOpenTelemetry(openTelemetryLoggerOptions =>
+        {
+            openTelemetryLoggerOptions.IncludeScopes = true;
+            openTelemetryLoggerOptions.IncludeFormattedMessage = true;
+        }));
+
         return builder;
     }
 }

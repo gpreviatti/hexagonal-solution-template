@@ -11,10 +11,10 @@ namespace Application.Common.UseCases;
 
 public interface IBaseInOutUseCase<TRequest, TResponseData, TUseCase>
     where TRequest : BaseRequest
-    where TResponseData : class
+    where TResponseData : BaseResponse
     where TUseCase : class
 {
-    Task<BaseResponse<TResponseData>> Handle(TRequest request, CancellationToken cancellationToken);
+    Task<TResponseData> HandleAsync(TRequest request, CancellationToken cancellationToken);
 }
 
 public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCase>(
@@ -22,7 +22,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
     IValidator<TRequest> validator = null
 ) : IBaseInOutUseCase<TRequest, TResponseData, TUseCase>
     where TRequest : BaseRequest
-    where TResponseData : class
+    where TResponseData : BaseResponse
     where TEntity : DomainEntity
     where TUseCase : class
 {
@@ -31,18 +31,15 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
     protected readonly IValidator<TRequest> validator = validator;
     protected readonly IBaseRepository<TEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<TEntity>>();
     protected readonly IHybridCacheService _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
-
     private const string ClassName = nameof(BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCase>);
+    private const string HandleMethodName = nameof(HandleAsync);
 
-    public async Task<BaseResponse<TResponseData>> Handle(
+    public async Task<TResponseData> HandleAsync(
         TRequest request,
         CancellationToken cancellationToken
     )
     {
-        string methodName = nameof(Handle);
-        logger.LogInformation(DefaultApplicationMessages.StartToExecuteUseCase, ClassName, methodName, request.CorrelationId);
-
-        var response = new BaseResponse<TResponseData>();
+        logger.LogInformation(DefaultApplicationMessages.StartToExecuteUseCase, ClassName, HandleMethodName, request.CorrelationId);
 
         if (validator != null)
         {
@@ -50,15 +47,18 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
             if (!validationResult.IsValid)
             {
                 string errors = string.Join(", ", validationResult.Errors);
-                response.SetMessage(errors);
+                logger.LogError(DefaultApplicationMessages.ValidationErrors, ClassName, HandleMethodName, request.CorrelationId, errors);
 
-                logger.LogError(DefaultApplicationMessages.ValidationErrors, ClassName, methodName, request.CorrelationId, errors);
-                return response;
+                var response = Activator.CreateInstance<TResponseData>();
+                response.Success = false;
+                response.Message = errors;
+
+                return response!;
             }
         }
 
         return await HandleInternalAsync(request, cancellationToken);
     }
 
-    public abstract Task<BaseResponse<TResponseData>> HandleInternalAsync(TRequest request, CancellationToken cancellationToken);
+    public abstract Task<TResponseData> HandleInternalAsync(TRequest request, CancellationToken cancellationToken);
 }

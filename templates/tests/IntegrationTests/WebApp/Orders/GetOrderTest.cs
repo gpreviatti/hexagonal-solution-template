@@ -14,7 +14,7 @@ public class GetOrderTestFixture : BaseFixture
 
     public ApiHelper apiHelper;
 
-    public string RESOURCE_URL = "orders/{0}/{1}";
+    public string RESOURCE_URL = "orders/{0}";
 
     public GetOrderTestFixture(CustomWebApplicationFactory<Program> customWebApplicationFactory)
     {
@@ -32,7 +32,11 @@ public class GetOrderTest(CustomWebApplicationFactory<Program> customWebApplicat
     {
         // Arrange
         var id = 1;
-        var url = string.Format(RESOURCE_URL, id, Guid.NewGuid());
+        var url = string.Format(RESOURCE_URL, id);
+        apiHelper.AddHeaders(new Dictionary<string, string>
+        {
+            { "CorrelationId", Guid.NewGuid().ToString() }
+        });
 
         // Act
         var result = await apiHelper.GetAsync(url);
@@ -50,7 +54,11 @@ public class GetOrderTest(CustomWebApplicationFactory<Program> customWebApplicat
     {
         // Arrange
         var id = 9999999;
-        var url = string.Format(RESOURCE_URL, id, Guid.NewGuid());
+        var url = string.Format(RESOURCE_URL, id);
+        apiHelper.AddHeaders(new Dictionary<string, string>
+        {
+            { "CorrelationId", Guid.NewGuid().ToString() }
+        });
 
         // Act
         var result = await apiHelper.GetAsync(url);
@@ -58,7 +66,7 @@ public class GetOrderTest(CustomWebApplicationFactory<Program> customWebApplicat
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
         Assert.False(response!.Success);
         Assert.Null(response.Data);
     }

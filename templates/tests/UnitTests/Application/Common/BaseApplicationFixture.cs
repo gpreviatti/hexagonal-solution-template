@@ -1,4 +1,6 @@
-﻿using Application.Common.Repositories;
+﻿using System.Linq.Expressions;
+using Application.Common.Repositories;
+using Application.Common.Requests;
 using Application.Common.Services;
 using CommonTests.Fixtures;
 using Domain.Common;
@@ -41,11 +43,13 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
 
     public void ClearInvocations()
     {
-        mockLogger.Invocations.Clear();
-        mockRepository.Invocations.Clear();
-        mockValidator.Invocations.Clear();
-        mockCache.Invocations.Clear();
+        mockLogger.Reset();
+        mockRepository.Reset();
+        mockValidator.Reset();
+        mockCache.Reset();
     }
+
+    public BasePaginatedRequest SetValidBasePaginatedRequest() => new(Guid.NewGuid(), 1, 10);
 
     public void SetSuccessfulAddAsync() => mockRepository
         .Setup(d => d.AddAsync(It.IsAny<TEntity>(), It.IsAny<CancellationToken>()))
@@ -86,6 +90,25 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
         It.IsAny<CancellationToken>()
     ));
 
+    public void SetValidGetAllPaginatedAsyncNoIncludes(IEnumerable<TEntity> entities, int totalRecords) => mockRepository.Setup(r => r.GetAllPaginatedAsync(
+        It.IsAny<int>(),
+        It.IsAny<int>(),
+        It.IsAny<CancellationToken>(),
+        It.IsAny<string>(),
+        It.IsAny<bool>(),
+        It.IsAny<Dictionary<string, string>>()
+    )).ReturnsAsync((entities, totalRecords));
+
+    public void SetInvalidGetAllPaginatedAsync() => mockRepository.Setup(r => r.GetAllPaginatedAsync(
+        It.IsAny<int>(),
+        It.IsAny<int>(),
+        It.IsAny<CancellationToken>(),
+        It.IsAny<string>(),
+        It.IsAny<bool>(),
+        It.IsAny<Dictionary<string, string>>(),
+        It.IsAny<Expression<Func<TEntity, object>>>()
+    )).ReturnsAsync((null, 0));
+
     public void VerifyStartUseCaseLog(int times = 1) => VerifyLogInformation("Start to execute use case", times);
     public void VerifyFinishUseCaseLog(int times = 1) => VerifyLogInformation("Finished executing use case with success", times);
 
@@ -104,23 +127,26 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
         Times.Exactly(times)
     );
 
-    public void VerifyRepository(int times)
-    {
-        mockRepository.Verify(
-            d => d.AddAsync(It.IsAny<TEntity>(), It.IsAny<CancellationToken>()),
-            Times.Exactly(times)
-        );
-    }
-    
-    public void VerifyCache(int times)
-    {
-        mockCache.Verify(
-            c => c.GetOrCreateAsync(
-                It.IsAny<string>(),
-                It.IsAny<Func<CancellationToken, ValueTask<TEntity>>>(),
-                It.IsAny<CancellationToken>()
-            ),
-            Times.Exactly(times)
-        );
-    }
+    public void VerifyAddAsync(int times) => mockRepository.Verify(
+        d => d.AddAsync(It.IsAny<TEntity>(), It.IsAny<CancellationToken>()),
+        Times.Exactly(times)
+    );
+
+    public void VerifyGetAllPaginatedNoIncludes(int times) => mockRepository.Verify(r => r.GetAllPaginatedAsync(
+        It.IsAny<int>(),
+        It.IsAny<int>(),
+        It.IsAny<CancellationToken>(),
+        It.IsAny<string>(),
+        It.IsAny<bool>(),
+        It.IsAny<Dictionary<string, string>>()
+    ), Times.Exactly(times));
+
+    public void VerifyCache<TResult>(int times) => mockCache.Verify(
+        c => c.GetOrCreateAsync(
+            It.IsAny<string>(),
+            It.IsAny<Func<CancellationToken, ValueTask<TResult>>>(),
+            It.IsAny<CancellationToken>()
+        ),
+        Times.Exactly(times)
+    );
 }

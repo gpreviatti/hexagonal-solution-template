@@ -1,3 +1,4 @@
+using Application.Common.Requests;
 using Application.Common.UseCases;
 using Application.Orders;
 using Microsoft.AspNetCore.Mvc;
@@ -11,23 +12,38 @@ internal static class OrderEndpoints
         var ordersGroup = app.MapGroup("/orders")
             .WithTags("Orders");
 
-        ordersGroup.MapGet("/{id}/{correlationId}", async (
-            [FromServices] IBaseInOutUseCase<GetOrderRequest, OrderDto, GetOrderUseCase> useCase,
+        ordersGroup.MapGet("/{id}", async (
+            [FromServices] IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>, GetOrderUseCase> useCase,
+            [FromHeader] Guid correlationId,
             int id,
-            Guid correlationId
-        ) => Results.Ok(await useCase.Handle(new(correlationId, id), CancellationToken.None)));
-
-        ordersGroup.MapPost("/", async (
-            [FromServices] IBaseInOutUseCase<CreateOrderRequest, OrderDto, CreateOrderUseCase> useCase,
-            [FromBody] CreateOrderRequest request
+            CancellationToken cancellationToken
         ) =>
         {
-            var response = await useCase.Handle(request, CancellationToken.None);
+            var response = await useCase.HandleAsync(new(correlationId, id), cancellationToken);
 
-            if (!response.Success)
-                return Results.BadRequest(response);
+            return response.Success ? Results.Ok(response) : Results.NotFound(response);
+        });
 
-            return Results.Created($"/orders/{response.Data.Id}", response);
+        ordersGroup.MapPost("/", async (
+            [FromServices] IBaseInOutUseCase<CreateOrderRequest, BaseResponse<OrderDto>, CreateOrderUseCase> useCase,
+            [FromBody] CreateOrderRequest request,
+            CancellationToken cancellationToken
+        ) =>
+        {
+            var response = await useCase.HandleAsync(request, cancellationToken);
+
+            return response.Success ? Results.Created($"/orders/{response.Data.Id}", response) : Results.BadRequest(response);
+        });
+
+        ordersGroup.MapPost("/paginated", async (
+            [FromServices] IBaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<OrderDto>, GetAllOrdersUseCase> useCase,
+            [FromBody] BasePaginatedRequest request,
+            CancellationToken cancellationToken
+        ) =>
+        {
+            var response = await useCase.HandleAsync(request, cancellationToken);
+
+            return response.Success ? Results.Ok(response) : Results.BadRequest(response);
         });
 
         return app;
