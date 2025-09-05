@@ -42,7 +42,7 @@ Content-Type: application/json
 }
 ###
 
-POST {{WebApp_HostAddress}}/orders/paginated
+POST {{WebApp_HostAddress}}/orders/paginated HTTP/2
 Content-Type: application/json
 
 {

@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option csharp_namespace = "GrpcOrder";
+
+package order;
+
+service OrderService {
+  rpc Get (GetOrderRequest) returns (OrderReply);
+}
+
+message GetOrderRequest {
+    int32 id = 1;
+    string correlationId = 2;
+}
+
+message OrderReply {
+    int32 id = 1;
+    string description = 2;
+    double total = 3;
+}

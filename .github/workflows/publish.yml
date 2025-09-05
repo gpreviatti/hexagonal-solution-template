@@ -20,7 +20,7 @@ jobs:
     needs: [validate]
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-pack.yml@v1
     with:
-      package_version: "9.1.0"
+      package_version: "9.2.0"
       dotnet_version: "9.x"
     secrets:
       nuget_api_key: ${{secrets.NUGET_API_KEY}}

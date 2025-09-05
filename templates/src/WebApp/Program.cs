@@ -2,6 +2,7 @@
 using Domain;
 using Infrastructure;
 using WebApp.Endpoints;
+using WebApp.GrpcServices;
 using WebApp.HealthChecks;
 using WebApp.Middlewares;
 
@@ -14,6 +15,7 @@ public sealed class Program
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddGrpc();
 
         builder.Services.AddCustomHealthChecks(builder.Configuration);
 
@@ -27,7 +29,8 @@ public sealed class Program
 
         app.UseHttpsRedirection();
 
-        app.MapOrderEndpoints();
+        app.MapEndpoints();
+        app.MapGrpcServices();
 
         app.UseCustomHealthChecks();
 
