@@ -7,7 +7,7 @@ public sealed class Item : DomainEntity
 
     public Item(
         string name, string description, decimal value
-    ) : base(DateTime.UtcNow)
+    ) : base()
     {
         Name = name;
         Description = description;

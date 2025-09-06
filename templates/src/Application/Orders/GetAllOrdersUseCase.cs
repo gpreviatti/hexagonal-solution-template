@@ -50,7 +50,8 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) : Base
         var orderDtos = orders.Select(o => new OrderDto(
             o.Id,
             o.Description,
-            o.Total
+            o.Total,
+            o.CreatedAt
         ));
 
         logger.LogInformation(

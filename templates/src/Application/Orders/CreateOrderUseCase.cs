@@ -77,7 +77,14 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
         return new(new(
             newOrder.Id,
             newOrder.Description,
-            newOrder.Total
+            newOrder.Total,
+            newOrder.CreatedAt,
+            [.. newOrder.Items.Select(i => new ItemDto(
+                i.Id,
+                i.Name,
+                i.Description,
+                i.Value
+            ))]
         ), true);
     }
 }

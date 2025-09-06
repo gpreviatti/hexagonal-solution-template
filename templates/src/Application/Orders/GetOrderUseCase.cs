@@ -54,7 +54,14 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
         return new(new(
             order.Id,
             order.Description,
-            order.Total
+            order.Total,
+            order.CreatedAt,
+            order.Items.Select(i => new ItemDto(
+                i.Id,
+                i.Name,
+                i.Description,
+                i.Value
+            )).ToList()
         ), true);
     }
 }
