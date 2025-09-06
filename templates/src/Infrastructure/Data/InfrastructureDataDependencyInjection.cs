@@ -12,7 +12,9 @@ internal static class InfrastructureDataDependencyInjection
     public static IServiceCollection AddData(this IServiceCollection services, IConfiguration configuration)
     {
         services
-            .AddDbContext<MyDbContext>(context => context.UseSqlServer(configuration.GetConnectionString("OrderDb")));
+            .AddDbContextPool<MyDbContext>(context =>
+                context.UseSqlServer(configuration.GetConnectionString("OrderDb"))
+            );
 
         services.AddScoped<IBaseRepository<Order>, BaseRepository<Order>>();
 
