@@ -41,12 +41,17 @@ public class GetOrderTest(CustomWebApplicationFactory<Program> customWebApplicat
         // Act
         var result = await apiHelper.GetAsync(url);
         var response = await apiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
+        var data = response?.Data;
 
         // Assert
         Assert.NotNull(result);
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         Assert.True(response!.Success);
-        Assert.NotNull(response.Data);
+        Assert.NotNull(data);
+        Assert.Equal(id, data.Id);
+        Assert.NotNull(data.Items);
+        Assert.NotEmpty(data.Items);
+        Assert.NotNull(data.Description);
     }
 
     [Fact(DisplayName = nameof(Given_A_Invalid_Request_Then_Fails))]

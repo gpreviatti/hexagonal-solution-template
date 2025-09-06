@@ -35,11 +35,18 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
     {
         string methodName = nameof(HandleInternalAsync);
 
-        var order = await _cache.GetOrCreateAsync(
+        var response = await _cache.GetAsync<BaseResponse<OrderDto>>(
             $"Order-{request.Id}",
-            async cancellationToken => await _repository.GetByIdAsNoTrackingAsync(request.Id, cancellationToken, o => o.Items),
             cancellationToken
         );
+
+        if (response is not null)
+        {
+            logger.LogInformation(DefaultApplicationMessages.FinishedExecutingUseCaseFromCache, ClassName, methodName, request.CorrelationId);
+            return response;
+        }
+
+        var order = await _repository.GetByIdAsNoTrackingAsync(request.Id, cancellationToken, o => o.Items);
 
         if (order is null || order.Equals(default(Order)))
         {
@@ -47,21 +54,25 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
             return new(null, false, "Order not found.");
         }
 
-        logger.LogInformation(DefaultApplicationMessages.FinishedExecutingUseCase, ClassName, methodName, request.CorrelationId);
-
         OrderRetrieved.Add(1);
 
-        return new(new(
+        response = new(new(
             order.Id,
             order.Description,
             order.Total,
             order.CreatedAt,
-            order.Items.Select(i => new ItemDto(
+            [.. order.Items.Select(i => new ItemDto(
                 i.Id,
                 i.Name,
                 i.Description,
                 i.Value
-            )).ToList()
+            ))]
         ), true);
+
+        _ = _cache.SetAsync($"Order-{request.Id}", response, cancellationToken);
+
+        logger.LogInformation(DefaultApplicationMessages.FinishedExecutingUseCase, ClassName, methodName, request.CorrelationId);
+
+        return response;
     }
 }

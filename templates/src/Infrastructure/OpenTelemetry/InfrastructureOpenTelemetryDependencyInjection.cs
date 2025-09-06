@@ -65,7 +65,6 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
             })
         )
         .WithLogging(logging => logging
-            .AddConsoleExporter()
             .AddOtlpExporter(options =>
             {
                 options.Protocol = exporterProtocol;
