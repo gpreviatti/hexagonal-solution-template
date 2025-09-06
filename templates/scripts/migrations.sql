@@ -10,8 +10,8 @@ GO
 IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
 BEGIN
     CREATE TABLE [__EFMigrationsHistory] (
-        [MigrationId] nvarchar(150) NOT NULL,
-        [ProductVersion] nvarchar(32) NOT NULL,
+        [MigrationId] varchar(150) NOT NULL,
+        [ProductVersion] varchar(32) NOT NULL,
         CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
     );
 END;
@@ -27,7 +27,7 @@ IF NOT EXISTS (
 BEGIN
     CREATE TABLE [Order] (
         [Id] int NOT NULL IDENTITY,
-        [Description] nvarchar(255) NOT NULL,
+        [Description] varchar(150) NOT NULL,
         [Total] decimal(18,2) NOT NULL,
         [CreatedAt] DATETIME2 NULL,
         [UpdatedAt] DATETIME2 NULL,
@@ -43,8 +43,8 @@ IF NOT EXISTS (
 BEGIN
     CREATE TABLE [Item] (
         [Id] int NOT NULL IDENTITY,
-        [Name] nvarchar(200) NOT NULL,
-        [Description] nvarchar(255) NOT NULL,
+        [Name] varchar(100) NOT NULL,
+        [Description] varchar(150) NOT NULL,
         [Value] decimal(18,2) NOT NULL,
         [OrderId] int NULL,
         [CreatedAt] DATETIME2 NULL,
