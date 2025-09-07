@@ -14,7 +14,7 @@ public interface IBaseInOutUseCase<TRequest, TResponseData, TUseCase>
     where TResponseData : BaseResponse
     where TUseCase : class
 {
-    Task<TResponseData> HandleAsync(TRequest request, CancellationToken cancellationToken);
+    ValueTask<TResponseData> HandleAsync(TRequest request, CancellationToken cancellationToken, string cacheKey = null);
 }
 
 public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCase>(
@@ -34,12 +34,17 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
     private const string ClassName = nameof(BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCase>);
     private const string HandleMethodName = nameof(HandleAsync);
 
-    public async Task<TResponseData> HandleAsync(
+    public async ValueTask<TResponseData> HandleAsync(
         TRequest request,
-        CancellationToken cancellationToken
+        CancellationToken cancellationToken,
+        string cacheKey = null
     )
     {
-        logger.LogInformation(DefaultApplicationMessages.StartToExecuteUseCase, ClassName, HandleMethodName, request.CorrelationId);
+        logger.LogInformation(
+            DefaultApplicationMessages.StartToExecuteUseCase,
+            ClassName, HandleMethodName, request.CorrelationId
+        );
+        TResponseData response;
 
         if (validator != null)
         {
@@ -47,9 +52,12 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
             if (!validationResult.IsValid)
             {
                 string errors = string.Join(", ", validationResult.Errors);
-                logger.LogError(DefaultApplicationMessages.ValidationErrors, ClassName, HandleMethodName, request.CorrelationId, errors);
+                logger.LogError(
+                    DefaultApplicationMessages.ValidationErrors,
+                    ClassName, HandleMethodName, request.CorrelationId, errors
+                );
 
-                var response = Activator.CreateInstance<TResponseData>();
+                response = Activator.CreateInstance<TResponseData>();
                 response.Success = false;
                 response.Message = errors;
 
@@ -57,8 +65,24 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
             }
         }
 
-        return await HandleInternalAsync(request, cancellationToken);
+        var handleInternalTask = HandleInternalAsync(request, cancellationToken);
+
+        if (string.IsNullOrWhiteSpace(cacheKey))
+            response = await handleInternalTask;
+        else
+            response = await _cache.GetOrCreateAsync(
+                cacheKey,
+                async cancellationToken => await handleInternalTask,
+                cancellationToken
+            );
+
+        logger.LogInformation(
+            DefaultApplicationMessages.FinishedExecutingUseCase,
+            ClassName, HandleMethodName, request.CorrelationId
+        );
+
+        return response;
     }
 
-    public abstract Task<TResponseData> HandleInternalAsync(TRequest request, CancellationToken cancellationToken);
+    public abstract ValueTask<TResponseData> HandleInternalAsync(TRequest request, CancellationToken cancellationToken);
 }

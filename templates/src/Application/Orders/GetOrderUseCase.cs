@@ -28,51 +28,33 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
     public static Counter<int> OrderRetrieved = DefaultConfigurations.Meter
         .CreateCounter<int>("order.retrieved", "orders", "Number of orders retrieved");
 
-    public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(
+    public override async ValueTask<BaseResponse<OrderDto>> HandleInternalAsync(
         GetOrderRequest request,
         CancellationToken cancellationToken
     )
     {
         string methodName = nameof(HandleInternalAsync);
 
-        var response = await _cache.GetAsync<BaseResponse<OrderDto>>(
-            $"Order-{request.Id}",
-            cancellationToken
-        );
-
-        if (response is not null)
-        {
-            logger.LogInformation(DefaultApplicationMessages.FinishedExecutingUseCaseFromCache, ClassName, methodName, request.CorrelationId);
-            return response;
-        }
-
         var order = await _repository.GetByIdAsNoTrackingAsync(request.Id, cancellationToken, o => o.Items);
 
         if (order is null || order.Equals(default(Order)))
         {
-            logger.LogWarning(DefaultApplicationMessages.DefaultApplicationMessage + "Order not found.", ClassName, methodName, request.CorrelationId);
+            logger.LogWarning(
+                DefaultApplicationMessages.DefaultApplicationMessage + "Order not found.",
+                ClassName, methodName, request.CorrelationId
+            );
             return new(null, false, "Order not found.");
         }
 
         OrderRetrieved.Add(1);
 
-        response = new(new(
-            order.Id,
-            order.Description,
-            order.Total,
-            order.CreatedAt,
+        return new(new(
+            order.Id, order.Description,
+            order.Total, order.CreatedAt,
             [.. order.Items.Select(i => new ItemDto(
-                i.Id,
-                i.Name,
-                i.Description,
-                i.Value
+                i.Id, i.Name,
+                i.Description, i.Value
             ))]
         ), true);
-
-        _ = _cache.SetAsync($"Order-{request.Id}", response, cancellationToken);
-
-        logger.LogInformation(DefaultApplicationMessages.FinishedExecutingUseCase, ClassName, methodName, request.CorrelationId);
-
-        return response;
     }
 }
