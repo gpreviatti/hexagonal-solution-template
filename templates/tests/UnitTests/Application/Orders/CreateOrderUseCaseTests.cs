@@ -112,10 +112,10 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         Assert.Equal("Order must have at least one item.", result.Message);
 
         _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyFinishUseCaseLog(0);
         _fixture.VerifyCreateOrderLogNoItemsError(1);
         _fixture.VerifyFailedToCreateOrderLog(0);
         _fixture.VerifyAddAsync(0);
+        _fixture.VerifyFinishUseCaseLog();
     }
 
     [Fact]
@@ -138,9 +138,9 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         Assert.Equal("Failed to create order.", result.Message);
 
         _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyFinishUseCaseLog(0);
         _fixture.VerifyAddAsync(1);
         _fixture.VerifyCreateOrderLogNoItemsError(0);
         _fixture.VerifyFailedToCreateOrderLog(1);
+        _fixture.VerifyFinishUseCaseLog();
     }
 }

@@ -84,6 +84,12 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
         It.IsAny<CancellationToken>()
     )).ReturnsAsync(result);
 
+    public void SetupGetByIdAsNoTrackingAsync(TEntity entity) => mockRepository.Setup(r => r.GetByIdAsNoTrackingAsync(
+        It.IsAny<int>(),
+        It.IsAny<CancellationToken>(),
+        It.IsAny<Expression<Func<TEntity, object>>>()
+    )).ReturnsAsync(entity);
+
     public void SetInvalidGetOrCreateAsync<TResult>() => mockCache.Setup(c => c.GetOrCreateAsync(
         It.IsAny<string>(),
         It.IsAny<Func<CancellationToken, ValueTask<TResult>>>(),
@@ -110,8 +116,8 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
     )).ReturnsAsync((null, 0));
 
     public void VerifyStartUseCaseLog(int times = 1) => VerifyLogInformation("Start to execute use case", times);
-    public void VerifyFinishUseCaseLog(int times = 1) => VerifyLogInformation("Finished executing use case with success", times);
-    public void VerifyFinishUseCaseWithCacheLog(int times = 1) => VerifyLogInformation("Finished executing use case with success with cache key", times);
+    public void VerifyFinishUseCaseLog(int times = 1) => VerifyLogInformation("Finished executing use case", times);
+    public void VerifyFinishUseCaseWithCacheLog(int times = 1) => VerifyLogInformation("Finished executing use case with cache key", times);
 
     public void VerifyLogInformation(string message, int times = 1) => mockLogger.VerifyLog(
         l => l.LogInformation($"*{message}*"),
@@ -140,6 +146,11 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
         It.IsAny<string>(),
         It.IsAny<bool>(),
         It.IsAny<Dictionary<string, string>>()
+    ), Times.Exactly(times));
+
+    public void VerifyGetByIdAsync(int times) => mockRepository.Verify(r => r.GetByIdAsNoTrackingAsync(
+        It.IsAny<int>(),
+        It.IsAny<CancellationToken>()
     ), Times.Exactly(times));
 
     public void VerifyCache<TResult>(int times) => mockCache.Verify(

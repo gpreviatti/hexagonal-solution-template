@@ -42,6 +42,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         var request = _fixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
         var expectedOrder = _fixture.autoFixture.Create<Order>();
+        _fixture.SetupGetByIdAsNoTrackingAsync(expectedOrder);
 
         // Act
         var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
@@ -56,10 +57,9 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         Assert.Equal(expectedOrder.Total, result.Data.Total);
 
         _fixture.VerifyStartUseCaseLog();
+        _fixture.VerifyOrderNotFoundLog(0);
         _fixture.VerifyFinishUseCaseLog();
         _fixture.VerifyFinishUseCaseWithCacheLog(0);
-        _fixture.VerifyOrderNotFoundLog(0);
-        _fixture.VerifyCache<Order>(1);
     }
 
     [Fact]
@@ -90,7 +90,6 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyCache<BaseResponse<OrderDto>>(1);
         _fixture.VerifyOrderNotFoundLog(0);
-        _fixture.VerifyFinishUseCaseLog(0);
         _fixture.VerifyFinishUseCaseWithCacheLog(1);
     }
 
@@ -112,9 +111,10 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         Assert.NotEmpty(result.Message);
 
         _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyFinishUseCaseLog(0);
         _fixture.VerifyOrderNotFoundLog(0);
         _fixture.VerifyCache<Order>(0);
+        _fixture.VerifyFinishUseCaseLog(0);
+        _fixture.VerifyFinishUseCaseWithCacheLog(0);
     }
 
     [Fact]
@@ -123,8 +123,6 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         // Arrange
         var request = _fixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
-
-        _fixture.SetInvalidGetOrCreateAsync<Order>();
 
         // Act
         var result = await _fixture.useCase.HandleAsync(
@@ -138,8 +136,8 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         Assert.Equal("Order not found.", result.Message);
 
         _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyFinishUseCaseLog(0);
         _fixture.VerifyOrderNotFoundLog(1);
-        _fixture.VerifyCache<Order>(1);
+        _fixture.VerifyFinishUseCaseLog();
+        _fixture.VerifyFinishUseCaseWithCacheLog(0);
     }
 }

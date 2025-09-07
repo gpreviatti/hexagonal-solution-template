@@ -70,8 +70,6 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
             return new(null, false, "Failed to create order.");
         }
 
-        logger.LogInformation(DefaultApplicationMessages.FinishedExecutingUseCase, ClassName, methodName, correlationId);
-
         OrderCreated.Add(1);
 
         return new(new(

@@ -76,7 +76,7 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyGetAllPaginatedNoIncludes(1);
         _fixture.VerifyNoOrdersFoundLog(1);
-        _fixture.VerifyFinishUseCaseLog(0);
+        _fixture.VerifyFinishUseCaseLog();
     }
 
     [Fact]

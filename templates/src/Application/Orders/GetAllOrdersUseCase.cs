@@ -54,13 +54,6 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) : Base
             o.CreatedAt
         ));
 
-        logger.LogInformation(
-            DefaultApplicationMessages.FinishedExecutingUseCase,
-            ClassName,
-            methodName,
-            request.CorrelationId
-        );
-
         OrdersListed.Add(1);
 
         return new(
