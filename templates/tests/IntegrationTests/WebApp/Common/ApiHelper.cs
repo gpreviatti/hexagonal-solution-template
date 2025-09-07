@@ -44,7 +44,7 @@ public sealed class ApiHelper(HttpClient httpClient)
 
     public async Task<T?> DeSerializeResponse<T>(HttpResponseMessage response)
     {
-        var content = await response.Content.ReadAsStringAsync();
+        var content = await response.Content.ReadAsStreamAsync();
 
         return JsonSerializer.Deserialize<T>(content, _jsonSerializerOptions);
     }

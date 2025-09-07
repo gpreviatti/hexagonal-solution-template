@@ -12,13 +12,23 @@ internal class OrderService(IBaseInOutUseCase<GetOrderRequest, BaseResponse<Orde
 {
     private readonly IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>, GetOrderUseCase> _useCase = useCase;
 
-    public override async Task<OrderReply> Get(GrpcOrder.GetOrderRequest request, ServerCallContext context)
+    public override async Task<OrderReply> Get(
+        GrpcOrder.GetOrderRequest request,
+        ServerCallContext context
+    )
     {
         var correlationId = Guid.TryParse(request.CorrelationId, out var guid) ? guid : Guid.Empty;
 
-        var result = await _useCase.HandleAsync(new(correlationId, request.Id), CancellationToken.None);
+        var result = await _useCase.HandleAsync(
+            new(correlationId, request.Id),
+            context.CancellationToken,
+            $"order-{request.Id}"
+        );
 
-        return new OrderReply
+        if (!result.Success)
+            return new();
+
+        return new()
         {
             Id = result.Data.Id,
             Description = result.Data.Description,

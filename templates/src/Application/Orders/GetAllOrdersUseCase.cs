@@ -14,7 +14,6 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) : Base
     serviceProvider.GetService<IValidator<BasePaginatedRequest>>()
 )
 {
-    private const string ClassName = nameof(GetAllOrdersUseCase);
     public static Counter<int> OrdersListed = DefaultConfigurations.Meter
         .CreateCounter<int>("orders.listed", "orders", "Number of times orders were listed");
 
@@ -23,8 +22,6 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) : Base
         CancellationToken cancellationToken
     )
     {
-        string methodName = nameof(HandleInternalAsync);
-
         var (orders, totalRecords) = await _repository.GetAllPaginatedAsync(
             request.Page,
             request.PageSize,
@@ -39,7 +36,7 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) : Base
             logger.LogWarning(
                 DefaultApplicationMessages.DefaultApplicationMessage + "No orders found.",
                 ClassName,
-                methodName,
+                HandleMethodName,
                 request.CorrelationId
             );
             return new(0, 0, [], false, "No orders found.");

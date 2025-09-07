@@ -23,7 +23,7 @@ internal static class OrderEndpoints
             var response = await useCase.HandleAsync(
                 new(correlationId, id),
                 cancellationToken,
-                $"{nameof(GetOrderUseCase)}-{id}"
+                $"order-{id}"
             );
 
             return response.Success ? Results.Ok(response) : Results.NotFound(response);
