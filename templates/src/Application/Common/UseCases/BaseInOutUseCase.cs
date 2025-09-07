@@ -68,18 +68,27 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
         var handleInternalTask = HandleInternalAsync(request, cancellationToken);
 
         if (string.IsNullOrWhiteSpace(cacheKey))
+        {
             response = await handleInternalTask;
+
+            logger.LogInformation(
+                DefaultApplicationMessages.FinishedExecutingUseCase,
+                ClassName, HandleMethodName, request.CorrelationId
+            );
+        }
         else
+        {
             response = await _cache.GetOrCreateAsync(
                 cacheKey,
                 async cancellationToken => await handleInternalTask,
                 cancellationToken
             );
 
-        logger.LogInformation(
-            DefaultApplicationMessages.FinishedExecutingUseCase,
-            ClassName, HandleMethodName, request.CorrelationId
-        );
+            logger.LogInformation(
+                DefaultApplicationMessages.FinishedExecutingUseCaseWithCache,
+                ClassName, HandleMethodName, request.CorrelationId, cacheKey
+            );
+        }
 
         return response;
     }
