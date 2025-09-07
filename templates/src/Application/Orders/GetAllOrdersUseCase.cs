@@ -18,7 +18,7 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) : Base
     public static Counter<int> OrdersListed = DefaultConfigurations.Meter
         .CreateCounter<int>("orders.listed", "orders", "Number of times orders were listed");
 
-    public override async ValueTask<BasePaginatedResponse<OrderDto>> HandleInternalAsync(
+    public override async Task<BasePaginatedResponse<OrderDto>> HandleInternalAsync(
         BasePaginatedRequest request,
         CancellationToken cancellationToken
     )

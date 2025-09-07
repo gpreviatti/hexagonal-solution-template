@@ -28,7 +28,7 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
     public static Counter<int> OrderRetrieved = DefaultConfigurations.Meter
         .CreateCounter<int>("order.retrieved", "orders", "Number of orders retrieved");
 
-    public override async ValueTask<BaseResponse<OrderDto>> HandleInternalAsync(
+    public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(
         GetOrderRequest request,
         CancellationToken cancellationToken
     )

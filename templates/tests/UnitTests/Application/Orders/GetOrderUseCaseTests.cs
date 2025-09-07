@@ -1,3 +1,4 @@
+using Application.Common.Requests;
 using Application.Orders;
 using Domain.Orders;
 using Microsoft.Extensions.Logging;
@@ -35,14 +36,12 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
     }
 
     [Fact]
-    public async Task GivenAValidRequestThenPass()
+    public async Task GivenAValidRequestWithoutCacheThenPass()
     {
         // Arrange
         var request = _fixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
         var expectedOrder = _fixture.autoFixture.Create<Order>();
-
-        _fixture.SetValidGetOrCreateAsync(expectedOrder);
 
         // Act
         var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
@@ -58,8 +57,41 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
 
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyFinishUseCaseLog();
+        _fixture.VerifyFinishUseCaseWithCacheLog(0);
         _fixture.VerifyOrderNotFoundLog(0);
         _fixture.VerifyCache<Order>(1);
+    }
+
+    [Fact]
+    public async Task GivenAValidRequestWithCacheThenPass()
+    {
+        // Arrange
+        var request = _fixture.SetValidRequest();
+        _fixture.SetSuccessfulValidator(request);
+        var expectedResult = _fixture.autoFixture
+            .Create<BaseResponse<OrderDto>>()
+            with { Success = true, Message = string.Empty };
+        _fixture.SetValidGetOrCreateAsync(expectedResult);
+        var cacheKey = $"order-{request.Id}";
+
+        // Act
+        var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken, cacheKey);
+        var data = result.Data;
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.True(result.Success);
+        Assert.Empty(result.Message);
+        Assert.NotNull(data);
+        Assert.Equal(expectedResult.Data.Id, data.Id);
+        Assert.Equal(expectedResult.Data.Description, data.Description);
+        Assert.Equal(expectedResult.Data.Total, data.Total);
+
+        _fixture.VerifyStartUseCaseLog();
+        _fixture.VerifyCache<BaseResponse<OrderDto>>(1);
+        _fixture.VerifyOrderNotFoundLog(0);
+        _fixture.VerifyFinishUseCaseLog(0);
+        _fixture.VerifyFinishUseCaseWithCacheLog(1);
     }
 
     [Fact]

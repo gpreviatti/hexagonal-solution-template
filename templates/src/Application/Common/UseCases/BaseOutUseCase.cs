@@ -12,7 +12,7 @@ public interface IBaseOutUseCase<TResponseData, TEntity, TUseCase>
     where TResponseData : BaseResponse
     where TEntity : DomainEntity
 {
-    ValueTask<TResponseData> HandleAsync(CancellationToken cancellationToken, string cacheKey = null);
+    Task<TResponseData> HandleAsync(CancellationToken cancellationToken, string cacheKey = null);
 }
 
 public abstract class BaseOutUseCase<TResponseData, TEntity, TUseCase>(
@@ -28,7 +28,7 @@ public abstract class BaseOutUseCase<TResponseData, TEntity, TUseCase>(
     private const string ClassName = nameof(BaseOutUseCase<TResponseData, TEntity, TUseCase>);
     private const string HandleMethodName = nameof(HandleAsync);
 
-    public async ValueTask<TResponseData> HandleAsync(CancellationToken cancellationToken, string cacheKey = null)
+    public async Task<TResponseData> HandleAsync(CancellationToken cancellationToken, string cacheKey = null)
     {
         var correlationId = Guid.NewGuid();
         logger.LogInformation(DefaultApplicationMessages.StartToExecuteUseCase, ClassName, HandleMethodName, correlationId);
@@ -62,5 +62,5 @@ public abstract class BaseOutUseCase<TResponseData, TEntity, TUseCase>(
         return response;
     }
 
-    public abstract ValueTask<TResponseData> HandleInternalAsync(CancellationToken cancellationToken);
+    public abstract Task<TResponseData> HandleInternalAsync(CancellationToken cancellationToken);
 }

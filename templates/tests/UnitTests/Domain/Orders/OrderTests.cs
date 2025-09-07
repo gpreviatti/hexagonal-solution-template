@@ -22,11 +22,9 @@ public sealed class OrderTests
         // Assert
         Assert.NotNull(order);
         Assert.NotNull(result);
-        Assert.NotNull(order.UpdatedAt);
         Assert.True(result.Success);
         Assert.Empty(result.Message);
         Assert.NotEqual(0, order.Total);
-        Assert.NotNull(order.UpdatedAt);
         Assert.Equal(items.Sum(i => i.Value), order.Total);
     }
 

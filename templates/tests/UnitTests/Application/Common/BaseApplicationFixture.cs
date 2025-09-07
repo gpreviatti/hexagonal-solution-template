@@ -111,6 +111,7 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
 
     public void VerifyStartUseCaseLog(int times = 1) => VerifyLogInformation("Start to execute use case", times);
     public void VerifyFinishUseCaseLog(int times = 1) => VerifyLogInformation("Finished executing use case with success", times);
+    public void VerifyFinishUseCaseWithCacheLog(int times = 1) => VerifyLogInformation("Finished executing use case with success with cache key", times);
 
     public void VerifyLogInformation(string message, int times = 1) => mockLogger.VerifyLog(
         l => l.LogInformation($"*{message}*"),

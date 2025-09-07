@@ -14,7 +14,7 @@ public interface IBaseInOutUseCase<TRequest, TResponseData, TUseCase>
     where TResponseData : BaseResponse
     where TUseCase : class
 {
-    ValueTask<TResponseData> HandleAsync(TRequest request, CancellationToken cancellationToken, string cacheKey = null);
+    Task<TResponseData> HandleAsync(TRequest request, CancellationToken cancellationToken, string cacheKey = null);
 }
 
 public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCase>(
@@ -34,7 +34,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
     private const string ClassName = nameof(BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCase>);
     private const string HandleMethodName = nameof(HandleAsync);
 
-    public async ValueTask<TResponseData> HandleAsync(
+    public async Task<TResponseData> HandleAsync(
         TRequest request,
         CancellationToken cancellationToken,
         string cacheKey = null
@@ -93,5 +93,5 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
         return response;
     }
 
-    public abstract ValueTask<TResponseData> HandleInternalAsync(TRequest request, CancellationToken cancellationToken);
+    public abstract Task<TResponseData> HandleInternalAsync(TRequest request, CancellationToken cancellationToken);
 }
