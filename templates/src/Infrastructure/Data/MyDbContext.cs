@@ -11,6 +11,17 @@ public sealed class MyDbContext(
         .ApplyConfiguration(new OrderDbMapping())
         .ApplyConfiguration(new ItemDbMapping());
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        bool.TryParse(
+            Environment.GetEnvironmentVariable("ENABLE_SENSITIVE_DATA_LOGGING"),
+            out var enableSensitiveDataLogging
+        );
+
+        optionsBuilder
+            .EnableSensitiveDataLogging(enableSensitiveDataLogging);
+    }
+
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
         configurationBuilder
