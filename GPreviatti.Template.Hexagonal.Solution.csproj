@@ -21,6 +21,8 @@
     <PackageReleaseNotes>
       - Add gRPC service to handle orders
       - Update Kestrel configuration to support both HTTP/1.1 and HTTP/2
+      - Update test method names for clarity and consistency
+      - Add response compression to improve performance
     </PackageReleaseNotes>
   </PropertyGroup>
 
