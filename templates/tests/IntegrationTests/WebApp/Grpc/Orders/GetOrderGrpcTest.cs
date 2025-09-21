@@ -5,7 +5,6 @@ using GrpcOrder;
 using IntegrationTests.Common;
 using IntegrationTests.WebApp.Grpc.Common;
 using WebApp;
-using WebApp.GrpcServices;
 
 namespace IntegrationTests.WebApp.Grpc.Orders;
 
@@ -15,33 +14,19 @@ public class GetOrderGrpcTest : BaseFixture
     public CustomWebApplicationFactory<Program> customWebApplicationFactory;
 
     public ApiGrpcHelper apiGrpcHelper;
-
-    public const string RESOURCE_URL = "orders/paginated";
-    private readonly CallInvoker _callInvoker;
-
-    static readonly Marshaller<GetOrderRequest> __Marshaller_OrderRequest = Marshallers.Create(Google.Protobuf.MessageExtensions.ToByteArray, GetOrderRequest.Parser.ParseFrom);
-    static readonly Marshaller<OrderReply> __Marshaller_OrderReply = Marshallers.Create(Google.Protobuf.MessageExtensions.ToByteArray, OrderReply.Parser.ParseFrom);
-
-    static Method<GetOrderRequest, OrderReply> __Method_Get = new(
-        MethodType.Unary,
-        "OrderService",
-        "Get",
-        __Marshaller_OrderRequest,
-        __Marshaller_OrderReply
-    );
-
+    private readonly GrpcChannel _grpcChannel;
+    private readonly OrderService.OrderServiceClient _service;
 
     public GetOrderGrpcTest(CustomWebApplicationFactory<Program> customWebApplicationFactory)
     {
         this.customWebApplicationFactory = customWebApplicationFactory;
         apiGrpcHelper = new(this.customWebApplicationFactory.CreateClient());
-
-        var grpcChannel = apiGrpcHelper.AsGrpcClientChannel();
-        _callInvoker = grpcChannel.CreateCallInvoker();
+        _grpcChannel = apiGrpcHelper.AsGrpcClientChannel();
+        _service = new(_grpcChannel);
     }
 
-    [Fact]
-    public async Task GetUnaryTest()
+    [Fact(DisplayName = nameof(Given_A_Valid_Request_Then_Pass))]
+    public async Task Given_A_Valid_Request_Then_Pass()
     {
         // Arrange
         GetOrderRequest request = new()
@@ -49,19 +34,34 @@ public class GetOrderGrpcTest : BaseFixture
             CorrelationId = Guid.NewGuid().ToString(),
             Id = 1
         };
-        CallOptions callOptions = new(null, DateTime.MaxValue, cancellationToken);
 
         // Act
-        var reply = _callInvoker.AsyncUnaryCall(
-            __Method_Get,
-            string.Empty,
-            callOptions,
-            request
-        );
-        var response = await reply.ResponseAsync;
-
+        var response = await _service.GetAsync(request);
 
         // Assert
         Assert.NotNull(response);
+        Assert.Equal(1, response.Id);
+        Assert.Equal("XPTO Client Computers", response.Description);
+        Assert.Equal(1000.0, response.Total);
+    }
+
+    [Fact(DisplayName = nameof(Given_A_Invalid_Request_Then_Fails))]
+    public async Task Given_A_Invalid_Request_Then_Fails()
+    {
+        // Arrange
+        GetOrderRequest request = new()
+        {
+            CorrelationId = Guid.NewGuid().ToString(),
+            Id = 999
+        };
+
+        // Act
+        var response = await _service.GetAsync(request);
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.Equal(0, response.Id);
+        Assert.True(string.IsNullOrEmpty(response.Description));
+        Assert.Equal(0, response.Total);
     }
 }

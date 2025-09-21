@@ -1,6 +1,4 @@
-﻿using System.Text;
-using System.Text.Json;
-using Grpc.Net.Client;
+﻿using Grpc.Net.Client;
 
 namespace IntegrationTests.WebApp.Grpc.Common;
 public sealed class ApiGrpcHelper(HttpClient httpClient)
