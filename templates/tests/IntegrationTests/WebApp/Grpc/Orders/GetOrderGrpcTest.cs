@@ -1,5 +1,4 @@
 ﻿using CommonTests.Fixtures;
-using Grpc.Core;
 using Grpc.Net.Client;
 using GrpcOrder;
 using IntegrationTests.Common;
