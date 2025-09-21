@@ -41,7 +41,7 @@ services:
     restart: unless-stopped
     environment:
       ACCEPT_EULA: Y
-      SEQ_FIRSTRUN_ADMINPASSWORD: changeMe # Replace with a strong password
+      SEQ_FIRSTRUN_NOAUTHENTICATION: True
     ports:
       - "5341:80"
 
