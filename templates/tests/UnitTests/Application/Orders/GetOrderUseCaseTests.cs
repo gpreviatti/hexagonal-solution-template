@@ -35,8 +35,8 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.ClearInvocations();
     }
 
-    [Fact]
-    public async Task GivenAValidRequestWithoutCacheThenPass()
+    [Fact(DisplayName = nameof(Given_A_Valid_Request_Without_Cache_Then_Pass))]
+    public async Task Given_A_Valid_Request_Without_Cache_Then_Pass()
     {
         // Arrange
         var request = _fixture.SetValidRequest();
@@ -62,8 +62,8 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.VerifyFinishUseCaseWithCacheLog(0);
     }
 
-    [Fact]
-    public async Task GivenAValidRequestWithCacheThenPass()
+    [Fact(DisplayName = nameof(Given_A_Valid_Request_With_Cache_Then_Pass))]
+    public async Task Given_A_Valid_Request_With_Cache_Then_Pass()
     {
         // Arrange
         var request = _fixture.SetValidRequest();
@@ -93,8 +93,8 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.VerifyFinishUseCaseWithCacheLog(1);
     }
 
-    [Fact]
-    public async Task GivenAInvalidRequestThenFails()
+    [Fact(DisplayName = nameof(Given_A_Invalid_Request_Then_Fails))]
+    public async Task Given_A_Invalid_Request_Then_Fails()
     {
         // Arrange
         var request = _fixture.SetValidRequest();
@@ -117,8 +117,8 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.VerifyFinishUseCaseWithCacheLog(0);
     }
 
-    [Fact]
-    public async Task GivenAValidRequestWhenOrderNotFoundThenFails()
+    [Fact(DisplayName = nameof(Given_A_Valid_Request_When_Order_Not_Found_Then_Fails))]
+    public async Task Given_A_Valid_Request_When_Order_Not_Found_Then_Fails()
     {
         // Arrange
         var request = _fixture.SetValidRequest();

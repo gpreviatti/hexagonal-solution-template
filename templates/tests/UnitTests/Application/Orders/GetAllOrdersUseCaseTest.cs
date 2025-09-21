@@ -28,8 +28,8 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         _fixture.ClearInvocations();
     }
 
-    [Fact]
-    public async Task GivenAValidRequestThenPass()
+    [Fact(DisplayName = nameof(Given_A_Valid_Request_Then_Pass))]
+    public async Task Given_A_Valid_Request_Then_Pass()
     {
         // Arrange
         var totalRecords = 5;
@@ -57,8 +57,8 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         _fixture.VerifyFinishUseCaseLog();
     }
 
-    [Fact]
-    public async Task GivenAValidRequestWhenNoOrdersFoundThenFails()
+    [Fact(DisplayName = nameof(Given_A_Valid_Request_When_No_Orders_Found_Then_Fails))]
+    public async Task Given_A_Valid_Request_When_No_Orders_Found_Then_Fails()
     {
         // Arrange
         var request = _fixture.SetValidBasePaginatedRequest();
@@ -79,8 +79,8 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         _fixture.VerifyFinishUseCaseLog();
     }
 
-    [Fact]
-    public async Task GivenAInvalidRequestThenFails()
+    [Fact(DisplayName = nameof(Given_A_Invalid_Request_Then_Fails))]
+    public async Task Given_A_Invalid_Request_Then_Fails()
     {
         // Arrange
         var request = _fixture.SetValidBasePaginatedRequest();
