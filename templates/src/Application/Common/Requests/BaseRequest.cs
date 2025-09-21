@@ -3,7 +3,7 @@
 namespace Application.Common.Requests;
 public record BaseRequest(Guid CorrelationId);
 
-public sealed record BasePaginatedRequest(
+public record BasePaginatedRequest(
     Guid CorrelationId,
     int Page = 1,
     int PageSize = 10,

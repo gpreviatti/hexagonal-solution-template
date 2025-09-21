@@ -8,7 +8,7 @@ using GetOrderRequest = Application.Orders.GetOrderRequest;
 
 namespace WebApp.GrpcServices;
 
-internal class OrderService(IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>, GetOrderUseCase> useCase) : OrderServiceBase
+public class OrderService(IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>, GetOrderUseCase> useCase) : OrderServiceBase
 {
     private readonly IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>, GetOrderUseCase> _useCase = useCase;
 
