@@ -13,8 +13,14 @@ message GetOrderRequest {
     string correlationId = 2;
 }
 
-message OrderReply {
+message OrderDto {
     int32 id = 1;
     string description = 2;
     double total = 3;
+}
+
+message OrderReply {
+  bool success = 1;
+  string message = 2;
+  OrderDto data = 3;
 }

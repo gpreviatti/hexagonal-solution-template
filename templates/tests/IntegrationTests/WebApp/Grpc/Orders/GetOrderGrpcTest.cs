@@ -39,9 +39,12 @@ public class GetOrderGrpcTest : BaseFixture
 
         // Assert
         Assert.NotNull(response);
-        Assert.Equal(1, response.Id);
-        Assert.Equal("XPTO Client Computers", response.Description);
-        Assert.Equal(1000.0, response.Total);
+        Assert.True(response.Success);
+        Assert.True(string.IsNullOrEmpty(response.Message));
+        Assert.NotNull(response.Data);
+        Assert.Equal(1, response.Data.Id);
+        Assert.Equal("XPTO Client Computers", response.Data.Description);
+        Assert.Equal(1000.0, response.Data.Total);
     }
 
     [Fact(DisplayName = nameof(Given_A_Invalid_Request_Then_Fails))]
@@ -59,8 +62,8 @@ public class GetOrderGrpcTest : BaseFixture
 
         // Assert
         Assert.NotNull(response);
-        Assert.Equal(0, response.Id);
-        Assert.True(string.IsNullOrEmpty(response.Description));
-        Assert.Equal(0, response.Total);
+        Assert.False(response.Success);
+        Assert.False(string.IsNullOrEmpty(response.Message));
+        Assert.Null(response.Data);
     }
 }

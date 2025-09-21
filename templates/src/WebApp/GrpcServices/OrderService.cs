@@ -5,6 +5,7 @@ using Grpc.Core;
 using GrpcOrder;
 using static GrpcOrder.OrderService;
 using GetOrderRequest = Application.Orders.GetOrderRequest;
+using OrderDto = Application.Orders.OrderDto;
 
 namespace WebApp.GrpcServices;
 
@@ -26,13 +27,18 @@ public class OrderService(IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderD
         );
 
         if (!result.Success)
-            return new();
+            return new() { Success = false, Message = result.Message };
 
         return new()
         {
-            Id = result.Data.Id,
-            Description = result.Data.Description,
-            Total = double.TryParse(result.Data.Total.ToString(), out var total) ? total : 0.0
+            Success = true,
+            Message = string.Empty,
+            Data = new()
+            {
+                Id = result.Data.Id,
+                Description = result.Data.Description,
+                Total = double.TryParse(result.Data.Total.ToString(), out var total) ? total : 0.0
+            }
         };
     }
 }
