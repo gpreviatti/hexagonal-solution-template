@@ -3,10 +3,10 @@ using Application.Common.Requests;
 using Application.Orders;
 using CommonTests.Fixtures;
 using IntegrationTests.Common;
-using IntegrationTests.WebApp.Common;
+using IntegrationTests.WebApp.Http.Common;
 using WebApp;
 
-namespace IntegrationTests.WebApp.Orders;
+namespace IntegrationTests.WebApp.Http.Orders;
 
 public class GetOrderTestFixture : BaseFixture
 {
