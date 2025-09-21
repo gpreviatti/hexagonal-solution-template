@@ -1,22 +1,22 @@
 @WebApp_HostAddress = https://localhost:7175
 
 ###
-GET {{WebApp_HostAddress}}/health
+GET {{WebApp_HostAddress}}/health HTTP/2
 Accept: application/json
 
 ###
-GET {{WebApp_HostAddress}}/live
+GET {{WebApp_HostAddress}}/live HTTP/2
 
 ###
-GET {{WebApp_HostAddress}}/ready
+GET {{WebApp_HostAddress}}/ready HTTP/2
 
 ###
-GET {{WebApp_HostAddress}}/orders/1
+GET {{WebApp_HostAddress}}/orders/6 HTTP/2
 CorrelationId: {{$guid}}
 Accept: application/json
 
 ###
-POST {{WebApp_HostAddress}}/orders
+POST {{WebApp_HostAddress}}/orders HTTP/2
 Content-Type: application/json
 
 {
@@ -32,24 +32,30 @@ Content-Type: application/json
       "Name": "Mouse",
       "Description": "Microsoft mouse",
       "Value": 99
-    },
-    {
-      "Name": "Keyboard",
-      "Description": "Microsoft keyboard",
-      "Value": 199
     }
   ]
 }
-###
 
-POST {{WebApp_HostAddress}}/orders/paginated
+###
+POST {{WebApp_HostAddress}}/orders/paginated HTTP/2
 Content-Type: application/json
 
 {
   "CorrelationId": "{{$guid}}",
-  "PageNumber": 1,
+  "Page": 1,
+  "PageSize": 1
+}
+
+###
+POST {{WebApp_HostAddress}}/orders/paginated HTTP/2
+Content-Type: application/json
+
+{
+  "CorrelationId": "{{$guid}}",
+  "Page": 1,
   "PageSize": 10,
   "SearchByValues": {
     "Description": "client"
   }
 }
+

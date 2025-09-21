@@ -46,12 +46,10 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
         )
         .WithTracing(tracing => tracing
             .AddAspNetCoreInstrumentation()
-            .AddHttpClientInstrumentation(
-                options =>
-                {
-                    options.RecordException = true;
-                }
-            )
+            .AddHttpClientInstrumentation(options =>
+            {
+                options.RecordException = true;
+            })
             .AddEntityFrameworkCoreInstrumentation(
                 options =>
                 {
@@ -60,7 +58,6 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
                 }
             )
             .AddRedisInstrumentation()
-            .AddConsoleExporter()
             .AddOtlpExporter(options =>
             {
                 options.Protocol = exporterProtocol;
@@ -68,7 +65,6 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
             })
         )
         .WithLogging(logging => logging
-            .AddConsoleExporter()
             .AddOtlpExporter(options =>
             {
                 options.Protocol = exporterProtocol;

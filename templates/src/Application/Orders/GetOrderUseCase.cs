@@ -24,7 +24,6 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
     serviceProvider.GetService<IValidator<GetOrderRequest>>()
 )
 {
-    private const string ClassName = nameof(GetOrderUseCase);
     public static Counter<int> OrderRetrieved = DefaultConfigurations.Meter
         .CreateCounter<int>("order.retrieved", "orders", "Number of orders retrieved");
 
@@ -33,28 +32,26 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
         CancellationToken cancellationToken
     )
     {
-        string methodName = nameof(HandleInternalAsync);
-
-        var order = await _cache.GetOrCreateAsync(
-            $"Order-{request.Id}",
-            async cancellationToken => await _repository.GetByIdAsNoTrackingAsync(request.Id, cancellationToken, o => o.Items),
-            cancellationToken
-        );
+        var order = await _repository.GetByIdAsNoTrackingAsync(request.Id, cancellationToken, o => o.Items);
 
         if (order is null || order.Equals(default(Order)))
         {
-            logger.LogWarning(DefaultApplicationMessages.DefaultApplicationMessage + "Order not found.", ClassName, methodName, request.CorrelationId);
+            logger.LogWarning(
+                DefaultApplicationMessages.DefaultApplicationMessage + "Order not found.",
+                ClassName, HandleMethodName, request.CorrelationId
+            );
             return new(null, false, "Order not found.");
         }
-
-        logger.LogInformation(DefaultApplicationMessages.FinishedExecutingUseCase, ClassName, methodName, request.CorrelationId);
 
         OrderRetrieved.Add(1);
 
         return new(new(
-            order.Id,
-            order.Description,
-            order.Total
+            order.Id, order.Description,
+            order.Total, order.CreatedAt,
+            [.. order.Items.Select(i => new ItemDto(
+                i.Id, i.Name,
+                i.Description, i.Value
+            ))]
         ), true);
     }
 }

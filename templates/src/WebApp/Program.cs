@@ -2,6 +2,7 @@
 using Domain;
 using Infrastructure;
 using WebApp.Endpoints;
+using WebApp.GrpcServices;
 using WebApp.HealthChecks;
 using WebApp.Middlewares;
 
@@ -9,13 +10,19 @@ namespace WebApp;
 
 public sealed class Program
 {
-    private static void Main(string[] args)
+    private static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddGrpc();
 
         builder.Services.AddCustomHealthChecks(builder.Configuration);
+
+        builder.Services.AddResponseCompression(options =>
+        {
+            options.EnableForHttps = true;
+        });
 
         builder.Services
             .AddDomain()
@@ -27,12 +34,12 @@ public sealed class Program
 
         app.UseHttpsRedirection();
 
-        app.MapOrderEndpoints();
+        app.MapEndpoints()
+            .MapGrpcServices()
+            .UseCustomHealthChecks()
+            .UseResponseCompression()
+            .UseMiddleware<ExceptionHandlingMiddleware>();
 
-        app.UseCustomHealthChecks();
-
-        app.UseMiddleware<ExceptionHandlingMiddleware>();
-
-        app.Run();
+        await app.RunAsync();
     }
 }

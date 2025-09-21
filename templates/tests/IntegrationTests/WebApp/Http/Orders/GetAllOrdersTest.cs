@@ -3,10 +3,10 @@ using Application.Common.Requests;
 using Application.Orders;
 using CommonTests.Fixtures;
 using IntegrationTests.Common;
-using IntegrationTests.WebApp.Common;
+using IntegrationTests.WebApp.Http.Common;
 using WebApp;
 
-namespace IntegrationTests.WebApp.Orders;
+namespace IntegrationTests.WebApp.Http.Orders;
 
 public class GetAllOrdersTestFixture : BaseFixture
 {
@@ -19,7 +19,6 @@ public class GetAllOrdersTestFixture : BaseFixture
     public GetAllOrdersTestFixture(CustomWebApplicationFactory<Program> customWebApplicationFactory)
     {
         this.customWebApplicationFactory = customWebApplicationFactory;
-
         apiHelper = new ApiHelper(this.customWebApplicationFactory.CreateClient());
     }
 

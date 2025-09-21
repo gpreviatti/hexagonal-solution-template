@@ -1,3 +1,4 @@
+using Application.Common.Constants;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Application.Orders;
@@ -19,7 +20,11 @@ internal static class OrderEndpoints
             CancellationToken cancellationToken
         ) =>
         {
-            var response = await useCase.HandleAsync(new(correlationId, id), cancellationToken);
+            var response = await useCase.HandleAsync(
+                new(correlationId, id),
+                cancellationToken,
+                $"order-{id}"
+            );
 
             return response.Success ? Results.Ok(response) : Results.NotFound(response);
         });

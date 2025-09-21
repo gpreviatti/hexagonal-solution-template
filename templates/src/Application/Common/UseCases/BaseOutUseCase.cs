@@ -12,7 +12,7 @@ public interface IBaseOutUseCase<TResponseData, TEntity, TUseCase>
     where TResponseData : BaseResponse
     where TEntity : DomainEntity
 {
-    Task<TResponseData> HandleAsync(CancellationToken cancellationToken);
+    Task<TResponseData> HandleAsync(CancellationToken cancellationToken, string cacheKey = null);
 }
 
 public abstract class BaseOutUseCase<TResponseData, TEntity, TUseCase>(
@@ -28,11 +28,38 @@ public abstract class BaseOutUseCase<TResponseData, TEntity, TUseCase>(
     private const string ClassName = nameof(BaseOutUseCase<TResponseData, TEntity, TUseCase>);
     private const string HandleMethodName = nameof(HandleAsync);
 
-    public async Task<TResponseData> HandleAsync(CancellationToken cancellationToken)
+    public async Task<TResponseData> HandleAsync(CancellationToken cancellationToken, string cacheKey = null)
     {
-        logger.LogInformation(DefaultApplicationMessages.StartToExecuteUseCase, ClassName, HandleMethodName, Guid.NewGuid());
+        var correlationId = Guid.NewGuid();
+        logger.LogInformation(DefaultApplicationMessages.StartToExecuteUseCase, ClassName, HandleMethodName, correlationId);
 
-        return await HandleInternalAsync(cancellationToken);
+        TResponseData response;
+        var handleInternalTask = HandleInternalAsync(cancellationToken);
+
+        if (string.IsNullOrWhiteSpace(cacheKey))
+        {
+            response = await handleInternalTask;
+
+            logger.LogInformation(
+                DefaultApplicationMessages.FinishedExecutingUseCase,
+                ClassName, HandleMethodName, correlationId
+            );
+        }
+        else
+        {
+            response = await _cache.GetOrCreateAsync(
+                cacheKey,
+                async cancellationToken => await handleInternalTask,
+                cancellationToken
+            );
+
+            logger.LogInformation(
+                DefaultApplicationMessages.FinishedExecutingUseCaseWithCache,
+                ClassName, HandleMethodName, correlationId, cacheKey
+            );
+        }
+
+        return response;
     }
 
     public abstract Task<TResponseData> HandleInternalAsync(CancellationToken cancellationToken);

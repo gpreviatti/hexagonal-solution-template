@@ -1,50 +1,53 @@
 ﻿using System.Net;
 using Application.Common.Requests;
 using Application.Orders;
+using AutoFixture;
 using CommonTests.Fixtures;
 using IntegrationTests.Common;
-using IntegrationTests.WebApp.Common;
+using IntegrationTests.WebApp.Http.Common;
 using WebApp;
 
-namespace IntegrationTests.WebApp.Orders;
+namespace IntegrationTests.WebApp.Http.Orders;
 
-public class GetOrderTestFixture : BaseFixture
+public class CreateOrderTestFixture : BaseFixture
 {
     public CustomWebApplicationFactory<Program> customWebApplicationFactory;
 
     public ApiHelper apiHelper;
 
-    public string RESOURCE_URL = "orders/{0}";
+    public string RESOURCE_URL = "orders";
 
-    public GetOrderTestFixture(CustomWebApplicationFactory<Program> customWebApplicationFactory)
+    public CreateOrderTestFixture(CustomWebApplicationFactory<Program> customWebApplicationFactory)
     {
         this.customWebApplicationFactory = customWebApplicationFactory;
 
         apiHelper = new ApiHelper(this.customWebApplicationFactory.CreateClient());
     }
+
+    public CreateOrderRequest SetValidRequest() => autoFixture.Create<CreateOrderRequest>();
+
+    public CreateOrderRequest SetInvalidRequest() => autoFixture
+            .Build<CreateOrderRequest>()
+            .With(r => r.Description, string.Empty)
+            .Create();
 }
 
 [Collection("WebApplicationFactoryCollectionDefinition")]
-public class GetOrderTest(CustomWebApplicationFactory<Program> customWebApplicationFactory) : GetOrderTestFixture(customWebApplicationFactory)
+public sealed class CreateOrderTest(CustomWebApplicationFactory<Program> customWebApplicationFactory) : CreateOrderTestFixture(customWebApplicationFactory)
 {
     [Fact(DisplayName = nameof(Given_A_Valid_Request_Then_Pass))]
     public async Task Given_A_Valid_Request_Then_Pass()
     {
         // Arrange
-        var id = 1;
-        var url = string.Format(RESOURCE_URL, id);
-        apiHelper.AddHeaders(new Dictionary<string, string>
-        {
-            { "CorrelationId", Guid.NewGuid().ToString() }
-        });
+        var request = SetValidRequest();
 
         // Act
-        var result = await apiHelper.GetAsync(url);
+        var result = await apiHelper.PostAsync(RESOURCE_URL, request);
         var response = await apiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, result.StatusCode);
         Assert.True(response!.Success);
         Assert.NotNull(response.Data);
     }
@@ -53,21 +56,17 @@ public class GetOrderTest(CustomWebApplicationFactory<Program> customWebApplicat
     public async Task Given_A_Invalid_Request_Then_Fails()
     {
         // Arrange
-        var id = 9999999;
-        var url = string.Format(RESOURCE_URL, id);
-        apiHelper.AddHeaders(new Dictionary<string, string>
-        {
-            { "CorrelationId", Guid.NewGuid().ToString() }
-        });
+        var request = SetInvalidRequest();
 
         // Act
-        var result = await apiHelper.GetAsync(url);
+        var result = await apiHelper.PostAsync(RESOURCE_URL, request);
         var response = await apiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
 
         // Assert
+        Assert.NotNull(response);
         Assert.NotNull(result);
-        Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
-        Assert.False(response!.Success);
+        Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.False(response.Success);
         Assert.Null(response.Data);
     }
 }

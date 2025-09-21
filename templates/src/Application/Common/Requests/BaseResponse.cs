@@ -25,7 +25,7 @@ public record BaseResponse<TData> : BaseResponse where TData : class
     public TData Data { get; set; }
 }
 
-public sealed record BasePaginatedResponse<TData> : BaseResponse<IEnumerable<TData>> where TData : class
+public record BasePaginatedResponse<TData> : BaseResponse<IEnumerable<TData>> where TData : class
 {
     public BasePaginatedResponse() {}
 

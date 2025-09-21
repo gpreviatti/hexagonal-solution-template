@@ -1,7 +1,8 @@
 ﻿using System.Text;
 using System.Text.Json;
+using Grpc.Net.Client;
 
-namespace IntegrationTests.WebApp.Common;
+namespace IntegrationTests.WebApp.Http.Common;
 public sealed class ApiHelper(HttpClient httpClient)
 {
     public HttpClient httpClient = httpClient;
@@ -44,8 +45,13 @@ public sealed class ApiHelper(HttpClient httpClient)
 
     public async Task<T?> DeSerializeResponse<T>(HttpResponseMessage response)
     {
-        var content = await response.Content.ReadAsStringAsync();
+        var content = await response.Content.ReadAsStreamAsync();
 
         return JsonSerializer.Deserialize<T>(content, _jsonSerializerOptions);
     }
+
+    public GrpcChannel AsGrpcClientChannel() => GrpcChannel.ForAddress(httpClient.BaseAddress!, new GrpcChannelOptions
+    {
+        HttpClient = httpClient
+    });
 }

@@ -38,7 +38,6 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
     serviceProvider.GetService<IValidator<CreateOrderRequest>>()
 )
 {
-    private const string ClassName = nameof(CreateOrderUseCase);
     public static Counter<int> OrderCreated = DefaultConfigurations.Meter
         .CreateCounter<int>("order.created", "orders", "Number of orders created");
 
@@ -47,7 +46,6 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
         CancellationToken cancellationToken
     )
     {
-        string methodName = nameof(HandleInternalAsync);
         Guid correlationId = request.CorrelationId;
 
         var items = request.Items
@@ -58,7 +56,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
         var createResult = newOrder.SetTotal();
         if (createResult.IsFailure)
         {
-            logger.LogWarning(DefaultApplicationMessages.DefaultApplicationMessage + createResult.Message, ClassName, methodName, correlationId);
+            logger.LogWarning(DefaultApplicationMessages.DefaultApplicationMessage + createResult.Message, ClassName, HandleMethodName, correlationId);
             return new(null, false, createResult.Message);
         }
 
@@ -66,18 +64,23 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
 
         if (addResult == 0)
         {
-            logger.LogWarning(DefaultApplicationMessages.DefaultApplicationMessage + "Failed to create order.", ClassName, methodName, correlationId);
+            logger.LogWarning(DefaultApplicationMessages.DefaultApplicationMessage + "Failed to create order.", ClassName, HandleMethodName, correlationId);
             return new(null, false, "Failed to create order.");
         }
-
-        logger.LogInformation(DefaultApplicationMessages.FinishedExecutingUseCase, ClassName, methodName, correlationId);
 
         OrderCreated.Add(1);
 
         return new(new(
             newOrder.Id,
             newOrder.Description,
-            newOrder.Total
+            newOrder.Total,
+            newOrder.CreatedAt,
+            [.. newOrder.Items.Select(i => new ItemDto(
+                i.Id,
+                i.Name,
+                i.Description,
+                i.Value
+            ))]
         ), true);
     }
 }

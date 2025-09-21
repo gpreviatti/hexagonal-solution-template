@@ -46,8 +46,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.ClearInvocations();
     }
 
-    [Fact]
-    public async Task GivenAValidRequestThenPass()
+    [Fact(DisplayName = nameof(Given_A_Valid_Request_Then_Pass))]
+    public async Task Given_A_Valid_Request_Then_Pass()
     {
         // Arrange
         var request = _fixture.SetValidRequest();
@@ -69,8 +69,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyAddAsync(1);
     }
 
-    [Fact]
-    public async Task GivenAInvalidRequestThenFails()
+    [Fact(DisplayName = nameof(Given_A_Invalid_Request_Then_Fails))]
+    public async Task Given_A_Invalid_Request_Then_Fails()
     {
         // Arrange
         var request = _fixture.SetValidRequest();
@@ -93,8 +93,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyAddAsync(0);
     }
 
-    [Fact]
-    public async Task GivenAInvalidRequestThenFailsWhenThereIsNoItems()
+    [Fact(DisplayName = nameof(Given_A_Invalid_Request_Then_Fails_When_There_Is_No_Items))]
+    public async Task Given_A_Invalid_Request_Then_Fails_When_There_Is_No_Items()
     {
         // Arrange
         var request = CreateOrderUseCaseFixture.SetInvalidRequestWithNoItems();
@@ -112,14 +112,14 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         Assert.Equal("Order must have at least one item.", result.Message);
 
         _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyFinishUseCaseLog(0);
         _fixture.VerifyCreateOrderLogNoItemsError(1);
         _fixture.VerifyFailedToCreateOrderLog(0);
         _fixture.VerifyAddAsync(0);
+        _fixture.VerifyFinishUseCaseLog();
     }
 
-    [Fact]
-    public async Task GivenAValidRequestThenFailsWhenRepositoryReturnsZero()
+    [Fact(DisplayName = nameof(Given_A_Valid_Request_Then_Fails_When_Repository_Returns_Zero))]
+    public async Task Given_A_Valid_Request_Then_Fails_When_Repository_Returns_Zero()
     {
         // Arrange
         var request = _fixture.SetValidRequest();
@@ -138,9 +138,9 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         Assert.Equal("Failed to create order.", result.Message);
 
         _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyFinishUseCaseLog(0);
         _fixture.VerifyAddAsync(1);
         _fixture.VerifyCreateOrderLogNoItemsError(0);
         _fixture.VerifyFailedToCreateOrderLog(1);
+        _fixture.VerifyFinishUseCaseLog();
     }
 }
