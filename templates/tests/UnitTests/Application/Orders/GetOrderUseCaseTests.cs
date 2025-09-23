@@ -80,8 +80,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
 
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyOrderNotFoundLog(0);
-        _fixture.VerifyCache<Order>(0);
-        _fixture.VerifyFinishUseCaseLog();
+        _fixture.VerifyFinishUseCaseLog(0);
     }
 
     [Fact(DisplayName = nameof(Given_A_Valid_Request_When_Order_Not_Found_Then_Fails))]

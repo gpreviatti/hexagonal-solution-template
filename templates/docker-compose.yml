@@ -35,15 +35,13 @@ services:
         ./opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P "cY5VvZkkh4AzES" -C -d master -i ./tmp/migrations.sql &&
         ./opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P "cY5VvZkkh4AzES" -C -d master -i ./tmp/seeds.sql
 
-  seq:
-    image: datalust/seq:2025.2
-    container_name: seq
-    restart: unless-stopped
-    environment:
-      ACCEPT_EULA: Y
-      SEQ_FIRSTRUN_NOAUTHENTICATION: True
+  aspire-dashboard:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:9.4.0
     ports:
-      - "5341:80"
+      - "18888:18888"
+      - "18889:18889"
+    environment:
+      - DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS=true
 
   redis:
     image: redis:8
