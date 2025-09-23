@@ -20,20 +20,19 @@ internal static class OrderEndpoints
             [FromHeader] Guid correlationId,
             int id,
             CancellationToken cancellationToken
-        ) => await cache.GetOrCreateAsync(
-            $"order-{id}",
-            async (cancellationToken) =>
-            {
-                var response = await useCase.HandleAsync(
-                    new(correlationId, id),
-                    cancellationToken,
-                    $"order-{id}"
-                );
+        ) => {
+            var response = await cache.GetOrCreateAsync(
+                $"order-{id}",
+                async (cancellationToken) => await useCase.HandleAsync(
+                        new(correlationId, id),
+                        cancellationToken,
+                        $"order-{id}"
+                ),
+                cancellationToken
+            );
 
-                return response.Success ? Results.Ok(response) : Results.NotFound(response);
-            },
-            cancellationToken
-        ));
+            return response.Success ? Results.Ok(response) : Results.NotFound(response);
+        });
 
         ordersGroup.MapPost("/", async (
             [FromServices] IBaseInOutUseCase<CreateOrderRequest, BaseResponse<OrderDto>, CreateOrderUseCase> useCase,
