@@ -1,4 +1,5 @@
 using Application.Common.Requests;
+using Application.Common.Services;
 using Application.Common.UseCases;
 using Application.Orders;
 using Grpc.Core;
@@ -9,9 +10,13 @@ using OrderDto = Application.Orders.OrderDto;
 
 namespace WebApp.GrpcServices;
 
-public class OrderService(IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>, GetOrderUseCase> useCase) : OrderServiceBase
+public class OrderService(
+    IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>, GetOrderUseCase> useCase,
+    IHybridCacheService cache
+) : OrderServiceBase
 {
     private readonly IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>, GetOrderUseCase> _useCase = useCase;
+    private readonly IHybridCacheService _cache = cache;
 
     public override async Task<OrderReply> Get(
         GrpcOrder.GetOrderRequest request,
@@ -20,10 +25,13 @@ public class OrderService(IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderD
     {
         var correlationId = Guid.TryParse(request.CorrelationId, out var guid) ? guid : Guid.Empty;
 
-        var result = await _useCase.HandleAsync(
-            new(correlationId, request.Id),
-            context.CancellationToken,
-            $"order-{request.Id}"
+        var result = await _cache.GetOrCreateAsync($"order-{request.Id}", async cancellationToken =>
+            await _useCase.HandleAsync(
+                new(correlationId, request.Id),
+                cancellationToken,
+                $"order-{request.Id}"
+            ),
+            context.CancellationToken
         );
 
         if (!result.Success)

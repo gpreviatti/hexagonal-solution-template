@@ -1,5 +1,5 @@
-using Application.Common.Constants;
 using Application.Common.Requests;
+using Application.Common.Services;
 using Application.Common.UseCases;
 using Application.Orders;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +10,8 @@ internal static class OrderEndpoints
 {
     public static WebApplication MapOrderEndpoints(this WebApplication app)
     {
+        var cache = app.Services.GetRequiredService<IHybridCacheService>();
+
         var ordersGroup = app.MapGroup("/orders")
             .WithTags("Orders");
 
@@ -18,16 +20,20 @@ internal static class OrderEndpoints
             [FromHeader] Guid correlationId,
             int id,
             CancellationToken cancellationToken
-        ) =>
-        {
-            var response = await useCase.HandleAsync(
-                new(correlationId, id),
-                cancellationToken,
-                $"order-{id}"
-            );
+        ) => await cache.GetOrCreateAsync(
+            $"order-{id}",
+            async (cancellationToken) =>
+            {
+                var response = await useCase.HandleAsync(
+                    new(correlationId, id),
+                    cancellationToken,
+                    $"order-{id}"
+                );
 
-            return response.Success ? Results.Ok(response) : Results.NotFound(response);
-        });
+                return response.Success ? Results.Ok(response) : Results.NotFound(response);
+            },
+            cancellationToken
+        ));
 
         ordersGroup.MapPost("/", async (
             [FromServices] IBaseInOutUseCase<CreateOrderRequest, BaseResponse<OrderDto>, CreateOrderUseCase> useCase,

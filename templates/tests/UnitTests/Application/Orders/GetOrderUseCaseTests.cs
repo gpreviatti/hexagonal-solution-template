@@ -35,8 +35,8 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.ClearInvocations();
     }
 
-    [Fact(DisplayName = nameof(Given_A_Valid_Request_Without_Cache_Then_Pass))]
-    public async Task Given_A_Valid_Request_Without_Cache_Then_Pass()
+    [Fact(DisplayName = nameof(Given_A_Valid_Request_Then_Pass))]
+    public async Task Given_A_Valid_Request_Then_Pass()
     {
         // Arrange
         var request = _fixture.SetValidRequest();
@@ -59,38 +59,6 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyOrderNotFoundLog(0);
         _fixture.VerifyFinishUseCaseLog();
-        _fixture.VerifyFinishUseCaseWithCacheLog(0);
-    }
-
-    [Fact(DisplayName = nameof(Given_A_Valid_Request_With_Cache_Then_Pass))]
-    public async Task Given_A_Valid_Request_With_Cache_Then_Pass()
-    {
-        // Arrange
-        var request = _fixture.SetValidRequest();
-        _fixture.SetSuccessfulValidator(request);
-        var expectedResult = _fixture.autoFixture
-            .Create<BaseResponse<OrderDto>>()
-            with { Success = true, Message = string.Empty };
-        _fixture.SetValidGetOrCreateAsync(expectedResult);
-        var cacheKey = $"order-{request.Id}";
-
-        // Act
-        var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken, cacheKey);
-        var data = result.Data;
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.True(result.Success);
-        Assert.Empty(result.Message);
-        Assert.NotNull(data);
-        Assert.Equal(expectedResult.Data.Id, data.Id);
-        Assert.Equal(expectedResult.Data.Description, data.Description);
-        Assert.Equal(expectedResult.Data.Total, data.Total);
-
-        _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyCache<BaseResponse<OrderDto>>(1);
-        _fixture.VerifyOrderNotFoundLog(0);
-        _fixture.VerifyFinishUseCaseWithCacheLog(1);
     }
 
     [Fact(DisplayName = nameof(Given_A_Invalid_Request_Then_Fails))]
@@ -113,8 +81,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyOrderNotFoundLog(0);
         _fixture.VerifyCache<Order>(0);
-        _fixture.VerifyFinishUseCaseLog(0);
-        _fixture.VerifyFinishUseCaseWithCacheLog(0);
+        _fixture.VerifyFinishUseCaseLog();
     }
 
     [Fact(DisplayName = nameof(Given_A_Valid_Request_When_Order_Not_Found_Then_Fails))]
@@ -138,6 +105,5 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyOrderNotFoundLog(1);
         _fixture.VerifyFinishUseCaseLog();
-        _fixture.VerifyFinishUseCaseWithCacheLog(0);
     }
 }
