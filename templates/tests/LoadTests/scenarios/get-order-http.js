@@ -8,7 +8,7 @@ export const options = {
   },
 };
 
-export function getOrder() {
+export function getOrderHttp() {
   const headers = {
     headers: {
       'correlationId': crypto.randomUUID(),
