@@ -21,22 +21,18 @@ public class OrderService(
     public override async Task<OrderReply> Get(
         GrpcOrder.GetOrderRequest request,
         ServerCallContext context
-    ) => await _cache.GetOrCreateAsync<OrderReply>(
-        $"order-{request.Id}",
+    ) => await _cache.GetOrCreateAsync(
+        $"order-grpc-{request.Id}",
         async cancellationToken =>
         {
             var correlationId = Guid.TryParse(request.CorrelationId, out var guid) ? guid : Guid.Empty;
 
-            var response = await _useCase.HandleAsync(
-                new(correlationId, request.Id),
-                cancellationToken,
-                $"order-grpc-{request.Id}"
-            );
+            var response = await _useCase.HandleAsync(new(correlationId, request.Id), cancellationToken);
 
             if (!response.Success)
                 return new() { Success = false, Message = response.Message };
 
-            return new()
+            OrderReply orderReply = new()
             {
                 Success = true,
                 Message = string.Empty,
@@ -47,6 +43,16 @@ public class OrderService(
                     Total = double.TryParse(response.Data.Total.ToString(), out var total) ? total : 0.0
                 }
             };
+
+            orderReply.Data.Items?.AddRange(response.Data.Items.Select(i => new OrderItemsDto
+            {
+                Id = i.Id,
+                Name = i.Name,
+                Description = i.Description,
+                Value = double.TryParse(i.Value.ToString(), out var value) ? value : 0.0
+            }));
+
+            return orderReply;
         },
         context.CancellationToken
     );

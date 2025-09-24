@@ -14,11 +14,7 @@ public interface IBaseInOutUseCase<TRequest, TResponseData, TUseCase>
     where TResponseData : BaseResponse
     where TUseCase : class
 {
-    Task<TResponseData> HandleAsync(
-        TRequest request,
-        CancellationToken cancellationToken,
-        string cacheKey = null
-    );
+    Task<TResponseData> HandleAsync(TRequest request, CancellationToken cancellationToken);
 }
 
 public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCase>(
@@ -40,8 +36,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
 
     public async Task<TResponseData> HandleAsync(
         TRequest request,
-        CancellationToken cancellationToken,
-        string cacheKey = null
+        CancellationToken cancellationToken
     )
     {
         logger.LogInformation(

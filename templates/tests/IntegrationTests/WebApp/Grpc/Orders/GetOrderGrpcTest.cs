@@ -43,6 +43,8 @@ public class GetOrderGrpcTest : BaseFixture
         Assert.True(string.IsNullOrEmpty(response.Message));
         Assert.NotNull(response.Data);
         Assert.Equal(1, response.Data.Id);
+        Assert.NotNull(response.Data.Items);
+        Assert.NotEmpty(response.Data.Items);
         Assert.Equal("XPTO Client Computers", response.Data.Description);
         Assert.Equal(1000.0, response.Data.Total);
     }

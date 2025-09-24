@@ -25,8 +25,7 @@ internal static class OrderEndpoints
                 $"order-{id}",
                 async (cancellationToken) => await useCase.HandleAsync(
                         new(correlationId, id),
-                        cancellationToken,
-                        $"order-{id}"
+                        cancellationToken
                 ),
                 cancellationToken
             );
