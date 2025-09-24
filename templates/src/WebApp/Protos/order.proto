@@ -9,14 +9,22 @@ service OrderService {
 }
 
 message GetOrderRequest {
-    int32 id = 1;
-    string correlationId = 2;
+  int32 id = 1;
+  string correlationId = 2;
+}
+
+message ItemDto {
+  int32 id = 1;
+  string name = 2;
+  string description = 3;
+  double value = 4;
 }
 
 message OrderDto {
-    int32 id = 1;
-    string description = 2;
-    double total = 3;
+  int32 id = 1;
+  string description = 2;
+  double total = 3;
+  repeated ItemDto items = 4;
 }
 
 message OrderReply {

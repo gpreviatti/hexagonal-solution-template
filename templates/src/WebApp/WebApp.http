@@ -11,8 +11,9 @@ GET {{WebApp_HostAddress}}/live HTTP/2
 GET {{WebApp_HostAddress}}/ready HTTP/2
 
 ###
-GET {{WebApp_HostAddress}}/orders/6 HTTP/2
+GET {{WebApp_HostAddress}}/orders/1 HTTP/2
 CorrelationId: {{$guid}}
+Accept-Encoding: gzip, deflate
 Accept: application/json
 
 ###
