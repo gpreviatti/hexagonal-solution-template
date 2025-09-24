@@ -1,25 +1,24 @@
-import { getOrderHttp } from './scenarios/get-order-http.js';
-import { getOrderGrpc } from './scenarios/get-order-grpc.js';
+import { getOrderHttp } from './scenarios/getOrderHttp.js';
+import { getOrderGrpc } from './scenarios/getOrderGrpc.js';
 
 export const options = {
   scenarios: {
-    get_order_http: {
+    getOrderHttp: {
       exec: 'get_order_http',
       env: { EXAMPLEVAR: 'testing' },
-
       executor: 'constant-vus',
       vus: 10,
-      duration: '30s',
-      gracefulStop: '10s',
+      duration: '60s',
+      gracefulStop: '10s'
     },
-    get_order_grpc: {
+    getOrderGrpc: {
       exec: 'get_order_grpc',
       env: { EXAMPLEVAR: 'testing' },
-
       executor: 'constant-vus',
       vus: 10,
-      duration: '30s',
+      duration: '60s',
       gracefulStop: '10s',
+      startTime: '70s',
     }
   }
 };

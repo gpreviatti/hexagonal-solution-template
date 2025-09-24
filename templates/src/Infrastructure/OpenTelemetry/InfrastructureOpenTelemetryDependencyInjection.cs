@@ -58,6 +58,7 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
                 }
             )
             .AddRedisInstrumentation()
+            .AddGrpcClientInstrumentation()
             .AddOtlpExporter(options =>
             {
                 options.Protocol = exporterProtocol;

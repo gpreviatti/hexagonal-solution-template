@@ -21,32 +21,33 @@ public class OrderService(
     public override async Task<OrderReply> Get(
         GrpcOrder.GetOrderRequest request,
         ServerCallContext context
-    )
-    {
-        var correlationId = Guid.TryParse(request.CorrelationId, out var guid) ? guid : Guid.Empty;
+    ) => await _cache.GetOrCreateAsync<OrderReply>(
+        $"order-{request.Id}",
+        async cancellationToken =>
+        {
+            var correlationId = Guid.TryParse(request.CorrelationId, out var guid) ? guid : Guid.Empty;
 
-        var result = await _cache.GetOrCreateAsync($"order-{request.Id}", async cancellationToken =>
-            await _useCase.HandleAsync(
+            var response = await _useCase.HandleAsync(
                 new(correlationId, request.Id),
                 cancellationToken,
                 $"order-{request.Id}"
-            ),
-            context.CancellationToken
-        );
+            );
 
-        if (!result.Success)
-            return new() { Success = false, Message = result.Message };
+            if (!response.Success)
+                return new() { Success = false, Message = response.Message };
 
-        return new()
-        {
-            Success = true,
-            Message = string.Empty,
-            Data = new()
+            return new()
             {
-                Id = result.Data.Id,
-                Description = result.Data.Description,
-                Total = double.TryParse(result.Data.Total.ToString(), out var total) ? total : 0.0
-            }
-        };
-    }
+                Success = true,
+                Message = string.Empty,
+                Data = new()
+                {
+                    Id = response.Data.Id,
+                    Description = response.Data.Description,
+                    Total = double.TryParse(response.Data.Total.ToString(), out var total) ? total : 0.0
+                }
+            };
+        },
+        context.CancellationToken
+    );
 }
