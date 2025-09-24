@@ -30,7 +30,7 @@ public class OrderService(
             var response = await _useCase.HandleAsync(
                 new(correlationId, request.Id),
                 cancellationToken,
-                $"order-{request.Id}"
+                $"order-grpc-{request.Id}"
             );
 
             if (!response.Success)
