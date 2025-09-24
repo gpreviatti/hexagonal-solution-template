@@ -19,10 +19,10 @@
     <RepositoryUrl>git://github.com/gpreviatti/hexagonal-solution-template</RepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>
-      - Add gRPC service to handle orders
-      - Update Kestrel configuration to support both HTTP/1.1 and HTTP/2
-      - Update test method names for clarity and consistency
-      - Add response compression to improve performance
+      - Improve caching strategy with Redis and in-memory hybrid cache.
+      - Add OpenTelemetry GrpcNetClient instrumentation for better tracing of gRPC calls.
+      - Update load test scenarios to include both gRPC and HTTP order retrieval tests.
+      - General dependency updates and performance improvements.
     </PackageReleaseNotes>
   </PropertyGroup>
 
