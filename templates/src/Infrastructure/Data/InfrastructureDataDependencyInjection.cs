@@ -13,7 +13,7 @@ internal static class InfrastructureDataDependencyInjection
     {
         services
             .AddDbContext<MyDbContext>(context =>
-                context.UseSqlServer(configuration.GetConnectionString("OrderDb"))
+                context.UseSqlServer(configuration.GetConnectionString("OrderDb") ?? throw new NullReferenceException("OrderDb connection string is not configured."))
             );
 
         services.AddScoped<IBaseRepository<Order>, BaseRepository<Order>>();
