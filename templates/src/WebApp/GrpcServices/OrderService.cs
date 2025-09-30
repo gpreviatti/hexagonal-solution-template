@@ -24,7 +24,7 @@ public class OrderService(
     )
     {
         var response = await _cache.GetOrCreateAsync(
-            $"order-grpc-{request.Id}",
+            $"{nameof(OrderService)}-{request.Id}",
             async cancellationToken =>
             {
                 var correlationId = Guid.TryParse(request.CorrelationId, out var guid) ? guid : Guid.Empty;

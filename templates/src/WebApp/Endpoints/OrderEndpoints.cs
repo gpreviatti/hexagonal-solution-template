@@ -22,7 +22,7 @@ internal static class OrderEndpoints
             CancellationToken cancellationToken
         ) => {
             var response = await cache.GetOrCreateAsync(
-                $"order-{id}",
+                $"{nameof(OrderEndpoints)}-{id}",
                 async (cancellationToken) => await useCase.HandleAsync(
                         new(correlationId, id),
                         cancellationToken
