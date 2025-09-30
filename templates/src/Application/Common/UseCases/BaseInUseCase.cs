@@ -5,6 +5,8 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Application.Common.Services;
+using Application.Common.Constants;
+using System.Diagnostics;
 
 namespace Application.Common.UseCases;
 
@@ -36,7 +38,11 @@ public abstract class BaseInUseCase<TRequest, TEntity, TUseCase>(
         CancellationToken cancellationToken
     )
     {
-        logger.LogInformation("[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Start to execute use case", ClassName, HandleMethodName, request.CorrelationId);
+        var stopWatch = Stopwatch.StartNew();
+        logger.LogInformation(
+            DefaultApplicationMessages.StartToExecuteUseCase,
+            ClassName, HandleMethodName, request.CorrelationId
+        );
 
         if (validator != null)
         {
@@ -49,6 +55,11 @@ public abstract class BaseInUseCase<TRequest, TEntity, TUseCase>(
         }
 
         await HandleInternalAsync(request, cancellationToken);
+
+        logger.LogInformation(
+            DefaultApplicationMessages.FinishedExecutingUseCase,
+            ClassName, HandleMethodName, request.CorrelationId, stopWatch.ElapsedMilliseconds
+        );
     }
 
     public abstract Task HandleInternalAsync(TRequest request, CancellationToken cancellationToken);

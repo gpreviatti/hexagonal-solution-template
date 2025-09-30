@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Application.Common.Constants;
 using Application.Common.Services;
+using System.Diagnostics;
 
 namespace Application.Common.UseCases;
 
@@ -39,6 +40,8 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
         CancellationToken cancellationToken
     )
     {
+        var stopWatch = Stopwatch.StartNew();
+
         logger.LogInformation(
             DefaultApplicationMessages.StartToExecuteUseCase,
             ClassName, HandleMethodName, request.CorrelationId
@@ -68,7 +71,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
 
         logger.LogInformation(
             DefaultApplicationMessages.FinishedExecutingUseCase,
-            ClassName, HandleMethodName, request.CorrelationId
+            ClassName, HandleMethodName, request.CorrelationId, stopWatch.ElapsedMilliseconds
         );
 
         return response;
