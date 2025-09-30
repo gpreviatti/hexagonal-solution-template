@@ -35,6 +35,12 @@ dotnet ef migrations add <MigrationName> --project src/Infrastructure --startup-
 dotnet run --project src/WebApp
 ```
 
+### Start docker compose
+
+```bash
+docker-compose up -d
+```
+
 ### Run load tests with full summary
 
 ```bash
@@ -53,8 +59,8 @@ dotnet test tests/UnitTests
 dotnet test tests/IntegrationTests
 ```
 
-### Start docker compose
+### Run tests
 
 ```bash
-docker-compose up -d
+dotnet test
 ```
