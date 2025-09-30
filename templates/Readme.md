@@ -21,13 +21,13 @@ This repository provides a template for building applications using the Hexagona
 ### Run migrations
 
 ```bash
-dotnet ef database update --project src/Infrastructure --startup-project src/WebApp --output-dir Data/Migrations
+dotnet ef database update --project src/Infrastructure --startup-project src/WebApp --output-dir src/Infrastructure/Data/Migrations
 ```
 
 ### Create a new migration
 
 ```bash
-dotnet ef migrations add <MigrationName> --project src/Infrastructure --startup-project src/WebApp --output-dir Data/Migrations
+dotnet ef migrations add <MigrationName> --project src/Infrastructure --startup-project src/WebApp --output-dir src/Infrastructure/Data/Migrations
 ```
 ### Run the application
 
