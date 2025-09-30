@@ -1,6 +1,9 @@
-﻿using Application;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using Application;
 using Domain;
 using Infrastructure;
+using Microsoft.AspNetCore.Http.Json;
 using WebApp.Endpoints;
 using WebApp.GrpcServices;
 using WebApp.HealthChecks;
@@ -22,6 +25,14 @@ public sealed class Program
         builder.Services.AddResponseCompression(options =>
         {
             options.EnableForHttps = true;
+        });
+
+        builder.Services.Configure<JsonOptions>(options =>
+        {
+            options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+            options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+            options.SerializerOptions.ReadCommentHandling = JsonCommentHandling.Skip;
+            options.SerializerOptions.PropertyNameCaseInsensitive = true;
         });
 
         builder.Services
