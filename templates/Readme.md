@@ -47,6 +47,12 @@ docker-compose up -d
 k6 run tests/LoadTests/script.js --summary-mode=full
 ```
 
+### Run tests (except load tests)
+
+```bash
+dotnet test
+```
+
 ### Run unit tests
 
 ```bash
@@ -57,10 +63,4 @@ dotnet test tests/UnitTests
 
 ```bash
 dotnet test tests/IntegrationTests
-```
-
-### Run tests
-
-```bash
-dotnet test
-```
+```s
