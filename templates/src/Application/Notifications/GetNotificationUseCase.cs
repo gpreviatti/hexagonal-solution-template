@@ -49,7 +49,7 @@ public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)
 
         NotificationRetrieved.Add(1);
 
-        return new(new NotificationDto(
+        return new(new(
             notification.Id,
             notification.NotificationType,
             notification.NotificationTypeStatus,

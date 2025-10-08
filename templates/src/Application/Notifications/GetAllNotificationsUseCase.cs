@@ -40,9 +40,7 @@ public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
                 HandleMethodName,
                 request.CorrelationId
             );
-            return new BasePaginatedResponse<NotificationDto>(
-                0, 0, [], false, "No notifications found."
-            );
+            return new(0, 0, [], false, "No notifications found.");
         }
 
         var totalPages = (int)Math.Ceiling(totalRecords / (double)request.PageSize);
@@ -60,11 +58,6 @@ public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
 
         NotificationsListed.Add(1);
 
-        return new BasePaginatedResponse<NotificationDto>(
-            totalPages,
-            totalRecords,
-            notificationDtos,
-            true
-        );
+        return new(totalPages, totalRecords, notificationDtos, true);
     }
 }

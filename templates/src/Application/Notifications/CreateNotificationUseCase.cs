@@ -64,7 +64,7 @@ public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider)
 
         NotificationCreated.Add(1);
 
-        return new(new NotificationDto(
+        return new(new(
             notification.Id,
             notification.NotificationType,
             notification.NotificationTypeStatus,
