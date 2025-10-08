@@ -87,8 +87,22 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
     public void SetupGetByIdAsNoTrackingAsync(TEntity entity) => mockRepository.Setup(r => r.GetByIdAsNoTrackingAsync(
         It.IsAny<int>(),
         It.IsAny<CancellationToken>(),
-        It.IsAny<Expression<Func<TEntity, object>>>()
+        It.IsAny<Expression<Func<TEntity, object>>[]>()
     )).ReturnsAsync(entity);
+
+    public void SetupGetByIdAsNoTrackingAsyncNotFound() => mockRepository.Setup(r => r.GetByIdAsNoTrackingAsync(
+        It.IsAny<int>(),
+        It.IsAny<CancellationToken>(),
+        It.IsAny<Expression<Func<TEntity, object>>[]>()
+    )).ReturnsAsync((TEntity)null!);
+
+    public void SetSuccessfulUpdate() => mockRepository
+        .Setup(d => d.UpdateAsync(It.IsAny<TEntity>(), It.IsAny<CancellationToken>()))
+        .ReturnsAsync(1);
+
+    public void SetFailedUpdate() => mockRepository
+        .Setup(d => d.UpdateAsync(It.IsAny<TEntity>(), It.IsAny<CancellationToken>()))
+        .ReturnsAsync(0);
 
     public void SetInvalidGetOrCreateAsync<TResult>() => mockCache.Setup(c => c.GetOrCreateAsync(
         It.IsAny<string>(),
@@ -139,6 +153,11 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
         Times.Exactly(times)
     );
 
+    public void VerifyUpdate(int times) => mockRepository.Verify(
+        d => d.UpdateAsync(It.IsAny<TEntity>(), It.IsAny<CancellationToken>()),
+        Times.Exactly(times)
+    );
+
     public void VerifyGetAllPaginatedNoIncludes(int times) => mockRepository.Verify(r => r.GetAllPaginatedAsync(
         It.IsAny<int>(),
         It.IsAny<int>(),
@@ -150,7 +169,8 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
 
     public void VerifyGetByIdAsync(int times) => mockRepository.Verify(r => r.GetByIdAsNoTrackingAsync(
         It.IsAny<int>(),
-        It.IsAny<CancellationToken>()
+        It.IsAny<CancellationToken>(),
+        It.IsAny<Expression<Func<TEntity, object>>[]>()
     ), Times.Exactly(times));
 
     public void VerifyCache<TResult>(int times) => mockCache.Verify(
