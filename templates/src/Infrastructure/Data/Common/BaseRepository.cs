@@ -44,11 +44,11 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
         return entity;
     }
 
-    public int Update(TEntity entity)
+    public async Task<int> UpdateAsync(TEntity entity, CancellationToken cancellationToken)
     {
         dbEntitySet.Update(entity);
 
-        return dbContext.SaveChanges();
+        return await dbContext.SaveChangesAsync();
     }
 
     public async Task<int> RemoveAsync(TEntity entity, CancellationToken cancellationToken)

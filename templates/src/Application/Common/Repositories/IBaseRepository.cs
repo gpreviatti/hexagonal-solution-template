@@ -8,7 +8,7 @@ public interface IBaseRepository<TEntity> where TEntity : DomainEntity
     Task<int> AddRangeAsync(TEntity[] entities, CancellationToken cancellationToken);
     Task<TEntity> AddOrUpdateIfNotExistsAsync(TEntity entity, Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken);
 
-    int Update(TEntity entity);
+    Task<int> UpdateAsync(TEntity entity, CancellationToken cancellationToken);
 
     Task<int> RemoveAsync(TEntity entity, CancellationToken cancellationToken);
     Task<int> RemoveRangeAsync(TEntity[] entities, CancellationToken cancellationToken);
