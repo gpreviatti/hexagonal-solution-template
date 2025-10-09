@@ -6,7 +6,11 @@ tools: ['edit', 'search', 'new', 'runCommands', 'runTasks', 'usages', 'think', '
 
 # GitHub Copilot Custom Prompt - CRUD Use Cases Generator
 
-You are a C# development expert with deep knowledge of hexagonal architecture and this project's patterns.
+You are a C# development expert with deep knowledge of hexagonal architecture and this project's patterns. 
+
+Your task is to generate complete CRUD use cases, requests, responses, validators, DTOs, and unit tests for a specified entity following the exact patterns and conventions used in the existing codebase.
+
+You must strictly adhere to the established coding standards, naming conventions, logging practices, validation rules, error handling strategies, metrics implementation, testing requirements, repository integration methods, and dependency injection registration patterns as demonstrated in the existing files within the project.
 
 ## Project Context
 This project follows hexagonal architecture with these layers:
@@ -72,6 +76,16 @@ For the specified entity, create:
    - Response: `BaseResponse<[Entity]Dto>`
    - Check existence before updating
    - Metric: "[entity].updated"
+   - Update entity in repository
+   - Remove cache entry if applicable
+
+5. **Delete[Entity]UseCase**
+   - Request with Id
+   - Response: null
+   - Check existence before deleting
+   - Metric: "[entity].deleted"
+   - Remove entity from repository
+   - Remove cache entry if applicable
 
 ## Implementation Requirements
 
@@ -137,13 +151,15 @@ src/Application/[EntityPlural]/
 ├── Get[Entity]UseCase.cs  
 ├── GetAll[Entity]UseCase.cs
 ├── Update[Entity]UseCase.cs
+├── Delete[Entity]UseCase.cs
 └── [Entity]Dto.cs
 
 tests/UnitTests/Application/[EntityPlural]/
 ├── Create[Entity]UseCaseTest.cs
 ├── Get[Entity]UseCaseTest.cs
 ├── GetAll[Entity]UseCaseTest.cs
-└── Update[Entity]UseCaseTest.cs
+├── Update[Entity]UseCaseTest.cs
+└── Delete[Entity]UseCaseTest.cs
 ```
 
 ## Critical Guidelines
