@@ -56,7 +56,6 @@ public sealed class UpdateNotificationUseCase(IServiceProvider serviceProvider)
         }
 
         notification.NotificationType = request.NotificationType;
-        notification.NotificationTypeStatus = request.NotificationTypeStatus;
         notification.Message = request.Message ?? string.Empty;
         notification.SetUpdatedAt();
 

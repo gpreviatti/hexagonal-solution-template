@@ -59,7 +59,6 @@ public sealed class UpdateNotificationUseCaseTest : IClassFixture<UpdateNotifica
         Assert.Empty(result.Message);
         Assert.NotNull(result.Data);
         Assert.Equal(request.NotificationType, result.Data.NotificationType);
-        Assert.Equal(request.NotificationTypeStatus, result.Data.NotificationTypeStatus);
 
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyNotificationNotFoundLog(0);

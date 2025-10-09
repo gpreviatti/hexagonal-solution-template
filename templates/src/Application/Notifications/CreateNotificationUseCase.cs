@@ -12,7 +12,6 @@ namespace Application.Notifications;
 public sealed record CreateNotificationRequest(
     Guid CorrelationId,
     string NotificationType,
-    NotificationTypeStatus NotificationTypeStatus,
     string CreatedBy = null,
     object Message = null
 ) : BaseRequest(CorrelationId);
@@ -23,7 +22,6 @@ public sealed class CreateNotificationRequestValidator : AbstractValidator<Creat
     {
         RuleFor(r => r.CorrelationId).NotEmpty();
         RuleFor(r => r.NotificationType).NotEmpty();
-        RuleFor(r => r.NotificationTypeStatus).IsInEnum();
     }
 }
 
@@ -43,7 +41,6 @@ public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider)
     {
         var notification = new Notification(
             request.NotificationType,
-            request.NotificationTypeStatus,
             DateTime.UtcNow,
             request.CreatedBy,
             request.Message
@@ -53,6 +50,8 @@ public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider)
 
         if (addResult == 0)
         {
+            notification.SetNotificationTypeStatus(NotificationTypeStatus.Error);
+
             logger.LogWarning(
                 DefaultApplicationMessages.DefaultApplicationMessage + "Failed to create notification.",
                 ClassName, 
@@ -62,6 +61,7 @@ public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider)
             return new(null, false, "Failed to create notification.");
         }
 
+        notification.SetNotificationTypeStatus(NotificationTypeStatus.Success);
         NotificationCreated.Add(1);
 
         return new(new(
