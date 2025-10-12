@@ -433,6 +433,31 @@ tests/LoadTests/scenarios/
 - Follow existing registration patterns
 - Ensure proper service lifetime management
 
+### Entity Mapping
+
+- Create entity mapping in `Infrastructure/Data/[EntityPlural]/Mapping/[Entity]DbMapping.cs`
+- Inherit from `BaseDbMapping<TEntity>`
+- Configure required properties with appropriate constraints (MaxLength, Required, etc.)
+- Register mapping in `MyDbContext.OnModelCreating()` using `.ApplyConfiguration()`
+- Follow column type conventions from `MyDbContext.ConfigureConventions()`
+- Example mapping structure:
+
+```csharp
+internal sealed class [Entity]DbMapping : BaseDbMapping<[Entity]>
+{
+    public override void ConfigureDomainEntity(EntityTypeBuilder<[Entity]> builder)
+    {
+        builder.Property(p => p.PropertyName)
+            .HasMaxLength(100)
+            .IsRequired(true);
+        
+        // Configure relationships if any
+        builder.HasMany(p => p.Children);
+        // or
+        builder.HasOne(p => p.Parent);
+    }
+}
+
 ### Additional Considerations
 
 - DTOs must include ALL entity properties including base class fields
