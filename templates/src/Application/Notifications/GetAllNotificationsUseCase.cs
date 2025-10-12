@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Notifications;
 
-public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider) 
+public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
     : BaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<NotificationDto>, Notification, GetAllNotificationsUseCase>(
         serviceProvider,
         serviceProvider.GetService<IValidator<BasePaginatedRequest>>()
@@ -36,7 +36,7 @@ public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
         {
             logger.LogWarning(
                 DefaultApplicationMessages.DefaultApplicationMessage + "No notifications found.",
-                ClassName, 
+                ClassName,
                 HandleMethodName,
                 request.CorrelationId
             );
@@ -45,15 +45,15 @@ public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
 
         var totalPages = (int)Math.Ceiling(totalRecords / (double)request.PageSize);
 
-        var notificationDtos = notifications.Select(n => new NotificationDto(
-            n.Id,
-            n.NotificationType,
-            n.NotificationTypeStatus,
-            n.Message,
-            n.CreatedAt,
-            n.UpdatedAt,
-            n.CreatedBy,
-            n.UpdatedBy
+        var notificationDtos = notifications.Select(notification => new NotificationDto(
+            notification.Id,
+            notification.NotificationType,
+            notification.NotificationStatus,
+            notification.Message,
+            notification.CreatedAt,
+            notification.UpdatedAt,
+            notification.CreatedBy,
+            notification.UpdatedBy
         ));
 
         NotificationsListed.Add(1);

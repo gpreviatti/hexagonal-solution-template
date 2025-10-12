@@ -20,7 +20,7 @@ public sealed class GetNotificationRequestValidator : AbstractValidator<GetNotif
     }
 }
 
-public sealed class GetNotificationUseCase(IServiceProvider serviceProvider) 
+public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)
     : BaseInOutUseCase<GetNotificationRequest, BaseResponse<NotificationDto>, Notification, GetNotificationUseCase>(
         serviceProvider,
         serviceProvider.GetService<IValidator<GetNotificationRequest>>()
@@ -40,8 +40,8 @@ public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)
         {
             logger.LogWarning(
                 DefaultApplicationMessages.DefaultApplicationMessage + "Notification not found.",
-                ClassName, 
-                HandleMethodName, 
+                ClassName,
+                HandleMethodName,
                 request.CorrelationId
             );
             return new(null, false, "Notification not found.");
@@ -52,7 +52,7 @@ public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)
         return new(new(
             notification.Id,
             notification.NotificationType,
-            notification.NotificationTypeStatus,
+            notification.NotificationStatus,
             notification.Message,
             notification.CreatedAt,
             notification.UpdatedAt,

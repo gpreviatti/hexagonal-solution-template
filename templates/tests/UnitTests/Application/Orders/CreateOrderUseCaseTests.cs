@@ -1,4 +1,5 @@
-﻿using Application.Orders;
+﻿using Application.Common.Messages;
+using Application.Orders;
 using Domain.Orders;
 using FluentValidation;
 using FluentValidation.TestHelper;
@@ -116,6 +117,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyCreateOrderLogNoItemsError(0);
         _fixture.VerifyFailedToCreateOrderLog(0);
         _fixture.VerifyAddAsync(1);
+        _fixture.VerifyProduce<CreateNotificationMessage>();
     }
 
     [Fact(DisplayName = nameof(Given_A_Invalid_Request_Then_Fails))]
@@ -140,6 +142,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyCreateOrderLogNoItemsError(0);
         _fixture.VerifyFailedToCreateOrderLog(0);
         _fixture.VerifyAddAsync(0);
+        _fixture.VerifyProduce<CreateNotificationMessage>(0);
     }
 
     [Fact(DisplayName = nameof(Given_A_Invalid_Request_Then_Fails_When_There_Is_No_Items))]
@@ -165,6 +168,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyFailedToCreateOrderLog(0);
         _fixture.VerifyAddAsync(0);
         _fixture.VerifyFinishUseCaseLog();
+        _fixture.VerifyProduce<CreateNotificationMessage>();
     }
 
     [Fact(DisplayName = nameof(Given_A_Valid_Request_Then_Fails_When_Repository_Returns_Zero))]
@@ -191,5 +195,6 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyCreateOrderLogNoItemsError(0);
         _fixture.VerifyFailedToCreateOrderLog(1);
         _fixture.VerifyFinishUseCaseLog();
+        _fixture.VerifyProduce<CreateNotificationMessage>();
     }
 }

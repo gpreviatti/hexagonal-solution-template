@@ -19,7 +19,7 @@ public sealed class GetNotificationUseCaseFixture : BaseApplicationFixture<Notif
         base.ClearInvocations();
     }
 
-    public GetNotificationRequest SetValidRequest() => 
+    public GetNotificationRequest SetValidRequest() =>
         new(Guid.NewGuid(), Math.Abs(autoFixture.Create<int>()) + 1);
 
     public void VerifyNotificationNotFoundLog(int times = 1) =>
@@ -55,7 +55,7 @@ public sealed class GetNotificationUseCaseTest : IClassFixture<GetNotificationUs
         Assert.NotNull(result.Data);
         Assert.Equal(expectedNotification.Id, result.Data.Id);
         Assert.Equal(expectedNotification.NotificationType, result.Data.NotificationType);
-        Assert.Equal(expectedNotification.NotificationTypeStatus, result.Data.NotificationTypeStatus);
+        Assert.Equal(expectedNotification.NotificationStatus, result.Data.NotificationStatus);
 
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyNotificationNotFoundLog(0);

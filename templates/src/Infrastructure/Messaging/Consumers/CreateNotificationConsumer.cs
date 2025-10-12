@@ -14,9 +14,10 @@ public sealed class CreateNotificationConsumer(
     protected override async Task HandleMessageAsync(
         CreateNotificationMessage message,
         CancellationToken cancellationToken
-    ) => await useCase.HandleAsync( new(
+    ) => await useCase.HandleAsync(new(
             message.CorrelationId,
             message.NotificationType,
+            message.NotificationStatus,
             message.CreatedBy,
             message.Message
         ), cancellationToken

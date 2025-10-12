@@ -5,7 +5,7 @@ namespace Application.Notifications;
 public sealed record NotificationDto(
     int Id,
     string NotificationType,
-    NotificationTypeStatus NotificationTypeStatus,
+    string NotificationStatus,
     string Message,
     DateTime CreatedAt,
     DateTime? UpdatedAt,

@@ -13,7 +13,7 @@ public sealed record UpdateNotificationRequest(
     Guid CorrelationId,
     int Id,
     string NotificationType,
-    NotificationTypeStatus NotificationTypeStatus,
+    string NotificationStatus,
     string Message = ""
 ) : BaseRequest(CorrelationId);
 
@@ -24,11 +24,11 @@ public sealed class UpdateNotificationRequestValidator : AbstractValidator<Updat
         RuleFor(r => r.CorrelationId).NotEmpty();
         RuleFor(r => r.Id).GreaterThan(0);
         RuleFor(r => r.NotificationType).NotEmpty();
-        RuleFor(r => r.NotificationTypeStatus).IsInEnum();
+        RuleFor(r => r.NotificationStatus).NotEmpty();
     }
 }
 
-public sealed class UpdateNotificationUseCase(IServiceProvider serviceProvider) 
+public sealed class UpdateNotificationUseCase(IServiceProvider serviceProvider)
     : BaseInOutUseCase<UpdateNotificationRequest, BaseResponse<NotificationDto>, Notification, UpdateNotificationUseCase>(
         serviceProvider,
         serviceProvider.GetService<IValidator<UpdateNotificationRequest>>()
@@ -48,8 +48,8 @@ public sealed class UpdateNotificationUseCase(IServiceProvider serviceProvider)
         {
             logger.LogWarning(
                 DefaultApplicationMessages.DefaultApplicationMessage + "Notification not found.",
-                ClassName, 
-                HandleMethodName, 
+                ClassName,
+                HandleMethodName,
                 request.CorrelationId
             );
             return new(null, false, "Notification not found.");
@@ -64,8 +64,8 @@ public sealed class UpdateNotificationUseCase(IServiceProvider serviceProvider)
         {
             logger.LogWarning(
                 DefaultApplicationMessages.DefaultApplicationMessage + "Failed to update notification.",
-                ClassName, 
-                HandleMethodName, 
+                ClassName,
+                HandleMethodName,
                 request.CorrelationId
             );
             return new(null, false, "Failed to update notification.");
@@ -76,7 +76,7 @@ public sealed class UpdateNotificationUseCase(IServiceProvider serviceProvider)
         return new(new(
             notification.Id,
             notification.NotificationType,
-            notification.NotificationTypeStatus,
+            notification.NotificationStatus,
             notification.Message,
             notification.CreatedAt,
             notification.UpdatedAt,

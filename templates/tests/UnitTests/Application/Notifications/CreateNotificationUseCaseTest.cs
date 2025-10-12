@@ -11,8 +11,8 @@ public sealed class CreateNotificationRequestValidationFixture
 {
     public IValidator<CreateNotificationRequest> validator = new CreateNotificationRequestValidator();
 
-    public CreateNotificationRequest GetValidRequest() => 
-        new(Guid.NewGuid(), "TestNotification", "System", new { Test = "Message" });
+    public CreateNotificationRequest GetValidRequest() =>
+        new(Guid.NewGuid(), "TestNotification", "Success", "System", new { Test = "Message" });
 }
 
 public sealed class CreateNotificationRequestValidationTests(CreateNotificationRequestValidationFixture fixture) : IClassFixture<CreateNotificationRequestValidationFixture>
@@ -65,7 +65,7 @@ public sealed class CreateNotificationUseCaseFixture : BaseApplicationFixture<No
     }
 
     public CreateNotificationRequest SetValidRequest() =>
-        new(Guid.NewGuid(), "TestNotification", "System", new { Test = "Message" });
+        new(Guid.NewGuid(), "TestNotification", "Success", "System", new { Test = "Message" });
 
     public void VerifyFailedToCreateNotificationLog(int times = 1) =>
         mockLogger.VerifyLog(l => l.LogWarning("*Failed to create notification.*"), Times.Exactly(times));

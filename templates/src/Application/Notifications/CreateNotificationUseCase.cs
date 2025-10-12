@@ -12,6 +12,7 @@ namespace Application.Notifications;
 public sealed record CreateNotificationRequest(
     Guid CorrelationId,
     string NotificationType,
+    string NotificationStatus,
     string CreatedBy = null,
     object Message = null
 ) : BaseRequest(CorrelationId);
@@ -25,7 +26,7 @@ public sealed class CreateNotificationRequestValidator : AbstractValidator<Creat
     }
 }
 
-public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider) 
+public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider)
     : BaseInOutUseCase<CreateNotificationRequest, BaseResponse<NotificationDto>, Notification, CreateNotificationUseCase>(
         serviceProvider,
         serviceProvider.GetService<IValidator<CreateNotificationRequest>>()
@@ -41,6 +42,7 @@ public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider)
     {
         var notification = new Notification(
             request.NotificationType,
+            request.NotificationStatus,
             DateTime.UtcNow,
             request.CreatedBy,
             request.Message
@@ -50,24 +52,21 @@ public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider)
 
         if (addResult == 0)
         {
-            notification.SetNotificationTypeStatus(NotificationTypeStatus.Error);
-
             logger.LogWarning(
                 DefaultApplicationMessages.DefaultApplicationMessage + "Failed to create notification.",
-                ClassName, 
-                HandleMethodName, 
+                ClassName,
+                HandleMethodName,
                 request.CorrelationId
             );
             return new(null, false, "Failed to create notification.");
         }
 
-        notification.SetNotificationTypeStatus(NotificationTypeStatus.Success);
         NotificationCreated.Add(1);
 
         return new(new(
             notification.Id,
             notification.NotificationType,
-            notification.NotificationTypeStatus,
+            notification.NotificationStatus,
             notification.Message,
             notification.CreatedAt,
             notification.UpdatedAt,

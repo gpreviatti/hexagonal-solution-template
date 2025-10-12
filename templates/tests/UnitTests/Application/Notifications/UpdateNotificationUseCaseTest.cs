@@ -19,7 +19,7 @@ public sealed class UpdateNotificationUseCaseFixture : BaseApplicationFixture<No
     }
 
     public UpdateNotificationRequest SetValidRequest() =>
-        new(Guid.NewGuid(), 1, "UpdatedNotification", NotificationTypeStatus.Error, "Updated message");
+        new(Guid.NewGuid(), 1, "UpdatedNotification", "Error", "Updated message");
 
     public void VerifyNotificationNotFoundLog(int times = 1) =>
         mockLogger.VerifyLog(l => l.LogWarning("*Notification not found.*"), Times.Exactly(times));
