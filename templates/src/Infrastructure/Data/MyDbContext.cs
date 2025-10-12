@@ -1,4 +1,4 @@
-﻿using Infrastructure.Data.Orders.Mapping;
+﻿using Infrastructure.Data.Mapping;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data;
@@ -9,7 +9,8 @@ public sealed class MyDbContext(
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder) => modelBuilder
         .ApplyConfiguration(new OrderDbMapping())
-        .ApplyConfiguration(new ItemDbMapping());
+        .ApplyConfiguration(new ItemDbMapping())
+        .ApplyConfiguration(new NotificationDbMapping());
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

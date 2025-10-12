@@ -2,7 +2,8 @@
 using Infrastructure.Data.Common;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Data.Orders.Mapping;
+namespace Infrastructure.Data.Mapping;
+
 internal sealed class OrderDbMapping : BaseDbMapping<Order>
 {
     public override void ConfigureDomainEntity(EntityTypeBuilder<Order> builder)
