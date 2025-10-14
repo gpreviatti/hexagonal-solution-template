@@ -29,7 +29,6 @@ dotnet-ef database update --project src/Infrastructure --startup-project src/Web
 ### Common Parameters:
 - `<MigrationName>`: Name for the new migration
 - `--project`: Points to Infrastructure project containing DbContext
-- `--startup-project`: Points to WebApp project
 - `--context`: Specifies MyDbContext 
 - `--output-dir`: Places migrations in Data/Migrations folder
 - `--idempotent`: Makes script rerunnable
