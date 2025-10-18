@@ -1,5 +1,3 @@
-using Domain.Notifications;
-
 namespace Application.Notifications;
 
 public sealed record NotificationDto(
@@ -9,6 +7,6 @@ public sealed record NotificationDto(
     string Message,
     DateTime CreatedAt,
     DateTime? UpdatedAt,
-    string CreatedBy,
-    string UpdatedBy
+    string? CreatedBy,
+    string? UpdatedBy
 );

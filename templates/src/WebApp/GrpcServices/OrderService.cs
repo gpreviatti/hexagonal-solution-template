@@ -1,3 +1,4 @@
+using System.Globalization;
 using Application.Common.Requests;
 using Application.Common.Services;
 using Application.Common.UseCases;
@@ -33,7 +34,7 @@ public class OrderService(
             context.CancellationToken
         );
 
-        if (!response.Success)
+        if (!response.Success || response.Data == null)
             return new() { Success = false, Message = response.Message };
 
         OrderReply orderReply = new()
@@ -44,18 +45,18 @@ public class OrderService(
             {
                 Id = response.Data.Id,
                 Description = response.Data.Description,
-                Total = double.TryParse(response.Data.Total.ToString(), out var total) ? total : 0.0
+                Total = double.TryParse(response.Data.Total.ToString(CultureInfo.InvariantCulture), NumberStyles.Any, CultureInfo.InvariantCulture, out var total) ? total : 0.0
             }
         };
 
-        orderReply.Data.Items?.AddRange(response.Data.Items.Select(i => new GrpcOrder.ItemDto
+        orderReply.Data.Items?.AddRange(response.Data.Items?.Select(i => new GrpcOrder.ItemDto
         {
             Id = i.Id,
             Name = i.Name,
             Description = i.Description,
-            Value = double.TryParse(i.Value.ToString(), out var value) ? value : 0.0
+            Value = double.TryParse(i.Value.ToString(CultureInfo.InvariantCulture), NumberStyles.Any, CultureInfo.InvariantCulture, out var value) ? value : 0.0
         }));
 
         return orderReply;
-    }    
+    }
 }

@@ -76,6 +76,7 @@ public sealed class GetAllNotificationsUseCaseTest : IClassFixture<GetAllNotific
 
         // Assert
         Assert.False(result.Success);
+        Assert.NotNull(result.Message);
         Assert.NotEmpty(result.Message);
 
         _fixture.VerifyStartUseCaseLog();
@@ -96,6 +97,7 @@ public sealed class GetAllNotificationsUseCaseTest : IClassFixture<GetAllNotific
 
         // Assert
         Assert.False(result.Success);
+        Assert.NotNull(result.Message);
         Assert.NotEmpty(result.Message);
         Assert.Equal("No notifications found.", result.Message);
 

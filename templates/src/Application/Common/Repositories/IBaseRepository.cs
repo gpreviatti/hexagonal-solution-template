@@ -40,9 +40,9 @@ public interface IBaseRepository<TEntity> where TEntity : DomainEntity
         int page,
         int pageSize,
         CancellationToken cancellationToken,
-        string sortBy = null,
+        string? sortBy = null,
         bool sortDescending = false,
-        Dictionary<string, string> searchByValues = null,
+        Dictionary<string, string>? searchByValues = null,
         params Expression<Func<TEntity, object>>[] includes
     );
 

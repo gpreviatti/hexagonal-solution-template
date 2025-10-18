@@ -11,7 +11,9 @@ using WebApp.Middlewares;
 
 namespace WebApp;
 
+#pragma warning disable S1118 // Utility classes should not have public constructors
 public sealed class Program
+#pragma warning restore S1118 // Utility classes should not have public constructors
 {
     private static async Task Main(string[] args)
     {

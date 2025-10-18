@@ -41,7 +41,10 @@ internal static class OrderEndpoints
         {
             var response = await useCase.HandleAsync(request, cancellationToken);
 
-            return response.Success ? Results.Created($"/orders/{response.Data.Id}", response) : Results.BadRequest(response);
+            if (!response.Success || response.Data == null)
+                return Results.BadRequest(response);
+
+            return Results.Created($"/orders/{response.Data.Id}", response);
         });
 
         ordersGroup.MapPost("/paginated", async (

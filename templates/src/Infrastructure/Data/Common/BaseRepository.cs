@@ -175,7 +175,7 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
         var totalRecords = await query.CountAsync(cancellationToken);
 
         if (searchByValues != null && searchByValues.Any())
-        {    
+        {
             foreach (var searchByValue in searchByValues)
             {
                 query = query.Where(e => EF.Property<string>(e, searchByValue.Key)
