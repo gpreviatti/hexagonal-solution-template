@@ -21,10 +21,10 @@ public sealed class GetOrderRequestValidator : AbstractValidator<GetOrderRequest
 
 public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>, Order, GetOrderUseCase>(
     serviceProvider,
-    serviceProvider.GetService<IValidator<GetOrderRequest>>()
+    serviceProvider.GetRequiredService<IValidator<GetOrderRequest>>()
 )
 {
-    public static Counter<int> OrderRetrieved = DefaultConfigurations.Meter
+    public static readonly Counter<int> OrderRetrieved = DefaultConfigurations.Meter
         .CreateCounter<int>("order.retrieved", "orders", "Number of orders retrieved");
 
     public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(

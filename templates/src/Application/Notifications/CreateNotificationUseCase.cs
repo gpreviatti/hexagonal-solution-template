@@ -13,8 +13,8 @@ public sealed record CreateNotificationRequest(
     Guid CorrelationId,
     string NotificationType,
     string NotificationStatus,
-    string CreatedBy = null,
-    object Message = null
+    string? CreatedBy = null,
+    object? Message = null
 ) : BaseRequest(CorrelationId);
 
 public sealed class CreateNotificationRequestValidator : AbstractValidator<CreateNotificationRequest>
@@ -29,10 +29,10 @@ public sealed class CreateNotificationRequestValidator : AbstractValidator<Creat
 public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider)
     : BaseInOutUseCase<CreateNotificationRequest, BaseResponse<NotificationDto>, Notification, CreateNotificationUseCase>(
         serviceProvider,
-        serviceProvider.GetService<IValidator<CreateNotificationRequest>>()
+        serviceProvider.GetRequiredService<IValidator<CreateNotificationRequest>>()
     )
 {
-    public static Counter<int> NotificationCreated = DefaultConfigurations.Meter
+    public static readonly Counter<int> NotificationCreated = DefaultConfigurations.Meter
         .CreateCounter<int>("notification.created", "notifications", "Number of notifications created");
 
     public override async Task<BaseResponse<NotificationDto>> HandleInternalAsync(

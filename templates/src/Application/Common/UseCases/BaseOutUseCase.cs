@@ -23,7 +23,7 @@ public abstract class BaseOutUseCase<TResponseData, TEntity, TUseCase>(
     where TEntity : DomainEntity
     where TUseCase : class
 {
-    protected readonly ILogger<TUseCase> logger = serviceProvider.GetService<ILogger<TUseCase>>();
+    protected readonly ILogger<TUseCase> logger = serviceProvider.GetRequiredService<ILogger<TUseCase>>();
     protected readonly IBaseRepository<TEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<TEntity>>();
     protected readonly IHybridCacheService _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
     private const string ClassName = nameof(BaseOutUseCase<TResponseData, TEntity, TUseCase>);

@@ -12,10 +12,10 @@ namespace Application.Notifications;
 public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
     : BaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<NotificationDto>, Notification, GetAllNotificationsUseCase>(
         serviceProvider,
-        serviceProvider.GetService<IValidator<BasePaginatedRequest>>()
+        serviceProvider.GetRequiredService<IValidator<BasePaginatedRequest>>()
     )
 {
-    public static Counter<int> NotificationsListed = DefaultConfigurations.Meter
+    public static readonly Counter<int> NotificationsListed = DefaultConfigurations.Meter
         .CreateCounter<int>("notifications.listed", "notifications", "Number of times notifications were listed");
 
     public override async Task<BasePaginatedResponse<NotificationDto>> HandleInternalAsync(

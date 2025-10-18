@@ -20,7 +20,7 @@ public interface IBaseInOutUseCase<TRequest, TResponseData, TUseCase>
 
 public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCase>(
     IServiceProvider serviceProvider,
-    IValidator<TRequest> validator = null
+    IValidator<TRequest> validator = null!
 ) : IBaseInOutUseCase<TRequest, TResponseData, TUseCase>
     where TRequest : BaseRequest
     where TResponseData : BaseResponse

@@ -11,10 +11,10 @@ namespace Application.Orders;
 
 public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<OrderDto>, Order, GetAllOrdersUseCase>(
     serviceProvider,
-    serviceProvider.GetService<IValidator<BasePaginatedRequest>>()
+    serviceProvider.GetRequiredService<IValidator<BasePaginatedRequest>>()
 )
 {
-    public static Counter<int> OrdersListed = DefaultConfigurations.Meter
+    public static readonly Counter<int> OrdersListed = DefaultConfigurations.Meter
         .CreateCounter<int>("orders.listed", "orders", "Number of times orders were listed");
 
     public override async Task<BasePaginatedResponse<OrderDto>> HandleInternalAsync(

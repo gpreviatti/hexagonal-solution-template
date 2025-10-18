@@ -23,10 +23,10 @@ public sealed class GetNotificationRequestValidator : AbstractValidator<GetNotif
 public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)
     : BaseInOutUseCase<GetNotificationRequest, BaseResponse<NotificationDto>, Notification, GetNotificationUseCase>(
         serviceProvider,
-        serviceProvider.GetService<IValidator<GetNotificationRequest>>()
+        serviceProvider.GetRequiredService<IValidator<GetNotificationRequest>>()
     )
 {
-    public static Counter<int> NotificationRetrieved = DefaultConfigurations.Meter
+    public static readonly Counter<int> NotificationRetrieved = DefaultConfigurations.Meter
         .CreateCounter<int>("notification.retrieved", "notifications", "Number of notifications retrieved");
 
     public override async Task<BaseResponse<NotificationDto>> HandleInternalAsync(

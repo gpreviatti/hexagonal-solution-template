@@ -31,10 +31,10 @@ public sealed class UpdateNotificationRequestValidator : AbstractValidator<Updat
 public sealed class UpdateNotificationUseCase(IServiceProvider serviceProvider)
     : BaseInOutUseCase<UpdateNotificationRequest, BaseResponse<NotificationDto>, Notification, UpdateNotificationUseCase>(
         serviceProvider,
-        serviceProvider.GetService<IValidator<UpdateNotificationRequest>>()
+        serviceProvider.GetRequiredService<IValidator<UpdateNotificationRequest>>()
     )
 {
-    public static Counter<int> NotificationUpdated = DefaultConfigurations.Meter
+    public static readonly Counter<int> NotificationUpdated = DefaultConfigurations.Meter
         .CreateCounter<int>("notification.updated", "notifications", "Number of notifications updated");
 
     public override async Task<BaseResponse<NotificationDto>> HandleInternalAsync(

@@ -10,7 +10,7 @@ using System.Diagnostics;
 
 namespace Application.Common.UseCases;
 
-public interface IBaseInUseCase<TRequest, TEntity, TUseCase>
+public interface IBaseInUseCase<in TRequest, TEntity, TUseCase>
     where TRequest : BaseRequest
     where TEntity : DomainEntity
     where TUseCase : class
@@ -20,13 +20,13 @@ public interface IBaseInUseCase<TRequest, TEntity, TUseCase>
 
 public abstract class BaseInUseCase<TRequest, TEntity, TUseCase>(
     IServiceProvider serviceProvider,
-    IValidator<TRequest> validator = null
+    IValidator<TRequest> validator = null!
 ) : IBaseInUseCase<TRequest, TEntity, TUseCase>
     where TRequest : BaseRequest
     where TEntity : DomainEntity
     where TUseCase : class
 {
-    protected readonly ILogger<TUseCase> logger = serviceProvider.GetService<ILogger<TUseCase>>();
+    protected readonly ILogger<TUseCase> logger = serviceProvider.GetRequiredService<ILogger<TUseCase>>();
     protected readonly IValidator<TRequest> validator = validator;
     protected readonly IBaseRepository<TEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<TEntity>>();
     protected readonly IHybridCacheService _cache = serviceProvider.GetRequiredService<IHybridCacheService>();

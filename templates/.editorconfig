@@ -152,6 +152,10 @@ csharp_space_between_parentheses = false
 csharp_space_between_square_brackets = false
 
 # C++ Files
+
+# S3216: "ConfigureAwait(false)" should be used
+dotnet_diagnostic.S3216.severity = none
+
 [*.{cpp,h,in}]
 curly_bracket_next_line = true
 indent_brace_style = Allman

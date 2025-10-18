@@ -36,10 +36,10 @@ public sealed class CreateOrderRequestValidator : AbstractValidator<CreateOrderR
 
 public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<CreateOrderRequest, BaseResponse<OrderDto>, Order, CreateOrderUseCase>(
     serviceProvider,
-    serviceProvider.GetService<IValidator<CreateOrderRequest>>()
+    serviceProvider.GetRequiredService<IValidator<CreateOrderRequest>>()
 )
 {
-    public static Counter<int> OrderCreated = DefaultConfigurations.Meter
+    public static readonly Counter<int> OrderCreated = DefaultConfigurations.Meter
         .CreateCounter<int>("order.created", "orders", "Number of orders created");
     private const string NotificationType = "OrderCreated";
 

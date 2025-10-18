@@ -10,8 +10,8 @@ public sealed class Notification : DomainEntity
         string notificationType,
         string notificationStatus,
         DateTime? currentDate,
-        string createdBy = null,
-        object message = null
+        string? createdBy = null,
+        object? message = null
     ) : base(currentDate, createdBy)
     {
         NotificationType = notificationType;
