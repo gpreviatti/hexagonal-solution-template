@@ -10,14 +10,12 @@ internal sealed class OrderDbMapping : BaseDbMapping<Order>
     {
         builder.Property(p => p.Description)
             .HasMaxLength(255)
-            .IsRequired(true);
+            .IsRequired();
 
         builder.Property(p => p.Total)
-            .IsRequired(true)
+            .IsRequired()
             .HasPrecision(18, 2);
 
         builder.HasMany(p => p.Items);
-
-        //builder.Navigation(p => p.Items).AutoInclude(false);
     }
 }

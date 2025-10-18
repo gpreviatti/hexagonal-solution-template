@@ -95,7 +95,7 @@ public sealed class CreateNotificationUseCaseTest : IClassFixture<CreateNotifica
         // Assert
         Assert.NotNull(result);
         Assert.True(result.Success);
-        Assert.Empty(result.Message);
+        Assert.Null(result.Message);
         Assert.NotNull(result.Data);
 
         _fixture.VerifyStartUseCaseLog();
@@ -116,6 +116,7 @@ public sealed class CreateNotificationUseCaseTest : IClassFixture<CreateNotifica
 
         // Assert
         Assert.False(result.Success);
+        Assert.NotNull(result.Message);
         Assert.NotEmpty(result.Message);
 
         _fixture.VerifyStartUseCaseLog();
@@ -137,6 +138,7 @@ public sealed class CreateNotificationUseCaseTest : IClassFixture<CreateNotifica
 
         // Assert
         Assert.False(result.Success);
+        Assert.NotNull(result.Message);
         Assert.NotEmpty(result.Message);
         Assert.Equal("Failed to create notification.", result.Message);
 

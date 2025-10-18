@@ -1,9 +1,9 @@
 namespace Application.Common.Messages;
 
-public record CreateNotificationMessage(
+public sealed record CreateNotificationMessage(
     Guid CorrelationId,
     string NotificationType,
     string NotificationStatus,
-    string CreatedBy = null,
-    object Message = null
+    string? CreatedBy = null,
+    object? Message = null
 ) : BaseMessage(CorrelationId, DateTime.UtcNow);

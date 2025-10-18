@@ -10,14 +10,14 @@ internal sealed class ItemDbMapping : BaseDbMapping<Item>
     {
         builder.Property(p => p.Name)
             .HasMaxLength(200)
-            .IsRequired(true);
+            .IsRequired();
 
         builder.Property(p => p.Value)
-            .IsRequired(true)
+            .IsRequired()
             .HasPrecision(18, 2);
 
         builder.Property(p => p.Description)
             .HasMaxLength(255)
-            .IsRequired(true);
+            .IsRequired();
     }
 }

@@ -19,7 +19,7 @@ public sealed class GetAllNotificationsUseCaseFixture : BaseApplicationFixture<N
         base.ClearInvocations();
     }
 
-    public new BasePaginatedRequest SetValidBasePaginatedRequest() => 
+    public new BasePaginatedRequest SetValidBasePaginatedRequest() =>
         new(Guid.NewGuid(), 1, 10);
 
     public void VerifyNoNotificationsFoundLog(int times = 1) =>
@@ -53,7 +53,7 @@ public sealed class GetAllNotificationsUseCaseTest : IClassFixture<GetAllNotific
         // Assert
         Assert.NotNull(result);
         Assert.True(result.Success);
-        Assert.Empty(result.Message);
+        Assert.Null(result.Message);
         Assert.NotNull(result.Data);
         Assert.Equal(expectedNotifications.Count(), result.Data.Count());
         Assert.Equal(1, result.TotalPages);

@@ -51,7 +51,7 @@ public sealed class GetNotificationUseCaseTest : IClassFixture<GetNotificationUs
         // Assert
         Assert.NotNull(result);
         Assert.True(result.Success);
-        Assert.Empty(result.Message);
+        Assert.Null(result.Message);
         Assert.NotNull(result.Data);
         Assert.Equal(expectedNotification.Id, result.Data.Id);
         Assert.Equal(expectedNotification.NotificationType, result.Data.NotificationType);
@@ -74,6 +74,7 @@ public sealed class GetNotificationUseCaseTest : IClassFixture<GetNotificationUs
 
         // Assert
         Assert.False(result.Success);
+        Assert.NotNull(result.Message);
         Assert.NotEmpty(result.Message);
 
         _fixture.VerifyStartUseCaseLog();
@@ -93,6 +94,7 @@ public sealed class GetNotificationUseCaseTest : IClassFixture<GetNotificationUs
 
         // Assert
         Assert.False(result.Success);
+        Assert.NotNull(result.Message);
         Assert.NotEmpty(result.Message);
         Assert.Equal("Notification not found.", result.Message);
 
