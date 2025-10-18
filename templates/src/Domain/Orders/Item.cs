@@ -1,20 +1,9 @@
 ﻿using Domain.Common;
 
 namespace Domain.Orders;
-public sealed class Item : DomainEntity
+public sealed class Item(string name, string description, decimal value) : DomainEntity()
 {
-    public Item() {}
-
-    public Item(
-        string name, string description, decimal value
-    ) : base()
-    {
-        Name = name;
-        Description = description;
-        Value = value;
-    }
-
-    public string Name { get; private set; }
-    public string Description { get; private set; }
-    public decimal Value { get; private set; }
+    public string Name { get; private set; } = name;
+    public string Description { get; private set; } = description;
+    public decimal Value { get; private set; } = value;
 }

@@ -2,19 +2,11 @@
 
 namespace Domain.Orders;
 
-public sealed class Order : DomainEntity
+public sealed class Order(string description, ICollection<Item> items) : DomainEntity
 {
-    public Order() {}
-
-    public Order(string description, ICollection<Item> items) : base()
-    {
-        Description = description;
-        Items = items;
-    }
-
-    public string Description { get; private set; }
+    public string Description { get; private set; } = description;
     public decimal Total { get; private set; }
-    public ICollection<Item> Items { get; private set; } = [];
+    public ICollection<Item> Items { get; private set; } = items;
 
     public Result SetTotal()
     {

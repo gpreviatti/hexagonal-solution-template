@@ -130,11 +130,11 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
         It.IsAny<int>(),
         It.IsAny<int>(),
         It.IsAny<CancellationToken>(),
-        It.IsAny<string>(),
+        It.IsAny<string?>(),
         It.IsAny<bool>(),
-        It.IsAny<Dictionary<string, string>>(),
-        It.IsAny<Expression<Func<TEntity, object>>>()
-    )).ReturnsAsync((null, 0));
+        It.IsAny<Dictionary<string, string>?>(),
+        It.IsAny<Expression<Func<TEntity, object>>[]>()
+    )).ReturnsAsync(([], 0));
 
     public void VerifyStartUseCaseLog(int times = 1) => VerifyLogInformation("Start to execute use case", times);
     public void VerifyFinishUseCaseLog(int times = 1) => VerifyLogInformation("Finished executing use case", times);

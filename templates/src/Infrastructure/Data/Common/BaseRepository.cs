@@ -147,9 +147,9 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
         int page,
         int pageSize,
         CancellationToken cancellationToken,
-        string sortBy = null!,
+        string? sortBy = null!,
         bool sortDescending = false,
-        Dictionary<string, string> searchByValues = null!,
+        Dictionary<string, string>? searchByValues = null!,
         params Expression<Func<TEntity, object>>[] includes
     )
     {
@@ -157,8 +157,8 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
 
         if (includes != null && includes.Length > 0)
         {
-            foreach (var include in includes)
-                query = query.Include(include);
+            for (int i = 0; i < includes.Length; i++)
+                query = query.Include(includes[i]);
         }
 
         if (!string.IsNullOrWhiteSpace(sortBy))
@@ -174,13 +174,12 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
 
         var totalRecords = await query.CountAsync(cancellationToken);
 
-        if (searchByValues != null && searchByValues.Any())
+        if (searchByValues != null && searchByValues.Count != 0)
         {
-            foreach (var searchByValue in searchByValues)
-            {
-                query = query.Where(e => EF.Property<string>(e, searchByValue.Key)
-                    .Contains(searchByValue.Value.ToLowerInvariant()));
-            }
+            for (int i = 0; i < searchByValues.Count; i++)
+                query = query.Where(e =>
+                    EF.Property<string>(e, searchByValues.ElementAt(i).Key).Contains(searchByValues.ElementAt(i).Value.ToLowerInvariant())
+                );
         }
 
         var items = await query
