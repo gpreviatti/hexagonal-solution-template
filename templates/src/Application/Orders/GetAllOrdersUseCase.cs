@@ -39,7 +39,7 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) : Base
                 HandleMethodName,
                 request.CorrelationId
             );
-            return new(0, 0, [], false, "No orders found.");
+            return new(false, 0, 0, [], "No orders found.");
         }
 
         var totalPages = (int)Math.Ceiling(totalRecords / (double)request.PageSize);
@@ -54,10 +54,10 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) : Base
         OrdersListed.Add(1);
 
         return new(
+            true,
             totalPages,
             totalRecords,
-            orderDtos,
-            true
+            orderDtos
         );
     }
 }

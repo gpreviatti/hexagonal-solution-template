@@ -22,7 +22,6 @@ public static class ApplicationDependencyInjection
         services.AddScoped<IBaseInOutUseCase<CreateNotificationRequest, BaseResponse<NotificationDto>, CreateNotificationUseCase>, CreateNotificationUseCase>();
         services.AddScoped<IBaseInOutUseCase<GetNotificationRequest, BaseResponse<NotificationDto>, GetNotificationUseCase>, GetNotificationUseCase>();
         services.AddScoped<IBaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<NotificationDto>, GetAllNotificationsUseCase>, GetAllNotificationsUseCase>();
-        services.AddScoped<IBaseInOutUseCase<UpdateNotificationRequest, BaseResponse<NotificationDto>, UpdateNotificationUseCase>, UpdateNotificationUseCase>();
 
         return services;
     }

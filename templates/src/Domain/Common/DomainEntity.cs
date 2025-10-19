@@ -4,8 +4,12 @@ public abstract class DomainEntity(DateTime? currentDate = null, string? user = 
 {
     public int Id { get; set; } = 0;
     public DateTime CreatedAt { get; private set; } = currentDate ?? DateTime.UtcNow;
-    public string? CreatedBy { get; set; } = user ?? "System";
+    public string? CreatedBy { get; private set; } = user ?? "System";
     public DateTime UpdatedAt { get; private set; } = currentDate ?? DateTime.UtcNow;
-    public string? UpdatedBy { get; set; } = user ?? "System";
-    public void SetUpdatedAt() => UpdatedAt = DateTime.UtcNow;
+    public string? UpdatedBy { get; private set; } = user ?? "System";
+    public void SetUpdated(string? user = null)
+    {
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedBy = user ?? "System";
+    }
 }

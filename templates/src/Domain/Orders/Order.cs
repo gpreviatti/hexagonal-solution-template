@@ -14,7 +14,7 @@ public sealed class Order(string description, ICollection<Item> items) : DomainE
             return Result.Fail("Order must have at least one item.");
 
         Total = Items.Sum(item => item.Value);
-        SetUpdatedAt();
+        SetUpdated();
 
         return Result.Ok();
     }

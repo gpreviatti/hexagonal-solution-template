@@ -61,8 +61,11 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
                 );
 
                 response = Activator.CreateInstance<TResponseData>();
-                response.Success = false;
-                response.Message = errors;
+                response = response with
+                {
+                    Success = false,
+                    Message = errors
+                };
 
                 return response!;
             }

@@ -44,12 +44,12 @@ public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)
                 HandleMethodName,
                 request.CorrelationId
             );
-            return new(null, false, "Notification not found.");
+            return new(false, null, "Notification not found.");
         }
 
         NotificationRetrieved.Add(1);
 
-        return new(new(
+        return new(true, new(
             notification.Id,
             notification.NotificationType,
             notification.NotificationStatus,
@@ -58,6 +58,6 @@ public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)
             notification.UpdatedAt,
             notification.CreatedBy,
             notification.UpdatedBy
-        ), true);
+        ));
     }
 }

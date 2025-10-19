@@ -58,12 +58,12 @@ public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider)
                 HandleMethodName,
                 request.CorrelationId
             );
-            return new(null, false, "Failed to create notification.");
+            return new(false, null, "Failed to create notification.");
         }
 
         NotificationCreated.Add(1);
 
-        return new(new(
+        return new(true, new(
             notification.Id,
             notification.NotificationType,
             notification.NotificationStatus,
@@ -72,6 +72,6 @@ public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider)
             notification.UpdatedAt,
             notification.CreatedBy,
             notification.UpdatedBy
-        ), true);
+        ));
     }
 }

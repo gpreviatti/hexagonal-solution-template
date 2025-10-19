@@ -41,7 +41,6 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
 {
     public static readonly Counter<int> OrderCreated = DefaultConfigurations.Meter
         .CreateCounter<int>("order.created", "orders", "Number of orders created");
-    private const string NotificationType = "OrderCreated";
 
     public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(
         CreateOrderRequest request,
@@ -61,7 +60,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
         {
             logger.LogWarning(DefaultApplicationMessages.DefaultApplicationMessage + createResult.Message, ClassName, HandleMethodName, correlationId);
 
-            response = new(null, false, createResult.Message);
+            response = new(false, null, createResult.Message);
 
             await CreateNotificationAsync(correlationId, "Failed", response, cancellationToken);
 
@@ -73,7 +72,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
         {
             logger.LogWarning(DefaultApplicationMessages.DefaultApplicationMessage + "Failed to create order.", ClassName, HandleMethodName, correlationId);
 
-            response = new(null, false, "Failed to create order.");
+            response = new(false, null, "Failed to create order.");
 
             await CreateNotificationAsync(correlationId, "Failed", response, cancellationToken);
 
@@ -82,7 +81,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
 
         OrderCreated.Add(1);
 
-        response = new(new(
+        response = new(true, new(
             newOrder.Id,
             newOrder.Description,
             newOrder.Total,
@@ -93,7 +92,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
                 i.Description,
                 i.Value
             ))]
-        ), true);
+        ));
 
         await CreateNotificationAsync(correlationId, "Success", response, cancellationToken);
 

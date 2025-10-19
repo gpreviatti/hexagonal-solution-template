@@ -11,7 +11,7 @@ public sealed class Notification(
     object? message = null
 ) : DomainEntity(currentDate, createdBy)
 {
-    public string NotificationType { get; set; } = notificationType;
-    public string NotificationStatus { get; set; } = notificationStatus;
-    public string Message { get; set; } = message != null ? JsonSerializer.Serialize(message) : string.Empty;
+    public string NotificationType { get; private set; } = notificationType;
+    public string NotificationStatus { get; private set; } = notificationStatus;
+    public string Message { get; private set; } = message != null ? JsonSerializer.Serialize(message) : string.Empty;
 }

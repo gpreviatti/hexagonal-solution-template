@@ -40,7 +40,7 @@ public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
                 HandleMethodName,
                 request.CorrelationId
             );
-            return new(0, 0, [], false, "No notifications found.");
+            return new(false, 0, 0, [], "No notifications found.");
         }
 
         var totalPages = (int)Math.Ceiling(totalRecords / (double)request.PageSize);
@@ -58,6 +58,6 @@ public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
 
         NotificationsListed.Add(1);
 
-        return new(totalPages, totalRecords, notificationDtos, true);
+        return new(true, totalPages, totalRecords, notificationDtos);
     }
 }
