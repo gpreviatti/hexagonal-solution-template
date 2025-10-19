@@ -46,12 +46,16 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
         OrderRetrieved.Add(1);
 
         return new(true, new(
-            order.Id, order.Description,
-            order.Total, order.CreatedAt,
-            [.. order.Items.Select(i => new ItemDto(
-                i.Id, i.Name,
-                i.Description, i.Value
-            ))]
+            order.Id,
+            order.Description,
+            order.Total,
+            order.CreatedAt,
+            order.Items?.Select(i => new ItemDto(
+                i.Id,
+                i.Name,
+                i.Description,
+                i.Value
+            ))
         ));
     }
 }

@@ -41,7 +41,11 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         // Arrange
         var request = _fixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
-        var expectedOrder = _fixture.autoFixture.Create<Order>();
+        var expectedOrder = new Order("John's Order",
+        [
+            new("Item 1", "Description 1", 10.0m),
+            new("Item 2", "Description 2", 20.0m)
+        ]);
         _fixture.SetupGetByIdAsNoTrackingAsync(expectedOrder);
 
         // Act
@@ -55,6 +59,35 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         Assert.Equal(expectedOrder.Id, result.Data.Id);
         Assert.Equal(expectedOrder.Description, result.Data.Description);
         Assert.Equal(expectedOrder.Total, result.Data.Total);
+        Assert.NotNull(result.Data.Items);
+        Assert.Equal(expectedOrder.Items.Count, result.Data.Items!.Count());
+
+        _fixture.VerifyStartUseCaseLog();
+        _fixture.VerifyOrderNotFoundLog(0);
+        _fixture.VerifyFinishUseCaseLog();
+    }
+
+    [Fact(DisplayName = nameof(Given_A_Valid_Request_Without_Items_Then_Pass))]
+    public async Task Given_A_Valid_Request_Without_Items_Then_Pass()
+    {
+        // Arrange
+        var request = _fixture.SetValidRequest();
+        _fixture.SetSuccessfulValidator(request);
+        var expectedOrder = new Order("John's Order", []);
+        _fixture.SetupGetByIdAsNoTrackingAsync(expectedOrder);
+
+        // Act
+        var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.True(result.Success);
+        Assert.Null(result.Message);
+        Assert.NotNull(result.Data);
+        Assert.Equal(expectedOrder.Id, result.Data.Id);
+        Assert.Equal(expectedOrder.Description, result.Data.Description);
+        Assert.Equal(expectedOrder.Total, result.Data.Total);
+        Assert.Equal(0, result.Data.Items?.Count());
 
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyOrderNotFoundLog(0);
