@@ -2,7 +2,7 @@
 
 public abstract class DomainEntity(DateTime? currentDate = null, string? user = null)
 {
-    public int Id { get; set; } = 0;
+    public int Id { get; private set; } = 0;
     public DateTime CreatedAt { get; private set; } = currentDate ?? DateTime.UtcNow;
     public string? CreatedBy { get; private set; } = user ?? "System";
     public DateTime UpdatedAt { get; private set; } = currentDate ?? DateTime.UtcNow;
