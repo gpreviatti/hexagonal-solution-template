@@ -48,7 +48,7 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
     {
         dbEntitySet.Update(entity);
 
-        return await dbContext.SaveChangesAsync();
+        return await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<int> RemoveAsync(TEntity entity, CancellationToken cancellationToken)
