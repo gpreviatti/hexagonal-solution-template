@@ -53,7 +53,7 @@ public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)
             notification.Id,
             notification.NotificationType,
             notification.NotificationStatus,
-            notification.Message,
+            notification.Message!,
             notification.CreatedAt,
             notification.UpdatedAt,
             notification.CreatedBy,

@@ -159,6 +159,9 @@ dotnet_diagnostic.S3216.severity = none
 # S2360: Optional parameters should not be used
 dotnet_diagnostic.S2360.severity = none
 
+# CS8618: Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+dotnet_diagnostic.CS8618.severity = none
+
 [*.{cpp,h,in}]
 curly_bracket_next_line = true
 indent_brace_style = Allman

@@ -2,11 +2,19 @@
 
 namespace Domain.Orders;
 
-public sealed class Order(string description, ICollection<Item> items) : DomainEntity
+public sealed class Order : DomainEntity
 {
-    public string Description { get; private set; } = description;
+    public Order() { }
+
+    public Order(string description, ICollection<Item> items)
+    {
+        Description = description;
+        Items = items;
+    }
+
+    public string Description { get; private set; }
     public decimal Total { get; private set; }
-    public ICollection<Item> Items { get; private set; } = items;
+    public ICollection<Item> Items { get; private set; }
 
     public Result SetTotal()
     {
@@ -14,7 +22,7 @@ public sealed class Order(string description, ICollection<Item> items) : DomainE
             return Result.Fail("Order must have at least one item.");
 
         Total = Items.Sum(item => item.Value);
-        SetUpdated();
+        Update();
 
         return Result.Ok();
     }

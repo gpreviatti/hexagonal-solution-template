@@ -3,15 +3,22 @@ using Domain.Common;
 
 namespace Domain.Notifications;
 
-public sealed class Notification(
-    string notificationType,
-    string notificationStatus,
-    DateTime? currentDate,
-    string? createdBy = null,
-    object? message = null
-) : DomainEntity(currentDate, createdBy)
+public sealed class Notification : DomainEntity
 {
-    public string NotificationType { get; private set; } = notificationType;
-    public string NotificationStatus { get; private set; } = notificationStatus;
-    public string Message { get; private set; } = message != null ? JsonSerializer.Serialize(message) : string.Empty;
+    public Notification() {}
+
+    public Notification(
+        string notificationType,
+        string notificationStatus,
+        string? createdBy = null,
+        object? message = null
+    ) : base(createdBy)
+    {
+        NotificationType = notificationType;
+        NotificationStatus = notificationStatus;
+        Message = message != null ? JsonSerializer.Serialize(message) : string.Empty;
+    }
+    public string NotificationType { get; private set; }
+    public string NotificationStatus { get; private set; }
+    public string Message { get; private set; }
 }

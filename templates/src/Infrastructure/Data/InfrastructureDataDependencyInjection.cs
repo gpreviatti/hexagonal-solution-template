@@ -1,5 +1,6 @@
 ﻿using Application.Common.Constants;
 using Application.Common.Repositories;
+using Domain.Notifications;
 using Domain.Orders;
 using Infrastructure.Data.Common;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,7 @@ internal static class InfrastructureDataDependencyInjection
             );
 
         services.AddScoped<IBaseRepository<Order>, BaseRepository<Order>>();
+        services.AddScoped<IBaseRepository<Notification>, BaseRepository<Notification>>();
 
         return services;
     }

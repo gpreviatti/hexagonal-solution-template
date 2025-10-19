@@ -43,7 +43,6 @@ public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider)
         var notification = new Notification(
             request.NotificationType,
             request.NotificationStatus,
-            DateTime.UtcNow,
             request.CreatedBy,
             request.Message
         );

@@ -18,7 +18,7 @@ internal static class OrderEndpoints
         ordersGroup.MapGet("/{id}", async (
             [FromServices] IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>, GetOrderUseCase> useCase,
             [FromHeader] Guid correlationId,
-            int id,
+            [FromRoute] int id,
             CancellationToken cancellationToken
         ) => {
             var response = await cache.GetOrCreateAsync(
