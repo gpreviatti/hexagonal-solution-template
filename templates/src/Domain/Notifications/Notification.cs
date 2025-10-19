@@ -12,13 +12,13 @@ public sealed class Notification : DomainEntity
         string notificationStatus,
         string? createdBy = null,
         object? message = null
-    ) : base(createdBy)
+    ) : base(DateTime.UtcNow, createdBy)
     {
         NotificationType = notificationType;
         NotificationStatus = notificationStatus;
         Message = message != null ? JsonSerializer.Serialize(message) : string.Empty;
     }
-    public string NotificationType { get; private set; }
-    public string NotificationStatus { get; private set; }
-    public string Message { get; private set; }
+    public string NotificationType { get; init; }
+    public string NotificationStatus { get; init; }
+    public string Message { get; init; }
 }

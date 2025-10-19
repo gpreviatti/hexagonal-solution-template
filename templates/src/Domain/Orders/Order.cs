@@ -6,7 +6,7 @@ public sealed class Order : DomainEntity
 {
     public Order() { }
 
-    public Order(string description, ICollection<Item> items)
+    public Order(string description, ICollection<Item> items) : base(DateTime.UtcNow)
     {
         Description = description;
         Items = items;

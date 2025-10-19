@@ -3,17 +3,17 @@
 public abstract class DomainEntity
 {
     public DomainEntity() {}
-    public DomainEntity(string? user = null)
+    public DomainEntity(DateTime currentDate, string? user = null)
     {
-        CreatedAt = DateTime.UtcNow;
+        CreatedAt = currentDate;
         CreatedBy = user ?? "System";
-        UpdatedAt = DateTime.UtcNow;
+        UpdatedAt = currentDate;
         UpdatedBy = user ?? "System";
     }
 
-    public int Id { get; private set; } = 0;
-    public DateTime CreatedAt { get; private set; }
-    public string? CreatedBy { get; private set; }
+    public int Id { get; init; } = 0;
+    public DateTime CreatedAt { get; init; }
+    public string? CreatedBy { get; init; }
     public DateTime UpdatedAt { get; private set; }
     public string? UpdatedBy { get; private set; }
 

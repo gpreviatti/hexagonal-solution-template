@@ -154,11 +154,9 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
     )
     {
         IQueryable<TEntity> query = dbEntitySet.AsNoTracking();
-
-        if (includes != null && includes.Length > 0)
+        foreach (var include in includes)
         {
-            for (int i = 0; i < includes.Length; i++)
-                query = query.Include(includes[i]);
+            query = query.Include(include);
         }
 
         if (!string.IsNullOrWhiteSpace(sortBy))
@@ -176,10 +174,12 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
 
         if (searchByValues != null && searchByValues.Count != 0)
         {
-            for (int i = 0; i < searchByValues.Count; i++)
+            foreach (var searchByValue in searchByValues)
+            {
                 query = query.Where(e =>
-                    EF.Property<string>(e, searchByValues.ElementAt(i).Key).Contains(searchByValues.ElementAt(i).Value.ToLowerInvariant())
+                    EF.Property<string>(e, searchByValue.Key).Contains(searchByValue.Value.ToLowerInvariant())
                 );
+            }
         }
 
         var items = await query
