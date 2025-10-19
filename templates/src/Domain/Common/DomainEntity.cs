@@ -11,7 +11,7 @@ public abstract class DomainEntity
         UpdatedBy = user ?? "System";
     }
 
-    public int Id { get; init; } = 0;
+    public int Id { get; init; }
     public DateTime CreatedAt { get; init; }
     public string? CreatedBy { get; init; }
     public DateTime UpdatedAt { get; private set; }
