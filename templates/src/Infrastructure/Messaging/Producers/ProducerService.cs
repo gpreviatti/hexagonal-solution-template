@@ -54,7 +54,7 @@ public class ProducerService : IProduceService
         );
 
         await channel.BasicPublishAsync(
-            exchange: queue,
+            exchange: exchange,
             routingKey: queue,
             mandatory: true,
             body: JsonSerializer.SerializeToUtf8Bytes(message),

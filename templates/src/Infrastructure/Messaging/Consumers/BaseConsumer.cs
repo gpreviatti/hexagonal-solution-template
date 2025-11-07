@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text.Json;
 using Application.Common.Messages;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
@@ -15,14 +16,17 @@ public abstract class BaseConsumer<TMessage, TConsumer> : BackgroundService wher
     private readonly ILogger<BaseConsumer<TMessage, TConsumer>> _logger;
     private readonly string _queueName;
     private readonly ConnectionFactory _factory;
+    protected IServiceScopeFactory serviceScopeFactory;
 
     public BaseConsumer(
         ILogger<BaseConsumer<TMessage, TConsumer>> logger,
+        IServiceScopeFactory serviceScopeFactory,
         IConfiguration configuration,
         string queueName
     )
     {
         _logger = logger;
+        this.serviceScopeFactory = serviceScopeFactory;
 
         var connectionString = configuration.GetConnectionString("RabbitMQ");
 
@@ -71,7 +75,10 @@ public abstract class BaseConsumer<TMessage, TConsumer> : BackgroundService wher
                 _className, message.CorrelationId, typeof(TMessage).Name
             );
 
-            await HandleMessageAsync(message, cancellationToken);
+            using IServiceScope scope = serviceScopeFactory.CreateScope();
+            var serviceProvider = scope.ServiceProvider;
+
+            await HandleMessageAsync(serviceProvider, message, cancellationToken);
 
             _logger.LogInformation(
                 "[{ClassName}] | [Consume] | CorrelationId: {CorrelationId} | Processed message in {ElapsedMilliseconds} ms",
@@ -87,5 +94,5 @@ public abstract class BaseConsumer<TMessage, TConsumer> : BackgroundService wher
         );
     }
 
-    protected abstract Task HandleMessageAsync(TMessage message, CancellationToken cancellationToken);
+    protected abstract Task HandleMessageAsync(IServiceProvider serviceProvider, TMessage message, CancellationToken cancellationToken);
 }
