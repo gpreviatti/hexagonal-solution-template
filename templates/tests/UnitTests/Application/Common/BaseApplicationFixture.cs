@@ -192,7 +192,9 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
     public void VerifyProduce<TMessage>(int times = 1) where TMessage : BaseMessage => mockProduceService.Verify(
         p => p.HandleAsync(
             It.IsAny<TMessage>(),
-            It.IsAny<CancellationToken>()
+            It.IsAny<CancellationToken>(),
+            It.IsAny<string>(),
+            It.IsAny<string>()
         ),
         Times.Exactly(times)
     );

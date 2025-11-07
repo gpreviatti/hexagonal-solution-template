@@ -102,11 +102,12 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
     private async Task CreateNotificationAsync(Guid correlationId, string notificationStatus, object message, CancellationToken cancellationToken) => await _produceService.HandleAsync(
         new CreateNotificationMessage(
             correlationId,
-            "OrderCreated",
+            NotificationType.OrderCreated,
             notificationStatus,
             "System",
             message
         ),
-        cancellationToken
+        cancellationToken,
+        NotificationType.OrderCreated
     );
 }
