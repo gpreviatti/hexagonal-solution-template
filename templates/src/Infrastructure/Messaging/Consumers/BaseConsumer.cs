@@ -15,6 +15,7 @@ public abstract class BaseConsumer<TMessage, TConsumer> : BackgroundService wher
     private readonly string _className = typeof(TConsumer).Name;
     private readonly ILogger<BaseConsumer<TMessage, TConsumer>> _logger;
     private readonly string _queueName;
+    private readonly IDictionary<string, object?> _arguments;
     private readonly ConnectionFactory _factory;
     protected IServiceScopeFactory serviceScopeFactory;
 
@@ -22,7 +23,8 @@ public abstract class BaseConsumer<TMessage, TConsumer> : BackgroundService wher
         ILogger<BaseConsumer<TMessage, TConsumer>> logger,
         IServiceScopeFactory serviceScopeFactory,
         IConfiguration configuration,
-        string queueName
+        string queueName,
+        IDictionary<string, object?> arguments = null!
     )
     {
         _logger = logger;
@@ -36,54 +38,72 @@ public abstract class BaseConsumer<TMessage, TConsumer> : BackgroundService wher
         }
 
         _queueName = queueName;
+        _arguments = arguments;
         _factory = new() { Uri = new(connectionString) };
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        var stopWatch = Stopwatch.StartNew();
-
-        using var connection = await _factory.CreateConnectionAsync(cancellationToken);
-        using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
+        var connection = await _factory.CreateConnectionAsync(cancellationToken);
+        var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
 
         await channel.QueueDeclareAsync(
             queue: _queueName,
             durable: false,
             exclusive: false,
             autoDelete: false,
-            arguments: null,
+            arguments: _arguments,
             cancellationToken: cancellationToken
         );
 
         var consumer = new AsyncEventingBasicConsumer(channel);
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        var serviceProvider = scope.ServiceProvider;
 
         consumer.ReceivedAsync += async (model, eventArguments) =>
         {
             var body = eventArguments.Body.ToArray();
-            var message = JsonSerializer.Deserialize<TMessage>(body);
-            if (message == null || message.GetType() != typeof(TMessage))
+            try
             {
-                _logger.LogDebug(
-                    "[{ClassName}] | [Consume] | CorrelationId: {CorrelationId} | Received null message of type {MessageType}",
-                    _className, eventArguments.BasicProperties.CorrelationId, typeof(TMessage).Name
+                var message = JsonSerializer.Deserialize<TMessage>(body);
+                
+                var stopWatch = Stopwatch.StartNew();
+                if (message == null || message.GetType() != typeof(TMessage))
+                {
+                    _logger.LogDebug(
+                        "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Received null message of type {MessageType}",
+                        _className, eventArguments.BasicProperties.CorrelationId, typeof(TMessage).Name
+                    );
+                    return;
+                }
+
+                _logger.LogInformation(
+                    "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Received message: {MessageType}",
+                    _className, message.CorrelationId, typeof(TMessage).Name
                 );
-                return;
+
+                await HandleMessageAsync(serviceProvider, message, cancellationToken);
+
+                _logger.LogInformation(
+                    "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Processed message in {ElapsedMilliseconds} ms",
+                    _className, message.CorrelationId, stopWatch.ElapsedMilliseconds
+                );
             }
-
-            _logger.LogInformation(
-                "[{ClassName}] | [Consume] | CorrelationId: {CorrelationId} | Received message: {MessageType}",
-                _className, message.CorrelationId, typeof(TMessage).Name
-            );
-
-            using IServiceScope scope = serviceScopeFactory.CreateScope();
-            var serviceProvider = scope.ServiceProvider;
-
-            await HandleMessageAsync(serviceProvider, message, cancellationToken);
-
-            _logger.LogInformation(
-                "[{ClassName}] | [Consume] | CorrelationId: {CorrelationId} | Processed message in {ElapsedMilliseconds} ms",
-                _className, message.CorrelationId, stopWatch.ElapsedMilliseconds
-            );
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Error processing message: {ErrorMessage}",
+                    _className, eventArguments.BasicProperties.CorrelationId, ex.Message
+                );
+                await channel.BasicPublishAsync(
+                    exchange: string.Empty,
+                    routingKey: _queueName + "_deadLetter",
+                    mandatory: true,
+                    body: eventArguments.Body,
+                    cancellationToken: cancellationToken
+                );
+                throw;
+            }
         };
 
         await channel.BasicConsumeAsync(
@@ -92,6 +112,8 @@ public abstract class BaseConsumer<TMessage, TConsumer> : BackgroundService wher
             consumer: consumer,
             cancellationToken: cancellationToken
         );
+
+        await Task.Delay(Timeout.Infinite, cancellationToken);
     }
 
     protected abstract Task HandleMessageAsync(IServiceProvider serviceProvider, TMessage message, CancellationToken cancellationToken);
