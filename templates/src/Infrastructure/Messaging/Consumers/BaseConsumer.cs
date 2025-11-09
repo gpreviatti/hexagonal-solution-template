@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Text.Json;
 using Application.Common.Messages;
+using Application.Common.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -63,10 +64,9 @@ public abstract class BaseConsumer<TMessage, TConsumer> : BackgroundService wher
         consumer.ReceivedAsync += async (model, eventArguments) =>
         {
             var body = eventArguments.Body.ToArray();
+            var message = JsonSerializer.Deserialize<TMessage>(body);
             try
             {
-                var message = JsonSerializer.Deserialize<TMessage>(body);
-                
                 var stopWatch = Stopwatch.StartNew();
                 if (message == null || message.GetType() != typeof(TMessage))
                 {
@@ -82,6 +82,22 @@ public abstract class BaseConsumer<TMessage, TConsumer> : BackgroundService wher
                     _className, message.CorrelationId, typeof(TMessage).Name
                 );
 
+                var idempotency = await serviceProvider
+                .GetRequiredService<IHybridCacheService>()
+                .GetOrCreateAsync(
+                    _className + "-" + message.CorrelationId,
+                    async (cancellationToken) => true,
+                    cancellationToken
+                );
+                if (idempotency)
+                {
+                    _logger.LogWarning(
+                        "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Duplicate message detected. Skipping processing for message type {MessageType}",
+                        _className, message.CorrelationId, typeof(TMessage).Name
+                    );
+                    return;
+                }
+
                 await HandleMessageAsync(serviceProvider, message, cancellationToken);
 
                 _logger.LogInformation(
@@ -95,13 +111,11 @@ public abstract class BaseConsumer<TMessage, TConsumer> : BackgroundService wher
                     "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Error processing message: {ErrorMessage}",
                     _className, eventArguments.BasicProperties.CorrelationId, ex.Message
                 );
-                await channel.BasicPublishAsync(
-                    exchange: string.Empty,
-                    routingKey: _queueName + "_deadLetter",
-                    mandatory: true,
-                    body: eventArguments.Body,
-                    cancellationToken: cancellationToken
-                );
+
+                await serviceProvider
+                    .GetRequiredService<IProduceService>()
+                    .HandleAsync(message!, cancellationToken, _queueName + "_deadLetter");
+
                 throw;
             }
         };
