@@ -85,13 +85,13 @@ public abstract class BaseConsumer<TMessage, TConsumer> : BackgroundService wher
 
                 var cache = serviceProvider.GetRequiredService<IHybridCacheService>();
 
-                var alreadyExecuted = await cache.GetOrCreateAsync(
+                var isExecuted = await cache.GetOrCreateAsync(
                     _className + "-" + message.CorrelationId,
                     async (cancellationToken) => false,
                     cancellationToken
                 );
 
-                if (alreadyExecuted)
+                if (isExecuted)
                 {
                     _logger.LogWarning(
                         "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Duplicate message detected. Skipping processing.",
