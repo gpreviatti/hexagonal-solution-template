@@ -121,7 +121,9 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
 
         consumer.ReceivedAsync += async (model, eventArguments) =>
         {
+            var basicProperties = eventArguments.BasicProperties;
             var body = eventArguments.Body.ToArray();
+
             TMessage message = null!;
             try
             {
@@ -139,16 +141,16 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
             catch (JsonException ex)
             {
                 logger.LogError(
-                    "[{ClassName}] | [HandleRabbitMqAsync] | Error deserializing message: {ErrorMessage}",
-                    _className, ex.Message
+                    "[{ClassName}] | [HandleRabbitMqAsync] | [{CorrelationId}] | AppId: {AppId} | ClusterId: {ClusterId} | Error deserializing message: {ErrorMessage} ",
+                    _className, basicProperties.CorrelationId, basicProperties.AppId, basicProperties.ClusterId, ex.Message
                 );
                 throw;
             }
             catch (Exception ex)
             {
                 logger.LogError(
-                    "[{ClassName}] | [HandleRabbitMqAsync] | Unexpected error: {ErrorMessage}",
-                    _className, ex.Message
+                    "[{ClassName}] | [HandleRabbitMqAsync] | [{CorrelationId}] | AppId: {AppId} | ClusterId: {ClusterId} | Unexpected error: {ErrorMessage}",
+                    _className, basicProperties.CorrelationId, basicProperties.AppId, basicProperties.ClusterId, ex.Message
                 );
                 throw;
             }

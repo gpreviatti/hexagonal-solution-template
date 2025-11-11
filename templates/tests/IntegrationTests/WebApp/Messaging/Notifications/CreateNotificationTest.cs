@@ -1,14 +1,14 @@
-using CommonTests.Fixtures;
-using IntegrationTests.Common;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
+// using CommonTests.Fixtures;
+// using IntegrationTests.Common;
+// using Microsoft.VisualStudio.TestPlatform.TestHost;
 
-namespace IntegrationTests.WebApp.Messaging.Notifications;
+// namespace IntegrationTests.WebApp.Messaging.Notifications;
 
-public class CreateNotificationTestFixture : BaseFixture
-{
-}
+// public class CreateNotificationTestFixture : BaseFixture
+// {
+// }
 
-public sealed class CreateNotificationTest(CustomWebApplicationFactory<Program> customWebApplicationFactory) : CreateNotificationTestFixture(customWebApplicationFactory)
-{
+// public sealed class CreateNotificationTest(CustomWebApplicationFactory<Program> customWebApplicationFactory) : CreateNotificationTestFixture(customWebApplicationFactory)
+// {
 
-}
+// }
