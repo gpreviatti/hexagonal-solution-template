@@ -64,9 +64,10 @@ public abstract class BaseConsumer<TMessage, TConsumer> : BackgroundService wher
         consumer.ReceivedAsync += async (model, eventArguments) =>
         {
             var body = eventArguments.Body.ToArray();
-            var message = JsonSerializer.Deserialize<TMessage>(body);
+            TMessage message = null!;
             try
             {
+                message = JsonSerializer.Deserialize<TMessage>(body)!;
                 var stopWatch = Stopwatch.StartNew();
                 if (message == null || message.GetType() != typeof(TMessage))
                 {
@@ -82,23 +83,30 @@ public abstract class BaseConsumer<TMessage, TConsumer> : BackgroundService wher
                     _className, message.CorrelationId, typeof(TMessage).Name
                 );
 
-                var idempotency = await serviceProvider
-                .GetRequiredService<IHybridCacheService>()
-                .GetOrCreateAsync(
+                var cache = serviceProvider.GetRequiredService<IHybridCacheService>();
+
+                var alreadyExecuted = await cache.GetOrCreateAsync(
                     _className + "-" + message.CorrelationId,
-                    async (cancellationToken) => true,
+                    async (cancellationToken) => false,
                     cancellationToken
                 );
-                if (idempotency)
+
+                if (alreadyExecuted)
                 {
                     _logger.LogWarning(
-                        "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Duplicate message detected. Skipping processing for message type {MessageType}",
-                        _className, message.CorrelationId, typeof(TMessage).Name
+                        "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Duplicate message detected. Skipping processing.",
+                        _className, message.CorrelationId
                     );
                     return;
                 }
 
                 await HandleMessageAsync(serviceProvider, message, cancellationToken);
+
+                await cache.CreateAsync(
+                    _className + "-" + message.CorrelationId,
+                    async (cancellationToken) => true,
+                    cancellationToken
+                );
 
                 _logger.LogInformation(
                     "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Processed message in {ElapsedMilliseconds} ms",
