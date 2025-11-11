@@ -45,22 +45,11 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
 
     protected override async Task ExecuteInternalAsync(CancellationToken cancellationToken) => await HandleRabbitMqAsync(
         cancellationToken,
-        async (body, cancellationToken) =>
+        async (message, cancellationToken) =>
         {
-            TMessage message = null!;
             try
             {
                 var stopWatch = Stopwatch.StartNew();
-
-                message = JsonSerializer.Deserialize<TMessage>(body)!;
-                if (message == null || message.GetType() != typeof(TMessage))
-                {
-                    logger.LogDebug(
-                        "[{ClassName}] | [HandleMessageAsync] | Received null message of type {MessageType}",
-                        _className, typeof(TMessage).Name
-                    );
-                    return;
-                }
 
                 logger.LogInformation(
                     "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Received message: {MessageType}",
@@ -113,7 +102,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
 
     private async Task HandleRabbitMqAsync(
         CancellationToken cancellationToken,
-        Func<byte[], CancellationToken, Task> handleAsync
+        Func<TMessage, CancellationToken, Task> handleAsync
     )
     {
         var connection = await _factory.CreateConnectionAsync(cancellationToken);
@@ -133,8 +122,38 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
         consumer.ReceivedAsync += async (model, eventArguments) =>
         {
             var body = eventArguments.Body.ToArray();
+            TMessage message = null!;
+            try
+            {
+                message = JsonSerializer.Deserialize<TMessage>(body)!;
 
-            await handleAsync.Invoke(body, cancellationToken);
+                if (message == null || message.GetType() != typeof(TMessage))
+                {
+                    logger.LogWarning(
+                        "[{ClassName}] | [HandleMessageAsync] | Received null message of type {MessageType}",
+                        _className, typeof(TMessage).Name
+                    );
+                    return;
+                }
+            }
+            catch (JsonException ex)
+            {
+                logger.LogError(
+                    "[{ClassName}] | [HandleRabbitMqAsync] | Error deserializing message: {ErrorMessage}",
+                    _className, ex.Message
+                );
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(
+                    "[{ClassName}] | [HandleRabbitMqAsync] | Unexpected error: {ErrorMessage}",
+                    _className, ex.Message
+                );
+                throw;
+            }
+
+            await handleAsync.Invoke(message, cancellationToken);
         };
 
         await channel.BasicConsumeAsync(
