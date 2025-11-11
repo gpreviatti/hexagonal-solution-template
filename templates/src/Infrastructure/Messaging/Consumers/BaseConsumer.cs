@@ -84,9 +84,10 @@ public abstract class BaseConsumer<TMessage, TConsumer> : BackgroundService wher
                 );
 
                 var cache = serviceProvider.GetRequiredService<IHybridCacheService>();
+                var isExecutedKey = _className + "-" + message.CorrelationId;
 
                 var isExecuted = await cache.GetOrCreateAsync(
-                    _className + "-" + message.CorrelationId,
+                    isExecutedKey,
                     async (cancellationToken) => false,
                     cancellationToken
                 );
@@ -103,7 +104,7 @@ public abstract class BaseConsumer<TMessage, TConsumer> : BackgroundService wher
                 await HandleMessageAsync(serviceProvider, message, cancellationToken);
 
                 await cache.CreateAsync(
-                    _className + "-" + message.CorrelationId,
+                    isExecutedKey,
                     async (cancellationToken) => true,
                     cancellationToken
                 );
