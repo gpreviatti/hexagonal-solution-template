@@ -18,7 +18,9 @@ public abstract class BaseConsumer<TMessage, TConsumer> : BackgroundService wher
     private readonly string _queueName;
     private readonly IDictionary<string, object?> _arguments;
     private readonly ConnectionFactory _factory;
-    protected IServiceScopeFactory serviceScopeFactory;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IProduceService _produceService;
+    private readonly IHybridCacheService _hybridCacheService;
 
     public BaseConsumer(
         ILogger<BaseConsumer<TMessage, TConsumer>> logger,
@@ -29,7 +31,9 @@ public abstract class BaseConsumer<TMessage, TConsumer> : BackgroundService wher
     )
     {
         _logger = logger;
-        this.serviceScopeFactory = serviceScopeFactory;
+        _serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
+        _produceService = _serviceProvider.GetRequiredService<IProduceService>();
+        _hybridCacheService = _serviceProvider.GetRequiredService<IHybridCacheService>();
 
         var connectionString = configuration.GetConnectionString("RabbitMQ");
 
@@ -57,9 +61,7 @@ public abstract class BaseConsumer<TMessage, TConsumer> : BackgroundService wher
             cancellationToken: cancellationToken
         );
 
-        var consumer = new AsyncEventingBasicConsumer(channel);
-        using IServiceScope scope = serviceScopeFactory.CreateScope();
-        var serviceProvider = scope.ServiceProvider;
+        AsyncEventingBasicConsumer consumer = new(channel);
 
         consumer.ReceivedAsync += async (model, eventArguments) =>
         {
@@ -67,8 +69,9 @@ public abstract class BaseConsumer<TMessage, TConsumer> : BackgroundService wher
             TMessage message = null!;
             try
             {
-                message = JsonSerializer.Deserialize<TMessage>(body)!;
                 var stopWatch = Stopwatch.StartNew();
+
+                message = JsonSerializer.Deserialize<TMessage>(body)!;
                 if (message == null || message.GetType() != typeof(TMessage))
                 {
                     _logger.LogDebug(
@@ -83,10 +86,9 @@ public abstract class BaseConsumer<TMessage, TConsumer> : BackgroundService wher
                     _className, message.CorrelationId, typeof(TMessage).Name
                 );
 
-                var cache = serviceProvider.GetRequiredService<IHybridCacheService>();
                 var isExecutedKey = _className + "-" + message.CorrelationId;
 
-                var isExecuted = await cache.GetOrCreateAsync(
+                var isExecuted = await _hybridCacheService.GetOrCreateAsync(
                     isExecutedKey,
                     async (cancellationToken) => false,
                     cancellationToken
@@ -101,9 +103,9 @@ public abstract class BaseConsumer<TMessage, TConsumer> : BackgroundService wher
                     return;
                 }
 
-                await HandleMessageAsync(serviceProvider, message, cancellationToken);
+                await HandleMessageAsync(_serviceProvider, message, cancellationToken);
 
-                await cache.CreateAsync(
+                await _hybridCacheService.CreateAsync(
                     isExecutedKey,
                     async (cancellationToken) => true,
                     cancellationToken
@@ -121,8 +123,7 @@ public abstract class BaseConsumer<TMessage, TConsumer> : BackgroundService wher
                     _className, eventArguments.BasicProperties.CorrelationId, ex.Message
                 );
 
-                await serviceProvider
-                    .GetRequiredService<IProduceService>()
+                await _produceService
                     .HandleAsync(message!, cancellationToken, _queueName + "_deadLetter");
 
                 throw;
