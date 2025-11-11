@@ -87,7 +87,6 @@ public abstract class BaseConsumer<TMessage, TConsumer> : BackgroundService wher
                 );
 
                 var isExecutedKey = _className + "-" + message.CorrelationId;
-
                 var isExecuted = await _hybridCacheService.GetOrCreateAsync(
                     isExecutedKey,
                     async (cancellationToken) => false,
