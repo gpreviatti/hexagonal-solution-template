@@ -9,13 +9,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Messaging.Consumers;
 
-public sealed class CreateNotificationConsumer(
+internal sealed class CreateNotificationConsumer(
     ILogger<CreateNotificationConsumer> logger,
     IServiceScopeFactory serviceScopeFactory,
     IConfiguration configuration
 ) : BaseConsumer<CreateNotificationMessage, CreateNotificationConsumer>(logger, serviceScopeFactory, configuration, NotificationType.OrderCreated)
 {
-    protected override async Task HandleMessageAsync(
+    protected override async Task HandleUseCaseAsync(
         IServiceProvider serviceProvider,
         CreateNotificationMessage message,
         CancellationToken cancellationToken
