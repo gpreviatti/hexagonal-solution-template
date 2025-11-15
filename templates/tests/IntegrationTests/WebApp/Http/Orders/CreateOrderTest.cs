@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using Application.Common.Requests;
 using Application.Orders;
-using AutoFixture;
 using CommonTests.Fixtures;
 using IntegrationTests.Common;
 using IntegrationTests.WebApp.Http.Common;

@@ -14,9 +14,9 @@ internal sealed class HybridCacheService(HybridCache cache) : IHybridCacheServic
         CancellationToken cancellationToken
     ) => await _cache.GetOrCreateAsync($"{DefaultConfigurations.ApplicationName}:{key}", factory, cancellationToken: cancellationToken);
 
-    public ValueTask CreateAsync<TResult>(string key, Func<CancellationToken, ValueTask<TResult>> factory, CancellationToken cancellationToken) =>
-        _cache.SetAsync($"{DefaultConfigurations.ApplicationName}:{key}", factory, cancellationToken: cancellationToken);
+    public async ValueTask CreateAsync<TResult>(string key, Func<CancellationToken, ValueTask<TResult>> factory, CancellationToken cancellationToken) =>
+        await _cache.SetAsync($"{DefaultConfigurations.ApplicationName}:{key}", factory, cancellationToken: cancellationToken);
 
-    public ValueTask DeleteAsync(string key, CancellationToken cancellationToken) =>
-        _cache.RemoveAsync($"{DefaultConfigurations.ApplicationName}:{key}", cancellationToken);
+    public async ValueTask DeleteAsync(string key, CancellationToken cancellationToken) =>
+        await _cache.RemoveAsync($"{DefaultConfigurations.ApplicationName}:{key}", cancellationToken);
 }

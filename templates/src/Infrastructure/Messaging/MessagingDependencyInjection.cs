@@ -10,7 +10,6 @@ internal static class MessagingDependencyInjection
 {
     public static IServiceCollection AddMessaging(this IServiceCollection services, IConfiguration configuration)
     {
-
         services.AddScoped<IProduceService, ProducerService>();
         services.AddHostedService<CreateNotificationConsumer>();
 
