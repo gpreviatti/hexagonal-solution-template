@@ -1,24 +1,22 @@
 using Application.Common.Constants;
 using Application.Common.Messages;
 using Application.Common.Repositories;
-using Application.Common.Services;
-using CommonTests.Fixtures;
 using Domain.Notifications;
 using IntegrationTests.Common;
+using IntegrationTests.WebApp.Messaging.Common;
 using Microsoft.Extensions.DependencyInjection;
 using WebApp;
 
 namespace IntegrationTests.WebApp.Messaging.Notifications;
 
-public class CreateNotificationTestFixture : BaseFixture
+public class CreateNotificationTestFixture : BaseMessagingFixture
 {
-    public IProduceService produceService;
     public IBaseRepository<Notification> notificationRepository;
 
-    public void SetServices(CustomWebApplicationFactory<Program> factory)
+    public new void SetServices(CustomWebApplicationFactory<Program> factory)
     {
         var scope = factory.Services.CreateAsyncScope();
-        produceService = scope.ServiceProvider.GetRequiredService<IProduceService>();
+        SetServices(scope);
         notificationRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<Notification>>();
     }
 
