@@ -12,16 +12,14 @@ namespace IntegrationTests.WebApp.Messaging.Notifications;
 
 public class CreateNotificationTestFixture : BaseFixture
 {
-    private readonly CustomWebApplicationFactory<Program> _customWebApplicationFactory;
-    protected readonly IProduceService produceService;
-    protected readonly IBaseRepository<Notification> notificationRepository;
+    public IProduceService produceService;
+    public IBaseRepository<Notification> notificationRepository;
 
-    public CreateNotificationTestFixture(CustomWebApplicationFactory<Program> customWebApplicationFactory)
+    public void SetServiceProvider(CustomWebApplicationFactory<Program> factory)
     {
-        _customWebApplicationFactory = customWebApplicationFactory;
-        
-        produceService = _customWebApplicationFactory.Services.GetRequiredService<IProduceService>();
-        notificationRepository = _customWebApplicationFactory.Services.GetRequiredService<IBaseRepository<Notification>>();
+        var scope = factory.Services.CreateAsyncScope();
+        produceService = scope.ServiceProvider.GetRequiredService<IProduceService>();
+        notificationRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<Notification>>();
     }
 
     public CreateNotificationMessage SetValidMessage() => autoFixture.Build<CreateNotificationMessage>().Create();
@@ -32,25 +30,34 @@ public class CreateNotificationTestFixture : BaseFixture
             message, cancellationToken,
             NotificationType.OrderCreated
         );
+
         await Task.Delay(delay, cancellationToken);
     }
 }
 
 [Collection("WebApplicationFactoryCollectionDefinition")]
-public sealed class CreateNotificationTest(CustomWebApplicationFactory<Program> customWebApplicationFactory) : CreateNotificationTestFixture(customWebApplicationFactory)
+public sealed class CreateNotificationTest : IClassFixture<CreateNotificationTestFixture>
 {
-    [Fact(DisplayName = nameof(Given_A_Valid_Notification_Message_Then_Pass))]
-    public async Task Given_A_Valid_Notification_Message_Then_Pass()
+    private readonly CreateNotificationTestFixture _fixture;
+
+    public CreateNotificationTest(CustomWebApplicationFactory<Program> factory, CreateNotificationTestFixture fixture)
+    {
+        _fixture = fixture;
+        _fixture.SetServiceProvider(factory);
+    }
+
+    [Fact(DisplayName = nameof(Given_A_Valid_Message_Then_Pass))]
+    public async Task Given_A_Valid_Message_Then_Pass()
     {
         // Arrange
-        var notificationMessage = SetValidMessage();
+        var message = _fixture.SetValidMessage();
 
         // Act
-        await HandleProducerAsync(notificationMessage);
+        await _fixture.HandleProducerAsync(message);
         
-        var notification = await notificationRepository.GetByWhereAsync(
+        var notification = await _fixture.notificationRepository.GetByWhereAsync(
             n => n.NotificationType == NotificationType.OrderCreated,
-            cancellationToken
+            _fixture.cancellationToken
         );
 
         // Assert
