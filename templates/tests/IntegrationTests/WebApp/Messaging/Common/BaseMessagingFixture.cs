@@ -1,3 +1,4 @@
+using Application.Common.Messages;
 using Application.Common.Services;
 using CommonTests.Fixtures;
 using IntegrationTests.Common;
@@ -19,5 +20,16 @@ public class BaseMessagingFixture : BaseFixture
     {
         var scope = factory.Services.CreateAsyncScope();
         produceService = scope.ServiceProvider.GetRequiredService<IProduceService>();
+    }
+
+    public async Task HandleProducerAsync<TMessage>(
+        TMessage message,
+        string queueName,
+        int delay = 5000
+    ) where TMessage : BaseMessage
+    {
+        await produceService.HandleAsync(message, cancellationToken, queueName);
+
+        await Task.Delay(delay, cancellationToken);
     }
 }

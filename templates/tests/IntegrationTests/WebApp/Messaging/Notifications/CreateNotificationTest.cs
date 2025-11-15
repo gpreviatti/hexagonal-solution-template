@@ -21,16 +21,6 @@ public class CreateNotificationTestFixture : BaseMessagingFixture
     }
 
     public CreateNotificationMessage SetValidMessage() => autoFixture.Build<CreateNotificationMessage>().Create();
-
-    public async Task HandleProducerAsync(CreateNotificationMessage message, int delay = 5000)
-    {
-        await produceService.HandleAsync(
-            message, cancellationToken,
-            NotificationType.OrderCreated
-        );
-
-        await Task.Delay(delay, cancellationToken);
-    }
 }
 
 [Collection("WebApplicationFactoryCollectionDefinition")]
@@ -51,7 +41,7 @@ public sealed class CreateNotificationTest : IClassFixture<CreateNotificationTes
         var message = _fixture.SetValidMessage();
 
         // Act
-        await _fixture.HandleProducerAsync(message);
+        await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated);
         
         var notification = await _fixture.notificationRepository.GetByWhereAsync(
             n => n.NotificationType == NotificationType.OrderCreated,
