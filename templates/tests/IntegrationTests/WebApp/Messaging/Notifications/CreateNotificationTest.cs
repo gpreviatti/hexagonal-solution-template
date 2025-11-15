@@ -15,7 +15,7 @@ public class CreateNotificationTestFixture : BaseFixture
     public IProduceService produceService;
     public IBaseRepository<Notification> notificationRepository;
 
-    public void SetServiceProvider(CustomWebApplicationFactory<Program> factory)
+    public void SetServices(CustomWebApplicationFactory<Program> factory)
     {
         var scope = factory.Services.CreateAsyncScope();
         produceService = scope.ServiceProvider.GetRequiredService<IProduceService>();
@@ -43,7 +43,7 @@ public sealed class CreateNotificationTest : IClassFixture<CreateNotificationTes
     public CreateNotificationTest(CustomWebApplicationFactory<Program> factory, CreateNotificationTestFixture fixture)
     {
         _fixture = fixture;
-        _fixture.SetServiceProvider(factory);
+        _fixture.SetServices(factory);
     }
 
     [Fact(DisplayName = nameof(Given_A_Valid_Message_Then_Pass))]

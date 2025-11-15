@@ -1,27 +1,14 @@
 using System.Net;
 using Application.Common.Requests;
 using Application.Orders;
-using CommonTests.Fixtures;
 using IntegrationTests.Common;
 using IntegrationTests.WebApp.Http.Common;
 using WebApp;
 
 namespace IntegrationTests.WebApp.Http.Orders;
 
-public class GetAllOrdersTestFixture : BaseFixture
+public class GetAllOrdersTestFixture : BaseHttpFixture
 {
-    public CustomWebApplicationFactory<Program> customWebApplicationFactory;
-
-    public ApiHelper apiHelper;
-
-    public const string RESOURCE_URL = "orders/paginated";
-
-    public GetAllOrdersTestFixture(CustomWebApplicationFactory<Program> customWebApplicationFactory)
-    {
-        this.customWebApplicationFactory = customWebApplicationFactory;
-        apiHelper = new ApiHelper(this.customWebApplicationFactory.CreateClient());
-    }
-
     public BasePaginatedRequest SetValidRequest() =>
         new(Guid.NewGuid(), 1, 10);
 
@@ -33,18 +20,25 @@ public class GetAllOrdersTestFixture : BaseFixture
 }
 
 [Collection("WebApplicationFactoryCollectionDefinition")]
-public class GetAllOrdersTest(CustomWebApplicationFactory<Program> customWebApplicationFactory)
-    : GetAllOrdersTestFixture(customWebApplicationFactory)
+public class GetAllOrdersTest : IClassFixture<GetAllOrdersTestFixture>
 {
+    private readonly GetAllOrdersTestFixture _fixture;
+    public GetAllOrdersTest(CustomWebApplicationFactory<Program> customWebApplicationFactory, GetAllOrdersTestFixture fixture)
+    {
+        _fixture = fixture;
+        _fixture.SetApiHelper(customWebApplicationFactory);
+        _fixture.resourceUrl = "orders/paginated";
+    }
+
     [Fact(DisplayName = nameof(Given_A_Valid_Request_Then_Pass))]
     public async Task Given_A_Valid_Request_Then_Pass()
     {
         // Arrange
-        var request = SetValidRequest();
+        var request = _fixture.SetValidRequest();
 
         // Act
-        var result = await apiHelper.PostAsync(RESOURCE_URL, request);
-        var response = await apiHelper.DeSerializeResponse<BasePaginatedResponse<OrderDto>>(result);
+        var result = await _fixture.apiHelper.PostAsync(_fixture.resourceUrl, request);
+        var response = await _fixture.apiHelper.DeSerializeResponse<BasePaginatedResponse<OrderDto>>(result);
 
         // Assert
         Assert.NotNull(result);
@@ -59,11 +53,11 @@ public class GetAllOrdersTest(CustomWebApplicationFactory<Program> customWebAppl
     public async Task Given_An_Invalid_Page_Request_Then_Fails()
     {
         // Arrange
-        var request = SetInvalidPageRequest();
+        var request = _fixture.SetInvalidPageRequest();
 
         // Act
-        var result = await apiHelper.PostAsync(RESOURCE_URL, request);
-        var response = await apiHelper.DeSerializeResponse<BasePaginatedResponse<OrderDto>>(result);
+        var result = await _fixture.apiHelper.PostAsync(_fixture.resourceUrl, request);
+        var response = await _fixture.apiHelper.DeSerializeResponse<BasePaginatedResponse<OrderDto>>(result);
 
         // Assert
         Assert.NotNull(result);
@@ -76,11 +70,11 @@ public class GetAllOrdersTest(CustomWebApplicationFactory<Program> customWebAppl
     public async Task Given_An_Invalid_PageSize_Request_Then_Fails()
     {
         // Arrange
-        var request = SetInvalidPageSizeRequest();
+        var request = _fixture.SetInvalidPageSizeRequest();
 
         // Act
-        var result = await apiHelper.PostAsync(RESOURCE_URL, request);
-        var response = await apiHelper.DeSerializeResponse<BasePaginatedResponse<OrderDto>>(result);
+        var result = await _fixture.apiHelper.PostAsync(_fixture.resourceUrl, request);
+        var response = await _fixture.apiHelper.DeSerializeResponse<BasePaginatedResponse<OrderDto>>(result);
 
         // Assert
         Assert.NotNull(result);
@@ -99,8 +93,8 @@ public class GetAllOrdersTest(CustomWebApplicationFactory<Program> customWebAppl
         );
 
         // Act
-        var result = await apiHelper.PostAsync(RESOURCE_URL, request);
-        var response = await apiHelper.DeSerializeResponse<BasePaginatedResponse<OrderDto>>(result);
+        var result = await _fixture.apiHelper.PostAsync(_fixture.resourceUrl, request);
+        var response = await _fixture.apiHelper.DeSerializeResponse<BasePaginatedResponse<OrderDto>>(result);
 
         // Assert
         Assert.NotNull(result);

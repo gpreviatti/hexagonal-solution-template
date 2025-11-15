@@ -1,46 +1,37 @@
 ﻿using System.Net;
 using Application.Common.Requests;
 using Application.Orders;
-using CommonTests.Fixtures;
 using IntegrationTests.Common;
 using IntegrationTests.WebApp.Http.Common;
 using WebApp;
 
 namespace IntegrationTests.WebApp.Http.Orders;
 
-public class GetOrderTestFixture : BaseFixture
-{
-    public CustomWebApplicationFactory<Program> customWebApplicationFactory;
-
-    public ApiHelper apiHelper;
-
-    public string RESOURCE_URL = "orders/{0}";
-
-    public GetOrderTestFixture(CustomWebApplicationFactory<Program> customWebApplicationFactory)
-    {
-        this.customWebApplicationFactory = customWebApplicationFactory;
-
-        apiHelper = new ApiHelper(this.customWebApplicationFactory.CreateClient());
-    }
-}
-
 [Collection("WebApplicationFactoryCollectionDefinition")]
-public class GetOrderTest(CustomWebApplicationFactory<Program> customWebApplicationFactory) : GetOrderTestFixture(customWebApplicationFactory)
+public class GetOrderTest : IClassFixture<BaseHttpFixture>
 {
+    private readonly BaseHttpFixture _fixture;
+    public GetOrderTest(CustomWebApplicationFactory<Program> customWebApplicationFactory, BaseHttpFixture fixture)
+    {
+        _fixture = fixture;
+        _fixture.SetApiHelper(customWebApplicationFactory);
+        _fixture.resourceUrl = "orders/{0}";
+    }
+
     [Fact(DisplayName = nameof(Given_A_Valid_Request_Then_Pass))]
     public async Task Given_A_Valid_Request_Then_Pass()
     {
         // Arrange
         var id = 1;
-        var url = string.Format(RESOURCE_URL, id);
-        apiHelper.AddHeaders(new Dictionary<string, string>
+        var url = string.Format(_fixture.resourceUrl, id);
+        _fixture.apiHelper.AddHeaders(new Dictionary<string, string>
         {
             { "CorrelationId", Guid.NewGuid().ToString() }
         });
 
         // Act
-        var result = await apiHelper.GetAsync(url);
-        var response = await apiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
+        var result = await _fixture.apiHelper.GetAsync(url);
+        var response = await _fixture.apiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
         var data = response?.Data;
 
         // Assert
@@ -59,15 +50,15 @@ public class GetOrderTest(CustomWebApplicationFactory<Program> customWebApplicat
     {
         // Arrange
         var id = 9999999;
-        var url = string.Format(RESOURCE_URL, id);
-        apiHelper.AddHeaders(new Dictionary<string, string>
+        var url = string.Format(_fixture.resourceUrl, id);
+        _fixture.apiHelper.AddHeaders(new Dictionary<string, string>
         {
             { "CorrelationId", Guid.NewGuid().ToString() }
         });
 
         // Act
-        var result = await apiHelper.GetAsync(url);
-        var response = await apiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
+        var result = await _fixture.apiHelper.GetAsync(url);
+        var response = await _fixture.apiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
 
         // Assert
         Assert.NotNull(result);
