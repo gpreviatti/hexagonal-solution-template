@@ -10,7 +10,7 @@ public interface IHybridCacheService
 
     ValueTask CreateAsync<TResult>(
         string key,
-        Func<CancellationToken, ValueTask<TResult>> factory,
+        TResult value,
         CancellationToken cancellationToken
     );
 
