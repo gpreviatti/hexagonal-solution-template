@@ -11,6 +11,8 @@ using RabbitMQ.Client.Events;
 
 namespace Infrastructure.Messaging.Consumers;
 
+sealed file record IsExecuted(bool Value);
+
 internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundService<BaseConsumer<TMessage, TConsumer>> where TMessage : BaseMessage
 {
     private readonly string _className = typeof(TConsumer).Name;
@@ -19,6 +21,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
     private readonly ConnectionFactory _factory;
     private readonly IProduceService _produceService;
     private readonly IHybridCacheService _hybridCacheService;
+
 
     public BaseConsumer(
         ILogger<BaseConsumer<TMessage, TConsumer>> logger,
@@ -74,11 +77,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
 
                 await HandleUseCaseAsync(serviceProvider, message, cancellationToken);
 
-                await _hybridCacheService.CreateAsync(
-                    isExecutedKey,
-                    async (cancellationToken) => true,
-                    cancellationToken
-                );
+                await _hybridCacheService.CreateAsync(isExecutedKey, true, cancellationToken);
 
                 logger.LogInformation(
                     "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Processed message in {ElapsedMilliseconds} ms",

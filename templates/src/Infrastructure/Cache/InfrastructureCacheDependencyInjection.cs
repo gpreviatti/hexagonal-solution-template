@@ -16,7 +16,6 @@ internal static class InfrastructureCacheDependencyInjection
         })
         .AddHybridCache(options =>
         {
-            // Default timeouts
             options.DefaultEntryOptions = new()
             {
                 Expiration = TimeSpan.FromMinutes(30),
