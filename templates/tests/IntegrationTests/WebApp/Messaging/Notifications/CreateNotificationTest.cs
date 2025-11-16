@@ -42,13 +42,35 @@ public sealed class CreateNotificationTest : IClassFixture<CreateNotificationTes
 
         // Act
         await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated);
-        
-        var notification = await _fixture.notificationRepository.GetByWhereAsync(
-            n => n.NotificationType == NotificationType.OrderCreated,
+
+        var notification = await _fixture.notificationRepository.FirstOrDefaultAsNoTrackingAsync(
+            n => n.NotificationType == message.NotificationType &&
+                n.NotificationStatus == message.NotificationStatus,
             _fixture.cancellationToken
         );
 
         // Assert
         Assert.NotNull(notification);
+        Assert.Equal(message.NotificationType, notification.NotificationType);
+    }
+
+    [Fact(DisplayName = nameof(Given_A_Duplicate_Message_Then_Should_Not_Create_Duplicated_Message))]
+    public async Task Given_A_Duplicate_Message_Then_Should_Not_Create_Duplicated_Message()
+    {
+        // Arrange
+        var message = _fixture.SetValidMessage();
+
+        // Act
+        await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated);
+        await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated);
+
+        var notifications = await _fixture.notificationRepository.GetByWhereAsNoTrackingAsync(
+            n => n.NotificationType == message.NotificationType &&
+                n.NotificationStatus == message.NotificationStatus,
+            cancellationToken: _fixture.cancellationToken
+        );
+
+        // Assert
+        Assert.Single(notifications);
     }
 }
