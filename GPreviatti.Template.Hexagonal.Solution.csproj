@@ -19,10 +19,7 @@
     <RepositoryUrl>git://github.com/gpreviatti/hexagonal-solution-template</RepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>
-      - Improve caching strategy with Redis and in-memory hybrid cache.
-      - Add OpenTelemetry GrpcNetClient instrumentation for better tracing of gRPC calls.
-      - Update load test scenarios to include both gRPC and HTTP order retrieval tests.
-      - General dependency updates and performance improvements.
+      - Add new basic use case by using RabbitMq as message broker.
     </PackageReleaseNotes>
   </PropertyGroup>
 

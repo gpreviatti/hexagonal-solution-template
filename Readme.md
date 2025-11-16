@@ -7,18 +7,19 @@ This is a dotnet solution template from projects based on hexagonal architecture
 
 ## Used Technologies
 
-- FluenValidation
+- FluentValidation
 - OpenTelemetry
 - EntityFrameworkCore
 - EntityFrameworkCore.SqlServer
 - Xunit
 - Moq
-- Autofixture
-- docker and docker compose
-- k6
+- AutoFixture
+- Docker and Docker Compose
+- K6
 - Stryker
-- GitHub actions
-- HybridCache
+- GitHub Actions
+- Hybrid cache
+- Rabbit Mq
 
 ## Advisors and recommendations
 
