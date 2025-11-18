@@ -19,8 +19,7 @@ internal abstract class BaseBackgroundService<TService>(
     {
         await ExecuteInternalAsync(cancellationToken);
 
-        while (!cancellationToken.IsCancellationRequested)
-            await Task.Delay(10000, cancellationToken);
+        await Task.Delay(Timeout.Infinite, cancellationToken);
     }
 
     protected abstract Task ExecuteInternalAsync(CancellationToken cancellationToken);
