@@ -1,5 +1,6 @@
 # Hexagonal architecture solution template
 
+[![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fgpreviatti%2Fhexagonal-solution-template%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/gpreviatti/hexagonal-solution-template/main)
 [![Publish template in Nuget.org](https://github.com/gpreviatti/hexagonal-solution-template/actions/workflows/publish.yml/badge.svg?branch=main)](https://github.com/gpreviatti/hexagonal-solution-template/actions/workflows/publish.yml)
 [![Validate pull request](https://github.com/gpreviatti/hexagonal-solution-template/actions/workflows/validate.yml/badge.svg)](https://github.com/gpreviatti/hexagonal-solution-template/actions/workflows/validate.yml)
 
