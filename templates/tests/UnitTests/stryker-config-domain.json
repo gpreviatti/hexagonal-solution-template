@@ -1,15 +1,14 @@
 {
   "stryker-config": {
     "reporters": [
-      "progress",
-      "html"
+      "progress"
     ],
     "project": "Domain.csproj",
     "report-file-name": "mutation-tests-domain-result",
     "thresholds": {
-      "high": 80,
-      "low": 70,
-      "break": 5
+      "high": 90,
+      "low": 80,
+      "break": 50
     },
     "mutate": [
       "!**/*DomainDependencyInjection.cs",
