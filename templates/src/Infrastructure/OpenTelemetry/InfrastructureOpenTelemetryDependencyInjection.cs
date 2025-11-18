@@ -58,6 +58,7 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
                 }
             )
             .AddRedisInstrumentation()
+            .AddRabbitMQInstrumentation()
             .AddGrpcClientInstrumentation()
             .AddOtlpExporter(options =>
             {
