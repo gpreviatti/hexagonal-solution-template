@@ -1,4 +1,5 @@
-﻿using Application.Common.Requests;
+﻿using System.Diagnostics.CodeAnalysis;
+using Application.Common.Requests;
 using Application.Common.UseCases;
 using Application.Notifications;
 using Application.Orders;
@@ -6,6 +7,8 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application;
+
+[ExcludeFromCodeCoverage]
 public static class ApplicationDependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)

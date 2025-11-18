@@ -15,6 +15,7 @@ public sealed class OrderTests
             new("Headphone", "Logitech", 100),
         };
         Order order = new("Amazing Computer", items);
+        var initialUpdatedAt = order.UpdatedAt;
 
         /// Act
         var result = order.SetTotal();
@@ -25,6 +26,7 @@ public sealed class OrderTests
         Assert.True(result.Success);
         Assert.Empty(result.Message);
         Assert.NotEqual(0, order.Total);
+        Assert.NotEqual(initialUpdatedAt, order.UpdatedAt);
         Assert.Equal(items.Sum(i => i.Value), order.Total);
     }
 

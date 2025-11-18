@@ -6,6 +6,7 @@ using Infrastructure.Cache;
 using Infrastructure.Messaging;
 
 namespace Infrastructure;
+
 public static class InfrastructureDependencyInjection
 {
     public static WebApplicationBuilder AddInfrastructure(this WebApplicationBuilder builder)

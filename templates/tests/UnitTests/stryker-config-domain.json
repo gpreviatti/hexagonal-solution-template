@@ -10,6 +10,10 @@
       "high": 80,
       "low": 70,
       "break": 5
-    }
+    },
+    "mutate": [
+      "!**/*DomainDependencyInjection.cs",
+      "!**/*Common/**"
+    ]
   }
 }
