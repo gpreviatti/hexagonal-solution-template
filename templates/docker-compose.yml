@@ -47,6 +47,12 @@ services:
     image: redis:8
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
     networks:
       - hexagonal_solution_template_network
 
