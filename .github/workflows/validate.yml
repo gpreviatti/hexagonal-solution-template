@@ -9,11 +9,11 @@ jobs:
     name: Validate Template
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate.yml@v1
     with:
-      unit_test_project_path: "./hexagonal-solution-template/templates/tests/UnitTests/"
-      domain_stryker_config_path: "./hexagonal-solution-template/templates/tests/UnitTests/stryker-config-domain.json"
-      application_stryker_config_path: "./hexagonal-solution-template/templates/tests/UnitTests/stryker-config-application.json"
-      integration_test_project_path: "./hexagonal-solution-template/templates/tests/IntegrationTests"
-      docker_compose_file_path: "./hexagonal-solution-template/templates/docker-compose.yml"
+      unit_test_project_path: "./templates/tests/UnitTests/"
+      domain_stryker_config_path: "./templates/tests/UnitTests/stryker-config-domain.json"
+      application_stryker_config_path: "./templates/tests/UnitTests/stryker-config-application.json"
+      integration_test_project_path: "./templates/tests/IntegrationTests"
+      docker_compose_file_path: "./templates/docker-compose.yml"
       dotnet_version: "9.x"
       stryker_log_level: "debug"
 
@@ -22,5 +22,5 @@ jobs:
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-build.yml@v1
     name: Build Template Solution
     with:
-      solution_path: "./hexagonal-solution-template/templates"
+      solution_path: "./templates"
       dotnet_version: "9.x"
