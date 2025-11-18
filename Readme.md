@@ -30,27 +30,28 @@ This is a dotnet solution template from projects based on hexagonal architecture
 
 To install the project template you have to use the following command
 
-```
+```bash
 dotnet new install Hexagonal.Solution.Template
 ```
 
 After that you can use it to create your project where -n is the name of your solution
 
-```
+```bash
 dotnet new hexagonal-solution -n HexagonalSolution
 ```
 
 If you had any doubts about the existing parameters you can also use -h to get more information
 
-```
+```bash
 dotnet new hexagonal-solution -h
 ```
 
 If you want to uninstall the template just execute the following command :(
-```
+
+```bash
 dotnet new uninstall Hexagonal.Solution.Template
 ```
 
 ## Official solution template documentation
 
-https://github.com/dotnet/templating/wiki
+<https://github.com/dotnet/templating/wiki>

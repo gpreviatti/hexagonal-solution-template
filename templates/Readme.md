@@ -5,16 +5,16 @@ This repository provides a template for building applications using the Hexagona
 ## Project Structure
 
 - `src/`: Contains the source code for the application.
-    - `Domain/`: Contains the core business logic and domain entities.
-    - `Application/`: Contains use cases and application services.
-    - `Infrastructure/`: Contains implementations for external systems (e.g., databases, messaging).
-    - `WebApp/`: Contains the web application layer (e.g., REST API, gRPC services).
+  - `Domain/`: Contains the core business logic and domain entities.
+  - `Application/`: Contains use cases and application services.
+  - `Infrastructure/`: Contains implementations for external systems (e.g., databases, messaging).
+  - `WebApp/`: Contains the web application layer (e.g., REST API, gRPC services).
 
 - `tests/`: Contains unit and integration tests for the application.
-    - `CommonTests/`: Contains shared test utilities and base classes.
-    - `UnitTests/`: Contains unit tests for individual components.
-    - `IntegrationTests/`: Contains integration tests for the application.
-    - `LoadTests/`: Contains load tests for performance evaluation.
+  - `CommonTests/`: Contains shared test utilities and base classes.
+  - `UnitTests/`: Contains unit tests for individual components.
+  - `IntegrationTests/`: Contains integration tests for the application.
+  - `LoadTests/`: Contains load tests for performance evaluation.
 
 ## Helper Commands
 
@@ -29,6 +29,7 @@ dotnet ef database update --project src/Infrastructure --startup-project src/Web
 ```bash
 dotnet ef migrations add <MigrationName> --project src/Infrastructure --startup-project src/WebApp --output-dir src/Infrastructure/Data/Migrations
 ```
+
 ### Run the application
 
 ```bash
