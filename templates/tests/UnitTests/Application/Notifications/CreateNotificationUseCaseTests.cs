@@ -71,11 +71,11 @@ public sealed class CreateNotificationUseCaseFixture : BaseApplicationFixture<No
         mockLogger.VerifyLog(l => l.LogWarning("*Failed to create notification.*"), Times.Exactly(times));
 }
 
-public sealed class CreateNotificationUseCaseTest : IClassFixture<CreateNotificationUseCaseFixture>
+public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotificationUseCaseFixture>
 {
     private readonly CreateNotificationUseCaseFixture _fixture;
 
-    public CreateNotificationUseCaseTest(CreateNotificationUseCaseFixture fixture)
+    public CreateNotificationUseCaseTests(CreateNotificationUseCaseFixture fixture)
     {
         _fixture = fixture;
         _fixture.ClearInvocations();

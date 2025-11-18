@@ -26,11 +26,11 @@ public sealed class GetAllNotificationsUseCaseFixture : BaseApplicationFixture<N
         mockLogger.VerifyLog(l => l.LogWarning("*No notifications found.*"), Times.Exactly(times));
 }
 
-public sealed class GetAllNotificationsUseCaseTest : IClassFixture<GetAllNotificationsUseCaseFixture>
+public sealed class GetAllNotificationsUseCaseTests : IClassFixture<GetAllNotificationsUseCaseFixture>
 {
     private readonly GetAllNotificationsUseCaseFixture _fixture;
 
-    public GetAllNotificationsUseCaseTest(GetAllNotificationsUseCaseFixture fixture)
+    public GetAllNotificationsUseCaseTests(GetAllNotificationsUseCaseFixture fixture)
     {
         _fixture = fixture;
         _fixture.ClearInvocations();

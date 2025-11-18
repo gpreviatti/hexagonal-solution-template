@@ -1,6 +1,6 @@
 ﻿using Domain.Orders;
 
-namespace UnitTests.Domain.Orders;
+namespace UnitTests.Domain;
 
 public sealed class OrderTests
 {

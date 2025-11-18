@@ -1,4 +1,3 @@
-using Application.Common.Requests;
 using Application.Notifications;
 using Domain.Notifications;
 using Microsoft.Extensions.Logging;
@@ -26,11 +25,11 @@ public sealed class GetNotificationUseCaseFixture : BaseApplicationFixture<Notif
         mockLogger.VerifyLog(l => l.LogWarning("*Notification not found.*"), Times.Exactly(times));
 }
 
-public sealed class GetNotificationUseCaseTest : IClassFixture<GetNotificationUseCaseFixture>
+public sealed class GetNotificationUseCaseTests : IClassFixture<GetNotificationUseCaseFixture>
 {
     private readonly GetNotificationUseCaseFixture _fixture;
 
-    public GetNotificationUseCaseTest(GetNotificationUseCaseFixture fixture)
+    public GetNotificationUseCaseTests(GetNotificationUseCaseFixture fixture)
     {
         _fixture = fixture;
         _fixture.ClearInvocations();
