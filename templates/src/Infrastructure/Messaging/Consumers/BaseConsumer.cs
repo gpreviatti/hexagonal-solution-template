@@ -75,6 +75,11 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
                     return;
                 }
 
+                logger.LogInformation(
+                    "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Start processing message.",
+                    _className, message.CorrelationId
+                );
+
                 await HandleUseCaseAsync(serviceProvider, message, cancellationToken);
 
                 await _hybridCacheService.CreateAsync(isExecutedKey, true, cancellationToken);
