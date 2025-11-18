@@ -25,7 +25,7 @@ public class BaseMessagingFixture : BaseFixture
     public async Task HandleProducerAsync<TMessage>(
         TMessage message,
         string queueName,
-        int delay = 5000
+        int delay = 3000
     ) where TMessage : BaseMessage
     {
         await produceService.HandleAsync(message, cancellationToken, queueName);
