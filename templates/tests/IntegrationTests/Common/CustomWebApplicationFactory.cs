@@ -5,8 +5,13 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using WebApp;
 
 namespace IntegrationTests.Common;
+
+[CollectionDefinition("WebApplicationFactoryCollectionDefinition")]
+public sealed class WebApplicationFactoryCollectionDefinition : IClassFixture<CustomWebApplicationFactory<Program>>;
+
 public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram>, IDisposable where TProgram : class
 {
     protected string? _connectionString = "Server=127.0.0.1,1433;Database=OrderDb;User Id=sa;Password=cY5VvZkkh4AzES;TrustServerCertificate=true;";
@@ -48,6 +53,6 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
     public new void Dispose()
     {
         MyDbContext!.Dispose();
-        base.Dispose();
+        // base.Dispose();
     }
 }

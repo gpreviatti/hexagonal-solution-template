@@ -21,12 +21,10 @@ internal abstract class BaseBackgroundService<TService>(
             using var scope = serviceScopeFactory.CreateScope();
             var serviceProvider = scope.ServiceProvider;
 
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                await ExecuteInternalAsync(serviceProvider, cancellationToken);
+            await ExecuteInternalAsync(serviceProvider, cancellationToken);
 
+            while (!cancellationToken.IsCancellationRequested)
                 await Task.Delay(10000, cancellationToken);
-            }
         }
         catch (Exception ex)
         {

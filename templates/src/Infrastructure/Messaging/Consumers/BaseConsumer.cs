@@ -56,21 +56,21 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
                     _className, message.CorrelationId, typeof(TMessage).Name
                 );
 
-                // var isExecutedKey = _className + "-" + message.CorrelationId;
-                // var isExecuted = await hybridCacheService.GetOrCreateAsync(
-                //     isExecutedKey,
-                //     async (cancellationToken) => false,
-                //     cancellationToken
-                // );
+                var isExecutedKey = _className + "-" + message.CorrelationId;
+                var isExecuted = await hybridCacheService.GetOrCreateAsync(
+                    isExecutedKey,
+                    async (cancellationToken) => false,
+                    cancellationToken
+                );
 
-                // if (isExecuted)
-                // {
-                //     logger.LogWarning(
-                //         "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Duplicate message detected. Skipping processing.",
-                //         _className, message.CorrelationId
-                //     );
-                //     return;
-                // }
+                if (isExecuted)
+                {
+                    logger.LogWarning(
+                        "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Duplicate message detected. Skipping processing.",
+                        _className, message.CorrelationId
+                    );
+                    return;
+                }
 
                 logger.LogInformation(
                     "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Start processing message.",
@@ -79,7 +79,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
 
                 await HandleUseCaseAsync(serviceProvider, message, cancellationToken);
 
-                // await hybridCacheService.CreateAsync(isExecutedKey, true, cancellationToken);
+                await hybridCacheService.CreateAsync(isExecutedKey, true, cancellationToken);
 
                 logger.LogInformation(
                     "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Processed message in {ElapsedMilliseconds} ms",
