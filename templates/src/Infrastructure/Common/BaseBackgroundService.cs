@@ -25,17 +25,11 @@ internal abstract class BaseBackgroundService<TService>(
             {
                 await ExecuteInternalAsync(serviceProvider, cancellationToken);
 
-                await Task.Delay(5000, cancellationToken);
+                await Task.Delay(10000, cancellationToken);
             }
         }
         catch (Exception ex)
         {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                logger.LogInformation("[BaseBackgroundService] | [ExecuteAsync] | Background service is stopping due to cancellation request.");
-                return;
-            }
-
             logger.LogError(
                 "[BaseBackgroundService] | [ExecuteAsync] | Unexpected error in background service. | Message: {ErrorMessage} | StackTrace: {StackTrace}",
                 ex.Message, ex.StackTrace
