@@ -24,6 +24,7 @@ public class ProducerService : IProduceService
         {
             throw new ArgumentException("Invalid RabbitMQ connection string.");
         }
+
         _factory = new() { Uri = new(connectionString) };
     }
 
@@ -39,15 +40,6 @@ public class ProducerService : IProduceService
         using var connection = await _factory.CreateConnectionAsync(cancellationToken);
         using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
 
-        await channel.QueueDeclareAsync(
-            queue: queue,
-            durable: false,
-            exclusive: false,
-            autoDelete: false,
-            arguments: null,
-            cancellationToken: cancellationToken
-        );
-
         _logger.LogInformation(
             "[{ClassName}] | [HandleAsync] | CorrelationId: {CorrelationId} | Publishing message: {MessageType}",
             _className, message.CorrelationId, typeof(TMessage).Name
@@ -56,7 +48,6 @@ public class ProducerService : IProduceService
         await channel.BasicPublishAsync(
             exchange: exchange,
             routingKey: queue,
-            mandatory: true,
             body: JsonSerializer.SerializeToUtf8Bytes(message),
             cancellationToken: cancellationToken
         );
@@ -79,15 +70,6 @@ public class ProducerService : IProduceService
         using var connection = await _factory.CreateConnectionAsync(cancellationToken);
         using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
 
-        await channel.QueueDeclareAsync(
-            queue: queue,
-            durable: false,
-            exclusive: false,
-            autoDelete: false,
-            arguments: null,
-            cancellationToken: cancellationToken
-        );
-
         _logger.LogInformation(
             "[{ClassName}] | [HandleAsync] | CorrelationId: {CorrelationId} | Publishing batch of messages: {MessageType}",
             _className, messages.Select(m => m.CorrelationId), typeof(TMessage).Name
@@ -97,7 +79,6 @@ public class ProducerService : IProduceService
             await channel.BasicPublishAsync(
                 exchange: exchange,
                 routingKey: queue,
-                mandatory: true,
                 body: JsonSerializer.SerializeToUtf8Bytes(message),
                 cancellationToken: cancellationToken
             );
