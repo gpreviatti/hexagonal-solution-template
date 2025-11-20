@@ -13,6 +13,7 @@ internal static class InfrastructureCacheDependencyInjection
         .AddStackExchangeRedisCache(options =>
         {
             options.Configuration = configuration.GetConnectionString("Redis") ?? throw new NullReferenceException("Redis connection string is not configured.");
+            options.Configuration += ",abortConnect=false,connectTimeout=5000,syncTimeout=5000";
         })
         .AddHybridCache(options =>
         {
