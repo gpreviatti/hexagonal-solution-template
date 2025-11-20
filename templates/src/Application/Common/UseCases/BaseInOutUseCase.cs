@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Application.Common.Constants;
 using Application.Common.Services;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 
 namespace Application.Common.UseCases;
 
@@ -35,6 +36,8 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
     protected readonly IProduceService _produceService = serviceProvider.GetRequiredService<IProduceService>();
     protected string ClassName = typeof(TUseCase).Name;
     protected const string HandleMethodName = nameof(HandleAsync);
+    private readonly Gauge<long> _useCaseExecutionElapsedTime = DefaultConfigurations.Meter
+        .CreateGauge<long>($"{typeof(TUseCase).Name.ToLower()}.duration", "milliseconds", "Duration taken to execute the use case");
 
     public async Task<TResponseData> HandleAsync(
         TRequest request,
@@ -77,6 +80,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
             DefaultApplicationMessages.FinishedExecutingUseCase,
             ClassName, HandleMethodName, request.CorrelationId, stopWatch.ElapsedMilliseconds
         );
+        _useCaseExecutionElapsedTime.Record(stopWatch.ElapsedMilliseconds);
 
         return response;
     }
