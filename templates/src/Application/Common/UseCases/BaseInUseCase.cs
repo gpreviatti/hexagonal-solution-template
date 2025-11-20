@@ -5,10 +5,12 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Application.Common.Services;
+using Application.Common.Constants;
+using System.Diagnostics;
 
 namespace Application.Common.UseCases;
 
-public interface IBaseInUseCase<TRequest, TEntity, TUseCase>
+public interface IBaseInUseCase<in TRequest, TEntity, TUseCase>
     where TRequest : BaseRequest
     where TEntity : DomainEntity
     where TUseCase : class
@@ -18,13 +20,13 @@ public interface IBaseInUseCase<TRequest, TEntity, TUseCase>
 
 public abstract class BaseInUseCase<TRequest, TEntity, TUseCase>(
     IServiceProvider serviceProvider,
-    IValidator<TRequest> validator = null
+    IValidator<TRequest> validator = null!
 ) : IBaseInUseCase<TRequest, TEntity, TUseCase>
     where TRequest : BaseRequest
     where TEntity : DomainEntity
     where TUseCase : class
 {
-    protected readonly ILogger<TUseCase> logger = serviceProvider.GetService<ILogger<TUseCase>>();
+    protected readonly ILogger<TUseCase> logger = serviceProvider.GetRequiredService<ILogger<TUseCase>>();
     protected readonly IValidator<TRequest> validator = validator;
     protected readonly IBaseRepository<TEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<TEntity>>();
     protected readonly IHybridCacheService _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
@@ -36,7 +38,11 @@ public abstract class BaseInUseCase<TRequest, TEntity, TUseCase>(
         CancellationToken cancellationToken
     )
     {
-        logger.LogInformation("[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Start to execute use case", ClassName, HandleMethodName, request.CorrelationId);
+        var stopWatch = Stopwatch.StartNew();
+        logger.LogInformation(
+            DefaultApplicationMessages.StartToExecuteUseCase,
+            ClassName, HandleMethodName, request.CorrelationId
+        );
 
         if (validator != null)
         {
@@ -49,6 +55,11 @@ public abstract class BaseInUseCase<TRequest, TEntity, TUseCase>(
         }
 
         await HandleInternalAsync(request, cancellationToken);
+
+        logger.LogInformation(
+            DefaultApplicationMessages.FinishedExecutingUseCase,
+            ClassName, HandleMethodName, request.CorrelationId, stopWatch.ElapsedMilliseconds
+        );
     }
 
     public abstract Task HandleInternalAsync(TRequest request, CancellationToken cancellationToken);

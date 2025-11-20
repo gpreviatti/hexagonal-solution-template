@@ -47,6 +47,29 @@ services:
     image: redis:8
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+    networks:
+      - hexagonal_solution_template_network
+
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 3s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
     networks:
       - hexagonal_solution_template_network
 

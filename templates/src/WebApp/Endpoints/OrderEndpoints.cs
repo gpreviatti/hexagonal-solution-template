@@ -18,15 +18,12 @@ internal static class OrderEndpoints
         ordersGroup.MapGet("/{id}", async (
             [FromServices] IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>, GetOrderUseCase> useCase,
             [FromHeader] Guid correlationId,
-            int id,
+            [FromRoute] int id,
             CancellationToken cancellationToken
         ) => {
             var response = await cache.GetOrCreateAsync(
-                $"order-{id}",
-                async (cancellationToken) => await useCase.HandleAsync(
-                        new(correlationId, id),
-                        cancellationToken
-                ),
+                $"{nameof(OrderEndpoints)}-{id}",
+                async (cancellationToken) => await useCase.HandleAsync(new(correlationId, id), cancellationToken),
                 cancellationToken
             );
 
@@ -41,7 +38,10 @@ internal static class OrderEndpoints
         {
             var response = await useCase.HandleAsync(request, cancellationToken);
 
-            return response.Success ? Results.Created($"/orders/{response.Data.Id}", response) : Results.BadRequest(response);
+            if (!response.Success || response.Data == null)
+                return Results.BadRequest(response);
+
+            return Results.Created($"/orders/{response.Data.Id}", response);
         });
 
         ordersGroup.MapPost("/paginated", async (

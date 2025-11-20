@@ -21,10 +21,10 @@ public sealed class GetOrderRequestValidator : AbstractValidator<GetOrderRequest
 
 public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>, Order, GetOrderUseCase>(
     serviceProvider,
-    serviceProvider.GetService<IValidator<GetOrderRequest>>()
+    serviceProvider.GetRequiredService<IValidator<GetOrderRequest>>()
 )
 {
-    public static Counter<int> OrderRetrieved = DefaultConfigurations.Meter
+    public static readonly Counter<int> OrderRetrieved = DefaultConfigurations.Meter
         .CreateCounter<int>("order.retrieved", "orders", "Number of orders retrieved");
 
     public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(
@@ -40,18 +40,22 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
                 DefaultApplicationMessages.DefaultApplicationMessage + "Order not found.",
                 ClassName, HandleMethodName, request.CorrelationId
             );
-            return new(null, false, "Order not found.");
+            return new(false, null, "Order not found.");
         }
 
         OrderRetrieved.Add(1);
 
-        return new(new(
-            order.Id, order.Description,
-            order.Total, order.CreatedAt,
-            [.. order.Items.Select(i => new ItemDto(
-                i.Id, i.Name,
-                i.Description, i.Value
-            ))]
-        ), true);
+        return new(true, new(
+            order.Id,
+            order.Description,
+            order.Total,
+            order.CreatedAt,
+            order.Items?.Select(i => new ItemDto(
+                i.Id,
+                i.Name,
+                i.Description,
+                i.Value
+            ))
+        ));
     }
 }

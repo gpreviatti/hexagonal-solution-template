@@ -3,11 +3,9 @@
 namespace Domain.Orders;
 public sealed class Item : DomainEntity
 {
-    public Item() {}
+    public Item() { }
 
-    public Item(
-        string name, string description, decimal value
-    ) : base()
+    public Item(string name, string description, decimal value) : base(DateTime.UtcNow)
     {
         Name = name;
         Description = description;

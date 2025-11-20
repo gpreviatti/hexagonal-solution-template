@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Application.Common.Messages;
 using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Common.Services;
@@ -18,6 +19,7 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
     public Mock<IServiceProvider> mockServiceProvider = new();
     public Mock<ILogger<TUseCase>> mockLogger = new();
     public Mock<IBaseRepository<TEntity>> mockRepository = new();
+    public Mock<IProduceService> mockProduceService = new();
     public Mock<IValidator<TRequest>> mockValidator = new();
     public Mock<IHybridCacheService> mockCache = new();
     public TUseCase useCase = default!;
@@ -39,6 +41,10 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
         mockServiceProvider
             .Setup(r => r.GetService(typeof(IHybridCacheService)))
             .Returns(mockCache.Object);
+
+        mockServiceProvider
+            .Setup(r => r.GetService(typeof(IProduceService)))
+            .Returns(mockProduceService.Object);
     }
 
     public void ClearInvocations()
@@ -47,6 +53,7 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
         mockRepository.Reset();
         mockValidator.Reset();
         mockCache.Reset();
+        mockProduceService.Reset();
     }
 
     public BasePaginatedRequest SetValidBasePaginatedRequest() => new(Guid.NewGuid(), 1, 10);
@@ -87,8 +94,22 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
     public void SetupGetByIdAsNoTrackingAsync(TEntity entity) => mockRepository.Setup(r => r.GetByIdAsNoTrackingAsync(
         It.IsAny<int>(),
         It.IsAny<CancellationToken>(),
-        It.IsAny<Expression<Func<TEntity, object>>>()
+        It.IsAny<Expression<Func<TEntity, object>>[]>()
     )).ReturnsAsync(entity);
+
+    public void SetupGetByIdAsNoTrackingAsyncNotFound() => mockRepository.Setup(r => r.GetByIdAsNoTrackingAsync(
+        It.IsAny<int>(),
+        It.IsAny<CancellationToken>(),
+        It.IsAny<Expression<Func<TEntity, object>>[]>()
+    )).ReturnsAsync((TEntity)null!);
+
+    public void SetSuccessfulUpdate() => mockRepository
+        .Setup(d => d.UpdateAsync(It.IsAny<TEntity>(), It.IsAny<CancellationToken>()))
+        .ReturnsAsync(1);
+
+    public void SetFailedUpdate() => mockRepository
+        .Setup(d => d.UpdateAsync(It.IsAny<TEntity>(), It.IsAny<CancellationToken>()))
+        .ReturnsAsync(0);
 
     public void SetInvalidGetOrCreateAsync<TResult>() => mockCache.Setup(c => c.GetOrCreateAsync(
         It.IsAny<string>(),
@@ -109,11 +130,11 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
         It.IsAny<int>(),
         It.IsAny<int>(),
         It.IsAny<CancellationToken>(),
-        It.IsAny<string>(),
+        It.IsAny<string?>(),
         It.IsAny<bool>(),
-        It.IsAny<Dictionary<string, string>>(),
-        It.IsAny<Expression<Func<TEntity, object>>>()
-    )).ReturnsAsync((null, 0));
+        It.IsAny<Dictionary<string, string>?>(),
+        It.IsAny<Expression<Func<TEntity, object>>[]>()
+    )).ReturnsAsync(([], 0));
 
     public void VerifyStartUseCaseLog(int times = 1) => VerifyLogInformation("Start to execute use case", times);
     public void VerifyFinishUseCaseLog(int times = 1) => VerifyLogInformation("Finished executing use case", times);
@@ -139,6 +160,11 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
         Times.Exactly(times)
     );
 
+    public void VerifyUpdate(int times) => mockRepository.Verify(
+        d => d.UpdateAsync(It.IsAny<TEntity>(), It.IsAny<CancellationToken>()),
+        Times.Exactly(times)
+    );
+
     public void VerifyGetAllPaginatedNoIncludes(int times) => mockRepository.Verify(r => r.GetAllPaginatedAsync(
         It.IsAny<int>(),
         It.IsAny<int>(),
@@ -150,7 +176,8 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
 
     public void VerifyGetByIdAsync(int times) => mockRepository.Verify(r => r.GetByIdAsNoTrackingAsync(
         It.IsAny<int>(),
-        It.IsAny<CancellationToken>()
+        It.IsAny<CancellationToken>(),
+        It.IsAny<Expression<Func<TEntity, object>>[]>()
     ), Times.Exactly(times));
 
     public void VerifyCache<TResult>(int times) => mockCache.Verify(
@@ -158,6 +185,16 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
             It.IsAny<string>(),
             It.IsAny<Func<CancellationToken, ValueTask<TResult>>>(),
             It.IsAny<CancellationToken>()
+        ),
+        Times.Exactly(times)
+    );
+
+    public void VerifyProduce<TMessage>(int times = 1) where TMessage : BaseMessage => mockProduceService.Verify(
+        p => p.HandleAsync(
+            It.IsAny<TMessage>(),
+            It.IsAny<CancellationToken>(),
+            It.IsAny<string>(),
+            It.IsAny<string>()
         ),
         Times.Exactly(times)
     );

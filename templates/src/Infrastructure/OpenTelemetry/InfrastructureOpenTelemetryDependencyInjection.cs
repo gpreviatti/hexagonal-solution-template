@@ -23,7 +23,7 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
         var exporterLogsEndpoint = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_LOGS_ENDPOINT");
 
         if (
-            string.Compare(environment, "IntegrationTests", true) == 0 ||
+            string.Equals(environment, "IntegrationTests", StringComparison.OrdinalIgnoreCase) ||
             string.IsNullOrWhiteSpace(exporterLogsEndpoint) ||
             string.IsNullOrWhiteSpace(exporterMetricsEndpoint) ||
             string.IsNullOrWhiteSpace(exporterTracesEndpoint)
@@ -58,6 +58,7 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
                 }
             )
             .AddRedisInstrumentation()
+            .AddRabbitMQInstrumentation()
             .AddGrpcClientInstrumentation()
             .AddOtlpExporter(options =>
             {

@@ -44,11 +44,11 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
         return entity;
     }
 
-    public int Update(TEntity entity)
+    public async Task<int> UpdateAsync(TEntity entity, CancellationToken cancellationToken)
     {
         dbEntitySet.Update(entity);
 
-        return dbContext.SaveChanges();
+        return await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<int> RemoveAsync(TEntity entity, CancellationToken cancellationToken)
@@ -147,18 +147,16 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
         int page,
         int pageSize,
         CancellationToken cancellationToken,
-        string sortBy = null!,
+        string? sortBy = null!,
         bool sortDescending = false,
-        Dictionary<string, string> searchByValues = null!,
+        Dictionary<string, string>? searchByValues = null!,
         params Expression<Func<TEntity, object>>[] includes
     )
     {
         IQueryable<TEntity> query = dbEntitySet.AsNoTracking();
-
-        if (includes != null && includes.Length > 0)
+        foreach (var include in includes)
         {
-            foreach (var include in includes)
-                query = query.Include(include);
+            query = query.Include(include);
         }
 
         if (!string.IsNullOrWhiteSpace(sortBy))
@@ -174,12 +172,13 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
 
         var totalRecords = await query.CountAsync(cancellationToken);
 
-        if (searchByValues != null && searchByValues.Any())
-        {    
+        if (searchByValues != null && searchByValues.Count != 0)
+        {
             foreach (var searchByValue in searchByValues)
             {
-                query = query.Where(e => EF.Property<string>(e, searchByValue.Key)
-                    .Contains(searchByValue.Value.ToLowerInvariant()));
+                query = query.Where(e =>
+                    EF.Property<string>(e, searchByValue.Key).Contains(searchByValue.Value.ToLowerInvariant())
+                );
             }
         }
 

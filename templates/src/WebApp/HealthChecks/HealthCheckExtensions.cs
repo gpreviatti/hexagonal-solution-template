@@ -1,6 +1,7 @@
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using RabbitMQ.Client;
 
 namespace WebApp.HealthChecks;
 
@@ -11,7 +12,16 @@ internal static class HealthCheckExtensions
         IConfiguration configuration
     )
     {
-        services.AddHealthChecks()
+        services
+            .AddSingleton(sp =>
+            {
+                var factory = new ConnectionFactory
+                {
+                    Uri = new(configuration.GetConnectionString("RabbitMQConnectionString")!),
+                };
+                return factory.CreateConnectionAsync().GetAwaiter().GetResult();
+            })
+            .AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
             .AddSqlServer(
                 configuration.GetConnectionString("OrderDb")!,
@@ -21,6 +31,10 @@ internal static class HealthCheckExtensions
             .AddRedis(
                 configuration.GetConnectionString("RedisConnectionString")!,
                 name: "Redis",
+                tags: ["services"]
+            )
+            .AddRabbitMQ(
+                name: "RabbitMQ",
                 tags: ["services"]
             );
 

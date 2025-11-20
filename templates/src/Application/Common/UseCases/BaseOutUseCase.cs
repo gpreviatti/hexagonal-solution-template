@@ -1,4 +1,5 @@
-﻿using Application.Common.Constants;
+﻿using System.Diagnostics;
+using Application.Common.Constants;
 using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Common.Services;
@@ -22,7 +23,7 @@ public abstract class BaseOutUseCase<TResponseData, TEntity, TUseCase>(
     where TEntity : DomainEntity
     where TUseCase : class
 {
-    protected readonly ILogger<TUseCase> logger = serviceProvider.GetService<ILogger<TUseCase>>();
+    protected readonly ILogger<TUseCase> logger = serviceProvider.GetRequiredService<ILogger<TUseCase>>();
     protected readonly IBaseRepository<TEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<TEntity>>();
     protected readonly IHybridCacheService _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
     private const string ClassName = nameof(BaseOutUseCase<TResponseData, TEntity, TUseCase>);
@@ -30,6 +31,7 @@ public abstract class BaseOutUseCase<TResponseData, TEntity, TUseCase>(
 
     public async Task<TResponseData> HandleAsync(CancellationToken cancellationToken)
     {
+        var stopWatch = Stopwatch.StartNew();
         var correlationId = Guid.NewGuid();
         logger.LogInformation(DefaultApplicationMessages.StartToExecuteUseCase, ClassName, HandleMethodName, correlationId);
 
@@ -37,7 +39,7 @@ public abstract class BaseOutUseCase<TResponseData, TEntity, TUseCase>(
 
         logger.LogInformation(
             DefaultApplicationMessages.FinishedExecutingUseCase,
-            ClassName, HandleMethodName, correlationId
+            ClassName, HandleMethodName, correlationId, stopWatch.ElapsedMilliseconds
         );
 
         return response;

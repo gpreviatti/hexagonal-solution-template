@@ -8,7 +8,7 @@ public interface IBaseRepository<TEntity> where TEntity : DomainEntity
     Task<int> AddRangeAsync(TEntity[] entities, CancellationToken cancellationToken);
     Task<TEntity> AddOrUpdateIfNotExistsAsync(TEntity entity, Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken);
 
-    int Update(TEntity entity);
+    Task<int> UpdateAsync(TEntity entity, CancellationToken cancellationToken);
 
     Task<int> RemoveAsync(TEntity entity, CancellationToken cancellationToken);
     Task<int> RemoveRangeAsync(TEntity[] entities, CancellationToken cancellationToken);
@@ -40,9 +40,9 @@ public interface IBaseRepository<TEntity> where TEntity : DomainEntity
         int page,
         int pageSize,
         CancellationToken cancellationToken,
-        string sortBy = null,
+        string? sortBy = null,
         bool sortDescending = false,
-        Dictionary<string, string> searchByValues = null,
+        Dictionary<string, string>? searchByValues = null,
         params Expression<Func<TEntity, object>>[] includes
     );
 

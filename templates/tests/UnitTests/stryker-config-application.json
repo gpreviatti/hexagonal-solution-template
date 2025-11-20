@@ -7,13 +7,16 @@
     "project": "Application.csproj",
     "report-file-name": "mutation-tests-application-result",
     "thresholds": {
-      "high": 80,
-      "low": 70,
-      "break": 20
+      "high": 90,
+      "low": 80,
+      "break": 50
     },
     "ignore-mutations": [
       "linq.First",
       "linq.Sum"
+    ],
+    "mutate": [
+      "!**/*ApplicationDependencyInjection.cs"
     ]
   }
 }

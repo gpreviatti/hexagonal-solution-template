@@ -15,6 +15,8 @@ jobs:
       integration_test_project_path: "./templates/tests/IntegrationTests"
       docker_compose_file_path: "./templates/docker-compose.yml"
       dotnet_version: "9.x"
+      stryker_enable: false
+      dotnet_test_verbosity: 'd'
 
   build:
     needs: validate

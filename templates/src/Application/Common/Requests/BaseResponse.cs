@@ -2,43 +2,45 @@
 
 public record BaseResponse
 {
-    public BaseResponse(bool success, string message = "")
+    public BaseResponse() { }
+
+    public BaseResponse(bool success, string? message = null)
     {
         Success = success;
         Message = message;
     }
-    public BaseResponse() {}
 
     public bool Success { get; set; }
-    public string Message { get; set; }
+    public string? Message { get; set; }
 }
 
 public record BaseResponse<TData> : BaseResponse where TData : class
 {
-    public BaseResponse(){}
+    public BaseResponse() { }
 
-    public BaseResponse(TData data, bool success = false, string message = "") : base(success, message)
+    public BaseResponse(bool success, TData? data = null, string? message = null) : base(success, message)
     {
         Data = data;
     }
 
-    public TData Data { get; set; }
+    public TData? Data { get; set; }
+
 }
 
-public record BasePaginatedResponse<TData> : BaseResponse<IEnumerable<TData>> where TData : class
+public sealed record BasePaginatedResponse<TData> : BaseResponse<IEnumerable<TData>>
 {
-    public BasePaginatedResponse() {}
+    public BasePaginatedResponse() { }
 
     public BasePaginatedResponse(
-        int totalPages = 0, int totalRecords = 0,
-        IEnumerable<TData> data = null,
-        bool success = true, string message = ""
-    ) : base(data, success, message)
+        bool success, int totalPages, int totalRecords,
+        IEnumerable<TData>? data = null, string? message = null
+    ) : base(success, data, message)
     {
         TotalPages = totalPages;
         TotalRecords = totalRecords;
     }
 
-    public int TotalPages { get; set; } = 0;
-    public int TotalRecords { get; set; } = 0;
+    public int TotalPages { get; set; }
+    public int TotalRecords { get; set; }
+
 }

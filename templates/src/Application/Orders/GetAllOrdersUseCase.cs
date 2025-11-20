@@ -11,10 +11,10 @@ namespace Application.Orders;
 
 public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<OrderDto>, Order, GetAllOrdersUseCase>(
     serviceProvider,
-    serviceProvider.GetService<IValidator<BasePaginatedRequest>>()
+    serviceProvider.GetRequiredService<IValidator<BasePaginatedRequest>>()
 )
 {
-    public static Counter<int> OrdersListed = DefaultConfigurations.Meter
+    public static readonly Counter<int> OrdersListed = DefaultConfigurations.Meter
         .CreateCounter<int>("orders.listed", "orders", "Number of times orders were listed");
 
     public override async Task<BasePaginatedResponse<OrderDto>> HandleInternalAsync(
@@ -39,7 +39,7 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) : Base
                 HandleMethodName,
                 request.CorrelationId
             );
-            return new(0, 0, [], false, "No orders found.");
+            return new(false, 0, 0, [], "No orders found.");
         }
 
         var totalPages = (int)Math.Ceiling(totalRecords / (double)request.PageSize);
@@ -54,10 +54,10 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) : Base
         OrdersListed.Add(1);
 
         return new(
+            true,
             totalPages,
             totalRecords,
-            orderDtos,
-            true
+            orderDtos
         );
     }
 }

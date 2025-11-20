@@ -7,9 +7,9 @@ public record BasePaginatedRequest(
     Guid CorrelationId,
     int Page = 1,
     int PageSize = 10,
-    string SortBy = null,
+    string? SortBy = null,
     bool SortDescending = false,
-    Dictionary<string, string> SearchByValues = null
+    Dictionary<string, string>? SearchByValues = null
 ) : BaseRequest(CorrelationId);
 
 public sealed class BasePaginatedRequestValidator : AbstractValidator<BasePaginatedRequest>

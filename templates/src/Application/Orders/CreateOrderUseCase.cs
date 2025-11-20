@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.Metrics;
 using Application.Common.Constants;
+using Application.Common.Messages;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Orders;
@@ -35,10 +36,10 @@ public sealed class CreateOrderRequestValidator : AbstractValidator<CreateOrderR
 
 public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<CreateOrderRequest, BaseResponse<OrderDto>, Order, CreateOrderUseCase>(
     serviceProvider,
-    serviceProvider.GetService<IValidator<CreateOrderRequest>>()
+    serviceProvider.GetRequiredService<IValidator<CreateOrderRequest>>()
 )
 {
-    public static Counter<int> OrderCreated = DefaultConfigurations.Meter
+    public static readonly Counter<int> OrderCreated = DefaultConfigurations.Meter
         .CreateCounter<int>("order.created", "orders", "Number of orders created");
 
     public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(
@@ -47,6 +48,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
     )
     {
         Guid correlationId = request.CorrelationId;
+        BaseResponse<OrderDto> response;
 
         var items = request.Items
             .Select(i => new Item(i.Name, i.Description, i.Value))
@@ -57,20 +59,29 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
         if (createResult.IsFailure)
         {
             logger.LogWarning(DefaultApplicationMessages.DefaultApplicationMessage + createResult.Message, ClassName, HandleMethodName, correlationId);
-            return new(null, false, createResult.Message);
+
+            response = new(false, null, createResult.Message);
+
+            await CreateNotificationAsync(correlationId, "Failed", response, cancellationToken);
+
+            return response;
         }
 
         var addResult = await _repository.AddAsync(newOrder, cancellationToken);
-
         if (addResult == 0)
         {
             logger.LogWarning(DefaultApplicationMessages.DefaultApplicationMessage + "Failed to create order.", ClassName, HandleMethodName, correlationId);
-            return new(null, false, "Failed to create order.");
+
+            response = new(false, null, "Failed to create order.");
+
+            await CreateNotificationAsync(correlationId, "Failed", response, cancellationToken);
+
+            return response;
         }
 
         OrderCreated.Add(1);
 
-        return new(new(
+        response = new(true, new(
             newOrder.Id,
             newOrder.Description,
             newOrder.Total,
@@ -81,6 +92,22 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
                 i.Description,
                 i.Value
             ))]
-        ), true);
+        ));
+
+        await CreateNotificationAsync(correlationId, "Success", response, cancellationToken);
+
+        return response;
     }
+
+    private async Task CreateNotificationAsync(Guid correlationId, string notificationStatus, object message, CancellationToken cancellationToken) => await _produceService.HandleAsync(
+        new CreateNotificationMessage(
+            correlationId,
+            NotificationType.OrderCreated,
+            notificationStatus,
+            "System",
+            message
+        ),
+        cancellationToken,
+        NotificationType.OrderCreated
+    );
 }

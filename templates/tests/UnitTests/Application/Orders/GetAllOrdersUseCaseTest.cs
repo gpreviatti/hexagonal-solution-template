@@ -45,7 +45,7 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         // Assert
         Assert.NotNull(result);
         Assert.True(result.Success);
-        Assert.Empty(result.Message);
+        Assert.Null(result.Message);
         Assert.NotNull(result.Data);
         Assert.Equal(expectedOrders.Count(), result.Data.Count());
         Assert.Equal(1, result.TotalPages);
@@ -70,6 +70,7 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
 
         // Assert
         Assert.False(result.Success);
+        Assert.NotNull(result.Message);
         Assert.NotEmpty(result.Message);
         Assert.Equal("No orders found.", result.Message);
 
@@ -91,6 +92,7 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
 
         // Assert
         Assert.False(result.Success);
+        Assert.NotNull(result.Message);
         Assert.NotEmpty(result.Message);
 
         _fixture.VerifyStartUseCaseLog();
