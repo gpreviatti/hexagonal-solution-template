@@ -92,8 +92,8 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
             catch (Exception ex)
             {
                 logger.LogError(
-                    "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Error processing message: {ErrorMessage}",
-                    _className, message?.CorrelationId, ex.Message
+                    "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Error processing message: {ErrorMessage} | StackTrace: {StackTrace}",
+                    _className, message?.CorrelationId, ex.Message, ex.StackTrace
                 );
 
                 await _produceService
@@ -145,17 +145,19 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
             catch (JsonException ex)
             {
                 logger.LogError(
-                    "[{ClassName}] | [HandleRabbitMqAsync] | [{CorrelationId}] | AppId: {AppId} | ClusterId: {ClusterId} | Error deserializing message: {ErrorMessage} ",
-                    _className, basicProperties.CorrelationId, basicProperties.AppId, basicProperties.ClusterId, ex.Message
+                    "[{ClassName}] | [HandleRabbitMqAsync] | [{CorrelationId}] | AppId: {AppId} | ClusterId: {ClusterId} | Error deserializing message: {ErrorMessage} | StackTrace: {StackTrace}",
+                    _className, basicProperties.CorrelationId, basicProperties.AppId, basicProperties.ClusterId, ex.Message, ex.StackTrace
                 );
+
                 throw;
             }
             catch (Exception ex)
             {
                 logger.LogError(
-                    "[{ClassName}] | [HandleRabbitMqAsync] | [{CorrelationId}] | AppId: {AppId} | ClusterId: {ClusterId} | Unexpected error: {ErrorMessage}",
-                    _className, basicProperties.CorrelationId, basicProperties.AppId, basicProperties.ClusterId, ex.Message
+                    "[{ClassName}] | [HandleRabbitMqAsync] | [{CorrelationId}] | AppId: {AppId} | ClusterId: {ClusterId} | Unexpected error: {ErrorMessage} | StackTrace: {StackTrace}",
+                    _className, basicProperties.CorrelationId, basicProperties.AppId, basicProperties.ClusterId, ex.Message, ex.StackTrace
                 );
+
                 throw;
             }
 
