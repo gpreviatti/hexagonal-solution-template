@@ -19,9 +19,6 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
     private readonly string _queueName;
     private readonly IDictionary<string, object?> _arguments;
     private readonly ConnectionFactory _factory;
-    private readonly IProduceService _produceService;
-    private readonly IHybridCacheService _hybridCacheService;
-
 
     public BaseConsumer(
         ILogger<BaseConsumer<TMessage, TConsumer>> logger,
@@ -31,9 +28,6 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
         IDictionary<string, object?> arguments = null!
     ) : base(logger, serviceScopeFactory, configuration)
     {
-        _produceService = serviceProvider.GetRequiredService<IProduceService>();
-        _hybridCacheService = serviceProvider.GetRequiredService<IHybridCacheService>();
-
         var connectionString = configuration.GetConnectionString("RabbitMQ");
 
         if (string.IsNullOrWhiteSpace(connectionString))
@@ -46,13 +40,16 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
         _factory = new() { Uri = new(connectionString) };
     }
 
-    protected override async Task ExecuteInternalAsync(CancellationToken cancellationToken) => await HandleRabbitMqAsync(
+    protected override async Task ExecuteInternalAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken) => await HandleRabbitMqAsync(
         cancellationToken,
         async (message, cancellationToken) =>
         {
+            var producerService = serviceProvider.GetRequiredService<IProduceService>();
             try
             {
                 var stopWatch = Stopwatch.StartNew();
+                var hybridCacheService = serviceProvider.GetRequiredService<IHybridCacheService>();
+
 
                 logger.LogInformation(
                     "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Received message: {MessageType}",
@@ -60,7 +57,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
                 );
 
                 var isExecutedKey = _className + "-" + message.CorrelationId;
-                var isExecuted = await _hybridCacheService.GetOrCreateAsync(
+                var isExecuted = await hybridCacheService.GetOrCreateAsync(
                     isExecutedKey,
                     async (cancellationToken) => false,
                     cancellationToken
@@ -82,7 +79,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
 
                 await HandleUseCaseAsync(serviceProvider, message, cancellationToken);
 
-                await _hybridCacheService.CreateAsync(isExecutedKey, true, cancellationToken);
+                await hybridCacheService.CreateAsync(isExecutedKey, true, cancellationToken);
 
                 logger.LogInformation(
                     "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Processed message in {ElapsedMilliseconds} ms",
@@ -96,7 +93,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
                     _className, message?.CorrelationId, ex.Message, ex.StackTrace
                 );
 
-                await _produceService
+                await producerService
                     .HandleAsync(message!, cancellationToken, _queueName + "_deadLetter");
 
                 throw;

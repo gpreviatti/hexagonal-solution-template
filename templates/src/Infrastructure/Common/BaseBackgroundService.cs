@@ -12,15 +12,38 @@ internal abstract class BaseBackgroundService<TService>(
 ) : BackgroundService
 {
     protected readonly ILogger<BaseBackgroundService<TService>> logger = logger;
-    protected readonly IServiceProvider serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
     protected readonly IConfiguration configuration = configuration;
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        await ExecuteInternalAsync(cancellationToken);
+        try
+        {
+            using var scope = serviceScopeFactory.CreateScope();
+            var serviceProvider = scope.ServiceProvider;
 
-        await Task.Delay(Timeout.Infinite, cancellationToken);
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                await ExecuteInternalAsync(serviceProvider, cancellationToken);
+
+                await Task.Delay(5000, cancellationToken);
+            }
+        }
+        catch (Exception ex)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                logger.LogInformation("[BaseBackgroundService] | [ExecuteAsync] | Background service is stopping due to cancellation request.");
+                return;
+            }
+
+            logger.LogError(
+                "[BaseBackgroundService] | [ExecuteAsync] | Unexpected error in background service. | Message: {ErrorMessage} | StackTrace: {StackTrace}",
+                ex.Message, ex.StackTrace
+            );
+
+            throw;
+        }
     }
 
-    protected abstract Task ExecuteInternalAsync(CancellationToken cancellationToken);
+    protected abstract Task ExecuteInternalAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken);
 }
