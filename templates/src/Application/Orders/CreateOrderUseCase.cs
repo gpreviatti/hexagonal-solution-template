@@ -67,7 +67,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
             return response;
         }
 
-        var addResult = await _repository.AddAsync(newOrder, cancellationToken);
+        var addResult = await _repository.AddAsync(newOrder, correlationId, cancellationToken);
         if (addResult == 0)
         {
             logger.LogWarning(DefaultApplicationMessages.DefaultApplicationMessage + "Failed to create order.", ClassName, HandleMethodName, correlationId);

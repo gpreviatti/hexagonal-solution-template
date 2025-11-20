@@ -28,7 +28,7 @@ public abstract class BaseInUseCase<TRequest, TEntity, TUseCase>(
 {
     protected readonly ILogger<TUseCase> logger = serviceProvider.GetRequiredService<ILogger<TUseCase>>();
     protected readonly IValidator<TRequest> validator = validator;
-    protected readonly IBaseRepository<TEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<TEntity>>();
+    protected readonly IBaseRepository _repository = serviceProvider.GetRequiredService<IBaseRepository>();
     protected readonly IHybridCacheService _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
     private const string ClassName = nameof(BaseInUseCase<TRequest, TEntity, TUseCase>);
     private const string HandleMethodName = nameof(HandleAsync);

@@ -32,7 +32,7 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
         CancellationToken cancellationToken
     )
     {
-        var order = await _repository.GetByIdAsNoTrackingAsync(request.Id, cancellationToken, o => o.Items);
+        var order = await _repository.GetByIdAsNoTrackingAsync<Order>(request.Id, request.CorrelationId, cancellationToken, o => o.Items);
 
         if (order is null || order.Equals(default(Order)))
         {

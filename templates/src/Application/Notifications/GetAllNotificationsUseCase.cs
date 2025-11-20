@@ -23,9 +23,10 @@ public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
         CancellationToken cancellationToken
     )
     {
-        var (notifications, totalRecords) = await _repository.GetAllPaginatedAsync(
+        var (notifications, totalRecords) = await _repository.GetAllPaginatedAsync<Notification>(
             request.Page,
             request.PageSize,
+            request.CorrelationId,
             cancellationToken,
             request.SortBy,
             request.SortDescending,

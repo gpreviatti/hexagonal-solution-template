@@ -24,7 +24,7 @@ public abstract class BaseOutUseCase<TResponseData, TEntity, TUseCase>(
     where TUseCase : class
 {
     protected readonly ILogger<TUseCase> logger = serviceProvider.GetRequiredService<ILogger<TUseCase>>();
-    protected readonly IBaseRepository<TEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<TEntity>>();
+    protected readonly IBaseRepository _repository = serviceProvider.GetRequiredService<IBaseRepository>();
     protected readonly IHybridCacheService _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
     private const string ClassName = nameof(BaseOutUseCase<TResponseData, TEntity, TUseCase>);
     private const string HandleMethodName = nameof(HandleAsync);

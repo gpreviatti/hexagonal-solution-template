@@ -47,7 +47,7 @@ public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider)
             request.Message
         );
 
-        var addResult = await _repository.AddAsync(notification, cancellationToken);
+        var addResult = await _repository.AddAsync(notification, request.CorrelationId, cancellationToken);
 
         if (addResult == 0)
         {

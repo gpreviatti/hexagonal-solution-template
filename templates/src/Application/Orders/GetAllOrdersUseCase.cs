@@ -22,9 +22,10 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) : Base
         CancellationToken cancellationToken
     )
     {
-        var (orders, totalRecords) = await _repository.GetAllPaginatedAsync(
+        var (orders, totalRecords) = await _repository.GetAllPaginatedAsync<Order>(
             request.Page,
             request.PageSize,
+            request.CorrelationId,
             cancellationToken,
             request.SortBy,
             request.SortDescending,

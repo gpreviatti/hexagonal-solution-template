@@ -1,4 +1,5 @@
 using System.Diagnostics.Metrics;
+using System.Linq.Expressions;
 using Application.Common.Constants;
 using Application.Common.Requests;
 using Application.Common.UseCases;
@@ -34,7 +35,7 @@ public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)
         CancellationToken cancellationToken
     )
     {
-        var notification = await _repository.GetByIdAsNoTrackingAsync(request.Id, cancellationToken, Array.Empty<System.Linq.Expressions.Expression<Func<Notification, object>>>());
+        var notification = await _repository.GetByIdAsNoTrackingAsync(request.Id, request.CorrelationId, cancellationToken, Array.Empty<Expression<Func<Notification, object>>>());
 
         if (notification is null)
         {
