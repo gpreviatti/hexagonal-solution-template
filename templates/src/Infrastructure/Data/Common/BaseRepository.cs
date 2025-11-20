@@ -33,7 +33,7 @@ public class BaseRepository(ILogger<BaseRepository> logger, MyDbContext dbContex
         var result = await query.Invoke(dbEntitySet);
 
         logger.LogDebug(
-            "[BaseRepository] | [{Method}] | CorrelationId: {CorrelationId} | Query executed in {Time} ms.",
+            "[BaseRepository] | [{Method}] | CorrelationId: {CorrelationId} | Query executed in {ElapsedMilliseconds} ms.",
             methodName,
             correlationId,
             stopWatch.ElapsedMilliseconds
