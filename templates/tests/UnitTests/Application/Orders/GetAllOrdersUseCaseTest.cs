@@ -6,7 +6,7 @@ using UnitTests.Application.Common;
 
 namespace UnitTests.Application.Orders;
 
-public sealed class GetAllOrdersUseCaseFixture : BaseApplicationFixture<Order, BasePaginatedRequest, GetAllOrdersUseCase>
+public sealed class GetAllOrdersUseCaseFixture : BaseApplicationFixture<BasePaginatedRequest, GetAllOrdersUseCase>
 {
     public GetAllOrdersUseCaseFixture()
     {
@@ -52,7 +52,7 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         Assert.Equal(totalRecords, result.TotalRecords);
 
         _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyGetAllPaginatedNoIncludes(1);
+        _fixture.VerifyGetAllPaginatedNoIncludes<Order>(1);
         _fixture.VerifyNoOrdersFoundLog(0);
         _fixture.VerifyFinishUseCaseLog();
     }
@@ -63,7 +63,7 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         // Arrange
         var request = _fixture.SetValidBasePaginatedRequest();
         _fixture.SetSuccessfulValidator(request);
-        _fixture.SetInvalidGetAllPaginatedAsync();
+        _fixture.SetInvalidGetAllPaginatedAsync<Order>();
 
         // Act
         var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
@@ -75,7 +75,7 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         Assert.Equal("No orders found.", result.Message);
 
         _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyGetAllPaginatedNoIncludes(1);
+        _fixture.VerifyGetAllPaginatedNoIncludes<Order>(1);
         _fixture.VerifyNoOrdersFoundLog(1);
         _fixture.VerifyFinishUseCaseLog();
     }
@@ -96,7 +96,7 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         Assert.NotEmpty(result.Message);
 
         _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyGetAllPaginatedNoIncludes(0);
+        _fixture.VerifyGetAllPaginatedNoIncludes<Order>(0);
         _fixture.VerifyNoOrdersFoundLog(0);
         _fixture.VerifyFinishUseCaseLog(0);
     }

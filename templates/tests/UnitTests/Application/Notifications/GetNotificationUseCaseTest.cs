@@ -5,7 +5,7 @@ using UnitTests.Application.Common;
 
 namespace UnitTests.Application.Notifications;
 
-public sealed class GetNotificationUseCaseFixture : BaseApplicationFixture<Notification, GetNotificationRequest, GetNotificationUseCase>
+public sealed class GetNotificationUseCaseFixture : BaseApplicationFixture<GetNotificationRequest, GetNotificationUseCase>
 {
     public GetNotificationUseCaseFixture()
     {

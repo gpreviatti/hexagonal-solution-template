@@ -6,7 +6,7 @@ using UnitTests.Application.Common;
 
 namespace UnitTests.Application.Notifications;
 
-public sealed class GetAllNotificationsUseCaseFixture : BaseApplicationFixture<Notification, BasePaginatedRequest, GetAllNotificationsUseCase>
+public sealed class GetAllNotificationsUseCaseFixture : BaseApplicationFixture<BasePaginatedRequest, GetAllNotificationsUseCase>
 {
     public GetAllNotificationsUseCaseFixture()
     {
@@ -90,7 +90,7 @@ public sealed class GetAllNotificationsUseCaseTests : IClassFixture<GetAllNotifi
         // Arrange
         var request = _fixture.SetValidBasePaginatedRequest();
         _fixture.SetSuccessfulValidator(request);
-        _fixture.SetInvalidGetAllPaginatedAsync();
+        _fixture.SetInvalidGetAllPaginatedAsync<Notification>();
 
         // Act
         var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);

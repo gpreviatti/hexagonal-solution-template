@@ -11,14 +11,13 @@ using Microsoft.Extensions.Logging;
 
 namespace UnitTests.Application.Common;
 
-public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
-    where TEntity : DomainEntity
+public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
     where TRequest : class
     where TUseCase : class
 {
     public Mock<IServiceProvider> mockServiceProvider = new();
     public Mock<ILogger<TUseCase>> mockLogger = new();
-    public Mock<IBaseRepository<TEntity>> mockRepository = new();
+    public Mock<IBaseRepository> mockRepository = new();
     public Mock<IProduceService> mockProduceService = new();
     public Mock<IValidator<TRequest>> mockValidator = new();
     public Mock<IHybridCacheService> mockCache = new();
@@ -35,7 +34,7 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
         .Returns(mockValidator.Object);
 
         mockServiceProvider
-            .Setup(r => r.GetService(typeof(IBaseRepository<TEntity>)))
+            .Setup(r => r.GetService(typeof(IBaseRepository)))
             .Returns(mockRepository.Object);
 
         mockServiceProvider
@@ -58,12 +57,12 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
 
     public BasePaginatedRequest SetValidBasePaginatedRequest() => new(Guid.NewGuid(), 1, 10);
 
-    public void SetSuccessfulAddAsync() => mockRepository
-        .Setup(d => d.AddAsync(It.IsAny<TEntity>(), It.IsAny<CancellationToken>()))
+    public void SetSuccessfulAddAsync<TEntity>() where TEntity : DomainEntity => mockRepository
+        .Setup(d => d.AddAsync(It.IsAny<TEntity>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
         .ReturnsAsync(1);
 
-    public void SetFailedAddAsync() => mockRepository
-        .Setup(d => d.AddAsync(It.IsAny<TEntity>(), It.IsAny<CancellationToken>()))
+    public void SetFailedAddAsync<TEntity>() where TEntity : DomainEntity => mockRepository
+        .Setup(d => d.AddAsync(It.IsAny<TEntity>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
         .ReturnsAsync(0);
 
     public void SetSuccessfulValidator(TRequest request)
@@ -91,24 +90,26 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
         It.IsAny<CancellationToken>()
     )).ReturnsAsync(result);
 
-    public void SetupGetByIdAsNoTrackingAsync(TEntity entity) => mockRepository.Setup(r => r.GetByIdAsNoTrackingAsync(
+    public void SetupGetByIdAsNoTrackingAsync<TEntity>(TEntity entity) where TEntity : DomainEntity => mockRepository.Setup(r => r.GetByIdAsNoTrackingAsync(
         It.IsAny<int>(),
+        It.IsAny<Guid>(),
         It.IsAny<CancellationToken>(),
         It.IsAny<Expression<Func<TEntity, object>>[]>()
     )).ReturnsAsync(entity);
 
-    public void SetupGetByIdAsNoTrackingAsyncNotFound() => mockRepository.Setup(r => r.GetByIdAsNoTrackingAsync(
+    public void SetupGetByIdAsNoTrackingAsyncNotFound<TEntity>() where TEntity : DomainEntity => mockRepository.Setup(r => r.GetByIdAsNoTrackingAsync(
         It.IsAny<int>(),
+        It.IsAny<Guid>(),
         It.IsAny<CancellationToken>(),
         It.IsAny<Expression<Func<TEntity, object>>[]>()
     )).ReturnsAsync((TEntity)null!);
 
-    public void SetSuccessfulUpdate() => mockRepository
-        .Setup(d => d.UpdateAsync(It.IsAny<TEntity>(), It.IsAny<CancellationToken>()))
+    public void SetSuccessfulUpdate<TEntity>() where TEntity : DomainEntity => mockRepository
+        .Setup(d => d.UpdateAsync(It.IsAny<TEntity>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
         .ReturnsAsync(1);
 
-    public void SetFailedUpdate() => mockRepository
-        .Setup(d => d.UpdateAsync(It.IsAny<TEntity>(), It.IsAny<CancellationToken>()))
+    public void SetFailedUpdate<TEntity>() where TEntity : DomainEntity => mockRepository
+        .Setup(d => d.UpdateAsync(It.IsAny<TEntity>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
         .ReturnsAsync(0);
 
     public void SetInvalidGetOrCreateAsync<TResult>() => mockCache.Setup(c => c.GetOrCreateAsync(
@@ -117,18 +118,20 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
         It.IsAny<CancellationToken>()
     ));
 
-    public void SetValidGetAllPaginatedAsyncNoIncludes(IEnumerable<TEntity> entities, int totalRecords) => mockRepository.Setup(r => r.GetAllPaginatedAsync(
+    public void SetValidGetAllPaginatedAsyncNoIncludes<TEntity>(IEnumerable<TEntity> entities, int totalRecords) where TEntity : DomainEntity => mockRepository.Setup(r => r.GetAllPaginatedAsync<TEntity>(
         It.IsAny<int>(),
         It.IsAny<int>(),
+        It.IsAny<Guid>(),
         It.IsAny<CancellationToken>(),
         It.IsAny<string>(),
         It.IsAny<bool>(),
         It.IsAny<Dictionary<string, string>>()
     )).ReturnsAsync((entities, totalRecords));
 
-    public void SetInvalidGetAllPaginatedAsync() => mockRepository.Setup(r => r.GetAllPaginatedAsync(
+    public void SetInvalidGetAllPaginatedAsync<TEntity>() where TEntity : DomainEntity => mockRepository.Setup(r => r.GetAllPaginatedAsync(
         It.IsAny<int>(),
         It.IsAny<int>(),
+        It.IsAny<Guid>(),
         It.IsAny<CancellationToken>(),
         It.IsAny<string?>(),
         It.IsAny<bool>(),
@@ -155,27 +158,29 @@ public class BaseApplicationFixture<TEntity, TRequest, TUseCase> : BaseFixture
         Times.Exactly(times)
     );
 
-    public void VerifyAddAsync(int times) => mockRepository.Verify(
-        d => d.AddAsync(It.IsAny<TEntity>(), It.IsAny<CancellationToken>()),
+    public void VerifyAddAsync<TEntity>(int times) where TEntity : DomainEntity => mockRepository.Verify(
+        d => d.AddAsync(It.IsAny<TEntity>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()),
         Times.Exactly(times)
     );
 
-    public void VerifyUpdate(int times) => mockRepository.Verify(
-        d => d.UpdateAsync(It.IsAny<TEntity>(), It.IsAny<CancellationToken>()),
+    public void VerifyUpdate<TEntity>(int times) where TEntity : DomainEntity => mockRepository.Verify(
+        d => d.UpdateAsync(It.IsAny<TEntity>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()),
         Times.Exactly(times)
     );
 
-    public void VerifyGetAllPaginatedNoIncludes(int times) => mockRepository.Verify(r => r.GetAllPaginatedAsync(
+    public void VerifyGetAllPaginatedNoIncludes<TEntity>(int times) where TEntity : DomainEntity => mockRepository.Verify(r => r.GetAllPaginatedAsync<TEntity>(
         It.IsAny<int>(),
         It.IsAny<int>(),
+        It.IsAny<Guid>(),
         It.IsAny<CancellationToken>(),
         It.IsAny<string>(),
         It.IsAny<bool>(),
         It.IsAny<Dictionary<string, string>>()
     ), Times.Exactly(times));
 
-    public void VerifyGetByIdAsync(int times) => mockRepository.Verify(r => r.GetByIdAsNoTrackingAsync(
+    public void VerifyGetByIdAsync<TEntity>(int times) where TEntity : DomainEntity => mockRepository.Verify(r => r.GetByIdAsNoTrackingAsync(
         It.IsAny<int>(),
+        It.IsAny<Guid>(),
         It.IsAny<CancellationToken>(),
         It.IsAny<Expression<Func<TEntity, object>>[]>()
     ), Times.Exactly(times));
