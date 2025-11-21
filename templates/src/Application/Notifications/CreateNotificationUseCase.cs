@@ -1,4 +1,3 @@
-using System.Diagnostics.Metrics;
 using Application.Common.Constants;
 using Application.Common.Requests;
 using Application.Common.UseCases;
@@ -32,9 +31,6 @@ public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider)
         serviceProvider.GetRequiredService<IValidator<CreateNotificationRequest>>()
     )
 {
-    public static readonly Counter<int> NotificationCreated = DefaultConfigurations.Meter
-        .CreateCounter<int>("notification.created", "notifications", "Number of notifications created");
-
     public override async Task<BaseResponse<NotificationDto>> HandleInternalAsync(
         CreateNotificationRequest request,
         CancellationToken cancellationToken
@@ -47,7 +43,7 @@ public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider)
             request.Message
         );
 
-        var addResult = await _repository.AddAsync(notification, cancellationToken);
+        var addResult = await _repository.AddAsync(notification, request.CorrelationId, cancellationToken);
 
         if (addResult == 0)
         {
@@ -59,8 +55,6 @@ public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider)
             );
             return new(false, null, "Failed to create notification.");
         }
-
-        NotificationCreated.Add(1);
 
         return new(true, new(
             notification.Id,

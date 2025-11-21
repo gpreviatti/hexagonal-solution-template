@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Application.Common.Constants;
 using Application.Common.Services;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 
 namespace Application.Common.UseCases;
 
@@ -30,11 +31,16 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
     protected readonly IServiceProvider serviceProvider = serviceProvider;
     protected readonly ILogger<TUseCase> logger = serviceProvider.GetRequiredService<ILogger<TUseCase>>();
     protected readonly IValidator<TRequest> validator = validator;
-    protected readonly IBaseRepository<TEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<TEntity>>();
+    protected readonly IBaseRepository _repository = serviceProvider.GetRequiredService<IBaseRepository>();
     protected readonly IHybridCacheService _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
     protected readonly IProduceService _produceService = serviceProvider.GetRequiredService<IProduceService>();
     protected string ClassName = typeof(TUseCase).Name;
     protected const string HandleMethodName = nameof(HandleAsync);
+
+    private readonly Histogram<int> _useCaseExecuted = DefaultConfigurations.Meter
+        .CreateHistogram<int>($"{typeof(TUseCase).Name.ToLower()}.executed", "total", "Number of times the use case was executed");
+    private readonly Gauge<long> _useCaseExecutionElapsedTime = DefaultConfigurations.Meter
+        .CreateGauge<long>($"{typeof(TUseCase).Name.ToLower()}.elapsed", "elapsed", "Elapsed time taken to execute the use case");
 
     public async Task<TResponseData> HandleAsync(
         TRequest request,
@@ -77,6 +83,9 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
             DefaultApplicationMessages.FinishedExecutingUseCase,
             ClassName, HandleMethodName, request.CorrelationId, stopWatch.ElapsedMilliseconds
         );
+
+        _useCaseExecuted.Record(1);
+        _useCaseExecutionElapsedTime.Record(stopWatch.ElapsedMilliseconds);
 
         return response;
     }

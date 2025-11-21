@@ -1,4 +1,3 @@
-using Application.Common.Requests;
 using Application.Orders;
 using Domain.Orders;
 using Microsoft.Extensions.Logging;
@@ -6,7 +5,7 @@ using UnitTests.Application.Common;
 
 namespace UnitTests.Application.Orders;
 
-public sealed class GetOrderUseCaseFixture : BaseApplicationFixture<Order, GetOrderRequest, GetOrderUseCase>
+public sealed class GetOrderUseCaseFixture : BaseApplicationFixture<GetOrderRequest, GetOrderUseCase>
 {
     public GetOrderUseCaseFixture()
     {

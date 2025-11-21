@@ -24,29 +24,23 @@ public class ProducerService : IProduceService
         {
             throw new ArgumentException("Invalid RabbitMQ connection string.");
         }
+
         _factory = new() { Uri = new(connectionString) };
     }
 
-    public async ValueTask HandleAsync<TMessage>(
+    public async Task HandleAsync<TMessage>(
         TMessage message,
         CancellationToken cancellationToken,
         string queue = "",
         string exchange = ""
     ) where TMessage : BaseMessage
     {
+        await Task.Yield();
+
         var stopWatch = Stopwatch.StartNew();
 
         using var connection = await _factory.CreateConnectionAsync(cancellationToken);
         using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
-
-        await channel.QueueDeclareAsync(
-            queue: queue,
-            durable: false,
-            exclusive: false,
-            autoDelete: false,
-            arguments: null,
-            cancellationToken: cancellationToken
-        );
 
         _logger.LogInformation(
             "[{ClassName}] | [HandleAsync] | CorrelationId: {CorrelationId} | Publishing message: {MessageType}",
@@ -56,7 +50,6 @@ public class ProducerService : IProduceService
         await channel.BasicPublishAsync(
             exchange: exchange,
             routingKey: queue,
-            mandatory: true,
             body: JsonSerializer.SerializeToUtf8Bytes(message),
             cancellationToken: cancellationToken
         );
@@ -67,26 +60,19 @@ public class ProducerService : IProduceService
         );
     }
 
-    public async ValueTask HandleAsync<TMessage>(
+    public async Task HandleAsync<TMessage>(
         IEnumerable<TMessage> messages,
         CancellationToken cancellationToken,
         string queue = "",
         string exchange = ""
     ) where TMessage : BaseMessage
     {
+        await Task.Yield();
+
         var stopWatch = Stopwatch.StartNew();
 
         using var connection = await _factory.CreateConnectionAsync(cancellationToken);
         using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
-
-        await channel.QueueDeclareAsync(
-            queue: queue,
-            durable: false,
-            exclusive: false,
-            autoDelete: false,
-            arguments: null,
-            cancellationToken: cancellationToken
-        );
 
         _logger.LogInformation(
             "[{ClassName}] | [HandleAsync] | CorrelationId: {CorrelationId} | Publishing batch of messages: {MessageType}",
@@ -97,7 +83,6 @@ public class ProducerService : IProduceService
             await channel.BasicPublishAsync(
                 exchange: exchange,
                 routingKey: queue,
-                mandatory: true,
                 body: JsonSerializer.SerializeToUtf8Bytes(message),
                 cancellationToken: cancellationToken
             );

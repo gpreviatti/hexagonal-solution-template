@@ -19,7 +19,9 @@
     <RepositoryUrl>git://github.com/gpreviatti/hexagonal-solution-template</RepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>
-      - Add new basic use case by using RabbitMq as message broker.
+      - **Breaking change** Enhance base repository to simplify initial setup and remove necessary entity dependency on definition.
+      - Add logging on base repository operations for better traceability
+      - Add default metrics for use cases
     </PackageReleaseNotes>
   </PropertyGroup>
 

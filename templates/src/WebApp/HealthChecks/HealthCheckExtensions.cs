@@ -17,7 +17,7 @@ internal static class HealthCheckExtensions
             {
                 var factory = new ConnectionFactory
                 {
-                    Uri = new(configuration.GetConnectionString("RabbitMQConnectionString")!),
+                    Uri = new(configuration.GetConnectionString("RabbitMq")!),
                 };
                 return factory.CreateConnectionAsync().GetAwaiter().GetResult();
             })
@@ -29,7 +29,7 @@ internal static class HealthCheckExtensions
                 tags: ["services"]
             )
             .AddRedis(
-                configuration.GetConnectionString("RedisConnectionString")!,
+                configuration.GetConnectionString("Redis")!,
                 name: "Redis",
                 tags: ["services"]
             )

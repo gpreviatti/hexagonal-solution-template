@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.Metrics;
-using Application.Common.Constants;
+﻿using Application.Common.Constants;
 using Application.Common.Messages;
 using Application.Common.Requests;
 using Application.Common.UseCases;
@@ -39,9 +38,6 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
     serviceProvider.GetRequiredService<IValidator<CreateOrderRequest>>()
 )
 {
-    public static readonly Counter<int> OrderCreated = DefaultConfigurations.Meter
-        .CreateCounter<int>("order.created", "orders", "Number of orders created");
-
     public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(
         CreateOrderRequest request,
         CancellationToken cancellationToken
@@ -67,7 +63,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
             return response;
         }
 
-        var addResult = await _repository.AddAsync(newOrder, cancellationToken);
+        var addResult = await _repository.AddAsync(newOrder, correlationId, cancellationToken);
         if (addResult == 0)
         {
             logger.LogWarning(DefaultApplicationMessages.DefaultApplicationMessage + "Failed to create order.", ClassName, HandleMethodName, correlationId);
@@ -78,8 +74,6 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
 
             return response;
         }
-
-        OrderCreated.Add(1);
 
         response = new(true, new(
             newOrder.Id,

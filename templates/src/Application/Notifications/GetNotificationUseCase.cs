@@ -1,4 +1,4 @@
-using System.Diagnostics.Metrics;
+using System.Linq.Expressions;
 using Application.Common.Constants;
 using Application.Common.Requests;
 using Application.Common.UseCases;
@@ -26,15 +26,12 @@ public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)
         serviceProvider.GetRequiredService<IValidator<GetNotificationRequest>>()
     )
 {
-    public static readonly Counter<int> NotificationRetrieved = DefaultConfigurations.Meter
-        .CreateCounter<int>("notification.retrieved", "notifications", "Number of notifications retrieved");
-
     public override async Task<BaseResponse<NotificationDto>> HandleInternalAsync(
         GetNotificationRequest request,
         CancellationToken cancellationToken
     )
     {
-        var notification = await _repository.GetByIdAsNoTrackingAsync(request.Id, cancellationToken, Array.Empty<System.Linq.Expressions.Expression<Func<Notification, object>>>());
+        var notification = await _repository.GetByIdAsNoTrackingAsync(request.Id, request.CorrelationId, cancellationToken, Array.Empty<Expression<Func<Notification, object>>>());
 
         if (notification is null)
         {
@@ -46,8 +43,6 @@ public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)
             );
             return new(false, null, "Notification not found.");
         }
-
-        NotificationRetrieved.Add(1);
 
         return new(true, new(
             notification.Id,

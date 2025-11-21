@@ -5,10 +5,10 @@ using WebApp;
 namespace IntegrationTests.Data;
 
 [Collection("WebApplicationFactoryCollectionDefinition")]
-public sealed class OrderRepositoryTest : IClassFixture<BaseDataFixture<Order>>
+public sealed class OrderRepositoryTest : IClassFixture<BaseDataFixture>
 {
-    private readonly BaseDataFixture<Order>? _fixture;
-    public OrderRepositoryTest(CustomWebApplicationFactory<Program> factory, BaseDataFixture<Order> fixture)
+    private readonly BaseDataFixture? _fixture;
+    public OrderRepositoryTest(CustomWebApplicationFactory<Program> factory, BaseDataFixture fixture)
     {
         _fixture = fixture;
         _fixture.SetRepository(factory);
@@ -21,8 +21,9 @@ public sealed class OrderRepositoryTest : IClassFixture<BaseDataFixture<Order>>
         var id = 1;
 
         // Act
-        var result = await _fixture!.repository!.GetByIdAsNoTrackingAsync(
+        var result = await _fixture!.repository!.GetByIdAsNoTrackingAsync<Order>(
             id,
+            Guid.NewGuid(),
             _fixture.cancellationToken,
             o => o.Items
         );
@@ -42,9 +43,10 @@ public sealed class OrderRepositoryTest : IClassFixture<BaseDataFixture<Order>>
         var pageSize = 5;
 
         // Act
-        var (result, totalRecords) = await _fixture!.repository!.GetAllPaginatedAsync(
+        var (result, totalRecords) = await _fixture!.repository!.GetAllPaginatedAsync<Order>(
             pageNumber,
             pageSize,
+            Guid.NewGuid(),
             _fixture.cancellationToken
         );
 
@@ -62,9 +64,10 @@ public sealed class OrderRepositoryTest : IClassFixture<BaseDataFixture<Order>>
         var pageSize = 5;
 
         // Act
-        var (result, totalRecords) = await _fixture!.repository!.GetAllPaginatedAsync(
+        var (result, totalRecords) = await _fixture!.repository!.GetAllPaginatedAsync<Order>(
             pageNumber,
             pageSize,
+            Guid.NewGuid(),
             _fixture.cancellationToken
         );
 
@@ -86,9 +89,10 @@ public sealed class OrderRepositoryTest : IClassFixture<BaseDataFixture<Order>>
         };
 
         // Act
-        var (result, totalRecords) = await _fixture!.repository!.GetAllPaginatedAsync(
+        var (result, totalRecords) = await _fixture!.repository!.GetAllPaginatedAsync<Order>(
             pageNumber,
             pageSize,
+            Guid.NewGuid(),
             _fixture.cancellationToken,
             searchByValues: searchByValues
         );
@@ -111,9 +115,10 @@ public sealed class OrderRepositoryTest : IClassFixture<BaseDataFixture<Order>>
         };
 
         // Act
-        var (result, totalRecords) = await _fixture!.repository!.GetAllPaginatedAsync(
+        var (result, totalRecords) = await _fixture!.repository!.GetAllPaginatedAsync<Order>(
             pageNumber,
             pageSize,
+            Guid.NewGuid(),
             _fixture.cancellationToken,
             searchByValues: searchByValues
         );
@@ -135,9 +140,10 @@ public sealed class OrderRepositoryTest : IClassFixture<BaseDataFixture<Order>>
         var sortBy = "Description";
 
         // Act
-        var (result, totalRecords) = await _fixture!.repository!.GetAllPaginatedAsync(
+        var (result, totalRecords) = await _fixture!.repository!.GetAllPaginatedAsync<Order>(
             pageNumber,
             pageSize,
+            Guid.NewGuid(),
             _fixture.cancellationToken,
             sortBy: sortBy,
             sortDescending: sortDescending

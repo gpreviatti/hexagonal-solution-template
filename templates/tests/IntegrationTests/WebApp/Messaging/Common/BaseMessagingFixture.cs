@@ -1,4 +1,5 @@
 using Application.Common.Messages;
+using Application.Common.Repositories;
 using Application.Common.Services;
 using CommonTests.Fixtures;
 using IntegrationTests.Common;
@@ -10,16 +11,19 @@ namespace IntegrationTests.WebApp.Messaging.Common;
 public class BaseMessagingFixture : BaseFixture
 {
     public IProduceService produceService;
+    public IBaseRepository repository;
 
     public void SetServices(AsyncServiceScope scope)
     {
         produceService = scope.ServiceProvider.GetRequiredService<IProduceService>();
+        repository = scope.ServiceProvider.GetRequiredService<IBaseRepository>();
     }
 
     public void SetServices(CustomWebApplicationFactory<Program> factory)
     {
         var scope = factory.Services.CreateAsyncScope();
         produceService = scope.ServiceProvider.GetRequiredService<IProduceService>();
+        repository = scope.ServiceProvider.GetRequiredService<IBaseRepository>();
     }
 
     public async Task HandleProducerAsync<TMessage>(

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using Application.Common.Constants;
 using Application.Common.Repositories;
 using Application.Common.Requests;
@@ -24,10 +25,15 @@ public abstract class BaseOutUseCase<TResponseData, TEntity, TUseCase>(
     where TUseCase : class
 {
     protected readonly ILogger<TUseCase> logger = serviceProvider.GetRequiredService<ILogger<TUseCase>>();
-    protected readonly IBaseRepository<TEntity> _repository = serviceProvider.GetRequiredService<IBaseRepository<TEntity>>();
+    protected readonly IBaseRepository _repository = serviceProvider.GetRequiredService<IBaseRepository>();
     protected readonly IHybridCacheService _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
     private const string ClassName = nameof(BaseOutUseCase<TResponseData, TEntity, TUseCase>);
     private const string HandleMethodName = nameof(HandleAsync);
+
+    private readonly Histogram<int> _useCaseExecuted = DefaultConfigurations.Meter
+        .CreateHistogram<int>($"{typeof(TUseCase).Name.ToLower()}.executed", "total", "Number of times the use case was executed");
+    private readonly Gauge<long> _useCaseExecutionElapsedTime = DefaultConfigurations.Meter
+        .CreateGauge<long>($"{typeof(TUseCase).Name.ToLower()}.elapsed", "milliseconds", "Elapsed time taken to execute the use case");
 
     public async Task<TResponseData> HandleAsync(CancellationToken cancellationToken)
     {
@@ -41,6 +47,9 @@ public abstract class BaseOutUseCase<TResponseData, TEntity, TUseCase>(
             DefaultApplicationMessages.FinishedExecutingUseCase,
             ClassName, HandleMethodName, correlationId, stopWatch.ElapsedMilliseconds
         );
+
+        _useCaseExecuted.Record(1);
+        _useCaseExecutionElapsedTime.Record(stopWatch.ElapsedMilliseconds);
 
         return response;
     }

@@ -11,13 +11,11 @@ namespace IntegrationTests.WebApp.Messaging.Notifications;
 
 public class CreateNotificationTestFixture : BaseMessagingFixture
 {
-    public IBaseRepository<Notification> notificationRepository;
-
     public new void SetServices(CustomWebApplicationFactory<Program> factory)
     {
         var scope = factory.Services.CreateAsyncScope();
         SetServices(scope);
-        notificationRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<Notification>>();
+        repository = scope.ServiceProvider.GetRequiredService<IBaseRepository>();
     }
 
     public CreateNotificationMessage SetValidMessage() => autoFixture.Build<CreateNotificationMessage>().Create();
@@ -43,9 +41,10 @@ public sealed class CreateNotificationTest : IClassFixture<CreateNotificationTes
         // Act
         await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated);
 
-        var notification = await _fixture.notificationRepository.FirstOrDefaultAsNoTrackingAsync(
+        var notification = await _fixture.repository.FirstOrDefaultAsNoTrackingAsync<Notification>(
             n => n.NotificationType == message.NotificationType &&
                 n.NotificationStatus == message.NotificationStatus,
+            Guid.NewGuid(),
             _fixture.cancellationToken
         );
 
@@ -64,9 +63,10 @@ public sealed class CreateNotificationTest : IClassFixture<CreateNotificationTes
         await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated);
         await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated);
 
-        var notifications = await _fixture.notificationRepository.GetByWhereAsNoTrackingAsync(
+        var notifications = await _fixture.repository.GetByWhereAsNoTrackingAsync<Notification>(
             n => n.NotificationType == message.NotificationType &&
                 n.NotificationStatus == message.NotificationStatus,
+            Guid.NewGuid(),
             cancellationToken: _fixture.cancellationToken
         );
 
