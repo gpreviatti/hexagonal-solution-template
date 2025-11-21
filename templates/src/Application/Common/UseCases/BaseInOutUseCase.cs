@@ -37,8 +37,8 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
     protected string ClassName = typeof(TUseCase).Name;
     protected const string HandleMethodName = nameof(HandleAsync);
 
-    private readonly Gauge<int> _useCaseExecuted = DefaultConfigurations.Meter
-        .CreateGauge<int>($"{typeof(TUseCase).Name.ToLower()}.executed", "total", "Number of times the use case was executed");
+    private readonly Histogram<int> _useCaseExecuted = DefaultConfigurations.Meter
+        .CreateHistogram<int>($"{typeof(TUseCase).Name.ToLower()}.executed", "total", "Number of times the use case was executed");
     private readonly Gauge<long> _useCaseExecutionElapsedTime = DefaultConfigurations.Meter
         .CreateGauge<long>($"{typeof(TUseCase).Name.ToLower()}.elapsed", "elapsed", "Elapsed time taken to execute the use case");
 

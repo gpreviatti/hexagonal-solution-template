@@ -33,8 +33,8 @@ public abstract class BaseInUseCase<TRequest, TEntity, TUseCase>(
     protected readonly IHybridCacheService _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
     private const string ClassName = nameof(BaseInUseCase<TRequest, TEntity, TUseCase>);
     private const string HandleMethodName = nameof(HandleAsync);
-    private readonly Gauge<int> _useCaseExecuted = DefaultConfigurations.Meter
-        .CreateGauge<int>($"{typeof(TUseCase).Name.ToLower()}.executed", "total", "Number of times the use case was executed");
+    private readonly Histogram<int> _useCaseExecuted = DefaultConfigurations.Meter
+        .CreateHistogram<int>($"{typeof(TUseCase).Name.ToLower()}.executed", "total", "Number of times the use case was executed");
     private readonly Gauge<long> _useCaseExecutionElapsedTime = DefaultConfigurations.Meter
         .CreateGauge<long>($"{typeof(TUseCase).Name.ToLower()}.elapsed", "milliseconds", "Elapsed time taken to execute the use case");
 

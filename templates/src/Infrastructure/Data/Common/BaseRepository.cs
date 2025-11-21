@@ -11,7 +11,6 @@ public class BaseRepository(ILogger<BaseRepository> logger, MyDbContext dbContex
 {
     protected readonly ILogger<BaseRepository> logger = logger;
     protected readonly MyDbContext dbContext = dbContext;
-    public DbSet<TEntity> SetEntity<TEntity>() where TEntity : DomainEntity => dbContext.Set<TEntity>();
 
     private async Task<TResult> HandleBaseQueryAsync<TEntity, TResult>(
         Func<DbSet<TEntity>, Task<TResult>> query,
@@ -28,7 +27,7 @@ public class BaseRepository(ILogger<BaseRepository> logger, MyDbContext dbContex
             correlationId
         );
 
-        var dbEntitySet = SetEntity<TEntity>();
+        var dbEntitySet = dbContext.Set<TEntity>();
 
         var result = await query.Invoke(dbEntitySet);
 
