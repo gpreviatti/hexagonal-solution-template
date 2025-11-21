@@ -1,4 +1,3 @@
-using System.Diagnostics.Metrics;
 using Application.Common.Constants;
 using Application.Common.Requests;
 using Application.Common.UseCases;
@@ -15,9 +14,6 @@ public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
         serviceProvider.GetRequiredService<IValidator<BasePaginatedRequest>>()
     )
 {
-    public static readonly Counter<int> NotificationsListed = DefaultConfigurations.Meter
-        .CreateCounter<int>("notifications.listed", "notifications", "Number of times notifications were listed");
-
     public override async Task<BasePaginatedResponse<NotificationDto>> HandleInternalAsync(
         BasePaginatedRequest request,
         CancellationToken cancellationToken
@@ -56,8 +52,6 @@ public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
             notification.CreatedBy,
             notification.UpdatedBy
         ));
-
-        NotificationsListed.Add(1);
 
         return new(true, totalPages, totalRecords, notificationDtos);
     }

@@ -28,13 +28,15 @@ public class ProducerService : IProduceService
         _factory = new() { Uri = new(connectionString) };
     }
 
-    public async ValueTask HandleAsync<TMessage>(
+    public async Task HandleAsync<TMessage>(
         TMessage message,
         CancellationToken cancellationToken,
         string queue = "",
         string exchange = ""
     ) where TMessage : BaseMessage
     {
+        await Task.Yield();
+
         var stopWatch = Stopwatch.StartNew();
 
         using var connection = await _factory.CreateConnectionAsync(cancellationToken);
@@ -58,13 +60,15 @@ public class ProducerService : IProduceService
         );
     }
 
-    public async ValueTask HandleAsync<TMessage>(
+    public async Task HandleAsync<TMessage>(
         IEnumerable<TMessage> messages,
         CancellationToken cancellationToken,
         string queue = "",
         string exchange = ""
     ) where TMessage : BaseMessage
     {
+        await Task.Yield();
+
         var stopWatch = Stopwatch.StartNew();
 
         using var connection = await _factory.CreateConnectionAsync(cancellationToken);

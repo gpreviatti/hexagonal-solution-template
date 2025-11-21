@@ -36,8 +36,11 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
     protected readonly IProduceService _produceService = serviceProvider.GetRequiredService<IProduceService>();
     protected string ClassName = typeof(TUseCase).Name;
     protected const string HandleMethodName = nameof(HandleAsync);
+
+    private readonly Gauge<int> _useCaseExecuted = DefaultConfigurations.Meter
+        .CreateGauge<int>($"{typeof(TUseCase).Name.ToLower()}.executed", "total", "Number of times the use case was executed");
     private readonly Gauge<long> _useCaseExecutionElapsedTime = DefaultConfigurations.Meter
-        .CreateGauge<long>($"{typeof(TUseCase).Name.ToLower()}.elapsed", "milliseconds", "Elapsed time taken to execute the use case");
+        .CreateGauge<long>($"{typeof(TUseCase).Name.ToLower()}.elapsed", "elapsed", "Elapsed time taken to execute the use case");
 
     public async Task<TResponseData> HandleAsync(
         TRequest request,
@@ -80,6 +83,8 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
             DefaultApplicationMessages.FinishedExecutingUseCase,
             ClassName, HandleMethodName, request.CorrelationId, stopWatch.ElapsedMilliseconds
         );
+
+        _useCaseExecuted.Record(1);
         _useCaseExecutionElapsedTime.Record(stopWatch.ElapsedMilliseconds);
 
         return response;

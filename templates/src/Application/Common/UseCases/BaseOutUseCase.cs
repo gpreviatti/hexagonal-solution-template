@@ -29,6 +29,9 @@ public abstract class BaseOutUseCase<TResponseData, TEntity, TUseCase>(
     protected readonly IHybridCacheService _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
     private const string ClassName = nameof(BaseOutUseCase<TResponseData, TEntity, TUseCase>);
     private const string HandleMethodName = nameof(HandleAsync);
+
+    private readonly Gauge<int> _useCaseExecuted = DefaultConfigurations.Meter
+        .CreateGauge<int>($"{typeof(TUseCase).Name.ToLower()}.executed", "total", "Number of times the use case was executed");
     private readonly Gauge<long> _useCaseExecutionElapsedTime = DefaultConfigurations.Meter
         .CreateGauge<long>($"{typeof(TUseCase).Name.ToLower()}.elapsed", "milliseconds", "Elapsed time taken to execute the use case");
 
@@ -44,6 +47,8 @@ public abstract class BaseOutUseCase<TResponseData, TEntity, TUseCase>(
             DefaultApplicationMessages.FinishedExecutingUseCase,
             ClassName, HandleMethodName, correlationId, stopWatch.ElapsedMilliseconds
         );
+
+        _useCaseExecuted.Record(1);
         _useCaseExecutionElapsedTime.Record(stopWatch.ElapsedMilliseconds);
 
         return response;

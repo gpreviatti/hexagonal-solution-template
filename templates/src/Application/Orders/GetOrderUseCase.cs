@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.Metrics;
-using Application.Common.Constants;
+﻿using Application.Common.Constants;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Orders;
@@ -24,9 +23,6 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
     serviceProvider.GetRequiredService<IValidator<GetOrderRequest>>()
 )
 {
-    public static readonly Counter<int> OrderRetrieved = DefaultConfigurations.Meter
-        .CreateCounter<int>("order.retrieved", "orders", "Number of orders retrieved");
-
     public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(
         GetOrderRequest request,
         CancellationToken cancellationToken
@@ -42,8 +38,6 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
             );
             return new(false, null, "Order not found.");
         }
-
-        OrderRetrieved.Add(1);
 
         return new(true, new(
             order.Id,

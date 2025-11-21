@@ -1,4 +1,3 @@
-using System.Diagnostics.Metrics;
 using Application.Common.Constants;
 using Application.Common.Requests;
 using Application.Common.UseCases;
@@ -14,9 +13,6 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) : Base
     serviceProvider.GetRequiredService<IValidator<BasePaginatedRequest>>()
 )
 {
-    public static readonly Counter<int> OrdersListed = DefaultConfigurations.Meter
-        .CreateCounter<int>("orders.listed", "orders", "Number of times orders were listed");
-
     public override async Task<BasePaginatedResponse<OrderDto>> HandleInternalAsync(
         BasePaginatedRequest request,
         CancellationToken cancellationToken
@@ -51,8 +47,6 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) : Base
             o.Total,
             o.CreatedAt
         ));
-
-        OrdersListed.Add(1);
 
         return new(
             true,
