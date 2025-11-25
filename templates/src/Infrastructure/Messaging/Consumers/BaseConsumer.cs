@@ -19,6 +19,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
     private readonly string _queueName;
     private readonly IDictionary<string, object?> _arguments;
     private readonly ConnectionFactory _factory;
+    private readonly Stopwatch _stopwatch = new();
 
     public BaseConsumer(
         ILogger<BaseConsumer<TMessage, TConsumer>> logger,
