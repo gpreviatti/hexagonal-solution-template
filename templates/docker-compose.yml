@@ -2,7 +2,7 @@ name: hexagonal-solution-template
 
 services:
   sqlserver:
-    image: mcr.microsoft.com/mssql/server:2019-latest
+    image: mcr.microsoft.com/mssql/server:2025-latest
     environment:
       SA_PASSWORD: "cY5VvZkkh4AzES"
       ACCEPT_EULA: "Y"
@@ -36,7 +36,7 @@ services:
         ./opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P "cY5VvZkkh4AzES" -C -d master -i ./tmp/seeds.sql
 
   aspire-dashboard:
-    image: mcr.microsoft.com/dotnet/aspire-dashboard:9.4.0
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:9
     ports:
       - "18888:18888"
       - "18889:18889"

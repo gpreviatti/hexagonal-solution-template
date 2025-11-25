@@ -34,6 +34,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
     protected readonly IBaseRepository _repository = serviceProvider.GetRequiredService<IBaseRepository>();
     protected readonly IHybridCacheService _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
     protected readonly IProduceService _produceService = serviceProvider.GetRequiredService<IProduceService>();
+    protected readonly Stopwatch _stopWatch = new();
     protected string ClassName = typeof(TUseCase).Name;
     protected const string HandleMethodName = nameof(HandleAsync);
 
@@ -47,7 +48,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
         CancellationToken cancellationToken
     )
     {
-        var stopWatch = Stopwatch.StartNew();
+        _stopWatch.Restart();
 
         logger.LogInformation(
             DefaultApplicationMessages.StartToExecuteUseCase,
@@ -81,11 +82,11 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
 
         logger.LogInformation(
             DefaultApplicationMessages.FinishedExecutingUseCase,
-            ClassName, HandleMethodName, request.CorrelationId, stopWatch.ElapsedMilliseconds
+            ClassName, HandleMethodName, request.CorrelationId, _stopWatch.ElapsedMilliseconds
         );
 
         _useCaseExecuted.Record(1);
-        _useCaseExecutionElapsedTime.Record(stopWatch.ElapsedMilliseconds);
+        _useCaseExecutionElapsedTime.Record(_stopWatch.ElapsedMilliseconds);
 
         return response;
     }

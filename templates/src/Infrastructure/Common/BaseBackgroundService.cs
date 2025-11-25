@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,6 +14,7 @@ internal abstract class BaseBackgroundService<TService>(
 {
     protected readonly ILogger<BaseBackgroundService<TService>> logger = logger;
     protected readonly IConfiguration configuration = configuration;
+    protected readonly Stopwatch _stopwatch = new();
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
