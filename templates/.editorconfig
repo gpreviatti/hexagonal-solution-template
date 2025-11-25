@@ -162,6 +162,9 @@ dotnet_diagnostic.S2360.severity = none
 # CS8618: Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 dotnet_diagnostic.CS8618.severity = none
 
+# CA1873: Avoid potentially expensive logging
+dotnet_diagnostic.CA1873.severity = none
+
 [*.{cpp,h,in}]
 curly_bracket_next_line = true
 indent_brace_style = Allman

@@ -39,17 +39,6 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOu
             return new(false, null, "Order not found.");
         }
 
-        return new(true, new(
-            order.Id,
-            order.Description,
-            order.Total,
-            order.CreatedAt,
-            order.Items?.Select(i => new ItemDto(
-                i.Id,
-                i.Name,
-                i.Description,
-                i.Value
-            ))
-        ));
+        return new(true, order);
     }
 }
