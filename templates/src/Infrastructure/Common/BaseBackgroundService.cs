@@ -21,9 +21,8 @@ internal abstract class BaseBackgroundService<TService>(
         try
         {
             using var scope = serviceScopeFactory.CreateScope();
-            var serviceProvider = scope.ServiceProvider;
 
-            await ExecuteInternalAsync(serviceProvider, cancellationToken);
+            await ExecuteInternalAsync(scope.ServiceProvider, cancellationToken);
 
             while (!cancellationToken.IsCancellationRequested)
                 await Task.Delay(10000, cancellationToken);
