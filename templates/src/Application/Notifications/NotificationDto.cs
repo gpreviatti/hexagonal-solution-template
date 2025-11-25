@@ -9,4 +9,12 @@ public sealed record NotificationDto(
     DateTime? UpdatedAt,
     string? CreatedBy,
     string? UpdatedBy
-);
+)
+{
+    public static implicit operator NotificationDto(Domain.Notifications.Notification notification) => new(
+        notification.Id, notification.NotificationType,
+        notification.NotificationStatus, notification.Message,
+        notification.CreatedAt, notification.UpdatedAt,
+        notification.CreatedBy, notification.UpdatedBy
+    );
+};

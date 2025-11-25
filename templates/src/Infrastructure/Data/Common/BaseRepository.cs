@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using Application.Common.Repositories;
 using Domain.Common;
@@ -11,6 +12,7 @@ public class BaseRepository(ILogger<BaseRepository> logger, MyDbContext dbContex
 {
     protected readonly ILogger<BaseRepository> logger = logger;
     protected readonly MyDbContext dbContext = dbContext;
+    private readonly Stopwatch _stopwatch = new();
 
     private async Task<TResult> HandleBaseQueryAsync<TEntity, TResult>(
         Func<DbSet<TEntity>, Task<TResult>> query,
@@ -19,7 +21,7 @@ public class BaseRepository(ILogger<BaseRepository> logger, MyDbContext dbContex
         string methodName = null!
     ) where TEntity : DomainEntity
     {
-        var stopWatch = System.Diagnostics.Stopwatch.StartNew();
+        _stopwatch.Restart();
 
         logger.LogDebug(
             "[BaseRepository] | [{Method}] | CorrelationId: {CorrelationId} | Starting database operation.",
@@ -35,7 +37,7 @@ public class BaseRepository(ILogger<BaseRepository> logger, MyDbContext dbContex
             "[BaseRepository] | [{Method}] | CorrelationId: {CorrelationId} | Query executed in {ElapsedMilliseconds} ms.",
             methodName,
             correlationId,
-            stopWatch.ElapsedMilliseconds
+            _stopwatch.ElapsedMilliseconds
         );
 
         return result;

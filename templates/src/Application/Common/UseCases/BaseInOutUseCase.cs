@@ -1,13 +1,13 @@
-﻿using Application.Common.Requests;
+﻿using System.Diagnostics;
+using System.Diagnostics.Metrics;
+using Application.Common.Constants;
 using Application.Common.Repositories;
+using Application.Common.Requests;
+using Application.Common.Services;
 using Domain.Common;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Application.Common.Constants;
-using Application.Common.Services;
-using System.Diagnostics;
-using System.Diagnostics.Metrics;
 
 namespace Application.Common.UseCases;
 
@@ -34,6 +34,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
     protected readonly IBaseRepository _repository = serviceProvider.GetRequiredService<IBaseRepository>();
     protected readonly IHybridCacheService _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
     protected readonly IProduceService _produceService = serviceProvider.GetRequiredService<IProduceService>();
+    protected readonly Stopwatch _stopWatch = new();
     protected string ClassName = typeof(TUseCase).Name;
     protected const string HandleMethodName = nameof(HandleAsync);
 
@@ -47,7 +48,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
         CancellationToken cancellationToken
     )
     {
-        var stopWatch = Stopwatch.StartNew();
+        _stopWatch.Restart();
 
         logger.LogInformation(
             DefaultApplicationMessages.StartToExecuteUseCase,
@@ -81,11 +82,11 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData, TEntity, TUseCas
 
         logger.LogInformation(
             DefaultApplicationMessages.FinishedExecutingUseCase,
-            ClassName, HandleMethodName, request.CorrelationId, stopWatch.ElapsedMilliseconds
+            ClassName, HandleMethodName, request.CorrelationId, _stopWatch.ElapsedMilliseconds
         );
 
         _useCaseExecuted.Record(1);
-        _useCaseExecutionElapsedTime.Record(stopWatch.ElapsedMilliseconds);
+        _useCaseExecutionElapsedTime.Record(_stopWatch.ElapsedMilliseconds);
 
         return response;
     }

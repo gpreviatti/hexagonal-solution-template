@@ -1,6 +1,6 @@
 ---
 description: 'Complete CRUD Generator for C# Hexagonal Architecture Projects'
-tools: ['edit', 'search', 'new', 'runCommands', 'runTasks', 'usages', 'think', 'problems', 'testFailure', 'runTests', 'sequentialthinking', 'microsoft-docs']
+tools: ['edit', 'search', 'new', 'runCommands', 'runTasks', 'usages', 'problems', 'testFailure', 'runTests', 'microsoft-docs/*']
 ---
 
 # GitHub Copilot Custom Prompt - Complete CRUD Generator

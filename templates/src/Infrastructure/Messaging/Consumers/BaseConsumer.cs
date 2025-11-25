@@ -19,6 +19,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
     private readonly string _queueName;
     private readonly IDictionary<string, object?> _arguments;
     private readonly ConnectionFactory _factory;
+    private readonly Stopwatch _stopwatch = new();
 
     public BaseConsumer(
         ILogger<BaseConsumer<TMessage, TConsumer>> logger,
@@ -41,13 +42,12 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
     }
 
     protected override async Task ExecuteInternalAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken) => await HandleRabbitMqAsync(
-        cancellationToken,
         async (message, cancellationToken) =>
         {
             var producerService = serviceProvider.GetRequiredService<IProduceService>();
             try
             {
-                var stopWatch = Stopwatch.StartNew();
+                _stopwatch.Restart();
                 var hybridCacheService = serviceProvider.GetRequiredService<IHybridCacheService>();
 
 
@@ -83,7 +83,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
 
                 logger.LogInformation(
                     "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Processed message in {ElapsedMilliseconds} ms",
-                    _className, message.CorrelationId, stopWatch.ElapsedMilliseconds
+                    _className, message.CorrelationId, _stopwatch.ElapsedMilliseconds
                 );
             }
             catch (Exception ex)
@@ -98,12 +98,13 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
 
                 throw;
             }
-        }
+        },
+        cancellationToken
     );
 
     private async Task HandleRabbitMqAsync(
-        CancellationToken cancellationToken,
-        Func<TMessage, CancellationToken, Task> handleAsync
+        Func<TMessage, CancellationToken, Task> handleAsync,
+        CancellationToken cancellationToken
     )
     {
         var connection = await _factory.CreateConnectionAsync(cancellationToken);
@@ -111,7 +112,14 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
 
         await channel.QueueDeclareAsync(
             queue: _queueName,
-            durable: false,
+            exclusive: false,
+            autoDelete: false,
+            arguments: _arguments,
+            cancellationToken: cancellationToken
+        );
+
+        await channel.QueueDeclareAsync(
+            queue: _queueName + "_deadLetter",
             exclusive: false,
             autoDelete: false,
             arguments: _arguments,

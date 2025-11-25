@@ -56,15 +56,6 @@ public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider)
             return new(false, null, "Failed to create notification.");
         }
 
-        return new(true, new(
-            notification.Id,
-            notification.NotificationType,
-            notification.NotificationStatus,
-            notification.Message,
-            notification.CreatedAt,
-            notification.UpdatedAt,
-            notification.CreatedBy,
-            notification.UpdatedBy
-        ));
+        return new(true, notification);
     }
 }

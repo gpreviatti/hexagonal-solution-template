@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -19,9 +20,8 @@ internal abstract class BaseBackgroundService<TService>(
         try
         {
             using var scope = serviceScopeFactory.CreateScope();
-            var serviceProvider = scope.ServiceProvider;
 
-            await ExecuteInternalAsync(serviceProvider, cancellationToken);
+            await ExecuteInternalAsync(scope.ServiceProvider, cancellationToken);
 
             while (!cancellationToken.IsCancellationRequested)
                 await Task.Delay(10000, cancellationToken);
