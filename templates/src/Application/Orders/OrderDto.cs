@@ -3,7 +3,7 @@ public sealed record OrderDto(int Id, string Description, decimal Total, DateTim
 {
     public static implicit operator OrderDto(Domain.Orders.Order order) => new(
         order.Id, order.Description, order.Total, order.CreatedAt,
-        order.Items?.Select(item => (ItemDto)item).ToArray()
+        order.Items?.Select(item => (ItemDto) item).ToArray()
     );
 };
 
