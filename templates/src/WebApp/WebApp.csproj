@@ -2,21 +2,17 @@
   <PropertyGroup>
     <InvariantGlobalization>false</InvariantGlobalization>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="9.0.0" />
-    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="9.0.0" />
-    <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
-    <PackageReference Include="AspNetCore.HealthChecks.RabbitMQ" Version="9.0.0" />
-    <PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
+    <PackageReference Include="AspNetCore.HealthChecks.Redis" />
+    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI.Client" />
+    <PackageReference Include="AspNetCore.HealthChecks.RabbitMQ" />
+    <PackageReference Include="Grpc.AspNetCore" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Protobuf Include="Protos\*" />
   </ItemGroup>
-
 </Project>

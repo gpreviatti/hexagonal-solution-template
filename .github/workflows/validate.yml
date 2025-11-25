@@ -14,7 +14,7 @@ jobs:
       application_stryker_config_path: "./templates/tests/UnitTests/stryker-config-application.json"
       integration_test_project_path: "./templates/tests/IntegrationTests"
       docker_compose_file_path: "./templates/docker-compose.yml"
-      dotnet_version: "9.x"
+      dotnet_version: "10.x"
       stryker_enable: false
       dotnet_test_verbosity: 'd'
 
@@ -24,4 +24,4 @@ jobs:
     name: Build Template Solution
     with:
       solution_path: "./templates"
-      dotnet_version: "9.x"
+      dotnet_version: "10.x"

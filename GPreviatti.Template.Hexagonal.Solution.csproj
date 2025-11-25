@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <PackageType>Template</PackageType>
     <PackageId>GPreviatti.Template.Hexagonal.Solution</PackageId>
@@ -7,7 +6,7 @@
     <Authors>Giovanni Brunno Previatti</Authors>
     <Description>Solution following Hexagonal architecture and best praticies.</Description>
     <PackageTags>template;hexagonal-architecture;clean-architecture;ddd;net8</PackageTags>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <IncludeContentInPack>true</IncludeContentInPack>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <ContentTargetFolders>content</ContentTargetFolders>
@@ -19,16 +18,14 @@
     <RepositoryUrl>git://github.com/gpreviatti/hexagonal-solution-template</RepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>
-      - **Breaking change** Enhance base repository to simplify initial setup and remove necessary entity dependency on definition.
-      - Add logging on base repository operations for better traceability
-      - Add default metrics for use cases
+      - **Breaking change** Migrate to .NET 10
+      - Add global package management with `Directory.Packages.props`
+      - Update all dependencies to latest stable versions
     </PackageReleaseNotes>
   </PropertyGroup>
-
   <ItemGroup>
     <Content Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**" />
     <Compile Remove="**\*" />
     <None Include="Readme.md" Pack="true" PackagePath="" />
   </ItemGroup>
-
 </Project>
