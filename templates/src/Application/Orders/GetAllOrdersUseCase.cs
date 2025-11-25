@@ -41,18 +41,11 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) : Base
 
         var totalPages = (int)Math.Ceiling(totalRecords / (double)request.PageSize);
 
-        var orderDtos = orders.Select(o => new OrderDto(
-            o.Id,
-            o.Description,
-            o.Total,
-            o.CreatedAt
-        ));
-
         return new(
             true,
             totalPages,
             totalRecords,
-            orderDtos
+            orders.Select(o => (OrderDto) o)
         );
     }
 }

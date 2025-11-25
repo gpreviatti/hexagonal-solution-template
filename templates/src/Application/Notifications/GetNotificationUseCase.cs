@@ -44,15 +44,6 @@ public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)
             return new(false, null, "Notification not found.");
         }
 
-        return new(true, new(
-            notification.Id,
-            notification.NotificationType,
-            notification.NotificationStatus,
-            notification.Message!,
-            notification.CreatedAt,
-            notification.UpdatedAt,
-            notification.CreatedBy,
-            notification.UpdatedBy
-        ));
+        return new(true, notification);
     }
 }

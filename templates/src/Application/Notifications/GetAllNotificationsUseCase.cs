@@ -42,16 +42,7 @@ public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
 
         var totalPages = (int)Math.Ceiling(totalRecords / (double)request.PageSize);
 
-        var notificationDtos = notifications.Select(notification => new NotificationDto(
-            notification.Id,
-            notification.NotificationType,
-            notification.NotificationStatus,
-            notification.Message,
-            notification.CreatedAt,
-            notification.UpdatedAt,
-            notification.CreatedBy,
-            notification.UpdatedBy
-        ));
+        var notificationDtos = notifications.Select(notification => (NotificationDto)notification);
 
         return new(true, totalPages, totalRecords, notificationDtos);
     }
