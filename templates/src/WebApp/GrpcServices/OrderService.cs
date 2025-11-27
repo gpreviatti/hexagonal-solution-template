@@ -2,7 +2,6 @@ using System.Globalization;
 using Application.Common.Requests;
 using Application.Common.Services;
 using Application.Common.UseCases;
-using Application.Orders;
 using Grpc.Core;
 using GrpcOrder;
 using static GrpcOrder.OrderService;
@@ -12,11 +11,11 @@ using OrderDto = Application.Orders.OrderDto;
 namespace WebApp.GrpcServices;
 
 public class OrderService(
-    IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>, GetOrderUseCase> useCase,
+    IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>> useCase,
     IHybridCacheService cache
 ) : OrderServiceBase
 {
-    private readonly IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>, GetOrderUseCase> _useCase = useCase;
+    private readonly IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>> _useCase = useCase;
     private readonly IHybridCacheService _cache = cache;
 
     public override async Task<OrderReply> Get(
