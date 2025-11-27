@@ -64,7 +64,10 @@ public abstract class BaseInUseCase<TRequest> : IBaseInUseCase<TRequest> where T
             if (!validationResult.IsValid)
             {
                 var errors = string.Join(", ", validationResult.Errors);
-                logger.LogError(errors);
+                logger.LogError(
+                    DefaultApplicationMessages.ValidationErrors,
+                    ClassName, HandleMethodName, request.CorrelationId, errors
+                );
 
                 return;
             }
