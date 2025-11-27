@@ -5,8 +5,16 @@ on:
   workflow_dispatch:
 
 jobs:
+  build:
+    name: Build Template Solution
+    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-build.yml@v1
+    with:
+      solution_path: "./templates"
+      dotnet_version: "10.x"
+
   validate:
     name: Validate Template
+    needs: build
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate.yml@v1
     with:
       unit_test_project_path: "./templates/tests/UnitTests/"
@@ -17,11 +25,3 @@ jobs:
       dotnet_version: "10.x"
       stryker_enable: false
       dotnet_test_verbosity: 'd'
-
-  build:
-    needs: validate
-    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-build.yml@v1
-    name: Build Template Solution
-    with:
-      solution_path: "./templates"
-      dotnet_version: "10.x"
