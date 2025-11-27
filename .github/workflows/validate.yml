@@ -33,5 +33,6 @@ jobs:
     with:
       project: "hexagonal-solution-template"
       organization: "gpreviatti"
+    secrets:
       sonar_token: ${{ secrets.SONAR_TOKEN }}
     
