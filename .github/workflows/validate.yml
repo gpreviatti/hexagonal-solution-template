@@ -4,9 +4,6 @@ on:
   pull_request:
   workflow_dispatch:
 
-env:
-  DOTNET_VERSION: "10.x"
-
 jobs:
   build:
     name: Build Template Solution
