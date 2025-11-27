@@ -16,7 +16,8 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
     where TUseCase : class
 {
     public Mock<IServiceProvider> mockServiceProvider = new();
-    public Mock<ILogger<TUseCase>> mockLogger = new();
+    public Mock<ILogger> mockLogger = new();
+    public Mock<ILoggerFactory> mockLoggerFactory = new();
     public Mock<IBaseRepository> mockRepository = new();
     public Mock<IProduceService> mockProduceService = new();
     public Mock<IValidator<TRequest>> mockValidator = new();
@@ -26,7 +27,11 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
     public void MockServiceProviderServices()
     {
         mockServiceProvider
-            .Setup(r => r.GetService(typeof(ILogger<TUseCase>)))
+            .Setup(r => r.GetService(typeof(ILoggerFactory)))
+            .Returns(mockLoggerFactory.Object);
+
+        mockLoggerFactory
+            .Setup(l => l.CreateLogger(It.IsAny<string>()))
             .Returns(mockLogger.Object);
 
         mockServiceProvider
