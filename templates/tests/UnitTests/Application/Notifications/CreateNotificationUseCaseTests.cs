@@ -90,14 +90,9 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
         _fixture.SetSuccessfulAddAsync<Notification>();
 
         // Act
-        var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
+        await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.True(result.Success);
-        Assert.Null(result.Message);
-        Assert.NotNull(result.Data);
-
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyFinishUseCaseLog();
         _fixture.VerifyFailedToCreateNotificationLog(0);
@@ -112,13 +107,9 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
         _fixture.SetFailedValidator(request);
 
         // Act
-        var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
+        await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
 
         // Assert
-        Assert.False(result.Success);
-        Assert.NotNull(result.Message);
-        Assert.NotEmpty(result.Message);
-
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyFinishUseCaseLog(0);
         _fixture.VerifyFailedToCreateNotificationLog(0);
@@ -134,14 +125,9 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
         _fixture.SetFailedAddAsync<Notification>();
 
         // Act
-        var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
+        await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
 
         // Assert
-        Assert.False(result.Success);
-        Assert.NotNull(result.Message);
-        Assert.NotEmpty(result.Message);
-        Assert.Equal("Failed to create notification.", result.Message);
-
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyFinishUseCaseLog();
         _fixture.VerifyFailedToCreateNotificationLog(1);

@@ -24,10 +24,9 @@ public sealed class CreateNotificationRequestValidator : AbstractValidator<Creat
     }
 }
 
-public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider) 
-    : BaseInOutUseCase<CreateNotificationRequest, BaseResponse<NotificationDto>>(serviceProvider)
+public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider) : BaseInUseCase<CreateNotificationRequest>(serviceProvider)
 {
-    public override async Task<BaseResponse<NotificationDto>> HandleInternalAsync(
+    public override async Task HandleInternalAsync(
         CreateNotificationRequest request,
         CancellationToken cancellationToken
     )
@@ -49,9 +48,6 @@ public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider)
                 HandleMethodName,
                 request.CorrelationId
             );
-            return new(false, null, "Failed to create notification.");
         }
-
-        return new(true, notification);
     }
 }

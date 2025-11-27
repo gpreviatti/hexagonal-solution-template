@@ -10,7 +10,7 @@ using System.Diagnostics.Metrics;
 
 namespace Application.Common.UseCases;
 
-public interface IBaseInUseCase<TRequest>where TRequest : BaseRequest
+public interface IBaseInUseCase<TRequest> where TRequest : BaseRequest
 {
     Task HandleAsync(TRequest request, CancellationToken cancellationToken);
 }
@@ -65,6 +65,8 @@ public abstract class BaseInUseCase<TRequest> : IBaseInUseCase<TRequest> where T
             {
                 var errors = string.Join(", ", validationResult.Errors);
                 logger.LogError(errors);
+
+                return;
             }
         }
 
