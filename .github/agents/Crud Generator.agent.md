@@ -1,6 +1,6 @@
 ---
 description: 'Complete CRUD Generator for C# Hexagonal Architecture Projects'
-tools: ['edit', 'search', 'new', 'runCommands', 'runTasks', 'usages', 'problems', 'testFailure', 'runTests', 'microsoft-docs/*']
+tools: ['edit', 'search', 'new', 'runCommands', 'runTasks', 'microsoft-docs/*', 'usages', 'problems', 'testFailure', 'todos', 'runSubagent', 'runTests']
 ---
 
 # GitHub Copilot Custom Prompt - Complete CRUD Generator
@@ -176,22 +176,16 @@ public sealed record [Entity]Dto(
     DateTime? UpdatedAt,
     string? CreatedBy,
     string? UpdatedBy
-);
+) {
+    // Mapping from entity to DTO using implicit operator
+};
 ```
 
 ### Use Case Structure
 
 ```csharp
-public sealed class [Operation][Entity]UseCase(IServiceProvider serviceProvider) 
-    : BaseInOutUseCase<[Request], [Response], [Entity], [UseCase]>(
-        serviceProvider,
-        serviceProvider.GetService<IValidator<[Request]>>()
-    )
+public sealed class [Operation][Entity]UseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<[Request], [Response]>(serviceProvider)
 {
-    private const string ClassName = nameof([UseCase]);
-    public static Counter<int> [MetricName] = DefaultConfigurations.Meter
-        .CreateCounter<int>("[metric.name]", "[entity]", "Description");
-
     public override async Task<BaseResponse<[Response]>> HandleInternalAsync(
         [Request] request,
         CancellationToken cancellationToken
@@ -216,7 +210,7 @@ internal static class [Entity]Endpoints
 
         // GET /{id}
         [entity]Group.MapGet("/{id}", async (
-            [FromServices] IBaseInOutUseCase<Get[Entity]Request, BaseResponse<[Entity]Dto>, Get[Entity]UseCase> useCase,
+            [FromServices] IBaseInOutUseCase<Get[Entity]Request, BaseResponse<[Entity]Dto>> useCase,
             [FromHeader] Guid correlationId,
             int id,
             CancellationToken cancellationToken
@@ -368,7 +362,6 @@ tests/LoadTests/scenarios/
 
 ### Error Handling
 
-- Use `response.SetMessage()` for user-friendly messages
 - Log warnings for business rule violations
 - Log errors for technical failures
 - Return appropriate HTTP status codes
@@ -398,13 +391,6 @@ tests/LoadTests/scenarios/
 - Include both HTTP and gRPC scenarios where applicable
 - Test with appropriate load levels (VUs and duration)
 - Include graceful stop periods
-
-### Metrics Implementation
-
-- Create static Counter fields in each use case
-- Use descriptive metric names and descriptions
-- Increment counters after successful operations
-- Follow existing metric naming patterns
 
 ### Testing Requirements
 
@@ -473,5 +459,6 @@ internal sealed class [Entity]DbMapping : BaseDbMapping<[Entity]>
 - Include proper error handling in consumers
 - Use WebApplicationFactory collection definitions for integration tests
 - Create comprehensive load test scenarios covering all endpoints
+- Use #tool:todos to map track any pending tasks
 
 **Analyze existing @workspace files to understand exact patterns and replicate them faithfully for the new entity across all layers: Application, WebApp, Infrastructure (if needed), and comprehensive testing.**
