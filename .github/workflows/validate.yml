@@ -25,3 +25,13 @@ jobs:
       dotnet_version: "10.x"
       stryker_enable: false
       dotnet_test_verbosity: 'd'
+  
+  sonar-scanner:
+    name: SonarQube Scanner
+    needs: build
+    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-sonar-scanner.yml@v1
+    with:
+      project: "hexagonal-solution-template"
+      organization: "gpreviatti"
+      sonar_token: ${{ secrets.SONAR_TOKEN }}
+    
