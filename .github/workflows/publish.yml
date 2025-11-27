@@ -2,9 +2,6 @@ name: Publish template in Nuget.org
 
 on: 
   workflow_dispatch:
-    
-env:
-  DOTNET_VERSION: "10.x"
 
 jobs:
   validate:
@@ -16,7 +13,7 @@ jobs:
       application_stryker_config_path: "./templates/tests/UnitTests/stryker-config-application.json"
       integration_test_project_path: "./templates/tests/IntegrationTests"
       docker_compose_file_path: "./templates/docker-compose.yml"
-      dotnet_version: "$env.DOTNET_VERSION"
+      dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
       stryker_enable: false
 
   pack:
@@ -25,6 +22,6 @@ jobs:
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-pack.yml@v1
     with:
       package_version: "10.0.0"
-      dotnet_version: "$env.DOTNET_VERSION"
+      dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
     secrets:
       nuget_api_key: ${{ secrets.NUGET_API_KEY }}
