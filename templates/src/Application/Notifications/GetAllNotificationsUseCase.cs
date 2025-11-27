@@ -2,17 +2,12 @@ using Application.Common.Constants;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Notifications;
-using FluentValidation;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Notifications;
 
-public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
-    : BaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<NotificationDto>, Notification, GetAllNotificationsUseCase>(
-        serviceProvider,
-        serviceProvider.GetRequiredService<IValidator<BasePaginatedRequest>>()
-    )
+public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider) 
+    : BaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<NotificationDto>>(serviceProvider)
 {
     public override async Task<BasePaginatedResponse<NotificationDto>> HandleInternalAsync(
         BasePaginatedRequest request,

@@ -2,16 +2,12 @@ using Application.Common.Constants;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Orders;
-using FluentValidation;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Orders;
 
-public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<OrderDto>, Order, GetAllOrdersUseCase>(
-    serviceProvider,
-    serviceProvider.GetRequiredService<IValidator<BasePaginatedRequest>>()
-)
+public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) 
+    : BaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<OrderDto>>(serviceProvider)
 {
     public override async Task<BasePaginatedResponse<OrderDto>> HandleInternalAsync(
         BasePaginatedRequest request,

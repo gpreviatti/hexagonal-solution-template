@@ -3,7 +3,6 @@ using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Notifications;
 using FluentValidation;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Notifications;
@@ -25,11 +24,8 @@ public sealed class CreateNotificationRequestValidator : AbstractValidator<Creat
     }
 }
 
-public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider)
-    : BaseInOutUseCase<CreateNotificationRequest, BaseResponse<NotificationDto>, Notification, CreateNotificationUseCase>(
-        serviceProvider,
-        serviceProvider.GetRequiredService<IValidator<CreateNotificationRequest>>()
-    )
+public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider) 
+    : BaseInOutUseCase<CreateNotificationRequest, BaseResponse<NotificationDto>>(serviceProvider)
 {
     public override async Task<BaseResponse<NotificationDto>> HandleInternalAsync(
         CreateNotificationRequest request,

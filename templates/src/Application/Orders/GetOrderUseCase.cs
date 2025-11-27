@@ -3,7 +3,6 @@ using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Orders;
 using FluentValidation;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Orders;
@@ -18,10 +17,8 @@ public sealed class GetOrderRequestValidator : AbstractValidator<GetOrderRequest
     }
 }
 
-public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>, Order, GetOrderUseCase>(
-    serviceProvider,
-    serviceProvider.GetRequiredService<IValidator<GetOrderRequest>>()
-)
+public sealed class GetOrderUseCase(IServiceProvider serviceProvider) 
+    : BaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>>(serviceProvider)
 {
     public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(
         GetOrderRequest request,

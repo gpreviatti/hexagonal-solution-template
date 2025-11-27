@@ -1,6 +1,5 @@
 ﻿using Application.Common.Requests;
 using Application.Common.Repositories;
-using Domain.Common;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -11,32 +10,41 @@ using System.Diagnostics.Metrics;
 
 namespace Application.Common.UseCases;
 
-public interface IBaseInUseCase<in TRequest, TEntity, TUseCase>
-    where TRequest : BaseRequest
-    where TEntity : DomainEntity
-    where TUseCase : class
+public interface IBaseInUseCase<TRequest>where TRequest : BaseRequest
 {
     Task HandleAsync(TRequest request, CancellationToken cancellationToken);
 }
 
-public abstract class BaseInUseCase<TRequest, TEntity, TUseCase>(
-    IServiceProvider serviceProvider,
-    IValidator<TRequest> validator = null!
-) : IBaseInUseCase<TRequest, TEntity, TUseCase>
-    where TRequest : BaseRequest
-    where TEntity : DomainEntity
-    where TUseCase : class
+public abstract class BaseInUseCase<TRequest> : IBaseInUseCase<TRequest> where TRequest : BaseRequest
 {
-    protected readonly ILogger<TUseCase> logger = serviceProvider.GetRequiredService<ILogger<TUseCase>>();
-    protected readonly IValidator<TRequest> validator = validator;
-    protected readonly IBaseRepository _repository = serviceProvider.GetRequiredService<IBaseRepository>();
-    protected readonly IHybridCacheService _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
-    private const string ClassName = nameof(BaseInUseCase<TRequest, TEntity, TUseCase>);
-    private const string HandleMethodName = nameof(HandleAsync);
-    private readonly Histogram<int> _useCaseExecuted = DefaultConfigurations.Meter
-        .CreateHistogram<int>($"{typeof(TUseCase).Name.ToLower()}.executed", "total", "Number of times the use case was executed");
-    private readonly Gauge<long> _useCaseExecutionElapsedTime = DefaultConfigurations.Meter
-        .CreateGauge<long>($"{typeof(TUseCase).Name.ToLower()}.elapsed", "milliseconds", "Elapsed time taken to execute the use case");
+    protected readonly IServiceProvider serviceProvider;
+    protected readonly ILogger logger;
+    protected readonly IBaseRepository _repository;
+    protected readonly IHybridCacheService _cache;
+    protected readonly IProduceService _produceService;
+    protected readonly Stopwatch _stopWatch = new();
+    protected string ClassName;
+    protected const string HandleMethodName = nameof(HandleAsync);
+    private readonly Histogram<int> _useCaseExecuted;
+    private readonly Gauge<long> _useCaseExecutionElapsedTime;
+
+    protected BaseInUseCase(IServiceProvider serviceProvider)
+    {
+        this.serviceProvider = serviceProvider;
+
+        logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(GetType());
+        _repository = serviceProvider.GetRequiredService<IBaseRepository>();
+        _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
+        _produceService = serviceProvider.GetRequiredService<IProduceService>();
+
+        ClassName = GetType().Name;
+
+        _useCaseExecuted = DefaultConfigurations.Meter
+            .CreateHistogram<int>($"{ClassName.ToLower()}.executed", "total", "Number of times the use case was executed");
+
+        _useCaseExecutionElapsedTime = DefaultConfigurations.Meter
+            .CreateGauge<long>($"{ClassName.ToLower()}.elapsed", "elapsed", "Elapsed time taken to execute the use case");
+    }
 
     public async Task HandleAsync(
         TRequest request,
@@ -49,6 +57,7 @@ public abstract class BaseInUseCase<TRequest, TEntity, TUseCase>(
             ClassName, HandleMethodName, request.CorrelationId
         );
 
+        var validator = serviceProvider.GetRequiredService<IValidator<TRequest>>();
         if (validator != null)
         {
             var validationResult = await validator.ValidateAsync(request, cancellationToken);

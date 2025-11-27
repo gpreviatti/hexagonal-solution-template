@@ -17,14 +17,14 @@ public static class ApplicationDependencyInjection
         services.AddValidatorsFromAssemblyContaining<CreateOrderRequestValidator>();
 
         // Orders
-        services.AddScoped<IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>, GetOrderUseCase>, GetOrderUseCase>();
-        services.AddScoped<IBaseInOutUseCase<CreateOrderRequest, BaseResponse<OrderDto>, CreateOrderUseCase>, CreateOrderUseCase>();
-        services.AddScoped<IBaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<OrderDto>, GetAllOrdersUseCase>, GetAllOrdersUseCase>();
+        services.AddScoped<IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>>, GetOrderUseCase>();
+        services.AddScoped<IBaseInOutUseCase<CreateOrderRequest, BaseResponse<OrderDto>>, CreateOrderUseCase>();
+        services.AddScoped<IBaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<OrderDto>>, GetAllOrdersUseCase>();
 
         // Notifications
-        services.AddScoped<IBaseInOutUseCase<CreateNotificationRequest, BaseResponse<NotificationDto>, CreateNotificationUseCase>, CreateNotificationUseCase>();
-        services.AddScoped<IBaseInOutUseCase<GetNotificationRequest, BaseResponse<NotificationDto>, GetNotificationUseCase>, GetNotificationUseCase>();
-        services.AddScoped<IBaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<NotificationDto>, GetAllNotificationsUseCase>, GetAllNotificationsUseCase>();
+        services.AddScoped<IBaseInOutUseCase<CreateNotificationRequest, BaseResponse<NotificationDto>>, CreateNotificationUseCase>();
+        services.AddScoped<IBaseInOutUseCase<GetNotificationRequest, BaseResponse<NotificationDto>>, GetNotificationUseCase>();
+        services.AddScoped<IBaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<NotificationDto>>, GetAllNotificationsUseCase>();
 
         return services;
     }
