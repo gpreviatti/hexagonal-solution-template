@@ -22,28 +22,28 @@ public abstract class BaseInUseCase<TRequest> : IBaseInUseCase<TRequest> where T
     protected readonly IBaseRepository _repository;
     protected readonly IHybridCacheService _cache;
     protected readonly IProduceService _produceService;
-    protected readonly Stopwatch _stopWatch = new();
     protected string ClassName;
-    protected const string HandleMethodName = nameof(HandleAsync);
     private readonly Histogram<int> _useCaseExecuted;
     private readonly Gauge<long> _useCaseExecutionElapsedTime;
+    protected readonly Stopwatch _stopWatch = new();
+    protected const string HandleMethodName = nameof(HandleAsync);
 
     protected BaseInUseCase(IServiceProvider serviceProvider)
     {
-        this.serviceProvider = serviceProvider;
+        var classType = GetType();
+        ClassName = classType.Name;
 
-        logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(GetType());
+        this.serviceProvider = serviceProvider;
+        logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(classType);
         _repository = serviceProvider.GetRequiredService<IBaseRepository>();
         _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
         _produceService = serviceProvider.GetRequiredService<IProduceService>();
 
-        ClassName = GetType().Name;
-
         _useCaseExecuted = DefaultConfigurations.Meter
-            .CreateHistogram<int>($"{ClassName.ToLower()}.executed", "total", "Number of times the use case was executed");
+            .CreateHistogram<int>($"{ClassName}.Executed", "total", "Number of times the use case was executed");
 
         _useCaseExecutionElapsedTime = DefaultConfigurations.Meter
-            .CreateGauge<long>($"{ClassName.ToLower()}.elapsed", "elapsed", "Elapsed time taken to execute the use case");
+            .CreateGauge<long>($"{ClassName}.Elapsed", "elapsed", "Elapsed time taken to execute the use case");
     }
 
     public async Task HandleAsync(
