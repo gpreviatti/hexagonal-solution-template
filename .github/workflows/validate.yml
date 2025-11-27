@@ -4,13 +4,16 @@ on:
   pull_request:
   workflow_dispatch:
 
+env:
+  DOTNET_VERSION: "10.x"
+
 jobs:
   build:
     name: Build Template Solution
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-build.yml@v1
     with:
       solution_path: "./templates"
-      dotnet_version: "10.x"
+      dotnet_version: "${{ env.DOTNET_VERSION }}"
 
   validate:
     name: Validate Template
@@ -22,7 +25,7 @@ jobs:
       application_stryker_config_path: "./templates/tests/UnitTests/stryker-config-application.json"
       integration_test_project_path: "./templates/tests/IntegrationTests"
       docker_compose_file_path: "./templates/docker-compose.yml"
-      dotnet_version: "10.x"
+      dotnet_version: "${{ env.DOTNET_VERSION }}"
       stryker_enable: false
       dotnet_test_verbosity: 'd'
   
@@ -33,6 +36,7 @@ jobs:
     with:
       project: "hexagonal-solution-template"
       organization: "gpreviatti"
+      dotnet_version: "${{ env.DOTNET_VERSION }}"
     secrets:
       sonar_token: ${{ secrets.SONAR_TOKEN }}
     
