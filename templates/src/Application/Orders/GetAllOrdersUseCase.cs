@@ -15,14 +15,18 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider)
     )
     {
         var (orders, totalRecords) = await _repository.GetAllPaginatedAsync<Order, OrderDto>(
+            request.CorrelationId,
             request.Page,
             request.PageSize,
-            request.CorrelationId,
             cancellationToken,
             request.SortBy,
             request.SortDescending,
             request.SearchByValues,
-            selector: o => o
+            selector: o => new OrderDto
+            {
+                Id = o.Id,
+                Total = o.Total
+            }
         );
 
         if (orders is null || !orders.Any())

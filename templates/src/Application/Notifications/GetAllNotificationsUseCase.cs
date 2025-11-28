@@ -15,14 +15,20 @@ public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
     )
     {
         var (notifications, totalRecords) = await _repository.GetAllPaginatedAsync<Notification, NotificationDto>(
+            request.CorrelationId,
             request.Page,
             request.PageSize,
-            request.CorrelationId,
             cancellationToken,
             request.SortBy,
             request.SortDescending,
             request.SearchByValues,
-            selector: n => n
+            selector: n => new NotificationDto
+            {
+                Id = n.Id,
+                Message = n.Message,
+                NotificationType = n.NotificationType,
+                NotificationStatus = n.NotificationStatus,
+            }
         );
 
         if (notifications is null || !notifications.Any())

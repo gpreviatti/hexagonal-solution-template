@@ -30,7 +30,13 @@ public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)
         var notification = await _repository.GetByIdAsNoTrackingAsync<Notification, NotificationDto>(
             request.Id,
             request.CorrelationId,
-            n => n,
+            n => new NotificationDto
+            {
+                Id = n.Id,
+                Message = n.Message,
+                NotificationType = n.NotificationType,
+                NotificationStatus = n.NotificationStatus,
+            },
             cancellationToken
         );
 

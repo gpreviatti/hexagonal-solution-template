@@ -28,12 +28,22 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider)
         var order = await _repository.GetByIdAsNoTrackingAsync<Order, OrderDto>(
             request.Id,
             request.CorrelationId,
-            o => o,
+            o => new()
+            {
+                Id = o.Id,
+                Total = o.Total,
+                Items = o.Items.Select(i => new ItemDto
+                {
+                    Id = i.Id,
+                    Name = i.Name,
+                    Value = i.Value
+                }).ToArray()
+            },
             cancellationToken,
             o => o.Items
         );
 
-        if (order is null || order.Equals(default))
+        if (order is null)
         {
             logger.LogWarning(
                 DefaultApplicationMessages.DefaultApplicationMessage + "Order not found.",

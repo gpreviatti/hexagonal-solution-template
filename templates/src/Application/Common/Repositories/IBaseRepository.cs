@@ -61,9 +61,9 @@ public interface IBaseRepository
         params Expression<Func<TEntity, object>>[]? includes
     ) where TEntity : DomainEntity;
     Task<(IEnumerable<TEntity> Items, int TotalRecords)> GetAllPaginatedAsync<TEntity>(
+        Guid correlationId,
         int page,
         int pageSize,
-        Guid correlationId,
         CancellationToken cancellationToken,
         string? sortBy = null,
         bool sortDescending = false,
@@ -72,9 +72,9 @@ public interface IBaseRepository
     ) where TEntity : DomainEntity;
 
     Task<(IEnumerable<TResult> Items, int TotalRecords)> GetAllPaginatedAsync<TEntity, TResult>(
+        Guid correlationId,
         int page,
         int pageSize,
-        Guid correlationId,
         CancellationToken cancellationToken,
         string? sortBy = null,
         bool sortDescending = false,

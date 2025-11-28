@@ -72,7 +72,18 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
             return response;
         }
 
-        response = new(true, newOrder);
+        response = new(true, new OrderDto()
+        {
+            Id = newOrder.Id,
+            Total = newOrder.Total,
+            Items = [.. newOrder.Items.Select(i => new ItemDto
+            {
+                Id = i.Id,
+                Name = i.Name,
+                Description = i.Description,
+                Value = i.Value
+            })]
+        });
 
         await CreateNotificationAsync(correlationId, "Success", response, cancellationToken);
 

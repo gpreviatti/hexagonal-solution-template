@@ -43,7 +43,6 @@ public class OrderService(
             Data = new()
             {
                 Id = response.Data.Id,
-                Description = response.Data.Description,
                 Total = double.TryParse(response.Data.Total.ToString(CultureInfo.InvariantCulture), NumberStyles.Any, CultureInfo.InvariantCulture, out var total) ? total : 0.0
             }
         };
@@ -52,7 +51,6 @@ public class OrderService(
         {
             Id = i.Id,
             Name = i.Name,
-            Description = i.Description,
             Value = double.TryParse(i.Value.ToString(CultureInfo.InvariantCulture), NumberStyles.Any, CultureInfo.InvariantCulture, out var value) ? value : 0.0
         }));
 

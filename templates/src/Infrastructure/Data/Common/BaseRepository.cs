@@ -31,13 +31,6 @@ public class BaseRepository(ILogger<BaseRepository> logger, MyDbContext dbContex
 
         var dbEntitySet = dbContext.Set<TEntity>();
 
-        logger.LogDebug(
-            "[BaseRepository] | [{Method}] | CorrelationId: {CorrelationId} | DbContext set retrieved in {ElapsedMilliseconds} ms.",
-            methodName,
-            correlationId,
-            _stopwatch.ElapsedMilliseconds
-        );
-
         var result = await query.Invoke(dbEntitySet);
 
         logger.LogDebug(
@@ -232,9 +225,9 @@ public class BaseRepository(ILogger<BaseRepository> logger, MyDbContext dbContex
     }, correlationId);
 
     public async Task<(IEnumerable<TEntity> Items, int TotalRecords)> GetAllPaginatedAsync<TEntity>(
+        Guid correlationId,
         int page,
         int pageSize,
-        Guid correlationId,
         CancellationToken cancellationToken,
         string? sortBy = null!,
         bool sortDescending = false,
@@ -272,9 +265,9 @@ public class BaseRepository(ILogger<BaseRepository> logger, MyDbContext dbContex
     }, correlationId);
 
     public async Task<(IEnumerable<TResult> Items, int TotalRecords)> GetAllPaginatedAsync<TEntity, TResult>(
+        Guid correlationId,
         int page,
         int pageSize,
-        Guid correlationId,
         CancellationToken cancellationToken,
         string? sortBy = null!,
         bool sortDescending = false,
