@@ -46,7 +46,7 @@ public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
         var result = await _fixture!.repository!.GetByIdAsNoTrackingAsync<Order, OrderDto>(
             id,
             Guid.NewGuid(),
-            o => new OrderDto() {
+            selector: o => new OrderDto() {
                 Id = o.Id,
                 Total = o.Total,
                 Items = o.Items.Select(i => new ItemDto
@@ -101,7 +101,7 @@ public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
             pageNumber,
             pageSize,
             _fixture.cancellationToken,
-            o => new OrderDto() {
+            selector: o => new OrderDto() {
                 Id = o.Id,
                 Total = o.Total,
                 Items = o.Items.Select(i => new ItemDto

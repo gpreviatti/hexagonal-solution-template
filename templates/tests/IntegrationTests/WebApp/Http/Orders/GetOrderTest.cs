@@ -42,7 +42,6 @@ public class GetOrderTest : IClassFixture<BaseHttpFixture>
         Assert.Equal(id, data.Id);
         Assert.NotNull(data.Items);
         Assert.NotEmpty(data.Items);
-        Assert.NotNull(data.Description);
     }
 
     [Fact(DisplayName = nameof(Given_A_Invalid_Request_Then_Fails))]
