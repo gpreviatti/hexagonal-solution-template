@@ -27,6 +27,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : IBaseInOutUseC
     protected readonly IHybridCacheService _cache;
     protected readonly IProduceService _produceService;
     protected string ClassName;
+    private readonly IValidator<TRequest> _validator;
     private readonly Histogram<int> _useCaseExecuted;
     private readonly Gauge<long> _useCaseExecutionElapsedTime;
     protected readonly Stopwatch _stopWatch = new();
@@ -42,6 +43,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : IBaseInOutUseC
         _repository = serviceProvider.GetRequiredService<IBaseRepository>();
         _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
         _produceService = serviceProvider.GetRequiredService<IProduceService>();
+        _validator = serviceProvider.GetRequiredService<IValidator<TRequest>>();
 
         _useCaseExecuted = DefaultConfigurations.Meter
             .CreateHistogram<int>($"{ClassName}.Executed", "total", "Number of times the use case was executed");
@@ -63,10 +65,9 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : IBaseInOutUseC
         );
         TResponseData response;
 
-        var validator = serviceProvider.GetRequiredService<IValidator<TRequest>>();
-        if (validator != null)
+        if (_validator != null)
         {
-            var validationResult = await validator.ValidateAsync(request, cancellationToken);
+            var validationResult = await _validator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid)
             {
                 string errors = string.Join(", ", validationResult.Errors);

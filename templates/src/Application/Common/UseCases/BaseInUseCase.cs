@@ -22,6 +22,7 @@ public abstract class BaseInUseCase<TRequest> : IBaseInUseCase<TRequest> where T
     protected readonly IBaseRepository _repository;
     protected readonly IHybridCacheService _cache;
     protected readonly IProduceService _produceService;
+    private readonly IValidator<TRequest> _validator;
     protected string ClassName;
     private readonly Histogram<int> _useCaseExecuted;
     private readonly Gauge<long> _useCaseExecutionElapsedTime;
@@ -38,6 +39,7 @@ public abstract class BaseInUseCase<TRequest> : IBaseInUseCase<TRequest> where T
         _repository = serviceProvider.GetRequiredService<IBaseRepository>();
         _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
         _produceService = serviceProvider.GetRequiredService<IProduceService>();
+        _validator = serviceProvider.GetRequiredService<IValidator<TRequest>>();
 
         _useCaseExecuted = DefaultConfigurations.Meter
             .CreateHistogram<int>($"{ClassName}.Executed", "total", "Number of times the use case was executed");
@@ -57,10 +59,9 @@ public abstract class BaseInUseCase<TRequest> : IBaseInUseCase<TRequest> where T
             ClassName, HandleMethodName, request.CorrelationId
         );
 
-        var validator = serviceProvider.GetRequiredService<IValidator<TRequest>>();
-        if (validator != null)
+        if (_validator != null)
         {
-            var validationResult = await validator.ValidateAsync(request, cancellationToken);
+            var validationResult = await _validator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid)
             {
                 var errors = string.Join(", ", validationResult.Errors);
