@@ -14,14 +14,15 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider)
         CancellationToken cancellationToken
     )
     {
-        var (orders, totalRecords) = await _repository.GetAllPaginatedAsync<Order>(
+        var (orders, totalRecords) = await _repository.GetAllPaginatedAsync<Order, OrderDto>(
             request.Page,
             request.PageSize,
             request.CorrelationId,
             cancellationToken,
             request.SortBy,
             request.SortDescending,
-            request.SearchByValues
+            request.SearchByValues,
+            selector: o => o
         );
 
         if (orders is null || !orders.Any())
@@ -37,11 +38,6 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider)
 
         var totalPages = (int)Math.Ceiling(totalRecords / (double)request.PageSize);
 
-        return new(
-            true,
-            totalPages,
-            totalRecords,
-            orders.Select(o => (OrderDto) o)
-        );
+        return new(true, totalPages, totalRecords, orders);
     }
 }

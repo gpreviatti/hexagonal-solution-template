@@ -14,14 +14,15 @@ public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
         CancellationToken cancellationToken
     )
     {
-        var (notifications, totalRecords) = await _repository.GetAllPaginatedAsync<Notification>(
+        var (notifications, totalRecords) = await _repository.GetAllPaginatedAsync<Notification, NotificationDto>(
             request.Page,
             request.PageSize,
             request.CorrelationId,
             cancellationToken,
             request.SortBy,
             request.SortDescending,
-            request.SearchByValues
+            request.SearchByValues,
+            selector: n => n
         );
 
         if (notifications is null || !notifications.Any())
@@ -37,7 +38,7 @@ public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
 
         var totalPages = (int)Math.Ceiling(totalRecords / (double)request.PageSize);
 
-        var notificationDtos = notifications.Select(notification => (NotificationDto)notification);
+        var notificationDtos = notifications.Select(notification => notification);
 
         return new(true, totalPages, totalRecords, notificationDtos);
     }

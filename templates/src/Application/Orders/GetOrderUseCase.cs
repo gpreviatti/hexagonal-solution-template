@@ -25,9 +25,15 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider)
         CancellationToken cancellationToken
     )
     {
-        var order = await _repository.GetByIdAsNoTrackingAsync<Order>(request.Id, request.CorrelationId, cancellationToken, o => o.Items);
+        var order = await _repository.GetByIdAsNoTrackingAsync<Order, OrderDto>(
+            request.Id,
+            request.CorrelationId,
+            o => o,
+            cancellationToken,
+            o => o.Items
+        );
 
-        if (order is null || order.Equals(default(Order)))
+        if (order is null || order.Equals(default))
         {
             logger.LogWarning(
                 DefaultApplicationMessages.DefaultApplicationMessage + "Order not found.",

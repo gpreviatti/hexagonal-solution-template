@@ -27,7 +27,12 @@ public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)
         CancellationToken cancellationToken
     )
     {
-        var notification = await _repository.GetByIdAsNoTrackingAsync(request.Id, request.CorrelationId, cancellationToken, Array.Empty<Expression<Func<Notification, object>>>());
+        var notification = await _repository.GetByIdAsNoTrackingAsync<Notification, NotificationDto>(
+            request.Id,
+            request.CorrelationId,
+            n => n,
+            cancellationToken
+        );
 
         if (notification is null)
         {
