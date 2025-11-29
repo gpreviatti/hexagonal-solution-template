@@ -1,5 +1,4 @@
 ﻿using Application.Common.Requests;
-using Application.Common.Repositories;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -16,7 +15,6 @@ public interface IBaseInUseCase<TRequest> where TRequest : BaseRequest
 
 public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TRequest> where TRequest : BaseRequest
 {
-    protected readonly IBaseRepository _repository;
     protected readonly IHybridCacheService _cache;
     protected readonly IProduceService _produceService;
     private readonly IValidator<TRequest> _validator;
@@ -26,7 +24,6 @@ public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TReq
 
     protected BaseInUseCase(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _repository = serviceProvider.GetRequiredService<IBaseRepository>();
         _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
         _produceService = serviceProvider.GetRequiredService<IProduceService>();
         _validator = serviceProvider.GetRequiredService<IValidator<TRequest>>();

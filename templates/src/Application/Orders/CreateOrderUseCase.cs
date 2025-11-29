@@ -1,9 +1,11 @@
 ﻿using Application.Common.Constants;
 using Application.Common.Messages;
+using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Orders;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Orders;
@@ -35,6 +37,9 @@ public sealed class CreateOrderRequestValidator : AbstractValidator<CreateOrderR
 public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) 
     : BaseInOutUseCase<CreateOrderRequest, BaseResponse<OrderDto>>(serviceProvider)
 {
+    private readonly IBaseRepository<Order> _repository = serviceProvider
+        .GetRequiredService<IBaseRepository<Order>>();
+
     public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(
         CreateOrderRequest request,
         CancellationToken cancellationToken

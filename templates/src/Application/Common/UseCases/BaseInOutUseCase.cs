@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.Metrics;
 using Application.Common.Constants;
-using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Common.Services;
 using FluentValidation;
@@ -20,7 +19,6 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
     where TRequest : BaseRequest
     where TResponseData : BaseResponse
 {
-    protected readonly IBaseRepository _repository;
     protected readonly IHybridCacheService _cache;
     protected readonly IProduceService _produceService;
     private readonly IValidator<TRequest> _validator;
@@ -30,7 +28,6 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
 
     protected BaseInOutUseCase(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _repository = serviceProvider.GetRequiredService<IBaseRepository>();
         _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
         _produceService = serviceProvider.GetRequiredService<IProduceService>();
         _validator = serviceProvider.GetRequiredService<IValidator<TRequest>>();

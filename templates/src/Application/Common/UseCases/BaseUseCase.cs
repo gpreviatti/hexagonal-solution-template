@@ -9,7 +9,6 @@ public abstract class BaseUseCase
     protected readonly IServiceProvider serviceProvider;
     protected readonly ILogger logger;
     protected readonly Stopwatch stopWatch = new();
-    
     protected string ClassName;
 
     protected BaseUseCase(IServiceProvider serviceProvider)
@@ -18,6 +17,7 @@ public abstract class BaseUseCase
         ClassName = classType.Name;
 
         this.serviceProvider = serviceProvider;
+
         logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(classType);
     }
 }

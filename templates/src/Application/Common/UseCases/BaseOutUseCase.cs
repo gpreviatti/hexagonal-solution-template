@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.Metrics;
 using Application.Common.Constants;
-using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Common.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +14,6 @@ public interface IBaseOutUseCase<TResponseData> where TResponseData : BaseRespon
 
 public abstract class BaseOutUseCase<TResponseData> : BaseUseCase, IBaseOutUseCase<TResponseData> where TResponseData : BaseResponse
 {
-    protected readonly IBaseRepository _repository;
     protected readonly IHybridCacheService _cache;
     protected readonly IProduceService _produceService;
     private readonly Histogram<int> _useCaseExecuted;
@@ -24,7 +22,6 @@ public abstract class BaseOutUseCase<TResponseData> : BaseUseCase, IBaseOutUseCa
 
     protected BaseOutUseCase(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _repository = serviceProvider.GetRequiredService<IBaseRepository>();
         _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
         _produceService = serviceProvider.GetRequiredService<IProduceService>();
 
