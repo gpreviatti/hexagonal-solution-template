@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Application.Common.Services;
 using Application.Common.Constants;
-using System.Diagnostics;
 using System.Diagnostics.Metrics;
 
 namespace Application.Common.UseCases;
@@ -15,27 +14,18 @@ public interface IBaseInUseCase<TRequest> where TRequest : BaseRequest
     Task HandleAsync(TRequest request, CancellationToken cancellationToken);
 }
 
-public abstract class BaseInUseCase<TRequest> : IBaseInUseCase<TRequest> where TRequest : BaseRequest
+public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TRequest> where TRequest : BaseRequest
 {
-    protected readonly IServiceProvider serviceProvider;
-    protected readonly ILogger logger;
     protected readonly IBaseRepository _repository;
     protected readonly IHybridCacheService _cache;
     protected readonly IProduceService _produceService;
     private readonly IValidator<TRequest> _validator;
-    protected string ClassName;
     private readonly Histogram<int> _useCaseExecuted;
     private readonly Gauge<long> _useCaseExecutionElapsedTime;
-    protected readonly Stopwatch _stopWatch = new();
     protected const string HandleMethodName = nameof(HandleAsync);
 
-    protected BaseInUseCase(IServiceProvider serviceProvider)
+    protected BaseInUseCase(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        var classType = GetType();
-        ClassName = classType.Name;
-
-        this.serviceProvider = serviceProvider;
-        logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(classType);
         _repository = serviceProvider.GetRequiredService<IBaseRepository>();
         _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
         _produceService = serviceProvider.GetRequiredService<IProduceService>();
@@ -53,7 +43,8 @@ public abstract class BaseInUseCase<TRequest> : IBaseInUseCase<TRequest> where T
         CancellationToken cancellationToken
     )
     {
-        var stopWatch = Stopwatch.StartNew();
+        stopWatch.Restart();
+
         logger.LogInformation(
             DefaultApplicationMessages.StartToExecuteUseCase,
             ClassName, HandleMethodName, request.CorrelationId

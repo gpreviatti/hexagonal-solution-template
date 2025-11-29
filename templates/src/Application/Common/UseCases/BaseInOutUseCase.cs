@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Diagnostics.Metrics;
+﻿using System.Diagnostics.Metrics;
 using Application.Common.Constants;
 using Application.Common.Repositories;
 using Application.Common.Requests;
@@ -17,29 +16,20 @@ public interface IBaseInOutUseCase<in TRequest, TResponseData>
     Task<TResponseData> HandleAsync(TRequest request, CancellationToken cancellationToken);
 }
 
-public abstract class BaseInOutUseCase<TRequest, TResponseData> : IBaseInOutUseCase<TRequest, TResponseData>
+public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, IBaseInOutUseCase<TRequest, TResponseData>
     where TRequest : BaseRequest
     where TResponseData : BaseResponse
 {
-    protected readonly IServiceProvider serviceProvider;
-    protected readonly ILogger logger;
     protected readonly IBaseRepository _repository;
     protected readonly IHybridCacheService _cache;
     protected readonly IProduceService _produceService;
-    protected string ClassName;
     private readonly IValidator<TRequest> _validator;
     private readonly Histogram<int> _useCaseExecuted;
     private readonly Gauge<long> _useCaseExecutionElapsedTime;
-    protected readonly Stopwatch _stopWatch = new();
     protected const string HandleMethodName = nameof(HandleAsync);
 
-    protected BaseInOutUseCase(IServiceProvider serviceProvider)
+    protected BaseInOutUseCase(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        var classType = GetType();
-        ClassName = classType.Name;
-
-        this.serviceProvider = serviceProvider;
-        logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(classType);
         _repository = serviceProvider.GetRequiredService<IBaseRepository>();
         _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
         _produceService = serviceProvider.GetRequiredService<IProduceService>();
@@ -57,7 +47,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : IBaseInOutUseC
         CancellationToken cancellationToken
     )
     {
-        _stopWatch.Restart();
+        stopWatch.Restart();
 
         logger.LogInformation(
             DefaultApplicationMessages.StartToExecuteUseCase,
@@ -91,11 +81,11 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : IBaseInOutUseC
 
         logger.LogInformation(
             DefaultApplicationMessages.FinishedExecutingUseCase,
-            ClassName, HandleMethodName, request.CorrelationId, _stopWatch.ElapsedMilliseconds
+            ClassName, HandleMethodName, request.CorrelationId, stopWatch.ElapsedMilliseconds
         );
 
         _useCaseExecuted.Record(1);
-        _useCaseExecutionElapsedTime.Record(_stopWatch.ElapsedMilliseconds);
+        _useCaseExecutionElapsedTime.Record(stopWatch.ElapsedMilliseconds);
 
         return response;
     }

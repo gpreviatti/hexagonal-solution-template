@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Diagnostics.Metrics;
+﻿using System.Diagnostics.Metrics;
 using Application.Common.Constants;
 using Application.Common.Repositories;
 using Application.Common.Requests;
@@ -14,26 +13,17 @@ public interface IBaseOutUseCase<TResponseData> where TResponseData : BaseRespon
     Task<TResponseData> HandleAsync(CancellationToken cancellationToken);
 }
 
-public abstract class BaseOutUseCase<TResponseData>: IBaseOutUseCase<TResponseData> where TResponseData : BaseResponse
+public abstract class BaseOutUseCase<TResponseData> : BaseUseCase, IBaseOutUseCase<TResponseData> where TResponseData : BaseResponse
 {
-    protected readonly IServiceProvider serviceProvider;
-    protected readonly ILogger logger;
     protected readonly IBaseRepository _repository;
     protected readonly IHybridCacheService _cache;
     protected readonly IProduceService _produceService;
-    protected string ClassName;
     private readonly Histogram<int> _useCaseExecuted;
     private readonly Gauge<long> _useCaseExecutionElapsedTime;
-    protected readonly Stopwatch _stopWatch = new();
     protected const string HandleMethodName = nameof(HandleAsync);
 
-    protected BaseOutUseCase(IServiceProvider serviceProvider)
+    protected BaseOutUseCase(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        var classType = GetType();
-        ClassName = classType.Name;
-
-        this.serviceProvider = serviceProvider;
-        logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(classType);
         _repository = serviceProvider.GetRequiredService<IBaseRepository>();
         _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
         _produceService = serviceProvider.GetRequiredService<IProduceService>();
@@ -47,7 +37,7 @@ public abstract class BaseOutUseCase<TResponseData>: IBaseOutUseCase<TResponseDa
 
     public async Task<TResponseData> HandleAsync(CancellationToken cancellationToken)
     {
-        var stopWatch = Stopwatch.StartNew();
+        stopWatch.Restart();
         var correlationId = Guid.NewGuid();
         logger.LogInformation(DefaultApplicationMessages.StartToExecuteUseCase, ClassName, HandleMethodName, correlationId);
 
