@@ -1,3 +1,4 @@
+using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Notifications;
 using Domain.Notifications;
@@ -8,15 +9,23 @@ namespace UnitTests.Application.Notifications;
 
 public sealed class GetAllNotificationsUseCaseFixture : BaseApplicationFixture<BasePaginatedRequest, GetAllNotificationsUseCase>
 {
+    public Mock<IBaseRepository<Notification>> mockNotificationRepository = new();
     public GetAllNotificationsUseCaseFixture()
     {
         MockServiceProviderServices();
+
         useCase = new(mockServiceProvider.Object);
+
+        mockServiceProvider
+            .Setup(r => r.GetService(typeof(IBaseRepository<Notification>)))
+            .Returns(mockNotificationRepository.Object);
     }
 
     public new void ClearInvocations()
     {
         base.ClearInvocations();
+
+        mockNotificationRepository.Reset();
     }
 
     public new BasePaginatedRequest SetValidBasePaginatedRequest() =>
@@ -45,7 +54,7 @@ public sealed class GetAllNotificationsUseCaseTests : IClassFixture<GetAllNotifi
         _fixture.SetSuccessfulValidator(request);
         var expectedNotifications = _fixture.autoFixture.CreateMany<Notification>(totalRecords);
 
-        _fixture.SetValidGetAllPaginatedAsyncNoIncludes(expectedNotifications, totalRecords);
+        _fixture.mockNotificationRepository.SetValidGetAllPaginatedAsyncNoIncludes(expectedNotifications, totalRecords);
 
         // Act
         var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
@@ -90,7 +99,7 @@ public sealed class GetAllNotificationsUseCaseTests : IClassFixture<GetAllNotifi
         // Arrange
         var request = _fixture.SetValidBasePaginatedRequest();
         _fixture.SetSuccessfulValidator(request);
-        _fixture.SetInvalidGetAllPaginatedAsync<Notification>();
+        _fixture.mockNotificationRepository.SetInvalidGetAllPaginatedAsync();
 
         // Act
         var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);

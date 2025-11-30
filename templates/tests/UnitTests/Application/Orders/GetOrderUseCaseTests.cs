@@ -1,3 +1,4 @@
+using Application.Common.Repositories;
 using Application.Orders;
 using Domain.Orders;
 using Microsoft.Extensions.Logging;
@@ -7,15 +8,23 @@ namespace UnitTests.Application.Orders;
 
 public sealed class GetOrderUseCaseFixture : BaseApplicationFixture<GetOrderRequest, GetOrderUseCase>
 {
+    public Mock<IBaseRepository<Order>> mockOrderRepository = new();
+
     public GetOrderUseCaseFixture()
     {
         MockServiceProviderServices();
+
+        mockServiceProvider
+            .Setup(r => r.GetService(typeof(IBaseRepository<Order>)))
+            .Returns(mockOrderRepository.Object);
+
         useCase = new(mockServiceProvider.Object);
     }
 
     public new void ClearInvocations()
     {
         base.ClearInvocations();
+        mockOrderRepository.Reset();
     }
 
     public GetOrderRequest SetValidRequest() => new(Guid.NewGuid(), autoFixture.Create<int>());
@@ -40,12 +49,8 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         // Arrange
         var request = _fixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
-        var expectedOrder = new Order("John's Order",
-        [
-            new("Item 1", "Description 1", 10.0m),
-            new("Item 2", "Description 2", 20.0m)
-        ]);
-        _fixture.SetupGetByIdAsNoTrackingAsync(expectedOrder);
+        var expectedOrder = _fixture.autoFixture.Create<OrderDto>();
+        _fixture.mockOrderRepository.SetupGetByIdAsNoTrackingAsync(expectedOrder);
 
         // Act
         var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
@@ -59,7 +64,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         Assert.Equal(expectedOrder.Description, result.Data.Description);
         Assert.Equal(expectedOrder.Total, result.Data.Total);
         Assert.NotNull(result.Data.Items);
-        Assert.Equal(expectedOrder.Items.Count, result.Data.Items!.Count());
+        Assert.Equal(expectedOrder.Items?.Count, result.Data.Items!.Count);
 
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyOrderNotFoundLog(0);
@@ -72,8 +77,14 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         // Arrange
         var request = _fixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
-        var expectedOrder = new Order("John's Order", []);
-        _fixture.SetupGetByIdAsNoTrackingAsync(expectedOrder);
+        OrderDto expectedOrder = new()
+        {
+            Id = 1,
+            Description = "Test Order",
+            Total = 1000m,
+            Items = []
+        };
+        _fixture.mockOrderRepository.SetupGetByIdAsNoTrackingAsync(expectedOrder);
 
         // Act
         var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
@@ -86,7 +97,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         Assert.Equal(expectedOrder.Id, result.Data.Id);
         Assert.Equal(expectedOrder.Description, result.Data.Description);
         Assert.Equal(expectedOrder.Total, result.Data.Total);
-        Assert.Equal(0, result.Data.Items?.Count());
+        Assert.Equal(0, result.Data.Items?.Count);
 
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyOrderNotFoundLog(0);
