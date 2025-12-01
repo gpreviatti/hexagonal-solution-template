@@ -31,6 +31,7 @@ public class ProducerService : IProduceService
 
     public async Task HandleAsync<TMessage>(
         TMessage message,
+        CancellationToken cancellationToken,
         string queue = "",
         string exchange = ""
     ) where TMessage : BaseMessage
@@ -39,8 +40,8 @@ public class ProducerService : IProduceService
 
         _stopWatch.Restart();
 
-        using var connection = await _factory.CreateConnectionAsync();
-        using var channel = await connection.CreateChannelAsync();
+        using var connection = await _factory.CreateConnectionAsync(cancellationToken);
+        using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
 
         _logger.LogInformation(
             "[{ClassName}] | [HandleAsync] | CorrelationId: {CorrelationId} | Publishing message: {MessageType}",
@@ -50,7 +51,8 @@ public class ProducerService : IProduceService
         await channel.BasicPublishAsync(
             exchange: exchange,
             routingKey: queue,
-            body: JsonSerializer.SerializeToUtf8Bytes(message)
+            body: JsonSerializer.SerializeToUtf8Bytes(message),
+            cancellationToken: cancellationToken
         );
 
         _logger.LogInformation(
@@ -61,6 +63,7 @@ public class ProducerService : IProduceService
 
     public async Task HandleAsync<TMessage>(
         IEnumerable<TMessage> messages,
+        CancellationToken cancellationToken,
         string queue = "",
         string exchange = ""
     ) where TMessage : BaseMessage
@@ -69,8 +72,8 @@ public class ProducerService : IProduceService
 
         _stopWatch.Restart();
 
-        using var connection = await _factory.CreateConnectionAsync();
-        using var channel = await connection.CreateChannelAsync();
+        using var connection = await _factory.CreateConnectionAsync(cancellationToken);
+        using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
 
         _logger.LogInformation(
             "[{ClassName}] | [HandleAsync] | CorrelationId: {CorrelationId} | Publishing batch of messages: {MessageType}",
@@ -81,7 +84,8 @@ public class ProducerService : IProduceService
             await channel.BasicPublishAsync(
                 exchange: exchange,
                 routingKey: queue,
-                body: JsonSerializer.SerializeToUtf8Bytes(message)
+                body: JsonSerializer.SerializeToUtf8Bytes(message),
+                cancellationToken: cancellationToken
             );
 
         _logger.LogInformation(

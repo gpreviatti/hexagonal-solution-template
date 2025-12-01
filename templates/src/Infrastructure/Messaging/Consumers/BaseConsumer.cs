@@ -94,7 +94,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
                     _className, message?.CorrelationId, ex.Message, ex.StackTrace
                 );
 
-                _ = producerService.HandleAsync(message!, _queueName + "_deadLetter");
+                await producerService.HandleAsync(message!, cancellationToken, _queueName + "_deadLetter");
 
                 throw;
             }

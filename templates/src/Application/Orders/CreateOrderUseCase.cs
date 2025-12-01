@@ -103,6 +103,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
             "System",
             message
         ),
+        CancellationToken.None,
         NotificationType.OrderCreated
     );
 }
