@@ -13,6 +13,7 @@ public class ProducerService : IProduceService
     private readonly string _className = nameof(ProducerService);
     private readonly ILogger<ProducerService> _logger;
     private readonly ConnectionFactory _factory;
+    private readonly Stopwatch _stopWatch = new();
 
     public ProducerService(ILogger<ProducerService> logger, IConfiguration configuration)
     {
@@ -30,17 +31,16 @@ public class ProducerService : IProduceService
 
     public async Task HandleAsync<TMessage>(
         TMessage message,
-        CancellationToken cancellationToken,
         string queue = "",
         string exchange = ""
     ) where TMessage : BaseMessage
     {
         await Task.Yield();
 
-        var stopWatch = Stopwatch.StartNew();
+        _stopWatch.Restart();
 
-        using var connection = await _factory.CreateConnectionAsync(cancellationToken);
-        using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
+        using var connection = await _factory.CreateConnectionAsync();
+        using var channel = await connection.CreateChannelAsync();
 
         _logger.LogInformation(
             "[{ClassName}] | [HandleAsync] | CorrelationId: {CorrelationId} | Publishing message: {MessageType}",
@@ -50,29 +50,27 @@ public class ProducerService : IProduceService
         await channel.BasicPublishAsync(
             exchange: exchange,
             routingKey: queue,
-            body: JsonSerializer.SerializeToUtf8Bytes(message),
-            cancellationToken: cancellationToken
+            body: JsonSerializer.SerializeToUtf8Bytes(message)
         );
 
         _logger.LogInformation(
             "[{ClassName}] | [HandleAsync] | CorrelationId: {CorrelationId} | Message published: {MessageType} | Elapsed time: {ElapsedMilliseconds} ms",
-            _className, message.CorrelationId, typeof(TMessage).Name, stopWatch.ElapsedMilliseconds
+            _className, message.CorrelationId, typeof(TMessage).Name, _stopWatch.ElapsedMilliseconds
         );
     }
 
     public async Task HandleAsync<TMessage>(
         IEnumerable<TMessage> messages,
-        CancellationToken cancellationToken,
         string queue = "",
         string exchange = ""
     ) where TMessage : BaseMessage
     {
         await Task.Yield();
 
-        var stopWatch = Stopwatch.StartNew();
+        _stopWatch.Restart();
 
-        using var connection = await _factory.CreateConnectionAsync(cancellationToken);
-        using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
+        using var connection = await _factory.CreateConnectionAsync();
+        using var channel = await connection.CreateChannelAsync();
 
         _logger.LogInformation(
             "[{ClassName}] | [HandleAsync] | CorrelationId: {CorrelationId} | Publishing batch of messages: {MessageType}",
@@ -83,13 +81,12 @@ public class ProducerService : IProduceService
             await channel.BasicPublishAsync(
                 exchange: exchange,
                 routingKey: queue,
-                body: JsonSerializer.SerializeToUtf8Bytes(message),
-                cancellationToken: cancellationToken
+                body: JsonSerializer.SerializeToUtf8Bytes(message)
             );
 
         _logger.LogInformation(
             "[{ClassName}] | [HandleAsync] | CorrelationId: {CorrelationId} | Batch of messages published: {MessageType} | Elapsed time: {ElapsedMilliseconds} ms",
-             _className, messages.Select(m => m.CorrelationId), typeof(TMessage).Name, stopWatch.ElapsedMilliseconds
+             _className, messages.Select(m => m.CorrelationId), typeof(TMessage).Name, _stopWatch.ElapsedMilliseconds
         );
     }
 }

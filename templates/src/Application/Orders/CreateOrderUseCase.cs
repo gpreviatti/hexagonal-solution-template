@@ -60,7 +60,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
 
             response = new(false, null, createResult.Message);
 
-            await CreateNotificationAsync(correlationId, "Failed", response, cancellationToken);
+            CreateNotification(correlationId, "Failed", response);
 
             return response;
         }
@@ -72,7 +72,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
 
             response = new(false, null, "Failed to create order.");
 
-            await CreateNotificationAsync(correlationId, "Failed", response, cancellationToken);
+            CreateNotification(correlationId, "Failed", response);
 
             return response;
         }
@@ -90,12 +90,12 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
             })]
         });
 
-        await CreateNotificationAsync(correlationId, "Success", response, cancellationToken);
+        CreateNotification(correlationId, "Success", response);
 
         return response;
     }
 
-    private async Task CreateNotificationAsync(Guid correlationId, string notificationStatus, object message, CancellationToken cancellationToken) => await _produceService.HandleAsync(
+    private void CreateNotification(Guid correlationId, string notificationStatus, object message) => _ = _produceService.HandleAsync(
         new CreateNotificationMessage(
             correlationId,
             NotificationType.OrderCreated,
@@ -103,7 +103,6 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
             "System",
             message
         ),
-        cancellationToken,
         NotificationType.OrderCreated
     );
 }
