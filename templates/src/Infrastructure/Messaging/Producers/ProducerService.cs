@@ -8,7 +8,7 @@ using RabbitMQ.Client;
 
 namespace Infrastructure.Messaging.Producers;
 
-public class ProducerService : IProduceService
+public sealed class ProducerService : IProduceService
 {
     private readonly string _className = nameof(ProducerService);
     private readonly ILogger<ProducerService> _logger;
