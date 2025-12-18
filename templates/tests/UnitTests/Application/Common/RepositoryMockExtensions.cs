@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Application.Common.Repositories;
 using Domain.Common;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 
 namespace UnitTests.Application.Common;
 
@@ -47,7 +48,7 @@ public static class RepositoryMockExtensions
             It.IsAny<CancellationToken>(),
             It.IsAny<Expression<Func<TEntity, object>>[]>()
     ));
-    
+
 
     public static void VerifyAddAsync<TEntity>(this Mock<IBaseRepository<TEntity>> mockRepository, int times) where TEntity : DomainEntity => mockRepository.Verify(
         d => d.AddAsync(It.IsAny<TEntity>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()),
@@ -58,7 +59,7 @@ public static class RepositoryMockExtensions
         d => d.UpdateAsync(It.IsAny<TEntity>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()),
         Times.Exactly(times)
     );
-    
+
     public static void SetSuccessfulUpdate<TEntity>(this Mock<IBaseRepository<TEntity>> mockRepository) where TEntity : DomainEntity => mockRepository
         .Setup(d => d.UpdateAsync(It.IsAny<TEntity>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
         .ReturnsAsync(1);
@@ -67,17 +68,23 @@ public static class RepositoryMockExtensions
         .Setup(d => d.UpdateAsync(It.IsAny<TEntity>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
         .ReturnsAsync(0);
 
-    public static void SetValidGetAllPaginatedAsyncNoIncludes<TEntity>(this Mock<IBaseRepository<TEntity>> mockRepository, IEnumerable<TEntity> entities, int totalRecords) where TEntity : DomainEntity => mockRepository.Setup(r => r.GetAllPaginatedAsync<TEntity>(
+    public static void SetValidGetAllPaginatedAsyncNoIncludes<TEntity, TResult>(
+        this Mock<IBaseRepository<TEntity>> mockRepository,
+        IEnumerable<TResult> data,
+        int totalRecords
+    ) where TEntity : DomainEntity where TResult : class => mockRepository.Setup(r => r.GetAllPaginatedAsync(
         It.IsAny<Guid>(),
         It.IsAny<int>(),
         It.IsAny<int>(),
         It.IsAny<CancellationToken>(),
-        It.IsAny<string>(),
+        It.IsAny<string?>(),
         It.IsAny<bool>(),
-        It.IsAny<Dictionary<string, string>>()
-    )).ReturnsAsync((entities, totalRecords));
+        It.IsAny<Dictionary<string, string>>(),
+        It.IsAny<Expression<Func<TEntity, bool>>>(),
+        It.IsAny<Expression<Func<TEntity, TResult>>>()
+    )).ReturnsAsync((data, totalRecords));
 
-    public static void SetInvalidGetAllPaginatedAsync<TEntity>(this Mock<IBaseRepository<TEntity>> mockRepository) where TEntity : DomainEntity => mockRepository.Setup(r => r.GetAllPaginatedAsync(
+    public static void SetInvalidGetAllPaginatedAsync<TEntity, TResult>(this Mock<IBaseRepository<TEntity>> mockRepository) where TEntity : DomainEntity where TResult : class => mockRepository.Setup(r => r.GetAllPaginatedAsync(
         It.IsAny<Guid>(),
         It.IsAny<int>(),
         It.IsAny<int>(),
@@ -85,19 +92,21 @@ public static class RepositoryMockExtensions
         It.IsAny<string?>(),
         It.IsAny<bool>(),
         It.IsAny<Dictionary<string, string>?>(),
-        It.IsAny<Expression<Func<TEntity, object>>[]>()
+        It.IsAny<Expression<Func<TEntity, bool>>>(),
+        It.IsAny<Expression<Func<TEntity, TResult>>>()
     )).ReturnsAsync(([], 0));
 
-
-    public static void VerifyGetAllPaginatedNoIncludes<TEntity>(this Mock<IBaseRepository<TEntity>> mockRepository, int times) where TEntity : DomainEntity => mockRepository
-        .Verify(r => r.GetAllPaginatedAsync<TEntity>(
+    public static void VerifyGetAllPaginatedNoIncludes<TEntity, TResult>(this Mock<IBaseRepository<TEntity>> mockRepository, int times) where TEntity : DomainEntity where TResult : class => mockRepository
+        .Verify(r => r.GetAllPaginatedAsync(
             It.IsAny<Guid>(),
             It.IsAny<int>(),
             It.IsAny<int>(),
             It.IsAny<CancellationToken>(),
-            It.IsAny<string>(),
+            It.IsAny<string?>(),
             It.IsAny<bool>(),
-            It.IsAny<Dictionary<string, string>?>()
+            It.IsAny<Dictionary<string, string>?>(),
+            It.IsAny<Expression<Func<TEntity, bool>>>(),
+            It.IsAny<Expression<Func<TEntity, TResult>>>()
     ), Times.Exactly(times));
 
     public static void VerifyGetByIdAsync<TEntity>(this Mock<IBaseRepository<TEntity>> mockRepository, int times) where TEntity : DomainEntity => mockRepository

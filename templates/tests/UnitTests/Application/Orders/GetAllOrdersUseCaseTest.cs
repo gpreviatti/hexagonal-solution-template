@@ -49,7 +49,7 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         var totalRecords = 5;
         var request = _fixture.SetValidBasePaginatedRequest();
         _fixture.SetSuccessfulValidator(request);
-        var expectedOrders = _fixture.autoFixture.CreateMany<Order>(totalRecords);
+        var expectedOrders = _fixture.autoFixture.CreateMany<OrderDto>(totalRecords);
 
         _fixture.mockOrderRepository.SetValidGetAllPaginatedAsyncNoIncludes(expectedOrders, totalRecords);
 
@@ -66,7 +66,7 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         Assert.Equal(totalRecords, result.TotalRecords);
 
         _fixture.VerifyStartUseCaseLog();
-        _fixture.mockOrderRepository.VerifyGetAllPaginatedNoIncludes(1);
+        _fixture.mockOrderRepository.VerifyGetAllPaginatedNoIncludes<Order, OrderDto>(1);
         _fixture.VerifyNoOrdersFoundLog(0);
         _fixture.VerifyFinishUseCaseLog();
     }
@@ -77,7 +77,7 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         // Arrange
         var request = _fixture.SetValidBasePaginatedRequest();
         _fixture.SetSuccessfulValidator(request);
-        _fixture.mockOrderRepository.SetInvalidGetAllPaginatedAsync();
+        _fixture.mockOrderRepository.SetInvalidGetAllPaginatedAsync<Order, OrderDto>();
 
         // Act
         var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
@@ -89,7 +89,7 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         Assert.Equal("No orders found.", result.Message);
 
         _fixture.VerifyStartUseCaseLog();
-        _fixture.mockOrderRepository.VerifyGetAllPaginatedNoIncludes(1);
+        _fixture.mockOrderRepository.VerifyGetAllPaginatedNoIncludes<Order, OrderDto>(1);
         _fixture.VerifyNoOrdersFoundLog(1);
         _fixture.VerifyFinishUseCaseLog();
     }
@@ -110,7 +110,7 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         Assert.NotEmpty(result.Message);
 
         _fixture.VerifyStartUseCaseLog();
-        _fixture.mockOrderRepository.VerifyGetAllPaginatedNoIncludes(0);
+        _fixture.mockOrderRepository.VerifyGetAllPaginatedNoIncludes<Order, OrderDto>(0);
         _fixture.VerifyNoOrdersFoundLog(0);
         _fixture.VerifyFinishUseCaseLog(0);
     }

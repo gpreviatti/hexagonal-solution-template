@@ -13,11 +13,11 @@ public sealed class GetNotificationUseCaseFixture : BaseApplicationFixture<GetNo
     {
         MockServiceProviderServices();
 
-        useCase = new(mockServiceProvider.Object);
-
         mockServiceProvider
             .Setup(r => r.GetService(typeof(IBaseRepository<Notification>)))
             .Returns(mockNotificationRepository.Object);
+
+        useCase = new(mockServiceProvider.Object);
     }
 
     public new void ClearInvocations()
