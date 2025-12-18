@@ -19,4 +19,5 @@ jobs:
       stryker_enable: false
       package_version: "10.0.0"
     secrets:
+      sonar_token: ${{ secrets.SONAR_TOKEN }}
       nuget_api_key: ${{ secrets.NUGET_API_KEY }}
