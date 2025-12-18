@@ -29,9 +29,10 @@ jobs:
   sonar-scanner:
     name: SonarQube Scanner
     needs: build
-    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-sonar-scanner.yml@v1
+    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-unit-test-with-sonar-scanner.yml@v1
     with:
       project: "hexagonal-solution-template"
+      test_project_path: "./templates/tests/UnitTests/"
       organization: "gpreviatti"
       dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
     secrets:
