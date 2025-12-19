@@ -1,7 +1,6 @@
 using System.Linq.Expressions;
 using Application.Common.Repositories;
 using Domain.Common;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 
 namespace UnitTests.Application.Common;
 
