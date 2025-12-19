@@ -41,7 +41,7 @@ public class BaseRepository<TEntity>(ILogger<BaseRepository<TEntity>> logger, My
         return result;
     }
 
-    public async Task<int> AddAsync(TEntity entity, Guid correlationId, CancellationToken cancellationToken) => 
+    public async Task<int> AddAsync(TEntity entity, Guid correlationId, CancellationToken cancellationToken) =>
     await HandleBaseQueryAsync(async dbEntitySet =>
     {
         await dbEntitySet.AddAsync(entity, cancellationToken);
@@ -126,14 +126,10 @@ public class BaseRepository<TEntity>(ILogger<BaseRepository<TEntity>> logger, My
         int id,
         Guid correlationId,
         Expression<Func<TEntity, TResult>> selector,
-        CancellationToken cancellationToken,
-        params Expression<Func<TEntity, object>>[]? includes
+        CancellationToken cancellationToken
     ) => await HandleBaseQueryAsync(async dbEntitySet =>
     {
         var query = dbEntitySet.AsNoTracking();
-
-        if (includes is not null)
-            query = SetIncludes(includes, query);
 
         return await query
             .Where(o => o.Id == id)
@@ -175,14 +171,10 @@ public class BaseRepository<TEntity>(ILogger<BaseRepository<TEntity>> logger, My
         Guid correlationId,
         Expression<Func<TEntity, bool>> predicate,
         Expression<Func<TEntity, TResult>> selector,
-        CancellationToken cancellationToken,
-        params Expression<Func<TEntity, object>>[]? includes
+        CancellationToken cancellationToken
     ) => await HandleBaseQueryAsync(async dbEntitySet =>
     {
         var query = dbEntitySet.AsNoTracking();
-
-        if (includes is not null)
-            query = SetIncludes(includes, query);
 
         return await query.Where(predicate).Select(selector).ToListAsync(cancellationToken);
     }, correlationId);
@@ -206,15 +198,11 @@ public class BaseRepository<TEntity>(ILogger<BaseRepository<TEntity>> logger, My
         Guid correlationId,
         Expression<Func<TEntity, bool>> predicate,
         Expression<Func<TEntity, TResult>> selector,
-        CancellationToken cancellationToken,
-        params Expression<Func<TEntity, object>>[]? includes
+        CancellationToken cancellationToken
     ) => await HandleBaseQueryAsync(async dbEntitySet =>
     {
         var query = dbEntitySet
             .AsNoTracking();
-
-        if (includes is not null)
-            query = SetIncludes(includes, query);
 
         return await query
             .Where(predicate)
@@ -271,17 +259,12 @@ public class BaseRepository<TEntity>(ILogger<BaseRepository<TEntity>> logger, My
         bool sortDescending = false,
         Dictionary<string, string>? searchByValues = null!,
         Expression<Func<TEntity, bool>> predicate = null!,
-        Expression<Func<TEntity, TResult>> selector = null!,
-        params Expression<Func<TEntity, object>>[]? includes
+        Expression<Func<TEntity, TResult>> selector = null!
     ) => await HandleBaseQueryAsync(async dbEntitySet =>
     {
         var query = dbEntitySet.AsNoTracking();
         if (predicate != null)
             query = query.Where(predicate);
-
-        if (includes is not null)
-            foreach (var include in includes)
-                query = query.Include(include);
 
         if (!string.IsNullOrWhiteSpace(sortBy))
             query = sortDescending
@@ -307,7 +290,7 @@ public class BaseRepository<TEntity>(ILogger<BaseRepository<TEntity>> logger, My
         return (items, totalRecords);
     }, correlationId);
 
-    public async Task BeginTransactionAsync(CancellationToken cancellationToken) 
+    public async Task BeginTransactionAsync(CancellationToken cancellationToken)
     {
         if (dbContext.Database.CurrentTransaction == null)
             await dbContext.Database.BeginTransactionAsync(cancellationToken);

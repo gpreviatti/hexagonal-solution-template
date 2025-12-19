@@ -56,8 +56,7 @@ public sealed class OrderRepositoryTest : IClassFixture<BaseDataFixture<Order>>
                     Value = i.Value
                 }).ToArray()
             },
-            _fixture.cancellationToken,
-            o => o.Items
+            _fixture.cancellationToken
         );
 
         // Assert
@@ -118,6 +117,7 @@ public sealed class OrderRepositoryTest : IClassFixture<BaseDataFixture<Order>>
         Assert.NotEmpty(result);
         Assert.True(totalRecords > 0);
         Assert.All(result, r => Assert.IsType<OrderDto>(r));
+        Assert.All(result, r => Assert.NotNull(r.Items));
     }
 
     [Fact]

@@ -28,8 +28,7 @@ public static class RepositoryMockExtensions
             It.IsAny<int>(),
             It.IsAny<Guid>(),
             It.IsAny<Expression<Func<TEntity, TResult>>>(),
-            It.IsAny<CancellationToken>(),
-            It.IsAny<Expression<Func<TEntity, object>>[]>()
+            It.IsAny<CancellationToken>()
     )).ReturnsAsync(result);
 
     public static void SetupGetByIdAsNoTrackingAsyncNotFound<TEntity>(this Mock<IBaseRepository<TEntity>> mockRepository) where TEntity : DomainEntity => mockRepository
@@ -45,8 +44,7 @@ public static class RepositoryMockExtensions
             It.IsAny<int>(),
             It.IsAny<Guid>(),
             It.IsAny<Expression<Func<TEntity, TResult>>>(),
-            It.IsAny<CancellationToken>(),
-            It.IsAny<Expression<Func<TEntity, object>>[]>()
+            It.IsAny<CancellationToken>()
     ));
 
 

@@ -24,8 +24,7 @@ public interface IBaseRepository<TEntity> where TEntity : DomainEntity
         Guid correlationId,
         Expression<Func<TEntity, bool>> predicate,
         Expression<Func<TEntity, TResult>> selector,
-        CancellationToken cancellationToken,
-        params Expression<Func<TEntity, object>>[]? includes
+        CancellationToken cancellationToken
     );
     Task<TEntity> GetByIdAsNoTrackingAsync(
         int id,
@@ -37,8 +36,7 @@ public interface IBaseRepository<TEntity> where TEntity : DomainEntity
         int id,
         Guid correlationId,
         Expression<Func<TEntity, TResult>> selector,
-        CancellationToken cancellationToken,
-        params Expression<Func<TEntity, object>>[]? includes
+        CancellationToken cancellationToken
     );
     Task<IList<TEntity>> GetByWhereAsync(
         Guid correlationId,
@@ -56,8 +54,7 @@ public interface IBaseRepository<TEntity> where TEntity : DomainEntity
         Guid correlationId,
         Expression<Func<TEntity, bool>> predicate,
         Expression<Func<TEntity, TResult>> selector,
-        CancellationToken cancellationToken,
-        params Expression<Func<TEntity, object>>[]? includes
+        CancellationToken cancellationToken
     );
     Task<(IEnumerable<TEntity> Items, int TotalRecords)> GetAllPaginatedAsync(
         Guid correlationId,
@@ -79,8 +76,7 @@ public interface IBaseRepository<TEntity> where TEntity : DomainEntity
         bool sortDescending = false,
         Dictionary<string, string>? searchByValues = null,
         Expression<Func<TEntity, bool>> predicate = null!,
-        Expression<Func<TEntity, TResult>> selector = null!,
-        params Expression<Func<TEntity, object>>[]? includes
+        Expression<Func<TEntity, TResult>> selector = null!
     );
 
     Task BeginTransactionAsync(CancellationToken cancellationToken);

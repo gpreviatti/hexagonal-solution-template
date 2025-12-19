@@ -43,8 +43,7 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider)  : BaseInO
                     Value = i.Value
                 }).ToArray()
             },
-            cancellationToken,
-            o => o.Items
+            cancellationToken
         );
 
         if (order is null)
