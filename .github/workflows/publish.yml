@@ -11,11 +11,12 @@ jobs:
       organization: "gpreviatti"
       solution_path: "./templates/"
       unit_test_project_path: "./templates/tests/UnitTests/"
+      unit_test_verbosity: 'd'
+      dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
       domain_stryker_config_path: "./templates/tests/UnitTests/stryker-config-domain.json"
       application_stryker_config_path: "./templates/tests/UnitTests/stryker-config-application.json"
       integration_test_project_path: "./templates/tests/IntegrationTests"
       docker_compose_file_path: "./templates/docker-compose.yml"
-      dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
       stryker_enable: false
       package_version: "10.0.0"
     secrets:
