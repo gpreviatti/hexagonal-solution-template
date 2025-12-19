@@ -10,7 +10,6 @@ jobs:
     with:
       project: "hexagonal-solution-template"
       organization: "gpreviatti"
-      solution_path: "./templates/"
       unit_test_project_path: "./templates/tests/UnitTests/"
       unit_test_verbosity: 'd'
       dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
