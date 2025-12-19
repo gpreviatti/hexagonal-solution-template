@@ -179,7 +179,7 @@ public sealed class OrderRepositoryTest : IClassFixture<BaseDataFixture<Order>>
         };
 
         // Act
-        var (result, totalRecords) = await _fixture!.repository!.GetAllPaginatedAsync<Order>(
+        var (result, totalRecords) = await _fixture!.repository!.GetAllPaginatedAsync(
             Guid.NewGuid(),
             pageNumber,
             pageSize,
