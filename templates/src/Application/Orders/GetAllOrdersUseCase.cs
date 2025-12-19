@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Orders;
 
-public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider) 
+public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider)
     : BaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<OrderDto>>(serviceProvider)
 {
     private readonly IBaseRepository<Order> _repository = serviceProvider
@@ -23,15 +23,15 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider)
             request.CorrelationId,
             request.Page,
             request.PageSize,
-            cancellationToken,
-            request.SortBy,
-            request.SortDescending,
-            request.SearchByValues,
-            selector: o => new OrderDto
+            o => new OrderDto
             {
                 Id = o.Id,
                 Total = o.Total
-            }
+            },
+            cancellationToken,
+            request.SortBy,
+            request.SortDescending,
+            request.SearchByValues
         );
 
         if (orders is null || !orders.Any())

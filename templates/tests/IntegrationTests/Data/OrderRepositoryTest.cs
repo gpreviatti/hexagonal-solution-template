@@ -99,7 +99,6 @@ public sealed class OrderRepositoryTest : IClassFixture<BaseDataFixture<Order>>
             Guid.NewGuid(),
             pageNumber,
             pageSize,
-            _fixture.cancellationToken,
             selector: o => new OrderDto() {
                 Id = o.Id,
                 Total = o.Total,
@@ -109,7 +108,8 @@ public sealed class OrderRepositoryTest : IClassFixture<BaseDataFixture<Order>>
                     Name = i.Name,
                     Value = i.Value
                 }).ToArray()
-            }
+            },
+            _fixture.cancellationToken
         );
 
         // Assert

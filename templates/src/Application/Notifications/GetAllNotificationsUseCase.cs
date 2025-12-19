@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Notifications;
 
-public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider) 
+public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
     : BaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<NotificationDto>>(serviceProvider)
 {
     private readonly IBaseRepository<Notification> _repository = serviceProvider
@@ -22,17 +22,17 @@ public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
             request.CorrelationId,
             request.Page,
             request.PageSize,
-            cancellationToken,
-            request.SortBy,
-            request.SortDescending,
-            request.SearchByValues,
-            selector: n => new NotificationDto
+            n => new NotificationDto
             {
                 Id = n.Id,
                 Message = n.Message,
                 NotificationType = n.NotificationType,
                 NotificationStatus = n.NotificationStatus,
-            }
+            },
+            cancellationToken,
+            request.SortBy,
+            request.SortDescending,
+            request.SearchByValues
         );
 
         if (notifications is null || !notifications.Any())

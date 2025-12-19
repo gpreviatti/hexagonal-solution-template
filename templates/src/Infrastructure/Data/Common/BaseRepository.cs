@@ -60,9 +60,7 @@ public class BaseRepository<TEntity>(ILogger<BaseRepository<TEntity>> logger, My
     public async Task<int> AddOrUpdateIfNotExistsAsync(TEntity entity, Expression<Func<TEntity, bool>> predicate, Guid correlationId, CancellationToken cancellationToken) =>
     await HandleBaseQueryAsync(async dbEntitySet =>
     {
-        var exists = dbEntitySet.AsNoTracking().Any(predicate);
-
-        if (!exists)
+        if (!await dbEntitySet.AsNoTracking().AnyAsync(predicate))
             await dbEntitySet.AddAsync(entity, cancellationToken);
         else
             dbEntitySet.Update(entity);
@@ -127,15 +125,12 @@ public class BaseRepository<TEntity>(ILogger<BaseRepository<TEntity>> logger, My
         Guid correlationId,
         Expression<Func<TEntity, TResult>> selector,
         CancellationToken cancellationToken
-    ) => await HandleBaseQueryAsync(async dbEntitySet =>
-    {
-        var query = dbEntitySet.AsNoTracking();
-
-        return await query
-            .Where(o => o.Id == id)
-            .Select(selector)
-            .FirstOrDefaultAsync(cancellationToken) ?? default!;
-    }, correlationId);
+    ) => await HandleBaseQueryAsync(async dbEntitySet => await dbEntitySet
+        .Where(o => o.Id == id)
+        .Select(selector)
+        .FirstOrDefaultAsync(cancellationToken) ?? default!,
+        correlationId
+    );
 
     public async Task<IList<TEntity>> GetByWhereAsync(
         Guid correlationId,
@@ -144,7 +139,7 @@ public class BaseRepository<TEntity>(ILogger<BaseRepository<TEntity>> logger, My
         params Expression<Func<TEntity, object>>[]? includes
     ) => await HandleBaseQueryAsync(async dbEntitySet =>
     {
-        var query = dbEntitySet.AsNoTracking();
+        var query = dbEntitySet.AsQueryable();
 
         if (includes is not null)
             query = SetIncludes(includes, query);
@@ -173,11 +168,9 @@ public class BaseRepository<TEntity>(ILogger<BaseRepository<TEntity>> logger, My
         Expression<Func<TEntity, TResult>> selector,
         CancellationToken cancellationToken
     ) => await HandleBaseQueryAsync(async dbEntitySet =>
-    {
-        var query = dbEntitySet.AsNoTracking();
-
-        return await query.Where(predicate).Select(selector).ToListAsync(cancellationToken);
-    }, correlationId);
+        await dbEntitySet.Where(predicate).Select(selector).ToListAsync(cancellationToken),
+        correlationId
+    );
 
     public async Task<TEntity> FirstOrDefaultAsNoTrackingAsync(
         Guid correlationId,
@@ -199,16 +192,12 @@ public class BaseRepository<TEntity>(ILogger<BaseRepository<TEntity>> logger, My
         Expression<Func<TEntity, bool>> predicate,
         Expression<Func<TEntity, TResult>> selector,
         CancellationToken cancellationToken
-    ) => await HandleBaseQueryAsync(async dbEntitySet =>
-    {
-        var query = dbEntitySet
-            .AsNoTracking();
-
-        return await query
-            .Where(predicate)
-            .Select(selector)
-            .FirstOrDefaultAsync(cancellationToken) ?? default!;
-    }, correlationId);
+    ) => await HandleBaseQueryAsync(async dbEntitySet => await dbEntitySet
+        .Where(predicate)
+        .Select(selector)
+        .FirstOrDefaultAsync(cancellationToken) ?? default!,
+        correlationId
+    );
 
     public async Task<(IEnumerable<TEntity> Items, int TotalRecords)> GetAllPaginatedAsync(
         Guid correlationId,
@@ -254,15 +243,16 @@ public class BaseRepository<TEntity>(ILogger<BaseRepository<TEntity>> logger, My
         Guid correlationId,
         int page,
         int pageSize,
+        Expression<Func<TEntity, TResult>> selector,
         CancellationToken cancellationToken,
         string? sortBy = null!,
         bool sortDescending = false,
         Dictionary<string, string>? searchByValues = null!,
-        Expression<Func<TEntity, bool>> predicate = null!,
-        Expression<Func<TEntity, TResult>> selector = null!
+        Expression<Func<TEntity, bool>> predicate = null!
     ) => await HandleBaseQueryAsync(async dbEntitySet =>
     {
-        var query = dbEntitySet.AsNoTracking();
+        var query = dbEntitySet.AsQueryable();
+
         if (predicate != null)
             query = query.Where(predicate);
 

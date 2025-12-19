@@ -71,12 +71,12 @@ public interface IBaseRepository<TEntity> where TEntity : DomainEntity
         Guid correlationId,
         int page,
         int pageSize,
+        Expression<Func<TEntity, TResult>> selector,
         CancellationToken cancellationToken,
         string? sortBy = null,
         bool sortDescending = false,
         Dictionary<string, string>? searchByValues = null,
-        Expression<Func<TEntity, bool>> predicate = null!,
-        Expression<Func<TEntity, TResult>> selector = null!
+        Expression<Func<TEntity, bool>> predicate = null!
     );
 
     Task BeginTransactionAsync(CancellationToken cancellationToken);
