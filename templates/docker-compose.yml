@@ -36,7 +36,7 @@ services:
         ./opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P "cY5VvZkkh4AzES" -C -d master -i ./tmp/seeds.sql
 
   aspire-dashboard:
-    image: mcr.microsoft.com/dotnet/aspire-dashboard:9
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:13
     ports:
       - "18888:18888"
       - "18889:18889"
