@@ -1,4 +1,3 @@
-using Application.Common.Repositories;
 using Application.Orders;
 using Domain.Orders;
 using Microsoft.Extensions.Logging;
@@ -8,25 +7,10 @@ namespace UnitTests.Application.Orders;
 
 public sealed class GetOrderUseCaseFixture : BaseApplicationFixture<GetOrderRequest, GetOrderUseCase>
 {
-    public Mock<IBaseRepository<Order>> mockOrderRepository = new();
-
     public GetOrderUseCaseFixture()
     {
-        MockServiceProviderServices();
-
-        mockServiceProvider
-            .Setup(r => r.GetService(typeof(IBaseRepository<Order>)))
-            .Returns(mockOrderRepository.Object);
-
         useCase = new(mockServiceProvider.Object);
     }
-
-    public new void ClearInvocations()
-    {
-        base.ClearInvocations();
-        mockOrderRepository.Reset();
-    }
-
     public GetOrderRequest SetValidRequest() => new(Guid.NewGuid(), autoFixture.Create<int>());
 
     public void VerifyOrderNotFoundLog(int times = 1) =>
@@ -50,7 +34,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         var request = _fixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
         var expectedOrder = _fixture.autoFixture.Create<OrderDto>();
-        _fixture.mockOrderRepository.SetupGetByIdAsNoTrackingAsync(expectedOrder);
+        _fixture.mockRepository.SetupGetByIdAsNoTrackingAsync<Order, OrderDto>(expectedOrder);
 
         // Act
         var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
@@ -84,7 +68,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
             Total = 1000m,
             Items = []
         };
-        _fixture.mockOrderRepository.SetupGetByIdAsNoTrackingAsync(expectedOrder);
+        _fixture.mockRepository.SetupGetByIdAsNoTrackingAsync<Order, OrderDto>(expectedOrder);
 
         // Act
         var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
