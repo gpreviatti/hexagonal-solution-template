@@ -1,10 +1,8 @@
 ﻿using Application.Common.Constants;
-using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Orders;
 using FluentValidation;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Orders;
@@ -21,15 +19,12 @@ public sealed class GetOrderRequestValidator : AbstractValidator<GetOrderRequest
 
 public sealed class GetOrderUseCase(IServiceProvider serviceProvider)  : BaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>>(serviceProvider)
 {
-    private readonly IBaseRepository<Order> _repository = serviceProvider
-        .GetRequiredService<IBaseRepository<Order>>();
-
     public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(
         GetOrderRequest request,
         CancellationToken cancellationToken
     )
     {
-        var order = await _repository.GetByIdAsNoTrackingAsync(
+        var order = await _repository.GetByIdAsNoTrackingAsync<Order, OrderDto>(
             request.Id,
             request.CorrelationId,
             o => new OrderDto()

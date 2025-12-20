@@ -1,9 +1,7 @@
 using Application.Common.Constants;
-using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Orders;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Orders;
@@ -11,19 +9,16 @@ namespace Application.Orders;
 public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider)
     : BaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<OrderDto>>(serviceProvider)
 {
-    private readonly IBaseRepository<Order> _repository = serviceProvider
-        .GetRequiredService<IBaseRepository<Order>>();
-
     public override async Task<BasePaginatedResponse<OrderDto>> HandleInternalAsync(
         BasePaginatedRequest request,
         CancellationToken cancellationToken
     )
     {
-        var (orders, totalRecords) = await _repository.GetAllPaginatedAsync(
+        var (orders, totalRecords) = await _repository.GetAllPaginatedAsync<Order, OrderDto>(
             request.CorrelationId,
             request.Page,
             request.PageSize,
-            o => new OrderDto
+            o => new()
             {
                 Id = o.Id,
                 Total = o.Total

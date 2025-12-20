@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.Metrics;
 using Application.Common.Constants;
+using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Common.Services;
 using FluentValidation;
@@ -21,6 +22,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
 {
     protected readonly IHybridCacheService _cache;
     protected readonly IProduceService _produceService;
+    protected readonly IBaseRepository _repository;
     private readonly IValidator<TRequest> _validator;
     private readonly Histogram<int> _useCaseExecuted;
     private readonly Gauge<long> _useCaseExecutionElapsedTime;
@@ -30,6 +32,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
     {
         _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
         _produceService = serviceProvider.GetRequiredService<IProduceService>();
+        _repository = serviceProvider.GetRequiredService<IBaseRepository>();
         _validator = serviceProvider.GetRequiredService<IValidator<TRequest>>();
 
         _useCaseExecuted = DefaultConfigurations.Meter

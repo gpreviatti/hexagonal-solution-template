@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Application.Common.Services;
 using Application.Common.Constants;
 using System.Diagnostics.Metrics;
+using Application.Common.Repositories;
 
 namespace Application.Common.UseCases;
 
@@ -17,6 +18,7 @@ public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TReq
 {
     protected readonly IHybridCacheService _cache;
     protected readonly IProduceService _produceService;
+    protected readonly IBaseRepository _repository;
     private readonly IValidator<TRequest> _validator;
     private readonly Histogram<int> _useCaseExecuted;
     private readonly Gauge<long> _useCaseExecutionElapsedTime;
@@ -26,6 +28,7 @@ public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TReq
     {
         _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
         _produceService = serviceProvider.GetRequiredService<IProduceService>();
+        _repository = serviceProvider.GetRequiredService<IBaseRepository>();
         _validator = serviceProvider.GetRequiredService<IValidator<TRequest>>();
 
         _useCaseExecuted = DefaultConfigurations.Meter
