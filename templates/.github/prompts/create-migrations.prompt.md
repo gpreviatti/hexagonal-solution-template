@@ -1,6 +1,6 @@
 ---
 description: 'Migrations generator and SQL script generation for EF Core in a multi-project .NET solution.'
-tools: ['edit', 'search', 'new', 'runCommands', 'runTasks', 'microsoft-docs/*', 'usages', 'think', 'problems', 'todos']
+tools: ['edit', 'search', 'new', 'runCommands', 'runTasks', 'microsoft-docs/*', 'usages', 'problems', 'todos']
 ---
 
 Here's how to manage EF Core migrations in this solution:

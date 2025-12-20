@@ -1,6 +1,5 @@
 using Application.Common.Constants;
 using Application.Common.Messages;
-using Application.Common.Requests;
 using Application.Common.UseCases;
 using Application.Notifications;
 using Microsoft.Extensions.Configuration;
@@ -19,7 +18,7 @@ internal sealed class CreateNotificationConsumer(
         IServiceProvider serviceProvider,
         CreateNotificationMessage message,
         CancellationToken cancellationToken
-    ) => await serviceProvider.GetRequiredService<IBaseInOutUseCase<CreateNotificationRequest, BaseResponse<NotificationDto>, CreateNotificationUseCase>>().HandleAsync(new(
+    ) => await serviceProvider.GetRequiredService<IBaseInUseCase<CreateNotificationRequest>>().HandleAsync(new(
             message.CorrelationId,
             message.NotificationType,
             message.NotificationStatus,

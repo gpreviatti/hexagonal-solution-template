@@ -1,4 +1,5 @@
 ﻿using Application.Common.Constants;
+using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Orders;
@@ -18,19 +19,34 @@ public sealed class GetOrderRequestValidator : AbstractValidator<GetOrderRequest
     }
 }
 
-public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>, Order, GetOrderUseCase>(
-    serviceProvider,
-    serviceProvider.GetRequiredService<IValidator<GetOrderRequest>>()
-)
+public sealed class GetOrderUseCase(IServiceProvider serviceProvider)  : BaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>>(serviceProvider)
 {
+    private readonly IBaseRepository<Order> _repository = serviceProvider
+        .GetRequiredService<IBaseRepository<Order>>();
+
     public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(
         GetOrderRequest request,
         CancellationToken cancellationToken
     )
     {
-        var order = await _repository.GetByIdAsNoTrackingAsync<Order>(request.Id, request.CorrelationId, cancellationToken, o => o.Items);
+        var order = await _repository.GetByIdAsNoTrackingAsync(
+            request.Id,
+            request.CorrelationId,
+            o => new OrderDto()
+            {
+                Id = o.Id,
+                Total = o.Total,
+                Items = o.Items.Select(i => new ItemDto
+                {
+                    Id = i.Id,
+                    Name = i.Name,
+                    Value = i.Value
+                }).ToArray()
+            },
+            cancellationToken
+        );
 
-        if (order is null || order.Equals(default(Order)))
+        if (order is null)
         {
             logger.LogWarning(
                 DefaultApplicationMessages.DefaultApplicationMessage + "Order not found.",

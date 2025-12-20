@@ -1,4 +1,6 @@
 ﻿using Application.Common.Repositories;
+using Domain.Notifications;
+using Domain.Orders;
 using Infrastructure.Data.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -14,7 +16,8 @@ internal static class InfrastructureDataDependencyInjection
                 context.UseSqlServer(configuration.GetConnectionString("OrderDb") ?? throw new NullReferenceException("OrderDb connection string is not configured."))
             );
 
-        services.AddScoped<IBaseRepository, BaseRepository>();
+        services.AddScoped<IBaseRepository<Order>, BaseRepository<Order>>();
+        services.AddScoped<IBaseRepository<Notification>, BaseRepository<Notification>>();
 
         return services;
     }

@@ -2,8 +2,8 @@
 
 public abstract class DomainEntity
 {
-    public DomainEntity() {}
-    public DomainEntity(DateTime currentDate, string? user = null)
+    protected DomainEntity() {}
+    protected DomainEntity(DateTime currentDate, string? user = null)
     {
         CreatedAt = currentDate;
         CreatedBy = user ?? "System";

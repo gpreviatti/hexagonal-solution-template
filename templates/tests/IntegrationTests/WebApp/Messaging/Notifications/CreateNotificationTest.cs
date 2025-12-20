@@ -11,11 +11,12 @@ namespace IntegrationTests.WebApp.Messaging.Notifications;
 
 public class CreateNotificationTestFixture : BaseMessagingFixture
 {
+    public IBaseRepository<Notification> notificationRepository;
     public new void SetServices(CustomWebApplicationFactory<Program> factory)
     {
         var scope = factory.Services.CreateAsyncScope();
         SetServices(scope);
-        repository = scope.ServiceProvider.GetRequiredService<IBaseRepository>();
+        notificationRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<Notification>>();
     }
 
     public CreateNotificationMessage SetValidMessage() => autoFixture.Build<CreateNotificationMessage>().Create();
@@ -41,10 +42,9 @@ public sealed class CreateNotificationTest : IClassFixture<CreateNotificationTes
         // Act
         await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated);
 
-        var notification = await _fixture.repository.FirstOrDefaultAsNoTrackingAsync<Notification>(
-            n => n.NotificationType == message.NotificationType &&
-                n.NotificationStatus == message.NotificationStatus,
+        var notification = await _fixture.notificationRepository.FirstOrDefaultAsNoTrackingAsync(
             Guid.NewGuid(),
+            n => n.NotificationType == message.NotificationType && n.NotificationStatus == message.NotificationStatus,
             _fixture.cancellationToken
         );
 
@@ -63,10 +63,9 @@ public sealed class CreateNotificationTest : IClassFixture<CreateNotificationTes
         await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated);
         await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated);
 
-        var notifications = await _fixture.repository.GetByWhereAsNoTrackingAsync<Notification>(
-            n => n.NotificationType == message.NotificationType &&
-                n.NotificationStatus == message.NotificationStatus,
+        var notifications = await _fixture.notificationRepository.GetByWhereAsNoTrackingAsync(
             Guid.NewGuid(),
+            n => n.NotificationType == message.NotificationType && n.NotificationStatus == message.NotificationStatus,
             cancellationToken: _fixture.cancellationToken
         );
 

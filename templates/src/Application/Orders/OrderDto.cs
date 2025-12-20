@@ -1,14 +1,16 @@
 ﻿namespace Application.Orders;
-public sealed record OrderDto(int Id, string Description, decimal Total, DateTime CreatedAt, IReadOnlyCollection<ItemDto>? Items = null)
+public sealed record OrderDto
 {
-    public static implicit operator OrderDto(Domain.Orders.Order order) => new(
-        order.Id, order.Description, order.Total, order.CreatedAt,
-        order.Items?.Select(item => (ItemDto) item).ToArray()
-    );
+    public int Id { get; set; }
+    public string Description { get; set; }
+    public decimal Total { get; set; }
+    public IReadOnlyCollection<ItemDto>? Items { get; set; }
 };
 
-public sealed record ItemDto(int Id, string Name, string Description, decimal Value)
+public sealed record ItemDto
 {
-    public static implicit operator ItemDto(Domain.Orders.Item item) =>
-        new(item.Id, item.Name, item.Description, item.Value);
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public decimal Value { get; set; }
 };

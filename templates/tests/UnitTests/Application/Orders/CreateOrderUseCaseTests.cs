@@ -1,4 +1,5 @@
 ﻿using Application.Common.Messages;
+using Application.Common.Repositories;
 using Application.Orders;
 using Domain.Orders;
 using FluentValidation;
@@ -57,15 +58,23 @@ public sealed class CreateOrderRequestValidationTests(CreateOrderRequestValidati
 
 public sealed class CreateOrderUseCaseFixture : BaseApplicationFixture<CreateOrderRequest, CreateOrderUseCase>
 {
+    public Mock<IBaseRepository<Order>> mockOrderRepository = new();
+
     public CreateOrderUseCaseFixture()
     {
         MockServiceProviderServices();
+
+        mockServiceProvider
+            .Setup(r => r.GetService(typeof(IBaseRepository<Order>)))
+            .Returns(mockOrderRepository.Object);
+
         useCase = new(mockServiceProvider.Object);
     }
 
     public new void ClearInvocations()
     {
         base.ClearInvocations();
+        mockOrderRepository.Reset();
     }
 
     public CreateOrderRequest SetValidRequest()
@@ -102,7 +111,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         // Arrange
         var request = _fixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
-        _fixture.SetSuccessfulAddAsync<Order>();
+        _fixture.mockOrderRepository.SetSuccessfulAddAsync();
 
         // Act
         var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
@@ -116,7 +125,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyFinishUseCaseLog();
         _fixture.VerifyCreateOrderLogNoItemsError(0);
         _fixture.VerifyFailedToCreateOrderLog(0);
-        _fixture.VerifyAddAsync<Order>(1);
+        _fixture.mockOrderRepository.VerifyAddAsync(1);
         _fixture.VerifyProduce<CreateNotificationMessage>();
     }
 
@@ -142,7 +151,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyFinishUseCaseLog(0);
         _fixture.VerifyCreateOrderLogNoItemsError(0);
         _fixture.VerifyFailedToCreateOrderLog(0);
-        _fixture.VerifyAddAsync<Order>(0);
+        _fixture.mockOrderRepository.VerifyAddAsync(0);
         _fixture.VerifyProduce<CreateNotificationMessage>(0);
     }
 
@@ -168,7 +177,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyCreateOrderLogNoItemsError(1);
         _fixture.VerifyFailedToCreateOrderLog(0);
-        _fixture.VerifyAddAsync<Order>(0);
+        _fixture.mockOrderRepository.VerifyAddAsync(0);
         _fixture.VerifyFinishUseCaseLog();
         _fixture.VerifyProduce<CreateNotificationMessage>();
     }
@@ -179,7 +188,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         // Arrange
         var request = _fixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
-        _fixture.SetFailedAddAsync<Order>();
+        _fixture.mockOrderRepository.SetFailedAddAsync();
 
         // Act
         var result = await _fixture.useCase.HandleAsync(
@@ -194,7 +203,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         Assert.Equal("Failed to create order.", result.Message);
 
         _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyAddAsync<Order>(1);
+        _fixture.mockOrderRepository.VerifyAddAsync(1);
         _fixture.VerifyCreateOrderLogNoItemsError(0);
         _fixture.VerifyFailedToCreateOrderLog(1);
         _fixture.VerifyFinishUseCaseLog();

@@ -16,22 +16,27 @@ internal static class OrderEndpoints
             .WithTags("Orders");
 
         ordersGroup.MapGet("/{id}", async (
-            [FromServices] IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>, GetOrderUseCase> useCase,
+            [FromServices] IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>> useCase,
             [FromHeader] Guid correlationId,
             [FromRoute] int id,
-            CancellationToken cancellationToken
+            CancellationToken cancellationToken,
+            [FromHeader] bool cacheEnabled = true
         ) => {
-            var response = await cache.GetOrCreateAsync(
-                $"{nameof(OrderEndpoints)}-{id}",
-                async (cancellationToken) => await useCase.HandleAsync(new(correlationId, id), cancellationToken),
-                cancellationToken
-            );
+            var response = cacheEnabled switch
+            {
+                true => await cache.GetOrCreateAsync(
+                    $"{nameof(OrderEndpoints)}-{id}",
+                    async (cancellationToken) => await useCase.HandleAsync(new(correlationId, id), cancellationToken),
+                    cancellationToken
+                ),
+                false or _ => await useCase.HandleAsync(new(correlationId, id), cancellationToken),
+            };
 
             return response.Success ? Results.Ok(response) : Results.NotFound(response);
         });
 
         ordersGroup.MapPost("/", async (
-            [FromServices] IBaseInOutUseCase<CreateOrderRequest, BaseResponse<OrderDto>, CreateOrderUseCase> useCase,
+            [FromServices] IBaseInOutUseCase<CreateOrderRequest, BaseResponse<OrderDto>> useCase,
             [FromBody] CreateOrderRequest request,
             CancellationToken cancellationToken
         ) =>
@@ -45,7 +50,7 @@ internal static class OrderEndpoints
         });
 
         ordersGroup.MapPost("/paginated", async (
-            [FromServices] IBaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<OrderDto>, GetAllOrdersUseCase> useCase,
+            [FromServices] IBaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<OrderDto>> useCase,
             [FromBody] BasePaginatedRequest request,
             CancellationToken cancellationToken
         ) =>

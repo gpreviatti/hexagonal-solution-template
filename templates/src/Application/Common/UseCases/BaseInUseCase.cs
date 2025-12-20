@@ -1,61 +1,64 @@
 ﻿using Application.Common.Requests;
-using Application.Common.Repositories;
-using Domain.Common;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Application.Common.Services;
 using Application.Common.Constants;
-using System.Diagnostics;
 using System.Diagnostics.Metrics;
 
 namespace Application.Common.UseCases;
 
-public interface IBaseInUseCase<in TRequest, TEntity, TUseCase>
-    where TRequest : BaseRequest
-    where TEntity : DomainEntity
-    where TUseCase : class
+public interface IBaseInUseCase<TRequest> where TRequest : BaseRequest
 {
     Task HandleAsync(TRequest request, CancellationToken cancellationToken);
 }
 
-public abstract class BaseInUseCase<TRequest, TEntity, TUseCase>(
-    IServiceProvider serviceProvider,
-    IValidator<TRequest> validator = null!
-) : IBaseInUseCase<TRequest, TEntity, TUseCase>
-    where TRequest : BaseRequest
-    where TEntity : DomainEntity
-    where TUseCase : class
+public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TRequest> where TRequest : BaseRequest
 {
-    protected readonly ILogger<TUseCase> logger = serviceProvider.GetRequiredService<ILogger<TUseCase>>();
-    protected readonly IValidator<TRequest> validator = validator;
-    protected readonly IBaseRepository _repository = serviceProvider.GetRequiredService<IBaseRepository>();
-    protected readonly IHybridCacheService _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
-    private const string ClassName = nameof(BaseInUseCase<TRequest, TEntity, TUseCase>);
-    private const string HandleMethodName = nameof(HandleAsync);
-    private readonly Histogram<int> _useCaseExecuted = DefaultConfigurations.Meter
-        .CreateHistogram<int>($"{typeof(TUseCase).Name.ToLower()}.executed", "total", "Number of times the use case was executed");
-    private readonly Gauge<long> _useCaseExecutionElapsedTime = DefaultConfigurations.Meter
-        .CreateGauge<long>($"{typeof(TUseCase).Name.ToLower()}.elapsed", "milliseconds", "Elapsed time taken to execute the use case");
+    protected readonly IHybridCacheService _cache;
+    protected readonly IProduceService _produceService;
+    private readonly IValidator<TRequest> _validator;
+    private readonly Histogram<int> _useCaseExecuted;
+    private readonly Gauge<long> _useCaseExecutionElapsedTime;
+    protected const string HandleMethodName = nameof(HandleAsync);
+
+    protected BaseInUseCase(IServiceProvider serviceProvider) : base(serviceProvider)
+    {
+        _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
+        _produceService = serviceProvider.GetRequiredService<IProduceService>();
+        _validator = serviceProvider.GetRequiredService<IValidator<TRequest>>();
+
+        _useCaseExecuted = DefaultConfigurations.Meter
+            .CreateHistogram<int>($"{ClassName}.Executed", "total", "Number of times the use case was executed");
+
+        _useCaseExecutionElapsedTime = DefaultConfigurations.Meter
+            .CreateGauge<long>($"{ClassName}.Elapsed", "elapsed", "Elapsed time taken to execute the use case");
+    }
 
     public async Task HandleAsync(
         TRequest request,
         CancellationToken cancellationToken
     )
     {
-        var stopWatch = Stopwatch.StartNew();
+        stopWatch.Restart();
+
         logger.LogInformation(
             DefaultApplicationMessages.StartToExecuteUseCase,
             ClassName, HandleMethodName, request.CorrelationId
         );
 
-        if (validator != null)
+        if (_validator != null)
         {
-            var validationResult = await validator.ValidateAsync(request, cancellationToken);
+            var validationResult = await _validator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid)
             {
                 var errors = string.Join(", ", validationResult.Errors);
-                logger.LogError(errors);
+                logger.LogError(
+                    DefaultApplicationMessages.ValidationErrors,
+                    ClassName, HandleMethodName, request.CorrelationId, errors
+                );
+
+                return;
             }
         }
 

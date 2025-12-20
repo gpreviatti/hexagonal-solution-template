@@ -20,6 +20,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
     private readonly IDictionary<string, object?> _arguments;
     private readonly ConnectionFactory _factory;
     private readonly Stopwatch _stopwatch = new();
+    protected IProduceService producerService = null!;
 
     public BaseConsumer(
         ILogger<BaseConsumer<TMessage, TConsumer>> logger,
@@ -44,7 +45,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
     protected override async Task ExecuteInternalAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken) => await HandleRabbitMqAsync(
         async (message, cancellationToken) =>
         {
-            var producerService = serviceProvider.GetRequiredService<IProduceService>();
+            producerService = serviceProvider.GetRequiredService<IProduceService>();
             try
             {
                 _stopwatch.Restart();
@@ -93,8 +94,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
                     _className, message?.CorrelationId, ex.Message, ex.StackTrace
                 );
 
-                await producerService
-                    .HandleAsync(message!, cancellationToken, _queueName + "_deadLetter");
+                _ = producerService.HandleAsync(message!, CancellationToken.None, _queueName + "_deadLetter");
 
                 throw;
             }

@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Application.Common.Constants;
+using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Notifications;
@@ -20,18 +21,28 @@ public sealed class GetNotificationRequestValidator : AbstractValidator<GetNotif
     }
 }
 
-public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)
-    : BaseInOutUseCase<GetNotificationRequest, BaseResponse<NotificationDto>, Notification, GetNotificationUseCase>(
-        serviceProvider,
-        serviceProvider.GetRequiredService<IValidator<GetNotificationRequest>>()
-    )
+public sealed class GetNotificationUseCase(IServiceProvider serviceProvider) 
+    : BaseInOutUseCase<GetNotificationRequest, BaseResponse<NotificationDto>>(serviceProvider)
 {
+    private readonly IBaseRepository<Notification> _repository = serviceProvider
+        .GetRequiredService<IBaseRepository<Notification>>();
     public override async Task<BaseResponse<NotificationDto>> HandleInternalAsync(
         GetNotificationRequest request,
         CancellationToken cancellationToken
     )
     {
-        var notification = await _repository.GetByIdAsNoTrackingAsync(request.Id, request.CorrelationId, cancellationToken, Array.Empty<Expression<Func<Notification, object>>>());
+        var notification = await _repository.GetByIdAsNoTrackingAsync(
+            request.Id,
+            request.CorrelationId,
+            n => new NotificationDto
+            {
+                Id = n.Id,
+                Message = n.Message,
+                NotificationType = n.NotificationType,
+                NotificationStatus = n.NotificationStatus,
+            },
+            cancellationToken
+        );
 
         if (notification is null)
         {

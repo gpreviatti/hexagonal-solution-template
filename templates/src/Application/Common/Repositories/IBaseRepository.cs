@@ -2,53 +2,82 @@
 using Domain.Common;
 
 namespace Application.Common.Repositories;
-public interface IBaseRepository
+public interface IBaseRepository<TEntity> where TEntity : DomainEntity
 {
-    Task<int> AddAsync<TEntity>(TEntity entity, Guid correlationId, CancellationToken cancellationToken) where TEntity : DomainEntity;
-    Task<int> AddRangeAsync<TEntity>(TEntity[] entities, Guid correlationId, CancellationToken cancellationToken) where TEntity : DomainEntity;
-    Task<int> AddOrUpdateIfNotExistsAsync<TEntity>(TEntity entity, Expression<Func<TEntity, bool>> predicate, Guid correlationId, CancellationToken cancellationToken) where TEntity : DomainEntity;
+    Task<int> AddAsync(TEntity entity, Guid correlationId, CancellationToken cancellationToken);
+    Task<int> AddRangeAsync(TEntity[] entities, Guid correlationId, CancellationToken cancellationToken);
+    Task<int> AddOrUpdateIfNotExistsAsync(TEntity entity, Expression<Func<TEntity, bool>> predicate, Guid correlationId, CancellationToken cancellationToken);
+    Task<int> UpdateAsync(TEntity entity, Guid correlationId, CancellationToken cancellationToken);
+    Task<int> RemoveAsync(TEntity entity, Guid correlationId, CancellationToken cancellationToken);
+    Task<int> RemoveRangeAsync(TEntity[] entities, Guid correlationId, CancellationToken cancellationToken);
 
-    Task<int> UpdateAsync<TEntity>(TEntity entity, Guid correlationId, CancellationToken cancellationToken) where TEntity : DomainEntity;
-    Task<int> RemoveAsync<TEntity>(TEntity entity, Guid correlationId, CancellationToken cancellationToken) where TEntity : DomainEntity;
-    Task<int> RemoveRangeAsync<TEntity>(TEntity[] entities, Guid correlationId, CancellationToken cancellationToken) where TEntity : DomainEntity;
+    Task<bool> CheckExistsByWhereAsync(Expression<Func<TEntity, bool>> predicate, Guid correlationId, CancellationToken cancellationToken);
+    Task<bool> CheckExistsByWhereAsNoTrackingAsync(Expression<Func<TEntity, bool>> predicate, Guid correlationId, CancellationToken cancellationToken);
 
-    Task<bool> CheckExistsByWhereAsync<TEntity>(Expression<Func<TEntity, bool>> predicate, Guid correlationId, CancellationToken cancellationToken) where TEntity : DomainEntity;
-    Task<bool> CheckExistsByWhereAsNoTrackingAsync<TEntity>(Expression<Func<TEntity, bool>> predicate, Guid correlationId, CancellationToken cancellationToken) where TEntity : DomainEntity;
-
-    Task<TEntity> FirstOrDefaultAsNoTrackingAsync<TEntity>(
-        Expression<Func<TEntity, bool>> predicate,
+    Task<TEntity> FirstOrDefaultAsNoTrackingAsync(
         Guid correlationId,
+        Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken,
-        params Expression<Func<TEntity, object>>[] includes
-    ) where TEntity : DomainEntity;
-    Task<TEntity> GetByIdAsNoTrackingAsync<TEntity>(
+        params Expression<Func<TEntity, object>>[]? includes
+    );
+    Task<TResult> FirstOrDefaultAsNoTrackingAsync<TResult>(
+        Guid correlationId,
+        Expression<Func<TEntity, bool>> predicate,
+        Expression<Func<TEntity, TResult>> selector,
+        CancellationToken cancellationToken
+    );
+    Task<TEntity> GetByIdAsNoTrackingAsync(
         int id,
         Guid correlationId,
         CancellationToken cancellationToken,
-        params Expression<Func<TEntity, object>>[] includes
-    ) where TEntity : DomainEntity;
-    Task<IList<TEntity>> GetByWhereAsync<TEntity>(
-        Expression<Func<TEntity, bool>> predicate,
+        params Expression<Func<TEntity, object>>[]? includes
+    );
+    Task<TResult> GetByIdAsNoTrackingAsync<TResult>(
+        int id,
         Guid correlationId,
-        CancellationToken cancellationToken,
-        params Expression<Func<TEntity, object>>[] includes
-    ) where TEntity : DomainEntity;
-    Task<IList<TEntity>> GetByWhereAsNoTrackingAsync<TEntity>(
-        Expression<Func<TEntity, bool>> predicate,
+        Expression<Func<TEntity, TResult>> selector,
+        CancellationToken cancellationToken
+    );
+    Task<IList<TEntity>> GetByWhereAsync(
         Guid correlationId,
+        Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken,
-        params Expression<Func<TEntity, object>>[] includes
-    ) where TEntity : DomainEntity;
-    Task<(IEnumerable<TEntity> Items, int TotalRecords)> GetAllPaginatedAsync<TEntity>(
+        params Expression<Func<TEntity, object>>[]? includes
+    );
+    Task<IList<TEntity>> GetByWhereAsNoTrackingAsync(
+        Guid correlationId,
+        Expression<Func<TEntity, bool>> predicate,
+        CancellationToken cancellationToken,
+        params Expression<Func<TEntity, object>>[]? includes
+    );
+    Task<IList<TResult>> GetByWhereAsNoTrackingAsync<TResult>(
+        Guid correlationId,
+        Expression<Func<TEntity, bool>> predicate,
+        Expression<Func<TEntity, TResult>> selector,
+        CancellationToken cancellationToken
+    );
+    Task<(IEnumerable<TEntity> Items, int TotalRecords)> GetAllPaginatedAsync(
+        Guid correlationId,
         int page,
         int pageSize,
-        Guid correlationId,
         CancellationToken cancellationToken,
         string? sortBy = null,
         bool sortDescending = false,
         Dictionary<string, string>? searchByValues = null,
-        params Expression<Func<TEntity, object>>[] includes
-    ) where TEntity : DomainEntity;
+        params Expression<Func<TEntity, object>>[]? includes
+    );
+
+    Task<(IEnumerable<TResult> Items, int TotalRecords)> GetAllPaginatedAsync<TResult>(
+        Guid correlationId,
+        int page,
+        int pageSize,
+        Expression<Func<TEntity, TResult>> selector,
+        CancellationToken cancellationToken,
+        string? sortBy = null,
+        bool sortDescending = false,
+        Dictionary<string, string>? searchByValues = null,
+        Expression<Func<TEntity, bool>> predicate = null!
+    );
 
     Task BeginTransactionAsync(CancellationToken cancellationToken);
     Task CommitTransactionAsync(CancellationToken cancellationToken);

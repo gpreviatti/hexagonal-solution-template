@@ -1,4 +1,4 @@
-name: Validate pull request
+name: Validate
 
 on: 
   pull_request:
@@ -6,22 +6,18 @@ on:
 
 jobs:
   validate:
-    name: Validate Template
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate.yml@v1
     with:
+      project: "hexagonal-solution-template"
+      organization: "gpreviatti"
       unit_test_project_path: "./templates/tests/UnitTests/"
+      unit_test_verbosity: 'd'
+      dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
       domain_stryker_config_path: "./templates/tests/UnitTests/stryker-config-domain.json"
       application_stryker_config_path: "./templates/tests/UnitTests/stryker-config-application.json"
       integration_test_project_path: "./templates/tests/IntegrationTests"
       docker_compose_file_path: "./templates/docker-compose.yml"
-      dotnet_version: "10.x"
       stryker_enable: false
-      dotnet_test_verbosity: 'd'
-
-  build:
-    needs: validate
-    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-build.yml@v1
-    name: Build Template Solution
-    with:
-      solution_path: "./templates"
-      dotnet_version: "10.x"
+    secrets:
+      sonar_token: ${{ secrets.SONAR_TOKEN }}
+    

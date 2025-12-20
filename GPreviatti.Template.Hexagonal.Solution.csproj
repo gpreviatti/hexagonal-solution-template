@@ -18,9 +18,8 @@
     <RepositoryUrl>git://github.com/gpreviatti/hexagonal-solution-template</RepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>
-      - **Breaking change** Migrate to .NET 10
-      - Add global package management with `Directory.Packages.props`
-      - Update all dependencies to latest stable versions
+      - Add github actions to build and publish template with sonarcloud analysis.
+      - General improvements and fixes.
     </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>

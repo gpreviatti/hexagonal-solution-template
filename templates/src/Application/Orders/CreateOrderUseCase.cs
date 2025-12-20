@@ -1,5 +1,6 @@
 ﻿using Application.Common.Constants;
 using Application.Common.Messages;
+using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Orders;
@@ -33,11 +34,12 @@ public sealed class CreateOrderRequestValidator : AbstractValidator<CreateOrderR
     }
 }
 
-public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<CreateOrderRequest, BaseResponse<OrderDto>, Order, CreateOrderUseCase>(
-    serviceProvider,
-    serviceProvider.GetRequiredService<IValidator<CreateOrderRequest>>()
-)
+public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) 
+    : BaseInOutUseCase<CreateOrderRequest, BaseResponse<OrderDto>>(serviceProvider)
 {
+    private readonly IBaseRepository<Order> _repository = serviceProvider
+        .GetRequiredService<IBaseRepository<Order>>();
+
     public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(
         CreateOrderRequest request,
         CancellationToken cancellationToken
@@ -58,7 +60,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
 
             response = new(false, null, createResult.Message);
 
-            await CreateNotificationAsync(correlationId, "Failed", response, cancellationToken);
+            CreateNotification(correlationId, "Failed", response);
 
             return response;
         }
@@ -70,19 +72,30 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
 
             response = new(false, null, "Failed to create order.");
 
-            await CreateNotificationAsync(correlationId, "Failed", response, cancellationToken);
+            CreateNotification(correlationId, "Failed", response);
 
             return response;
         }
 
-        response = new(true, newOrder);
+        response = new(true, new OrderDto()
+        {
+            Id = newOrder.Id,
+            Total = newOrder.Total,
+            Items = [.. newOrder.Items.Select(i => new ItemDto
+            {
+                Id = i.Id,
+                Name = i.Name,
+                Description = i.Description,
+                Value = i.Value
+            })]
+        });
 
-        await CreateNotificationAsync(correlationId, "Success", response, cancellationToken);
+        CreateNotification(correlationId, "Success", response);
 
         return response;
     }
 
-    private async Task CreateNotificationAsync(Guid correlationId, string notificationStatus, object message, CancellationToken cancellationToken) => await _produceService.HandleAsync(
+    private void CreateNotification(Guid correlationId, string notificationStatus, object message) => _ = _produceService.HandleAsync(
         new CreateNotificationMessage(
             correlationId,
             NotificationType.OrderCreated,
@@ -90,7 +103,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) : BaseI
             "System",
             message
         ),
-        cancellationToken,
+        CancellationToken.None,
         NotificationType.OrderCreated
     );
 }

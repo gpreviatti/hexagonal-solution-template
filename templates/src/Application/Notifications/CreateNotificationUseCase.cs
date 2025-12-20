@@ -1,4 +1,5 @@
 using Application.Common.Constants;
+using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Notifications;
@@ -25,13 +26,12 @@ public sealed class CreateNotificationRequestValidator : AbstractValidator<Creat
     }
 }
 
-public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider)
-    : BaseInOutUseCase<CreateNotificationRequest, BaseResponse<NotificationDto>, Notification, CreateNotificationUseCase>(
-        serviceProvider,
-        serviceProvider.GetRequiredService<IValidator<CreateNotificationRequest>>()
-    )
+public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider) : BaseInUseCase<CreateNotificationRequest>(serviceProvider)
 {
-    public override async Task<BaseResponse<NotificationDto>> HandleInternalAsync(
+    private readonly IBaseRepository<Notification> _repository = serviceProvider
+        .GetRequiredService<IBaseRepository<Notification>>();
+
+    public override async Task HandleInternalAsync(
         CreateNotificationRequest request,
         CancellationToken cancellationToken
     )
@@ -53,9 +53,6 @@ public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider)
                 HandleMethodName,
                 request.CorrelationId
             );
-            return new(false, null, "Failed to create notification.");
         }
-
-        return new(true, notification);
     }
 }

@@ -18,10 +18,7 @@ public record BaseResponse<TData> : BaseResponse where TData : class
 {
     public BaseResponse() { }
 
-    public BaseResponse(bool success, TData? data = null, string? message = null) : base(success, message)
-    {
-        Data = data;
-    }
+    public BaseResponse(bool success, TData? data = null, string? message = null) : base(success, message) => Data = data;
 
     public TData? Data { get; set; }
 
