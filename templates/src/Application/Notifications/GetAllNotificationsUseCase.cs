@@ -34,7 +34,7 @@ public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
         if (notifications is null || !notifications.Any())
         {
             logger.LogWarning(
-                DefaultApplicationMessages.DefaultApplicationMessage + "No notifications found.",
+                "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | No notifications found.",
                 ClassName,
                 HandleMethodName,
                 request.CorrelationId

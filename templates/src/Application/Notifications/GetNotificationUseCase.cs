@@ -45,7 +45,7 @@ public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)
         if (notification is null)
         {
             logger.LogWarning(
-                DefaultApplicationMessages.DefaultApplicationMessage + "Notification not found.",
+                "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Notification not found.",
                 ClassName,
                 HandleMethodName,
                 request.CorrelationId

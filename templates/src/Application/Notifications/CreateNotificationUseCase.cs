@@ -43,7 +43,7 @@ public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider) 
         if (addResult == 0)
         {
             logger.LogWarning(
-                DefaultApplicationMessages.DefaultApplicationMessage + "Failed to create notification.",
+                "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Failed to create notification.",
                 ClassName,
                 HandleMethodName,
                 request.CorrelationId

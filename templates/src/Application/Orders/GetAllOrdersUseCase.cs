@@ -32,7 +32,7 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider)
         if (orders is null || !orders.Any())
         {
             logger.LogWarning(
-                DefaultApplicationMessages.DefaultApplicationMessage + "No orders found.",
+                "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | No orders found.",
                 ClassName,
                 HandleMethodName,
                 request.CorrelationId

@@ -1,5 +1,4 @@
-﻿using Application.Common.Constants;
-using Application.Common.Requests;
+﻿using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Orders;
 using FluentValidation;
@@ -44,7 +43,7 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider)  : BaseInO
         if (order is null)
         {
             logger.LogWarning(
-                DefaultApplicationMessages.DefaultApplicationMessage + "Order not found.",
+                "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Order not found.",
                 ClassName, HandleMethodName, request.CorrelationId
             );
             return new(false, null, "Order not found.");
