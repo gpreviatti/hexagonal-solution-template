@@ -16,7 +16,6 @@ jobs:
       application_stryker_config_path: "./templates/tests/UnitTests/stryker-config-application.json"
       integration_test_project_path: "./templates/tests/IntegrationTests"
       docker_compose_file_path: "./templates/docker-compose.yml"
-      stryker_enable: false
       package_version: "10.0.1"
     secrets:
       sonar_token: ${{ secrets.SONAR_TOKEN }}
