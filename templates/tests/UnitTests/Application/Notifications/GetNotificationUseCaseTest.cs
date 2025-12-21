@@ -1,4 +1,3 @@
-using Application.Common.Repositories;
 using Application.Notifications;
 using Domain.Notifications;
 using Microsoft.Extensions.Logging;
@@ -8,23 +7,9 @@ namespace UnitTests.Application.Notifications;
 
 public sealed class GetNotificationUseCaseFixture : BaseApplicationFixture<GetNotificationRequest, GetNotificationUseCase>
 {
-    public Mock<IBaseRepository<Notification>> mockNotificationRepository = new();
     public GetNotificationUseCaseFixture()
     {
-        MockServiceProviderServices();
-
-        mockServiceProvider
-            .Setup(r => r.GetService(typeof(IBaseRepository<Notification>)))
-            .Returns(mockNotificationRepository.Object);
-
         useCase = new(mockServiceProvider.Object);
-    }
-
-    public new void ClearInvocations()
-    {
-        base.ClearInvocations();
-
-        mockNotificationRepository.Reset();
     }
 
     public GetNotificationRequest SetValidRequest() =>
@@ -51,7 +36,7 @@ public sealed class GetNotificationUseCaseTests : IClassFixture<GetNotificationU
         var request = _fixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
         var expectedNotification = _fixture.autoFixture.Create<NotificationDto>();
-        _fixture.mockNotificationRepository.SetupGetByIdAsNoTrackingAsync(expectedNotification);
+        _fixture.mockRepository.SetupGetByIdAsNoTrackingAsync<Notification, NotificationDto>(expectedNotification);
 
         // Act
         var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);

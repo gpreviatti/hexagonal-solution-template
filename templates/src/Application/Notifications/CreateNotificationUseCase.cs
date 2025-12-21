@@ -1,10 +1,8 @@
 using Application.Common.Constants;
-using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Notifications;
 using FluentValidation;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Notifications;
@@ -28,9 +26,6 @@ public sealed class CreateNotificationRequestValidator : AbstractValidator<Creat
 
 public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider) : BaseInUseCase<CreateNotificationRequest>(serviceProvider)
 {
-    private readonly IBaseRepository<Notification> _repository = serviceProvider
-        .GetRequiredService<IBaseRepository<Notification>>();
-
     public override async Task HandleInternalAsync(
         CreateNotificationRequest request,
         CancellationToken cancellationToken
@@ -48,7 +43,7 @@ public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider) 
         if (addResult == 0)
         {
             logger.LogWarning(
-                DefaultApplicationMessages.DefaultApplicationMessage + "Failed to create notification.",
+                "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Failed to create notification.",
                 ClassName,
                 HandleMethodName,
                 request.CorrelationId

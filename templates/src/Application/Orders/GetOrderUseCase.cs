@@ -1,10 +1,7 @@
-﻿using Application.Common.Constants;
-using Application.Common.Repositories;
-using Application.Common.Requests;
+﻿using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Orders;
 using FluentValidation;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Orders;
@@ -21,15 +18,12 @@ public sealed class GetOrderRequestValidator : AbstractValidator<GetOrderRequest
 
 public sealed class GetOrderUseCase(IServiceProvider serviceProvider)  : BaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>>(serviceProvider)
 {
-    private readonly IBaseRepository<Order> _repository = serviceProvider
-        .GetRequiredService<IBaseRepository<Order>>();
-
     public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(
         GetOrderRequest request,
         CancellationToken cancellationToken
     )
     {
-        var order = await _repository.GetByIdAsNoTrackingAsync(
+        var order = await _repository.GetByIdAsNoTrackingAsync<Order, OrderDto>(
             request.Id,
             request.CorrelationId,
             o => new OrderDto()
@@ -49,7 +43,7 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider)  : BaseInO
         if (order is null)
         {
             logger.LogWarning(
-                DefaultApplicationMessages.DefaultApplicationMessage + "Order not found.",
+                "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Order not found.",
                 ClassName, HandleMethodName, request.CorrelationId
             );
             return new(false, null, "Order not found.");

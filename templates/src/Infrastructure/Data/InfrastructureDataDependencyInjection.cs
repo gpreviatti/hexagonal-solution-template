@@ -1,6 +1,4 @@
 ﻿using Application.Common.Repositories;
-using Domain.Notifications;
-using Domain.Orders;
 using Infrastructure.Data.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,13 +9,11 @@ internal static class InfrastructureDataDependencyInjection
 {
     public static IServiceCollection AddData(this IServiceCollection services, IConfiguration configuration)
     {
-        services
-            .AddDbContext<MyDbContext>(context =>
-                context.UseSqlServer(configuration.GetConnectionString("OrderDb") ?? throw new NullReferenceException("OrderDb connection string is not configured."))
-            );
+        services.AddDbContextFactory<MyDbContext>(options =>
+            options.UseSqlServer(configuration.GetConnectionString("OrderDb") ?? throw new NullReferenceException("OrderDb connection string is not configured."))
+        );
 
-        services.AddScoped<IBaseRepository<Order>, BaseRepository<Order>>();
-        services.AddScoped<IBaseRepository<Notification>, BaseRepository<Notification>>();
+        services.AddScoped<IBaseRepository, BaseRepository>();
 
         return services;
     }

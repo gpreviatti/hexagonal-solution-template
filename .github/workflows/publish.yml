@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish:
-    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-publish.yml@v1
+  validate:
+    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate.yml@v1
     with:
       project: "hexagonal-solution-template"
       organization: "gpreviatti"
@@ -16,8 +16,13 @@ jobs:
       application_stryker_config_path: "./templates/tests/UnitTests/stryker-config-application.json"
       integration_test_project_path: "./templates/tests/IntegrationTests"
       docker_compose_file_path: "./templates/docker-compose.yml"
-      stryker_enable: false
-      package_version: "10.0.1"
     secrets:
       sonar_token: ${{ secrets.SONAR_TOKEN }}
+  pack-and-publish:
+    needs: validate
+    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-pack.yml@v1
+    with:
+      dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
+      package_version: "10.0.2"
+    secrets:
       nuget_api_key: ${{ secrets.NUGET_API_KEY }}

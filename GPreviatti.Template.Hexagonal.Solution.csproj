@@ -18,8 +18,11 @@
     <RepositoryUrl>git://github.com/gpreviatti/hexagonal-solution-template</RepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>
-      - Add github actions to build and publish template with sonarcloud analysis.
-      - General improvements and fixes.
+      - Add DbContext factory to work with parallel queries providing a new DbContext instance per request
+      - Refactor BaseRepository to work with DbContext factory
+      - Refactor BaseRepository to work without generics on instantiation and simplify Dependency Injection
+      - Update GitHub Actions workflows to use shared templates
+      - Improve logging messages in application use cases
     </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>

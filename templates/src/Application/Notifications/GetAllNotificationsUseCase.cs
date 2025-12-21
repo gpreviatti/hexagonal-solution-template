@@ -1,9 +1,7 @@
 using Application.Common.Constants;
-using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Notifications;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Notifications;
@@ -11,18 +9,16 @@ namespace Application.Notifications;
 public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
     : BaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<NotificationDto>>(serviceProvider)
 {
-    private readonly IBaseRepository<Notification> _repository = serviceProvider
-        .GetRequiredService<IBaseRepository<Notification>>();
     public override async Task<BasePaginatedResponse<NotificationDto>> HandleInternalAsync(
         BasePaginatedRequest request,
         CancellationToken cancellationToken
     )
     {
-        var (notifications, totalRecords) = await _repository.GetAllPaginatedAsync(
+        var (notifications, totalRecords) = await _repository.GetAllPaginatedAsync<Notification, NotificationDto>(
             request.CorrelationId,
             request.Page,
             request.PageSize,
-            n => new NotificationDto
+            n => new()
             {
                 Id = n.Id,
                 Message = n.Message,
@@ -38,7 +34,7 @@ public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
         if (notifications is null || !notifications.Any())
         {
             logger.LogWarning(
-                DefaultApplicationMessages.DefaultApplicationMessage + "No notifications found.",
+                "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | No notifications found.",
                 ClassName,
                 HandleMethodName,
                 request.CorrelationId

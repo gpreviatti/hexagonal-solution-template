@@ -1,4 +1,5 @@
-﻿using Application.Orders;
+﻿using Application.Notifications;
+using Application.Orders;
 using Domain.Orders;
 using IntegrationTests.Common;
 using WebApp;
@@ -6,10 +7,10 @@ using WebApp;
 namespace IntegrationTests.Data;
 
 [Collection("WebApplicationFactoryCollectionDefinition")]
-public sealed class OrderRepositoryTest : IClassFixture<BaseDataFixture<Order>>
+public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
 {
-    private readonly BaseDataFixture<Order>? _fixture;
-    public OrderRepositoryTest(CustomWebApplicationFactory<Program> factory, BaseDataFixture<Order> fixture)
+    private readonly BaseDataFixture? _fixture;
+    public BaseRepositoryTest(CustomWebApplicationFactory<Program> factory, BaseDataFixture fixture)
     {
         _fixture = fixture;
         _fixture.SetRepository(factory);
@@ -22,11 +23,11 @@ public sealed class OrderRepositoryTest : IClassFixture<BaseDataFixture<Order>>
         var id = 1;
 
         // Act
-        var result = await _fixture!.repository!.GetByIdAsNoTrackingAsync(
+        var result = await _fixture!.repository!.GetByIdAsNoTrackingAsync<Order>(
             id,
             Guid.NewGuid(),
             _fixture.cancellationToken,
-            o => o.Items
+            includes: o => o.Items
         );
 
         // Assert
@@ -43,10 +44,11 @@ public sealed class OrderRepositoryTest : IClassFixture<BaseDataFixture<Order>>
         var id = 1;
 
         // Act
-        var result = await _fixture!.repository!.GetByIdAsNoTrackingAsync(
+        var result = await _fixture!.repository!.GetByIdAsNoTrackingAsync<Order, OrderDto>(
             id,
             Guid.NewGuid(),
-            selector: o => new OrderDto() {
+            selector: o => new OrderDto()
+            {
                 Id = o.Id,
                 Total = o.Total,
                 Items = o.Items.Select(i => new ItemDto
@@ -67,6 +69,40 @@ public sealed class OrderRepositoryTest : IClassFixture<BaseDataFixture<Order>>
     }
 
     [Fact]
+    public async Task Given_A_Order_And_Notification_Should_Execute_In_Parallel_With_Success()
+    {
+        // Arrange
+        var id = 1;
+
+        // Act
+        var orderTask = _fixture!.repository!.GetByIdAsNoTrackingAsync<Order>(
+            id,
+            Guid.NewGuid(),
+            _fixture.cancellationToken
+        );
+
+        var notificationTask = _fixture!.repository!.GetByIdAsNoTrackingAsync<Domain.Notifications.Notification>(
+            id,
+            Guid.NewGuid(),
+            _fixture.cancellationToken,
+            newContext: true
+        );
+
+        await Task.WhenAll(orderTask, notificationTask);
+        var order = await orderTask;
+        var notification = await notificationTask;
+
+        // Assert
+        Assert.NotNull(order);
+        Assert.Equal(id, order!.Id);
+
+        Assert.NotNull(notification);
+        Assert.Equal(id, notification!.Id);
+        Assert.NotNull(notification.NotificationType);
+        Assert.NotNull(notification.NotificationStatus);
+    }
+
+    [Fact]
     public async Task Given_A_Valid_Request_Then_Return_All_Orders_Paginated_With_Success()
     {
         // Arrange
@@ -74,7 +110,7 @@ public sealed class OrderRepositoryTest : IClassFixture<BaseDataFixture<Order>>
         var pageSize = 5;
 
         // Act
-        var (result, totalRecords) = await _fixture!.repository!.GetAllPaginatedAsync(
+        var (result, totalRecords) = await _fixture!.repository!.GetAllPaginatedAsync<Order>(
             Guid.NewGuid(),
             pageNumber,
             pageSize,
@@ -95,7 +131,7 @@ public sealed class OrderRepositoryTest : IClassFixture<BaseDataFixture<Order>>
         var pageSize = 5;
 
         // Act
-        var (result, totalRecords) = await _fixture!.repository!.GetAllPaginatedAsync(
+        var (result, totalRecords) = await _fixture!.repository!.GetAllPaginatedAsync<Order, OrderDto>(
             Guid.NewGuid(),
             pageNumber,
             pageSize,
@@ -128,7 +164,7 @@ public sealed class OrderRepositoryTest : IClassFixture<BaseDataFixture<Order>>
         var pageSize = 5;
 
         // Act
-        var (result, totalRecords) = await _fixture!.repository!.GetAllPaginatedAsync(
+        var (result, totalRecords) = await _fixture!.repository!.GetAllPaginatedAsync<Order>(
             Guid.NewGuid(),
             pageNumber,
             pageSize,
@@ -153,7 +189,7 @@ public sealed class OrderRepositoryTest : IClassFixture<BaseDataFixture<Order>>
         };
 
         // Act
-        var (result, totalRecords) = await _fixture!.repository!.GetAllPaginatedAsync(
+        var (result, totalRecords) = await _fixture!.repository!.GetAllPaginatedAsync<Order>(
             Guid.NewGuid(),
             pageNumber,
             pageSize,
@@ -179,7 +215,7 @@ public sealed class OrderRepositoryTest : IClassFixture<BaseDataFixture<Order>>
         };
 
         // Act
-        var (result, totalRecords) = await _fixture!.repository!.GetAllPaginatedAsync(
+        var (result, totalRecords) = await _fixture!.repository!.GetAllPaginatedAsync<Order>(
             Guid.NewGuid(),
             pageNumber,
             pageSize,
@@ -204,7 +240,7 @@ public sealed class OrderRepositoryTest : IClassFixture<BaseDataFixture<Order>>
         var sortBy = "Description";
 
         // Act
-        var (result, totalRecords) = await _fixture!.repository!.GetAllPaginatedAsync(
+        var (result, totalRecords) = await _fixture!.repository!.GetAllPaginatedAsync<Order>(
             Guid.NewGuid(),
             pageNumber,
             pageSize,

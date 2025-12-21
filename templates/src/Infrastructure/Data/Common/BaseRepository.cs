@@ -8,18 +8,23 @@ using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Data.Common;
 
-public class BaseRepository<TEntity>(ILogger<BaseRepository<TEntity>> logger, MyDbContext dbContext) : IBaseRepository<TEntity> where TEntity : DomainEntity
+public class BaseRepository(
+    ILogger<BaseRepository> logger,
+    IDbContextFactory<MyDbContext> dbContextFactory
+) : IBaseRepository
 {
-    protected readonly ILogger<BaseRepository<TEntity>> logger = logger;
+    protected readonly ILogger<BaseRepository> logger = logger;
     private readonly Stopwatch _stopwatch = new();
-    private readonly DbSet<TEntity> _dbSet = dbContext.Set<TEntity>();
+    private readonly IDbContextFactory<MyDbContext> _dbContextFactory = dbContextFactory;
+    private readonly MyDbContext _dbContext = dbContextFactory.CreateDbContext();
 
-    private async Task<TResult> HandleBaseQueryAsync<TResult>(
+    private async Task<TResult> HandleBaseQueryAsync<TEntity, TResult>(
         Func<DbSet<TEntity>, Task<TResult>> query,
         Guid correlationId,
+        bool? newContext = false,
         [CallerMemberName]
         string methodName = null!
-    )
+    ) where TEntity : DomainEntity
     {
         _stopwatch.Restart();
 
@@ -29,7 +34,11 @@ public class BaseRepository<TEntity>(ILogger<BaseRepository<TEntity>> logger, My
             correlationId
         );
 
-        var result = await query.Invoke(_dbSet);
+        var dbSet = _dbContext.Set<TEntity>();
+        if (newContext.GetValueOrDefault())
+            dbSet = _dbContextFactory.CreateDbContext().Set<TEntity>();
+
+        var result = await query.Invoke(dbSet);
 
         logger.LogDebug(
             "[BaseRepository] | [{Method}] | CorrelationId: {CorrelationId} | Query executed in {ElapsedMilliseconds} ms.",
@@ -41,76 +50,75 @@ public class BaseRepository<TEntity>(ILogger<BaseRepository<TEntity>> logger, My
         return result;
     }
 
-    public async Task<int> AddAsync(TEntity entity, Guid correlationId, CancellationToken cancellationToken) =>
-    await HandleBaseQueryAsync(async dbEntitySet =>
+    public async Task<int> AddAsync<TEntity>(TEntity entity, Guid correlationId, CancellationToken cancellationToken, bool? newContext = null) where TEntity : DomainEntity =>
+    await HandleBaseQueryAsync<TEntity, int>(async dbEntitySet =>
     {
         await dbEntitySet.AddAsync(entity, cancellationToken);
 
-        return await dbContext.SaveChangesAsync(cancellationToken);
-    }, correlationId);
+        return await _dbContext.SaveChangesAsync(cancellationToken);
+    }, correlationId, newContext);
 
-    public async Task<int> AddRangeAsync(TEntity[] entities, Guid correlationId, CancellationToken cancellationToken) =>
-    await HandleBaseQueryAsync(async dbEntitySet =>
+    public async Task<int> AddRangeAsync<TEntity>(TEntity[] entities, Guid correlationId, CancellationToken cancellationToken, bool? newContext = null) where TEntity : DomainEntity =>
+    await HandleBaseQueryAsync<TEntity, int>(async dbEntitySet =>
     {
         await dbEntitySet.AddRangeAsync(entities, cancellationToken);
 
-        return await dbContext.SaveChangesAsync(cancellationToken);
-    }, correlationId);
+        return await _dbContext.SaveChangesAsync(cancellationToken);
+    }, correlationId, newContext);
 
-    public async Task<int> AddOrUpdateIfNotExistsAsync(TEntity entity, Expression<Func<TEntity, bool>> predicate, Guid correlationId, CancellationToken cancellationToken) =>
-    await HandleBaseQueryAsync(async dbEntitySet =>
+    public async Task<int> AddOrUpdateIfNotExistsAsync<TEntity>(TEntity entity, Expression<Func<TEntity, bool>> predicate, Guid correlationId, CancellationToken cancellationToken, bool? newContext = null) where TEntity : DomainEntity =>
+    await HandleBaseQueryAsync<TEntity, int>(async dbEntitySet =>
     {
         if (!await dbEntitySet.AsNoTracking().AnyAsync(predicate))
             await dbEntitySet.AddAsync(entity, cancellationToken);
         else
             dbEntitySet.Update(entity);
 
-        return await dbContext.SaveChangesAsync(cancellationToken);
-    }, correlationId);
+        return await _dbContext.SaveChangesAsync(cancellationToken);
+    }, correlationId, newContext);
 
-    public async Task<int> UpdateAsync(TEntity entity, Guid correlationId, CancellationToken cancellationToken) =>
-    await HandleBaseQueryAsync(async dbEntitySet =>
+    public async Task<int> UpdateAsync<TEntity>(TEntity entity, Guid correlationId, CancellationToken cancellationToken, bool? newContext = null) where TEntity : DomainEntity =>
+    await HandleBaseQueryAsync<TEntity, int>(async dbEntitySet =>
     {
         var updatedEntity = dbEntitySet.Update(entity);
 
-        return await dbContext.SaveChangesAsync(cancellationToken);
-    }, correlationId);
+        return await _dbContext.SaveChangesAsync(cancellationToken);
+    }, correlationId, newContext);
 
-    public async Task<int> RemoveAsync(TEntity entity, Guid correlationId, CancellationToken cancellationToken) =>
-    await HandleBaseQueryAsync(async dbEntitySet =>
+    public async Task<int> RemoveAsync<TEntity>(TEntity entity, Guid correlationId, CancellationToken cancellationToken, bool? newContext = null) where TEntity : DomainEntity =>
+    await HandleBaseQueryAsync<TEntity, int>(async dbEntitySet =>
     {
         dbEntitySet.Remove(entity);
 
-        return await dbContext.SaveChangesAsync(cancellationToken);
-    }, correlationId);
+        return await _dbContext.SaveChangesAsync(cancellationToken);
+    }, correlationId, newContext);
 
-    public async Task<int> RemoveRangeAsync(TEntity[] entities, Guid correlationId, CancellationToken cancellationToken) =>
-    await HandleBaseQueryAsync(async dbEntitySet =>
+    public async Task<int> RemoveRangeAsync<TEntity>(TEntity[] entities, Guid correlationId, CancellationToken cancellationToken, bool? newContext = null) where TEntity : DomainEntity =>
+    await HandleBaseQueryAsync<TEntity, int>(async dbEntitySet =>
     {
         dbEntitySet.RemoveRange(entities);
 
-        return await dbContext.SaveChangesAsync(cancellationToken);
-    }, correlationId);
+        return await _dbContext.SaveChangesAsync(cancellationToken);
+    }, correlationId, newContext);
 
-    public async Task<bool> CheckExistsByWhereAsync(Expression<Func<TEntity, bool>> predicate, Guid correlationId, CancellationToken cancellationToken) =>
-    await HandleBaseQueryAsync(async dbEntitySet =>
+    public async Task<bool> CheckExistsByWhereAsync<TEntity>(Expression<Func<TEntity, bool>> predicate, Guid correlationId, CancellationToken cancellationToken, bool? newContext = null) where TEntity : DomainEntity =>
+    await HandleBaseQueryAsync<TEntity, bool>(async dbEntitySet =>
     {
         return await dbEntitySet.AnyAsync(predicate, cancellationToken);
-    }, correlationId);
+    }, correlationId, newContext);
 
-    public async Task<bool> CheckExistsByWhereAsNoTrackingAsync(Expression<Func<TEntity, bool>> predicate, Guid correlationId, CancellationToken cancellationToken) =>
-    await HandleBaseQueryAsync(async dbEntitySet =>
+    public async Task<bool> CheckExistsByWhereAsNoTrackingAsync<TEntity>(Expression<Func<TEntity, bool>> predicate, Guid correlationId, CancellationToken cancellationToken, bool? newContext = null) where TEntity : DomainEntity =>
+    await HandleBaseQueryAsync<TEntity, bool>(async dbEntitySet =>
     {
         return await dbEntitySet.AsNoTracking().AnyAsync(predicate, cancellationToken);
-    }, correlationId);
-
-    public async Task<TEntity> GetByIdAsNoTrackingAsync(
+    }, correlationId, newContext);
+    public async Task<TEntity> GetByIdAsNoTrackingAsync<TEntity>(
         int id,
         Guid correlationId,
         CancellationToken cancellationToken,
+        bool? newContext = null,
         params Expression<Func<TEntity, object>>[]? includes
-    ) =>
-    await HandleBaseQueryAsync(async dbEntitySet =>
+    ) where TEntity : DomainEntity => await HandleBaseQueryAsync<TEntity, TEntity>(async dbEntitySet =>
     {
         var query = dbEntitySet.AsNoTracking();
 
@@ -118,26 +126,29 @@ public class BaseRepository<TEntity>(ILogger<BaseRepository<TEntity>> logger, My
             query = SetIncludes(includes, query);
 
         return await query.FirstOrDefaultAsync(o => o.Id == id, cancellationToken) ?? default!;
-    }, correlationId);
+    }, correlationId, newContext);
 
-    public async Task<TResult> GetByIdAsNoTrackingAsync<TResult>(
+    public async Task<TResult> GetByIdAsNoTrackingAsync<TEntity, TResult>(
         int id,
         Guid correlationId,
         Expression<Func<TEntity, TResult>> selector,
-        CancellationToken cancellationToken
-    ) => await HandleBaseQueryAsync(async dbEntitySet => await dbEntitySet
+        CancellationToken cancellationToken,
+        bool? newContext = null
+    ) where TEntity : DomainEntity => await HandleBaseQueryAsync<TEntity, TResult>(async dbEntitySet => await dbEntitySet
         .Where(o => o.Id == id)
         .Select(selector)
         .FirstOrDefaultAsync(cancellationToken) ?? default!,
-        correlationId
+        correlationId,
+        newContext
     );
 
-    public async Task<IList<TEntity>> GetByWhereAsync(
+    public async Task<IList<TEntity>> GetByWhereAsync<TEntity>(
         Guid correlationId,
         Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken,
+        bool? newContext = null,
         params Expression<Func<TEntity, object>>[]? includes
-    ) => await HandleBaseQueryAsync(async dbEntitySet =>
+    ) where TEntity : DomainEntity => await HandleBaseQueryAsync<TEntity, IList<TEntity>>(async dbEntitySet =>
     {
         var query = dbEntitySet.AsQueryable();
 
@@ -145,14 +156,15 @@ public class BaseRepository<TEntity>(ILogger<BaseRepository<TEntity>> logger, My
             query = SetIncludes(includes, query);
 
         return await query.Where(predicate).ToListAsync(cancellationToken);
-    }, correlationId);
+    }, correlationId, newContext);
 
-    public async Task<IList<TEntity>> GetByWhereAsNoTrackingAsync(
+    public async Task<IList<TEntity>> GetByWhereAsNoTrackingAsync<TEntity>(
         Guid correlationId,
         Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken,
+        bool? newContext = null,
         params Expression<Func<TEntity, object>>[]? includes
-    ) => await HandleBaseQueryAsync(async dbEntitySet =>
+    ) where TEntity : DomainEntity => await HandleBaseQueryAsync<TEntity, IList<TEntity>>(async dbEntitySet =>
     {
         var query = dbEntitySet.AsNoTracking();
 
@@ -160,24 +172,27 @@ public class BaseRepository<TEntity>(ILogger<BaseRepository<TEntity>> logger, My
             query = SetIncludes(includes, query);
 
         return await query.Where(predicate).ToListAsync(cancellationToken);
-    }, correlationId);
+    }, correlationId, newContext);
 
-    public async Task<IList<TResult>> GetByWhereAsNoTrackingAsync<TResult>(
+    public async Task<IList<TResult>> GetByWhereAsNoTrackingAsync<TEntity, TResult>(
         Guid correlationId,
         Expression<Func<TEntity, bool>> predicate,
         Expression<Func<TEntity, TResult>> selector,
-        CancellationToken cancellationToken
-    ) => await HandleBaseQueryAsync(async dbEntitySet =>
+        CancellationToken cancellationToken,
+        bool? newContext = null
+    ) where TEntity : DomainEntity => await HandleBaseQueryAsync<TEntity, IList<TResult>>(async dbEntitySet =>
         await dbEntitySet.Where(predicate).Select(selector).ToListAsync(cancellationToken),
-        correlationId
+        correlationId,
+        newContext
     );
 
-    public async Task<TEntity> FirstOrDefaultAsNoTrackingAsync(
+    public async Task<TEntity> FirstOrDefaultAsNoTrackingAsync<TEntity>(
         Guid correlationId,
         Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken,
+        bool? newContext = null,
         params Expression<Func<TEntity, object>>[]? includes
-    ) => await HandleBaseQueryAsync(async dbEntitySet =>
+    ) where TEntity : DomainEntity => await HandleBaseQueryAsync<TEntity, TEntity>(async dbEntitySet =>
     {
         var query = dbEntitySet.AsNoTracking();
 
@@ -185,21 +200,23 @@ public class BaseRepository<TEntity>(ILogger<BaseRepository<TEntity>> logger, My
             query = SetIncludes(includes, query);
 
         return await query.FirstOrDefaultAsync(predicate, cancellationToken) ?? default!;
-    }, correlationId);
+    }, correlationId, newContext);
 
-    public async Task<TResult> FirstOrDefaultAsNoTrackingAsync<TResult>(
+    public async Task<TResult> FirstOrDefaultAsNoTrackingAsync<TEntity, TResult>(
         Guid correlationId,
         Expression<Func<TEntity, bool>> predicate,
         Expression<Func<TEntity, TResult>> selector,
-        CancellationToken cancellationToken
-    ) => await HandleBaseQueryAsync(async dbEntitySet => await dbEntitySet
+        CancellationToken cancellationToken,
+        bool? newContext = null
+    ) where TEntity : DomainEntity => await HandleBaseQueryAsync<TEntity, TResult>(async dbEntitySet => await dbEntitySet
         .Where(predicate)
         .Select(selector)
         .FirstOrDefaultAsync(cancellationToken) ?? default!,
-        correlationId
+        correlationId,
+        newContext
     );
 
-    public async Task<(IEnumerable<TEntity> Items, int TotalRecords)> GetAllPaginatedAsync(
+    public async Task<(IEnumerable<TEntity> Items, int TotalRecords)> GetAllPaginatedAsync<TEntity>(
         Guid correlationId,
         int page,
         int pageSize,
@@ -207,8 +224,9 @@ public class BaseRepository<TEntity>(ILogger<BaseRepository<TEntity>> logger, My
         string? sortBy = null!,
         bool sortDescending = false,
         Dictionary<string, string>? searchByValues = null!,
+        bool? newContext = null,
         params Expression<Func<TEntity, object>>[]? includes
-    ) => await HandleBaseQueryAsync(async dbEntitySet =>
+    ) where TEntity : DomainEntity => await HandleBaseQueryAsync<TEntity, (IEnumerable<TEntity> Items, int TotalRecords)>(async dbEntitySet =>
     {
         var query = dbEntitySet.AsNoTracking();
 
@@ -237,9 +255,9 @@ public class BaseRepository<TEntity>(ILogger<BaseRepository<TEntity>> logger, My
             .ToListAsync(cancellationToken);
 
         return (items, totalRecords);
-    }, correlationId);
+    }, correlationId, newContext);
 
-    public async Task<(IEnumerable<TResult> Items, int TotalRecords)> GetAllPaginatedAsync<TResult>(
+    public async Task<(IEnumerable<TResult> Items, int TotalRecords)> GetAllPaginatedAsync<TEntity, TResult>(
         Guid correlationId,
         int page,
         int pageSize,
@@ -248,8 +266,9 @@ public class BaseRepository<TEntity>(ILogger<BaseRepository<TEntity>> logger, My
         string? sortBy = null!,
         bool sortDescending = false,
         Dictionary<string, string>? searchByValues = null!,
-        Expression<Func<TEntity, bool>> predicate = null!
-    ) => await HandleBaseQueryAsync(async dbEntitySet =>
+        Expression<Func<TEntity, bool>> predicate = null!,
+        bool? newContext = null
+    ) where TEntity : DomainEntity => await HandleBaseQueryAsync<TEntity, (IEnumerable<TResult> Items, int TotalRecords)>(async dbEntitySet =>
     {
         var query = dbEntitySet.AsQueryable();
 
@@ -278,33 +297,33 @@ public class BaseRepository<TEntity>(ILogger<BaseRepository<TEntity>> logger, My
             .ToListAsync(cancellationToken);
 
         return (items, totalRecords);
-    }, correlationId);
+    }, correlationId, newContext);
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken)
     {
-        if (dbContext.Database.CurrentTransaction == null)
-            await dbContext.Database.BeginTransactionAsync(cancellationToken);
+        if (_dbContext.Database.CurrentTransaction == null)
+            await _dbContext.Database.BeginTransactionAsync(cancellationToken);
     }
 
     public async Task CommitTransactionAsync(CancellationToken cancellationToken)
     {
-        if (dbContext.Database.CurrentTransaction != null)
+        if (_dbContext.Database.CurrentTransaction != null)
         {
-            dbContext.SaveChanges();
-            await dbContext.Database.CurrentTransaction.CommitAsync(cancellationToken);
+            _dbContext.SaveChanges();
+            await _dbContext.Database.CurrentTransaction.CommitAsync(cancellationToken);
         }
     }
 
     public async Task RollbackTransactionAsync(CancellationToken cancellationToken)
     {
-        if (dbContext.Database.CurrentTransaction != null)
-            await dbContext.Database.CurrentTransaction.RollbackAsync(cancellationToken);
+        if (_dbContext.Database.CurrentTransaction != null)
+            await _dbContext.Database.CurrentTransaction.RollbackAsync(cancellationToken);
     }
 
-    private static IQueryable<TEntity> SetIncludes(
+    private static IQueryable<TEntity> SetIncludes<TEntity>(
         Expression<Func<TEntity, object>>[] includes,
         IQueryable<TEntity> query
-    )
+    ) where TEntity : DomainEntity
     {
         if (includes != null && includes.Length > 0)
             foreach (var include in includes)

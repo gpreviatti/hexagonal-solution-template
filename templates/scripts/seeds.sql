@@ -24,3 +24,14 @@ GO
 
 SET IDENTITY_INSERT [Item] OFF
 GO
+
+SET IDENTITY_INSERT [Notification] ON
+
+IF NOT EXISTS (SELECT TOP 1 * FROM [Notification] WHERE [Id] = 1 ) BEGIN
+    INSERT INTO [Notification] ([Id], [NotificationType], [NotificationStatus], [CreatedAt], [UpdatedAt])
+    VALUES (1, 'OrderCreated', 'Created', GETDATE(), GETDATE());
+END
+GO
+
+SET IDENTITY_INSERT [Notification] OFF
+GO

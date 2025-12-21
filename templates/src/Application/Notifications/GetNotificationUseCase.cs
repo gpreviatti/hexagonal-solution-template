@@ -21,20 +21,18 @@ public sealed class GetNotificationRequestValidator : AbstractValidator<GetNotif
     }
 }
 
-public sealed class GetNotificationUseCase(IServiceProvider serviceProvider) 
+public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)
     : BaseInOutUseCase<GetNotificationRequest, BaseResponse<NotificationDto>>(serviceProvider)
 {
-    private readonly IBaseRepository<Notification> _repository = serviceProvider
-        .GetRequiredService<IBaseRepository<Notification>>();
     public override async Task<BaseResponse<NotificationDto>> HandleInternalAsync(
         GetNotificationRequest request,
         CancellationToken cancellationToken
     )
     {
-        var notification = await _repository.GetByIdAsNoTrackingAsync(
+        var notification = await _repository.GetByIdAsNoTrackingAsync<Notification, NotificationDto>(
             request.Id,
             request.CorrelationId,
-            n => new NotificationDto
+            n => new()
             {
                 Id = n.Id,
                 Message = n.Message,
@@ -47,7 +45,7 @@ public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)
         if (notification is null)
         {
             logger.LogWarning(
-                DefaultApplicationMessages.DefaultApplicationMessage + "Notification not found.",
+                "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Notification not found.",
                 ClassName,
                 HandleMethodName,
                 request.CorrelationId

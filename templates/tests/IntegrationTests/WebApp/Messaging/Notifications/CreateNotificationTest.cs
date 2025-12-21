@@ -1,6 +1,5 @@
 using Application.Common.Constants;
 using Application.Common.Messages;
-using Application.Common.Repositories;
 using Domain.Notifications;
 using IntegrationTests.Common;
 using IntegrationTests.WebApp.Messaging.Common;
@@ -11,12 +10,10 @@ namespace IntegrationTests.WebApp.Messaging.Notifications;
 
 public class CreateNotificationTestFixture : BaseMessagingFixture
 {
-    public IBaseRepository<Notification> notificationRepository;
     public new void SetServices(CustomWebApplicationFactory<Program> factory)
     {
         var scope = factory.Services.CreateAsyncScope();
         SetServices(scope);
-        notificationRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<Notification>>();
     }
 
     public CreateNotificationMessage SetValidMessage() => autoFixture.Build<CreateNotificationMessage>().Create();
@@ -42,7 +39,7 @@ public sealed class CreateNotificationTest : IClassFixture<CreateNotificationTes
         // Act
         await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated);
 
-        var notification = await _fixture.notificationRepository.FirstOrDefaultAsNoTrackingAsync(
+        var notification = await _fixture.repository.FirstOrDefaultAsNoTrackingAsync<Notification>(
             Guid.NewGuid(),
             n => n.NotificationType == message.NotificationType && n.NotificationStatus == message.NotificationStatus,
             _fixture.cancellationToken
@@ -63,7 +60,7 @@ public sealed class CreateNotificationTest : IClassFixture<CreateNotificationTes
         await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated);
         await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated);
 
-        var notifications = await _fixture.notificationRepository.GetByWhereAsNoTrackingAsync(
+        var notifications = await _fixture.repository.GetByWhereAsNoTrackingAsync<Notification>(
             Guid.NewGuid(),
             n => n.NotificationType == message.NotificationType && n.NotificationStatus == message.NotificationStatus,
             cancellationToken: _fixture.cancellationToken

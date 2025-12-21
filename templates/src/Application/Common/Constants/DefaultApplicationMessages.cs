@@ -2,8 +2,7 @@ namespace Application.Common.Constants;
 
 public static class DefaultApplicationMessages
 {
-    public const string DefaultApplicationMessage = "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | ";
-    public const string StartToExecuteUseCase = DefaultApplicationMessage + "Start to execute use case";
-    public const string FinishedExecutingUseCase = DefaultApplicationMessage + "Elapsed time: {ElapsedMilliseconds} ms | Finished executing use case";
-    public const string ValidationErrors = DefaultApplicationMessage + "Validation errors: [{errors}]";
+    public const string StartToExecuteUseCase = "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Start to execute use case";
+    public const string FinishedExecutingUseCase = "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Elapsed time: {ElapsedMilliseconds} ms | Finished executing use case";
+    public const string ValidationErrors = "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Validation errors: [{errors}]";
 }

@@ -1,4 +1,5 @@
 ﻿using Application.Common.Messages;
+using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Common.Services;
 using CommonTests.Fixtures;
@@ -16,9 +17,15 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
     public Mock<ILogger> mockLogger = new();
     public Mock<ILoggerFactory> mockLoggerFactory = new();
     public Mock<IProduceService> mockProduceService = new();
+    public Mock<IBaseRepository> mockRepository = new();
     public Mock<IValidator<TRequest>> mockValidator = new();
     public Mock<IHybridCacheService> mockCache = new();
     public TUseCase useCase = default!;
+
+    public BaseApplicationFixture()
+    {
+        MockServiceProviderServices();
+    }
 
     public void MockServiceProviderServices()
     {
@@ -41,6 +48,10 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
         mockServiceProvider
             .Setup(r => r.GetService(typeof(IProduceService)))
             .Returns(mockProduceService.Object);
+
+        mockServiceProvider
+            .Setup(r => r.GetService(typeof(IBaseRepository)))
+            .Returns(mockRepository.Object);
     }
 
     public void ClearInvocations()
@@ -49,6 +60,7 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
         mockValidator.Reset();
         mockCache.Reset();
         mockProduceService.Reset();
+        mockRepository.Reset();
     }
 
     public BasePaginatedRequest SetValidBasePaginatedRequest() => new(Guid.NewGuid(), 1, 10);

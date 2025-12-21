@@ -1,11 +1,9 @@
 ﻿using Application.Common.Constants;
 using Application.Common.Messages;
-using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Orders;
 using FluentValidation;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Orders;
@@ -34,12 +32,9 @@ public sealed class CreateOrderRequestValidator : AbstractValidator<CreateOrderR
     }
 }
 
-public sealed class CreateOrderUseCase(IServiceProvider serviceProvider) 
+public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
     : BaseInOutUseCase<CreateOrderRequest, BaseResponse<OrderDto>>(serviceProvider)
 {
-    private readonly IBaseRepository<Order> _repository = serviceProvider
-        .GetRequiredService<IBaseRepository<Order>>();
-
     public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(
         CreateOrderRequest request,
         CancellationToken cancellationToken
@@ -56,7 +51,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
         var createResult = newOrder.SetTotal();
         if (createResult.IsFailure)
         {
-            logger.LogWarning(DefaultApplicationMessages.DefaultApplicationMessage + createResult.Message, ClassName, HandleMethodName, correlationId);
+            logger.LogWarning("[{ClassName}] | [{MethodName}] | [{CorrelationId}] | {Message}", ClassName, HandleMethodName, correlationId, createResult.Message);
 
             response = new(false, null, createResult.Message);
 
@@ -68,7 +63,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
         var addResult = await _repository.AddAsync(newOrder, correlationId, cancellationToken);
         if (addResult == 0)
         {
-            logger.LogWarning(DefaultApplicationMessages.DefaultApplicationMessage + "Failed to create order.", ClassName, HandleMethodName, correlationId);
+            logger.LogWarning("[{ClassName}] | [{MethodName}] | [{CorrelationId}] | " + "Failed to create order.", ClassName, HandleMethodName, correlationId);
 
             response = new(false, null, "Failed to create order.");
 
@@ -77,7 +72,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
             return response;
         }
 
-        response = new(true, new OrderDto()
+        response = new(true, new()
         {
             Id = newOrder.Id,
             Total = newOrder.Total,

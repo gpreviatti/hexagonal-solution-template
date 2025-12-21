@@ -1,4 +1,3 @@
-using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Notifications;
 using Domain.Notifications;
@@ -9,23 +8,9 @@ namespace UnitTests.Application.Notifications;
 
 public sealed class GetAllNotificationsUseCaseFixture : BaseApplicationFixture<BasePaginatedRequest, GetAllNotificationsUseCase>
 {
-    public Mock<IBaseRepository<Notification>> mockNotificationRepository = new();
     public GetAllNotificationsUseCaseFixture()
     {
-        MockServiceProviderServices();
-
-        mockServiceProvider
-            .Setup(r => r.GetService(typeof(IBaseRepository<Notification>)))
-            .Returns(mockNotificationRepository.Object);
-
         useCase = new(mockServiceProvider.Object);
-    }
-
-    public new void ClearInvocations()
-    {
-        base.ClearInvocations();
-
-        mockNotificationRepository.Reset();
     }
 
     public new BasePaginatedRequest SetValidBasePaginatedRequest() =>
@@ -54,7 +39,7 @@ public sealed class GetAllNotificationsUseCaseTests : IClassFixture<GetAllNotifi
         _fixture.SetSuccessfulValidator(request);
         var expectedNotifications = _fixture.autoFixture.CreateMany<NotificationDto>(totalRecords);
 
-        _fixture.mockNotificationRepository.SetValidGetAllPaginatedAsyncNoIncludes(expectedNotifications, totalRecords);
+        _fixture.mockRepository.SetValidGetAllPaginatedAsyncNoIncludes<Notification, NotificationDto>(expectedNotifications, totalRecords);
 
         // Act
         var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
@@ -99,7 +84,7 @@ public sealed class GetAllNotificationsUseCaseTests : IClassFixture<GetAllNotifi
         // Arrange
         var request = _fixture.SetValidBasePaginatedRequest();
         _fixture.SetSuccessfulValidator(request);
-        _fixture.mockNotificationRepository.SetInvalidGetAllPaginatedAsync<Notification, NotificationDto>();
+        _fixture.mockRepository.SetInvalidGetAllPaginatedAsync<Notification, NotificationDto>();
 
         // Act
         var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
