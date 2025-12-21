@@ -34,7 +34,7 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
 
             services.Remove(dbConnectionDescriptor!);
 
-            services.AddDbContext<MyDbContext>((container, options) => options.UseSqlServer(_connectionString));
+            services.AddDbContextFactory<MyDbContext>((options) => options.UseSqlServer(_connectionString));
         });
     }
 

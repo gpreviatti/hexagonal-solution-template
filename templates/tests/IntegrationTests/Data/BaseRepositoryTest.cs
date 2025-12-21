@@ -1,4 +1,5 @@
-﻿using Application.Orders;
+﻿using Application.Notifications;
+using Application.Orders;
 using Domain.Orders;
 using IntegrationTests.Common;
 using WebApp;
@@ -46,7 +47,8 @@ public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
         var result = await _fixture!.repository!.GetByIdAsNoTrackingAsync<Order, OrderDto>(
             id,
             Guid.NewGuid(),
-            selector: o => new OrderDto() {
+            selector: o => new OrderDto()
+            {
                 Id = o.Id,
                 Total = o.Total,
                 Items = o.Items.Select(i => new ItemDto
@@ -64,6 +66,40 @@ public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
         Assert.Equal(id, result!.Id);
         Assert.NotNull(result.Items);
         Assert.NotEmpty(result.Items);
+    }
+
+    [Fact]
+    public async Task Given_A_Order_And_Notification_Should_Execute_In_Parallel_With_Success()
+    {
+        // Arrange
+        var id = 1;
+
+        // Act
+        var orderTask = _fixture!.repository!.GetByIdAsNoTrackingAsync<Order>(
+            id,
+            Guid.NewGuid(),
+            _fixture.cancellationToken
+        );
+
+        var notificationTask = _fixture!.repository!.GetByIdAsNoTrackingAsync<Domain.Notifications.Notification>(
+            id,
+            Guid.NewGuid(),
+            _fixture.cancellationToken,
+            newContext: true
+        );
+
+        await Task.WhenAll(orderTask, notificationTask);
+        var order = await orderTask;
+        var notification = await notificationTask;
+
+        // Assert
+        Assert.NotNull(order);
+        Assert.Equal(id, order!.Id);
+
+        Assert.NotNull(notification);
+        Assert.Equal(id, notification!.Id);
+        Assert.NotNull(notification.NotificationType);
+        Assert.NotNull(notification.NotificationStatus);
     }
 
     [Fact]
