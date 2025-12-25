@@ -3,6 +3,8 @@ name: hexagonal-solution-template-load-tests
 services:
   k6:
     image: grafana/k6:1.4.2
+    depends_on:
+      - webapp
     ports:
       - "6565:6565"
     environment:
@@ -91,6 +93,8 @@ services:
       - "18889:18889"
     environment:
       - DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS=true
+    networks:
+      - hexagonal_solution_template_network
 
   redis:
     image: redis:8
