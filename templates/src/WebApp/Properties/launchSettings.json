@@ -22,6 +22,9 @@
                 "OTEL_EXPORTER_OTLP_LOGS_ENDPOINT": "http://localhost:18889",
                 "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
                 "OTEL_RESOURCE_ATTRIBUTES": "service.namespace=development",
+                "ConnectionStrings__OrderDb": "Server=127.0.0.1,1433;Database=OrderDb;User Id=sa;Password=cY5VvZkkh4AzES;TrustServerCertificate=true;",
+                "ConnectionStrings__Redis": "127.0.0.1:6379",
+                "ConnectionStrings__RabbitMQ": "amqp://guest:guest@127.0.0.1:5672/"
             }
         },
         "WebApp Https [Development]": {
@@ -45,7 +48,18 @@
                 "OTEL_EXPORTER_OTLP_LOGS_ENDPOINT": "http://localhost:18889",
                 "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
                 "OTEL_RESOURCE_ATTRIBUTES": "service.namespace=development",
+                "ConnectionStrings__OrderDb": "Server=127.0.0.1,1433;Database=OrderDb;User Id=sa;Password=cY5VvZkkh4AzES;TrustServerCertificate=true;",
+                "ConnectionStrings__Redis": "127.0.0.1:6379",
+                "ConnectionStrings__RabbitMQ": "amqp://guest:guest@127.0.0.1:5672/"
+
             }
+        },
+        "Production": {
+            "ASPNETCORE_ENVIRONMENT": "Production",
+            "commandName": "Project",
+            "dotnetRunMessages": true,
+            "sqlDebugging": false,
+            "launchBrowser": false
         }
     }
 }

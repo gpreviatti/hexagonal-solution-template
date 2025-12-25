@@ -1,0 +1,127 @@
+name: hexagonal-solution-template-load-tests
+
+services:
+  k6:
+    image: grafana/k6:1.4.2
+    ports:
+      - "6565:6565"
+    environment:
+      - K6_HTTP_DEBUG=full
+      - WEBAPP_URL=webapp:5000
+    volumes:
+      - ./tests/LoadTests:/LoadTests
+    networks:
+      - hexagonal_solution_template_network
+
+  webapp:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "5000:5000"
+    depends_on:
+      - sqlserver
+      - redis
+      - rabbitmq
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - LOGGING__LOGLEVEL__DEFAULT=Information
+      - LOGGING__LOGLEVEL__MICROSOFT=Information
+      - LOGGING__LOGLEVEL__MICROSOFT_HOSTING_LIFETIME=Information
+      - LOGGING__LOGLEVEL__MICROSOFT_ENTITY_FRAMEWORK_CORE=Information
+      - LOGGING__LOGLEVEL__MICROSOFT_ENTITY_FRAMEWORK_CORE_DATABASE_COMMAND=Information
+      - ENABLE_SENSITIVE_DATA_LOGGING=false
+      - OTEL_SERVICE_NAME=Hexagonal.Solution.Template.WebApp
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:18889
+      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://aspire-dashboard:18889
+      - OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=http://aspire-dashboard:18889
+      - OTEL_EXPORTER_OTLP_LOGS_ENDPOINT=http://aspire-dashboard:18889
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      - OTEL_RESOURCE_ATTRIBUTES=service.namespace=load-tests
+      - ConnectionStrings__OrderDb=Server=sqlserver,1433;Database=OrderDb;User Id=sa;Password=cY5VvZkkh4AzES;TrustServerCertificate=true;
+      - ConnectionStrings__Redis=redis:6379
+      - ConnectionStrings__RabbitMQ=amqp://guest:guest@rabbitmq:5672/
+    networks:
+      - hexagonal_solution_template_network
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2025-latest
+    environment:
+      SA_PASSWORD: "cY5VvZkkh4AzES"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+    networks:
+      - hexagonal_solution_template_network
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -U sa -P "cY5VvZkkh4AzES" -C -Q "SELECT 1" || exit 1
+      interval: 3s
+      timeout: 10s
+      retries: 10
+      start_period: 15s
+    ports:
+      - "1433:1433"
+
+  mssqltools:
+    image: mcr.microsoft.com/mssql-tools
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    networks:
+      - hexagonal_solution_template_network
+    volumes:
+      - ./scripts/migrations.sql:/tmp/migrations.sql
+      - ./scripts/seeds.sql:/tmp/seeds.sql
+    command:
+      - /bin/bash
+      - -c
+      - |
+        ./opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P "cY5VvZkkh4AzES" -C -d master -i ./tmp/migrations.sql &&
+        ./opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P "cY5VvZkkh4AzES" -C -d master -i ./tmp/seeds.sql
+
+  aspire-dashboard:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:13
+    ports:
+      - "18888:18888"
+      - "18889:18889"
+    environment:
+      - DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS=true
+
+  redis:
+    image: redis:8
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+    networks:
+      - hexagonal_solution_template_network
+
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 3s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+    networks:
+      - hexagonal_solution_template_network
+
+networks:
+  hexagonal_solution_template_network:
+    driver: bridge
