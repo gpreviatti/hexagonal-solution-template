@@ -16,8 +16,9 @@ export function getOrderHttp() {
       'Accept-Encoding': 'gzip, deflate',
     }
   };
-  const res = http.get('https://localhost:7175/orders/1', headers);
+  const webappUrl = __ENV.WEBAPP_URL || 'https://localhost:7175';
 
+  const res = http.get(`${webappUrl}/orders/1`, headers);
   check(res, {
     'status is 200': (r) => r.status === 200,
     'content type is JSON': (r) => r.headers['Content-Type'] === 'application/json; charset=utf-8',

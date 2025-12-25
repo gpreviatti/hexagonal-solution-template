@@ -7,13 +7,15 @@ export const options = {
         http_req_failed: ['rate<0.01'],
     },
 };
-  
+
 
 const client = new grpc.Client();
 client.load([], './protos/order.proto'); // Load your .proto file
 
 export function getOrderGrpc() {
-    client.connect('localhost:7175', { plaintext: false });
+    const webappUrl = __ENV.WEBAPP_URL || 'https://localhost:7175';
+
+    client.connect(webappUrl, { plaintext: false });
 
     const request = { id: 1, correlationId: crypto.randomUUID() };
     const response = client.invoke('order.OrderService/Get', request);
