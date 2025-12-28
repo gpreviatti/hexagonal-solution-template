@@ -13,7 +13,10 @@ const client = new grpc.Client();
 client.load([], './protos/order.proto'); // Load your .proto file
 
 export function getOrderGrpc() {
-    const webappUrl = __ENV.WEBAPP_URL || 'https://localhost:7175';
+    let webappUrl = __ENV.WEBAPP_URL || 'localhost:7175';
+
+    // Remove protocol scheme (http:// or https://) for gRPC connection
+    webappUrl = webappUrl.replace(/^http?:\/\//, '');
 
     client.connect(webappUrl, { plaintext: false });
 

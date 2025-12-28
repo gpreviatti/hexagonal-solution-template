@@ -13,7 +13,8 @@ export function getOrderHttp() {
     headers: {
       'correlationId': crypto.randomUUID(),
       'Accept': 'application/json',
-      'Accept-Encoding': 'gzip, deflate',
+        'Accept-Encoding': 'gzip, deflate',
+        'CacheEnabled': 'false'
     }
   };
   const webappUrl = __ENV.WEBAPP_URL || 'https://localhost:7175';

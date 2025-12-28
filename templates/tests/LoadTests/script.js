@@ -5,7 +5,6 @@ export const options = {
   scenarios: {
     getOrderHttp: {
       exec: 'get_order_http',
-      env: { EXAMPLEVAR: 'testing' },
       executor: 'constant-vus',
       vus: 10,
       duration: '60s',
@@ -13,7 +12,6 @@ export const options = {
     },
     getOrderGrpc: {
       exec: 'get_order_grpc',
-      env: { EXAMPLEVAR: 'testing' },
       executor: 'constant-vus',
       vus: 10,
       duration: '60s',

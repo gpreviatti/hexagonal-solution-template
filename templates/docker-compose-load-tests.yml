@@ -8,8 +8,9 @@ services:
     ports:
       - "6565:6565"
     environment:
-      - K6_HTTP_DEBUG=full
-      - WEBAPP_URL=webapp:5000
+      - WEBAPP_URL=http://webapp:5000
+      - K6_SUMMARY_MODE=full
+    command: ["run", "/LoadTests/script.js"]
     volumes:
       - ./tests/LoadTests:/LoadTests
     networks:
