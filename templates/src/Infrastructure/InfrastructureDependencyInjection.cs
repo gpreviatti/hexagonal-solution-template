@@ -9,17 +9,20 @@ namespace Infrastructure;
 
 public static class InfrastructureDependencyInjection
 {
-    public static WebApplicationBuilder AddInfrastructure(this WebApplicationBuilder builder)
+    extension(WebApplicationBuilder builder)
     {
-        var configuration = builder.Configuration;
+        public WebApplicationBuilder AddInfrastructure()
+        {
+            var configuration = builder.Configuration;
 
-        builder.Services
-            .AddData(configuration)
-            .AddCache(configuration)
-            .AddMessaging(configuration);
+            builder.Services
+                .AddData(configuration)
+                .AddCache(configuration)
+                .AddMessaging(configuration);
 
-        builder.AddOpenTelemetry();
+            builder.AddOpenTelemetry();
 
-        return builder;
+            return builder;
+        }
     }
 }
