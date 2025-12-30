@@ -42,10 +42,16 @@ dotnet run --project src/WebApp
 docker-compose up -d
 ```
 
-### Run load tests with full summary
+### Run load tests with full summary for HTTP script
 
 ```bash
-k6 run tests/LoadTests/script.js --summary-mode=full
+k6 run tests/LoadTests/scriptHttp.js --summary-mode=full
+```
+
+### Run load tests with full summary for gRPC script
+
+```bash
+k6 run tests/LoadTests/scriptGrpc.js --summary-mode=full
 ```
 
 ### Run tests (except load tests)

@@ -1,6 +1,6 @@
 ---
 description: 'Complete CRUD Generator for C# Hexagonal Architecture Projects'
-tools: ['edit', 'search', 'new', 'runCommands', 'runTasks', 'microsoft-docs/*', 'usages', 'problems', 'testFailure', 'todos', 'runSubagent', 'runTests']
+tools: ['vscode', 'execute', 'read', 'edit', 'search', 'web', 'microsoft-docs/*', 'agent', 'memory', 'todo']
 ---
 
 # GitHub Copilot Custom Prompt - Complete CRUD Generator
@@ -14,6 +14,7 @@ You must strictly adhere to the established coding standards, naming conventions
 ## Project Context
 
 This project follows hexagonal architecture with these layers:
+
 - **Domain**: Domain entities inheriting from `DomainEntity`
 - **Application**: Use cases, requests, responses and DTOs
 - **Infrastructure**: Repositories and implementations  
@@ -83,86 +84,87 @@ This project follows hexagonal architecture with these layers:
 
 1. **Create[Entity]UseCase**
 
-   - Request with all entity properties (except Id, CreatedAt, etc.)
-   - Response: `BaseResponse<[Entity]Dto>`
-   - Validator with required rules
-   - Metric: "[entity].created"
+- Request with all entity properties (except Id, CreatedAt, etc.)
+- Response: `BaseResponse<[Entity]Dto>`
+- Validator with required rules
+- Metric: "[entity].created"
 
 2. **Get[Entity]UseCase** 
 
-   - Request: Id + CorrelationId
-   - Response: `BaseResponse<[Entity]Dto>`
-   - Search by ID with `GetByIdAsNoTrackingAsync`
-   - Metric: "[entity].retrieved"
+- Request: Id + CorrelationId
+- Response: `BaseResponse<[Entity]Dto>`
+- Search by ID with `GetByIdAsNoTrackingAsync`
+- Metric: "[entity].retrieved"
 
 3. **GetAll[Entity]UseCase**
 
-   - Request: `BasePaginatedRequest`
-   - Response: `BasePaginatedResponse<[Entity]Dto>`
-   - Use repository's `GetAllPaginatedAsync`
-   - Metric: "[entity]s.listed"
+- Request: `BasePaginatedRequest`
+- Response: `BasePaginatedResponse<[Entity]Dto>`
+- Use repository's `GetAllPaginatedAsync`
+- Metric: "[entity]s.listed"
 
 4. **Update[Entity]UseCase**
 
-   - Request with Id + updatable fields
-   - Response: `BaseResponse<[Entity]Dto>`
-   - Check existence before updating
-   - Metric: "[entity].updated"
-   - Update entity in repository
-   - Remove cache entry if applicable
+- Request with Id + updatable fields
+- Response: `BaseResponse<[Entity]Dto>`
+- Check existence before updating
+- Metric: "[entity].updated"
+- Update entity in repository
+- Remove cache entry if applicable
 
 5. **Delete[Entity]UseCase**
 
-   - Request with Id
-   - Response: `BaseResponse`
-   - Check existence before deleting
-   - Metric: "[entity].deleted"
-   - Remove entity from repository
-   - Remove cache entry if applicable
+- Request with Id
+- Response: `BaseResponse`
+- Check existence before deleting
+- Metric: "[entity].deleted"
+- Remove entity from repository
+- Remove cache entry if applicable
 
 ### WebApp Layer
 
 6. **[Entity]Endpoints**
 
-   - Static class with `Map[Entity]Endpoints` method
-   - HTTP endpoints for all CRUD operations
-   - Proper route patterns: `GET /{id}`, `POST /`, `PUT /{id}`, `DELETE /{id}`, `POST /paginated`
-   - Include caching for GET operations
-   - Register in `Program.cs` endpoint mapping
+- Static class with `Map[Entity]Endpoints` method
+- HTTP endpoints for all CRUD operations
+- Proper route patterns: `GET /{id}`, `POST /`, `PUT /{id}`, `DELETE /{id}`, `POST /paginated`
+- Include caching for GET operations
+- Register in `Program.cs` endpoint mapping
 
 7. **[Entity]Service** (gRPC - if needed)
 
-   - gRPC service implementation
-   - Proto file definition
-   - Service registration in `Program.cs`
+- gRPC service implementation
+- Proto file definition
+- Service registration in `Program.cs`
 
 ### Messaging Layer
 
 8. **[Entity]Consumer** (if applicable)
-   - Message consumer for entity-related events
-   - Inherit from `BaseConsumer<TMessage, TConsumer>`
-   - Handle business logic for consumed messages
+
+- Message consumer for entity-related events
+- Inherit from `BaseConsumer<TMessage, TConsumer>`
+- Handle business logic for consumed messages
 
 ### Testing Layer
 
 9. **Unit Tests**
 
-   - `[UseCase]Fixture` and `[UseCase]Test` classes
-   - Cover all scenarios: success, validation, not found, errors
-   - Use AutoFixture for test data
+- `[UseCase]Fixture` and `[UseCase]Test` classes
+- Cover all scenarios: success, validation, not found, errors
+- Use AutoFixture for test data
 
 10. **Integration Tests**
 
-    - HTTP endpoint tests with `CustomWebApplicationFactory`
-    - gRPC service tests (if applicable)
-    - Database integration tests
-    - Test collections and fixtures
+- HTTP endpoint tests with `CustomWebApplicationFactory`
+- gRPC service tests (if applicable)
+- Database integration tests
+- Test collections and fixtures
 
 11. **Load Tests**
 
-    - k6 scenarios for HTTP endpoints
-    - k6 scenarios for gRPC services (if applicable)
-    - Performance thresholds and assertions
+- k6 scenarios for HTTP endpoints
+- k6 scenarios for gRPC services (if applicable)
+- Performance thresholds and assertions
 
 ## Implementation Requirements
 
@@ -328,11 +330,6 @@ tests/IntegrationTests/WebApp/Http/[EntityPlural]/
 
 tests/IntegrationTests/WebApp/Grpc/[EntityPlural]/ (if gRPC)
 └── Get[Entity]GrpcTest.cs
-
-tests/LoadTests/scenarios/
-├── get[Entity]Http.js
-├── create[Entity]Http.js
-└── get[Entity]Grpc.js (if gRPC)
 ```
 
 ## Critical Guidelines
@@ -409,6 +406,7 @@ tests/LoadTests/scenarios/
 - Use `AddAsync` for creation
 - Use `UpdateAsync` for modifications
 - Include proper cancellation token usage
+- Use Select projections to map entities to DTOs
 
 ### DI Registration
 
@@ -424,7 +422,6 @@ tests/LoadTests/scenarios/
 - Create entity mapping in `Infrastructure/Data/[EntityPlural]/Mapping/[Entity]DbMapping.cs`
 - Inherit from `BaseDbMapping<TEntity>`
 - Configure required properties with appropriate constraints (MaxLength, Required, etc.)
-- Register mapping in `MyDbContext.OnModelCreating()` using `.ApplyConfiguration()`
 - Follow column type conventions from `MyDbContext.ConfigureConventions()`
 - Example mapping structure:
 
@@ -459,6 +456,6 @@ internal sealed class [Entity]DbMapping : BaseDbMapping<[Entity]>
 - Include proper error handling in consumers
 - Use WebApplicationFactory collection definitions for integration tests
 - Create comprehensive load test scenarios covering all endpoints
-- Use #tool:todos to map track any pending tasks
+- Use #tool:todo to map track any pending tasks
 
 **Analyze existing @workspace files to understand exact patterns and replicate them faithfully for the new entity across all layers: Application, WebApp, Infrastructure (if needed), and comprehensive testing.**

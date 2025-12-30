@@ -1,6 +1,6 @@
 ---
 description: 'Migrations generator and SQL script generation for EF Core in a multi-project .NET solution.'
-tools: ['edit', 'search', 'new', 'runCommands', 'runTasks', 'microsoft-docs/*', 'usages', 'problems', 'todos']
+tools: ['vscode', 'execute', 'read', 'edit', 'search', 'web', 'microsoft-docs/*', 'agent', 'memory', 'todo']
 ---
 
 Here's how to manage EF Core migrations in this solution:
@@ -31,7 +31,7 @@ dotnet-ef database update --project src/Infrastructure --startup-project src/Web
 - `--project`: Points to Infrastructure project containing DbContext
 - `--context`: Specifies MyDbContext 
 - `--output-dir`: Places migrations in Data/Migrations folder
-- `--idempotent`: Makes script rerunnable
+- `--idempotent`: Makes script safe for any database state
 - `--output`: Saves SQL to specified file
 
 ### Tips:

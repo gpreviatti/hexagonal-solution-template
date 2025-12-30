@@ -1,4 +1,4 @@
-﻿using Infrastructure.Data.Mapping;
+﻿using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data;
@@ -8,20 +8,7 @@ public sealed class MyDbContext(
 ) : DbContext(options)
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder) => modelBuilder
-        .ApplyConfiguration(new OrderDbMapping())
-        .ApplyConfiguration(new ItemDbMapping())
-        .ApplyConfiguration(new NotificationDbMapping());
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        bool.TryParse(
-            Environment.GetEnvironmentVariable("ENABLE_SENSITIVE_DATA_LOGGING"),
-            out var enableSensitiveDataLogging
-        );
-
-        optionsBuilder
-            .EnableSensitiveDataLogging(enableSensitiveDataLogging);
-    }
+        .ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {

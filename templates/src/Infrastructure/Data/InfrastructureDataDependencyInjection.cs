@@ -7,14 +7,26 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Infrastructure.Data;
 internal static class InfrastructureDataDependencyInjection
 {
-    public static IServiceCollection AddData(this IServiceCollection services, IConfiguration configuration)
+    extension(IServiceCollection services)
     {
-        services.AddDbContextFactory<MyDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("OrderDb") ?? throw new NullReferenceException("OrderDb connection string is not configured."))
-        );
+        public IServiceCollection AddData(IConfiguration configuration)
+        {
+            bool.TryParse(
+                Environment.GetEnvironmentVariable("ENABLE_SENSITIVE_DATA_LOGGING"),
+                out var enableSensitiveDataLogging
+            );
 
-        services.AddScoped<IBaseRepository, BaseRepository>();
+            services.AddPooledDbContextFactory<MyDbContext>(options =>
+            {
+                options.UseSqlServer(
+                    configuration.GetConnectionString("OrderDb") ?? throw new NullReferenceException("OrderDb connection string is not configured.")
+                );
+                options.EnableSensitiveDataLogging(enableSensitiveDataLogging);
+            });
 
-        return services;
+            services.AddScoped<IBaseRepository, BaseRepository>();
+
+            return services;
+        }
     }
 }

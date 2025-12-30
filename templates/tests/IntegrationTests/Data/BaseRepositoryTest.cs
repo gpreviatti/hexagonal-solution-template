@@ -1,5 +1,4 @@
-﻿using Application.Notifications;
-using Application.Orders;
+﻿using Application.Orders;
 using Domain.Orders;
 using IntegrationTests.Common;
 using WebApp;

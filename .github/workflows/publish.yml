@@ -23,6 +23,6 @@ jobs:
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-pack.yml@v1
     with:
       dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
-      package_version: "10.0.2"
+      package_version: "10.0.3"
     secrets:
       nuget_api_key: ${{ secrets.NUGET_API_KEY }}

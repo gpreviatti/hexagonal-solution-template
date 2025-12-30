@@ -1,0 +1,87 @@
+name: hexagonal-solution-template-load-tests
+
+services:
+  k6:
+    image: grafana/k6:1.4.2
+    depends_on:
+      webapp:
+        condition: service_healthy
+    ports:
+      - "6565:6565"
+    environment:
+      - WEBAPP_URL=http://webapp:5000
+      - K6_SUMMARY_MODE=full
+    command: ["run", "/LoadTests/scriptHttp.js", ]
+    volumes:
+      - ./tests/LoadTests:/LoadTests
+    networks:
+      - hexagonal_solution_template_network
+
+  webapp:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "5000:5000"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - LOGGING__LOGLEVEL__DEFAULT=Information
+      - LOGGING__LOGLEVEL__MICROSOFT=Information
+      - LOGGING__LOGLEVEL__MICROSOFT_HOSTING_LIFETIME=Information
+      - LOGGING__LOGLEVEL__MICROSOFT_ENTITY_FRAMEWORK_CORE=Information
+      - LOGGING__LOGLEVEL__MICROSOFT_ENTITY_FRAMEWORK_CORE_DATABASE_COMMAND=Information
+      - ENABLE_SENSITIVE_DATA_LOGGING=false
+      - OTEL_SERVICE_NAME=Hexagonal.Solution.Template.WebApp
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:18889
+      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://aspire-dashboard:18889
+      - OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=http://aspire-dashboard:18889
+      - OTEL_EXPORTER_OTLP_LOGS_ENDPOINT=http://aspire-dashboard:18889
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      - OTEL_RESOURCE_ATTRIBUTES=service.namespace=load-tests
+      - ConnectionStrings__OrderDb=Server=sqlserver,1433;Database=OrderDb;User Id=sa;Password=cY5VvZkkh4AzES;TrustServerCertificate=true;
+      - ConnectionStrings__Redis=redis:6379
+      - ConnectionStrings__RabbitMQ=amqp://guest:guest@rabbitmq:5672/
+    networks:
+      - hexagonal_solution_template_network
+
+  sqlserver:
+    extends:
+      file: docker-compose.yml
+      service: sqlserver
+
+  mssqltools:
+    extends:
+      file: docker-compose.yml
+      service: mssqltools
+
+  aspire-dashboard:
+    extends:
+      file: docker-compose.yml
+      service: aspire-dashboard
+
+  redis:
+    extends:
+      file: docker-compose.yml
+      service: redis
+
+  rabbitmq:
+    extends:
+      file: docker-compose.yml
+      service: rabbitmq
+
+networks:
+  hexagonal_solution_template_network:
+    driver: bridge

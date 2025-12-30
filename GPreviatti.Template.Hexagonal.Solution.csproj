@@ -18,11 +18,10 @@
     <RepositoryUrl>git://github.com/gpreviatti/hexagonal-solution-template</RepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>
-      - Add DbContext factory to work with parallel queries providing a new DbContext instance per request
-      - Refactor BaseRepository to work with DbContext factory
-      - Refactor BaseRepository to work without generics on instantiation and simplify Dependency Injection
-      - Update GitHub Actions workflows to use shared templates
-      - Improve logging messages in application use cases
+      - Add docker support
+      - Add docker-compose file for load tests
+      - Add automatic assembly mapping for entities
+      - Simplify load tests methods definitions
     </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>

@@ -7,25 +7,28 @@ namespace Infrastructure.Cache;
 
 internal static class InfrastructureCacheDependencyInjection
 {
-    public static IServiceCollection AddCache(this IServiceCollection services, IConfiguration configuration)
+    extension(IServiceCollection services)
     {
-        services
-        .AddStackExchangeRedisCache(options =>
+        public IServiceCollection AddCache(IConfiguration configuration)
         {
-            options.Configuration = configuration.GetConnectionString("Redis") ?? throw new NullReferenceException("Redis connection string is not configured.");
-            options.Configuration += ",abortConnect=false,connectTimeout=5000,syncTimeout=5000";
-        })
-        .AddHybridCache(options =>
-        {
-            options.DefaultEntryOptions = new()
+            services
+            .AddStackExchangeRedisCache(options =>
             {
-                Expiration = TimeSpan.FromMinutes(30),
-                LocalCacheExpiration = TimeSpan.FromMinutes(30)
-            };
-        });
+                options.Configuration = configuration.GetConnectionString("Redis") ?? throw new NullReferenceException("Redis connection string is not configured.");
+                options.Configuration += ",abortConnect=false,connectTimeout=5000,syncTimeout=5000";
+            })
+            .AddHybridCache(options =>
+            {
+                options.DefaultEntryOptions = new()
+                {
+                    Expiration = TimeSpan.FromMinutes(30),
+                    LocalCacheExpiration = TimeSpan.FromMinutes(30)
+                };
+            });
 
-        services.AddSingleton<IHybridCacheService, HybridCacheService>();
+            services.AddSingleton<IHybridCacheService, HybridCacheService>();
 
-        return services;
+            return services;
+        }
     }
 }
