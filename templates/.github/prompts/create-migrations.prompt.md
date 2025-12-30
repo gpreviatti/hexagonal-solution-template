@@ -1,6 +1,6 @@
 ---
 description: 'Migrations generator and SQL script generation for EF Core in a multi-project .NET solution.'
-tools: ['vscode', 'execute', 'read', 'edit', 'search', 'web', 'atlassian/search', 'microsoft-docs/*', 'agent', 'memory', 'todo']
+tools: ['vscode', 'execute', 'read', 'edit', 'search', 'web', 'microsoft-docs/*', 'agent', 'memory', 'todo']
 ---
 
 Here's how to manage EF Core migrations in this solution:
