@@ -1,38 +1,12 @@
 ﻿{
   "$schema": "http://json.schemastore.org/launchsettings.json",
     "profiles": {
-        "WebApp Http [Development]": {
+        "Development": {
             "commandName": "Project",
             "dotnetRunMessages": true,
             "sqlDebugging": true,
             "launchBrowser": false,
-            "applicationUrl": "http://localhost:5010",
-            "environmentVariables": {
-                "ASPNETCORE_ENVIRONMENT": "Development",
-                "LOGGING__LOGLEVEL__DEFAULT": "Debug",
-                "LOGGING__LOGLEVEL__MICROSOFT": "Information",
-                "LOGGING__LOGLEVEL__MICROSOFT_HOSTING_LIFETIME": "Information",
-                "LOGGING__LOGLEVEL__MICROSOFT_ENTITY_FRAMEWORK_CORE": "Information",
-                "LOGGING__LOGLEVEL__MICROSOFT_ENTITY_FRAMEWORK_CORE_DATABASE_COMMAND": "Information",
-                "ENABLE_SENSITIVE_DATA_LOGGING": "true",
-                "OTEL_SERVICE_NAME": "Hexagonal.Solution.Template.WebApp",
-                "OTEL_EXPORTER_OTLP_ENDPOINT": "http://localhost:18889",
-                "OTEL_EXPORTER_OTLP_TRACES_ENDPOINT": "http://localhost:18889",
-                "OTEL_EXPORTER_OTLP_METRICS_ENDPOINT": "http://localhost:18889",
-                "OTEL_EXPORTER_OTLP_LOGS_ENDPOINT": "http://localhost:18889",
-                "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
-                "OTEL_RESOURCE_ATTRIBUTES": "service.namespace=development",
-                "ConnectionStrings__OrderDb": "Server=127.0.0.1,1433;Database=OrderDb;User Id=sa;Password=cY5VvZkkh4AzES;TrustServerCertificate=true;",
-                "ConnectionStrings__Redis": "127.0.0.1:6379",
-                "ConnectionStrings__RabbitMQ": "amqp://guest:guest@127.0.0.1:5672/"
-            }
-        },
-        "WebApp Https [Development]": {
-            "commandName": "Project",
-            "dotnetRunMessages": true,
-            "sqlDebugging": true,
-            "launchBrowser": false,
-            "applicationUrl": "https://localhost:7175",
+            "applicationUrl": "https://*:7175;http://*:5010",
             "environmentVariables": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
                 "LOGGING__LOGLEVEL__DEFAULT": "Debug",
