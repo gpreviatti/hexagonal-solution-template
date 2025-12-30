@@ -4,13 +4,14 @@ services:
   k6:
     image: grafana/k6:1.4.2
     depends_on:
-      - webapp
+      webapp:
+        condition: service_healthy
     ports:
       - "6565:6565"
     environment:
       - WEBAPP_URL=http://webapp:5000
       - K6_SUMMARY_MODE=full
-    command: ["run", "/LoadTests/script.js"]
+    command: ["run", "/LoadTests/scriptHttp.js", ]
     volumes:
       - ./tests/LoadTests:/LoadTests
     networks:
@@ -23,9 +24,12 @@ services:
     ports:
       - "5000:5000"
     depends_on:
-      - sqlserver
-      - redis
-      - rabbitmq
+      sqlserver:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health" ]
       interval: 30s
