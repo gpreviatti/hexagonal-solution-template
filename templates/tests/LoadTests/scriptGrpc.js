@@ -3,8 +3,8 @@ import { check, sleep } from 'k6';
 
 export const options = {
   scenarios: {
-    getOrderGrpc: {
-      exec: 'get_order_grpc',
+    getOrder: {
+      exec: 'getOrder',
       executor: 'constant-vus',
       vus: 10,
       duration: '60s',
@@ -21,7 +21,7 @@ const webappUrl = __ENV.WEBAPP_GRPC_URL || 'localhost:7175';
 const client = new grpc.Client();
 client.load([], './protos/order.proto');
 
-export function get_order_grpc() {
+export function getOrder() {
   client.connect(webappUrl, { plaintext: false });
 
   const request = { id: 1, correlationId: crypto.randomUUID() };

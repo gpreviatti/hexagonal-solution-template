@@ -3,7 +3,7 @@ import { check, sleep } from 'k6';
 
 export const options = {
   scenarios: {
-    getOrderHttp: {
+    getOrder: {
       exec: 'getOrder',
       executor: 'constant-vus',
       vus: 10,
