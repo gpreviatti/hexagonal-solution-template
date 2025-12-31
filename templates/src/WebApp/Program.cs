@@ -4,6 +4,7 @@ using Application;
 using Domain;
 using Infrastructure;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using WebApp.Endpoints;
 using WebApp.GrpcServices;
 using WebApp.HealthChecks;
@@ -42,6 +43,11 @@ public sealed class Program
             .AddApplication();
 
         builder.AddInfrastructure();
+
+        builder.WebHost.ConfigureKestrel(options =>
+            options.ConfigureEndpointDefaults(listenOptions =>
+                listenOptions.Protocols = HttpProtocols.Http1AndHttp2AndHttp3
+        ));
 
         var app = builder.Build();
 
