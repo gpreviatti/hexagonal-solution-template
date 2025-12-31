@@ -14,10 +14,31 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Run load tests with Docker Compose
+      - name: Starting required services
         working-directory: ./templates
         run: |
-          docker compose -f docker-compose-load-tests.yml up --exit-code-from k6 --build --timestamps
+          docker compose -f docker-compose-load-tests.yml up sqlserver redis rabbitmq
+        env:
+          DOCKER_BUILDKIT: 1
+      
+      - name: Starting Database Seed
+        working-directory: ./templates
+        run: |
+          docker compose -f docker-compose-load-tests.yml up mssqltools
+        env:
+          DOCKER_BUILDKIT: 1
+
+      - name: Starting WebApp
+        working-directory: ./templates
+        run: |
+          docker compose -f docker-compose-load-tests.yml up webapp --build
+        env:
+          DOCKER_BUILDKIT: 1
+
+      - name: Run Load Tests
+        working-directory: ./templates
+        run: |
+          docker compose -f docker-compose-load-tests.yml up k6
         env:
           DOCKER_BUILDKIT: 1
 

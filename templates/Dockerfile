@@ -16,4 +16,4 @@ RUN apt-get update \
 
 EXPOSE 5000
 
-ENTRYPOINT ["dotnet", "WebApp.dll", "--launch-profile", "Production", "--urls", "http://+:5000"]
+ENTRYPOINT ["dotnet", "WebApp.dll", "--urls", "http://+:5000"]

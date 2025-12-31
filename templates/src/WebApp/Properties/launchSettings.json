@@ -27,13 +27,6 @@
                 "ConnectionStrings__RabbitMQ": "amqp://guest:guest@127.0.0.1:5672/"
 
             }
-        },
-        "Production": {
-            "ASPNETCORE_ENVIRONMENT": "Production",
-            "commandName": "Project",
-            "dotnetRunMessages": true,
-            "sqlDebugging": false,
-            "launchBrowser": false
         }
     }
 }
