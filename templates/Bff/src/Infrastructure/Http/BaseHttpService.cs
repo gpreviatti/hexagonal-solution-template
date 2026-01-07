@@ -15,6 +15,7 @@ public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> log
         string requestUri,
         HttpMethod method,
         CancellationToken cancellationToken,
+        dynamic? request = null,
         Dictionary<string, string>? headers = null
     )
     {
@@ -23,46 +24,23 @@ public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> log
 
         var requestMessage = new HttpRequestMessage(method, requestUri);
 
-        if (headers != null) foreach (var header in headers)
-            requestMessage.Headers.Add(header.Key, header.Value);
+        if (request != null)
+        {
+            var memoryStream = new MemoryStream();
+            await JsonSerializer.SerializeAsync(memoryStream, request, _jsonSerializerOptions, cancellationToken);
 
-        var httpResponse = await _httpClient.SendAsync(requestMessage, cancellationToken);
-        httpResponse.EnsureSuccessStatusCode();
-
-        var stream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken);
-
-        var result = await JsonSerializer.DeserializeAsync<dynamic>(stream, _jsonSerializerOptions, cancellationToken);
-
-        _logger.LogDebug("[BaseHttpService] | [SendAsync] | [{Method}] | [{RequestUri}] | Request completed in {ElapsedMilliseconds} ms", method, requestUri, _stopwatch.ElapsedMilliseconds);
-
-        return result;
-    }
-
-    public async Task<dynamic?> SendAsync<TRequest>(
-        string requestUri,
-        HttpMethod method,
-        TRequest request,
-        CancellationToken cancellationToken,
-        Dictionary<string, string>? headers = null
-    )
-    {
-        _stopwatch.Start();
-        _logger.LogDebug("[BaseHttpService] | [SendAsync] | [{Method}] | [{RequestUri}] | Sending request", method, requestUri);
-
-        var memoryStream = new MemoryStream();
-        await JsonSerializer.SerializeAsync(memoryStream, request, _jsonSerializerOptions, cancellationToken);
-
-        memoryStream.Seek(0, SeekOrigin.Begin);
-        var requestMessage = new HttpRequestMessage(method, requestUri);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            using var requestContent = new StreamContent(memoryStream);
+            requestMessage.Content = requestContent;
+        }
 
         if (headers != null) foreach (var header in headers)
             requestMessage.Headers.Add(header.Key, header.Value);
-
-        using var requestContent = new StreamContent(memoryStream);
-        requestMessage.Content = requestContent;
 
         using var response = await _httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+
         response.EnsureSuccessStatusCode();
+        
         var content = await response.Content.ReadAsStreamAsync(cancellationToken);
 
         var result = await JsonSerializer.DeserializeAsync<dynamic>(content, _jsonSerializerOptions, cancellationToken);

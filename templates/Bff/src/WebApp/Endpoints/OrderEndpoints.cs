@@ -1,7 +1,6 @@
 using Infrastructure.Http;
 using Microsoft.AspNetCore.Mvc;
 using Infrastructure.Cache;
-using Infrastructure.Common;
 
 namespace WebApp.Endpoints;
 
@@ -10,10 +9,12 @@ internal static class OrderEndpoints
     public static WebApplication MapOrderEndpoints(this WebApplication app)
     {
         var cache = app.Services.GetRequiredService<HybridCacheService>();
-        var httpService = app.Services.GetRequiredKeyedService<BaseHttpService>(ServicesKeys.Orders);
+        
+        var serviceKey = ServicesKeys.Orders.ToString();
 
-        var ordersGroup = app.MapGroup("/orders")
-            .WithTags("Orders");
+        var httpService = app.Services.GetRequiredKeyedService<BaseHttpService>(serviceKey);
+
+        var ordersGroup = app.MapGroup(serviceKey).WithTags(serviceKey);
 
         ordersGroup.MapGet("/{id}", async (
             [FromHeader] Guid correlationId,
@@ -25,13 +26,13 @@ internal static class OrderEndpoints
             {
                 true => await cache.GetOrCreateAsync(
                     $"{nameof(OrderEndpoints)}-{id}",
-                    async (cancellationToken) => await httpService.SendAsync($"/orders/{id}", HttpMethod.Get, cancellationToken, new()
+                    async (cancellationToken) => await httpService.SendAsync($"/orders/{id}", HttpMethod.Get, cancellationToken, headers: new()
                     {
                         { "CorrelationId", correlationId.ToString() }
                     }),
                     cancellationToken
                 ),
-                false or _ => await httpService.SendAsync($"/orders/{id}", HttpMethod.Get, cancellationToken, new()
+                false or _ => await httpService.SendAsync($"/orders/{id}", HttpMethod.Get, cancellationToken, headers: new()
                 {
                     { "CorrelationId", correlationId.ToString() }
                 }),
@@ -45,22 +46,12 @@ internal static class OrderEndpoints
             CancellationToken cancellationToken
         ) =>
         {
-            var response = await httpService.SendAsync("orders", request, cancellationToken);
+            var response = await httpService.SendAsync("orders", HttpMethod.Post, cancellationToken, request);
 
             if (!response.Success || response.Data == null)
                 return Results.BadRequest(response);
 
             return Results.Created($"/orders/{response.Data.Id}", response);
-        });
-
-        ordersGroup.MapPost("/paginated", async (
-            [FromBody] dynamic request,
-            CancellationToken cancellationToken
-        ) =>
-        {
-            var response = await httpService.SendAsync("orders/paginated", request, cancellationToken);
-
-            return response.Success ? Results.Ok(response) : Results.BadRequest(response);
         });
 
         return app;

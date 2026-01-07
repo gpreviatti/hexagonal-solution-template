@@ -23,7 +23,7 @@ public static class InfrastructureDependencyInjection
 
             builder.Services
                 .AddCache(configuration)
-                .AddHttpServices(configuration);
+                .AddHttp(configuration);
 
             builder.AddOpenTelemetry();
 
@@ -124,34 +124,37 @@ public static class InfrastructureDependencyInjection
             return services;
         }
 
-        internal IServiceCollection AddHttpServices(IConfiguration configuration)
+        internal IServiceCollection AddHttp(IConfiguration configuration)
         {
+            var httpConfigurations = configuration.GetSection("Http").Get<List<ServiceConfigurations>>()
+                ?? throw new NullReferenceException("Http services configuration is not configured.");
 
-            services.AddKeyedScoped<BaseHttpService>(ServicesKeys.Orders, (serviceProvider, cancellationToken) =>
+            var serviceKeys = Enum.GetValues<ServicesKeys>();
+
+            foreach (var serviceKey in serviceKeys)
             {
-                var serviceConfiguration = configuration.GetSection("Services:Orders").Get<ServiceConfigurations>() ?? throw new NullReferenceException("Orders service configuration is not configured.");
+                var serviceName = serviceKey.ToString();
 
-                var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
-                var logger = serviceProvider.GetRequiredService<ILogger<BaseHttpService>>();
-                var client = httpClientFactory.CreateClient(ServicesKeys.Orders);
-                client.BaseAddress = new Uri(serviceConfiguration.Url) ?? throw new NullReferenceException("Orders service address is not configured.");
-                client.DefaultRequestHeaders.Add("Accept", "application/json");
+                var serviceConfiguration = httpConfigurations.FirstOrDefault(x => 
+                    string.Equals(x.Name, serviceName, StringComparison.OrdinalIgnoreCase)) 
+                    ?? throw new NullReferenceException($"{serviceName} service configuration is not configured.");
 
-                return new(client, logger);
-            });
+                services.AddKeyedScoped(serviceKey, (serviceProvider, _) =>
+                {
+                    var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+                    var logger = serviceProvider.GetRequiredService<ILogger<BaseHttpService>>();
+                    var client = httpClientFactory.CreateClient(serviceKey.ToString());
 
-            services.AddKeyedScoped<BaseHttpService>(ServicesKeys.Payments, (serviceProvider, cancellationToken) =>
-            {
-                var serviceConfiguration = configuration.GetSection("Services:Payments").Get<ServiceConfigurations>() ?? throw new NullReferenceException("Payments service configuration is not configured.");
+                    client.BaseAddress = new Uri(serviceConfiguration.BaseAddress)
+                        ?? throw new NullReferenceException($"{serviceName} service address is not configured.");
 
-                var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
-                var logger = serviceProvider.GetRequiredService<ILogger<BaseHttpService>>();
-                var client = httpClientFactory.CreateClient(ServicesKeys.Payments);
-                client.BaseAddress = new Uri(serviceConfiguration.Url) ?? throw new NullReferenceException("Payments service address is not configured.");
-                client.DefaultRequestHeaders.Add("Accept", "application/json");
+                    if (serviceConfiguration.Headers is Dictionary<string, string> headers && headers.Count > 0)
+                        foreach (var header in headers)
+                            client.DefaultRequestHeaders.Add(header.Key, header.Value);
 
-                return new(client, logger);
-            });
+                    return new BaseHttpService(client, logger);
+                });
+            }
 
             return services;
         }
