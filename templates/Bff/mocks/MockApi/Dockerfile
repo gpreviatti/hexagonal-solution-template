@@ -3,7 +3,7 @@ WORKDIR /app
 
 COPY . .
 
-WORKDIR /app/src/WebApp
+WORKDIR /app/src/MockApi
 RUN dotnet restore \
     && dotnet publish -c Release -o /app/out
 
@@ -11,9 +11,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
 COPY --from=build-env /app/out .
 
-RUN apt-get update \
-    && apt-get install -y curl
+EXPOSE 5012
 
-EXPOSE 5000
-
-ENTRYPOINT ["dotnet", "WebApp.dll", "--urls", "http://+:5000"]
+ENTRYPOINT ["dotnet", "MockApi.dll", "--urls", "http://+:5012"]

@@ -9,6 +9,15 @@ services:
     environment:
       - DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS=true
 
+  mockApi:
+    build:
+      context: ./mocks/MockApi
+      dockerfile: Dockerfile
+    ports:
+      - "5012:5012"
+    networks:
+      - hexagonal_solution_template_network
+
   redis:
     image: redis:8
     ports:

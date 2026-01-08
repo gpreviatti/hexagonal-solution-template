@@ -1,57 +1,58 @@
-// using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 
-// namespace MockApi.Endpoints;
+namespace MockApi.Endpoints;
 
-// internal static class OrderEndpoints
-// {
-//     public static WebApplication MapOrderEndpoints(this WebApplication app)
-//     {
-//         var cache = app.Services.GetRequiredService<HybridCacheService>();
-        
-//         var serviceKey = ServicesKeys.Orders.ToString();
+internal static class OrderEndpoints
+{
+    public static WebApplication MapOrderEndpoints(this WebApplication app)
+    {
+        var ordersGroup = app.MapGroup("orders").WithTags("orders");
 
-//         var httpService = app.Services.GetRequiredKeyedService<BaseHttpService>(serviceKey);
+        ordersGroup.MapGet("/{id}", async (
+            [FromHeader] Guid correlationId,
+            [FromRoute] int id,
+            CancellationToken cancellationToken,
+            [FromHeader] bool cacheEnabled = true
+        ) => {
+            return Results.Ok(new
+            {
+                Success = true,
+                Message = string.Empty,
+                Data = new
+                {
+                    Id = id,
+                    Total = 100.0,
+                    Items = new[]
+                    {
+                        new { Id = 1, Name = "Item 1", Value = 50.0 },
+                        new { Id = 2, Name = "Item 2", Value = 50.0 }
+                    }
+                }
+            });
+        });
 
-//         var ordersGroup = app.MapGroup(serviceKey).WithTags(serviceKey);
+        ordersGroup.MapPost("/", async (
+            [FromBody] dynamic request,
+            CancellationToken cancellationToken
+        ) =>
+        {
+            return Results.Created($"/orders/1", new
+            {
+                Success = true,
+                Message = string.Empty,
+                Data = new
+                {
+                    Id = 1,
+                    Total = 100.0,
+                    Items = new[]
+                    {
+                        new { Id = 1, Name = "Item 1", Value = 50.0 },
+                        new { Id = 2, Name = "Item 2", Value = 50.0 }
+                    }
+                }
+            });
+        });
 
-//         ordersGroup.MapGet("/{id}", async (
-//             [FromHeader] Guid correlationId,
-//             [FromRoute] int id,
-//             CancellationToken cancellationToken,
-//             [FromHeader] bool cacheEnabled = true
-//         ) => {
-//             var response = cacheEnabled switch
-//             {
-//                 true => await cache.GetOrCreateAsync(
-//                     $"{nameof(OrderEndpoints)}-{id}",
-//                     async (cancellationToken) => await httpService.SendAsync($"/orders/{id}", HttpMethod.Get, cancellationToken, headers: new()
-//                     {
-//                         { "CorrelationId", correlationId.ToString() }
-//                     }),
-//                     cancellationToken
-//                 ),
-//                 false or _ => await httpService.SendAsync($"/orders/{id}", HttpMethod.Get, cancellationToken, headers: new()
-//                 {
-//                     { "CorrelationId", correlationId.ToString() }
-//                 }),
-//             };
-
-//             return response?.Success ? Results.Ok(response) : Results.NotFound(response);
-//         });
-
-//         ordersGroup.MapPost("/", async (
-//             [FromBody] dynamic request,
-//             CancellationToken cancellationToken
-//         ) =>
-//         {
-//             var response = await httpService.SendAsync("orders", HttpMethod.Post, cancellationToken, request);
-
-//             if (!response.Success || response.Data == null)
-//                 return Results.BadRequest(response);
-
-//             return Results.Created($"/orders/{response.Data.Id}", response);
-//         });
-
-//         return app;
-//     }
-// }
+        return app;
+    }
+}
