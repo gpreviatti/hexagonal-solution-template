@@ -1,0 +1,16 @@
+﻿{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+    "profiles": {
+        "Development": {
+            "commandName": "Project",
+            "dotnetRunMessages": true,
+            "sqlDebugging": true,
+            "launchBrowser": false,
+            "applicationUrl": "https://*:7177;http://*:5012",
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+
+            }
+        }
+    }
+}
