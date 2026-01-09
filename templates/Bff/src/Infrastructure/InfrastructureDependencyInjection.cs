@@ -139,7 +139,7 @@ public static class InfrastructureDependencyInjection
                     string.Equals(x.Name, serviceName, StringComparison.OrdinalIgnoreCase)) 
                     ?? throw new NullReferenceException($"{serviceName} service configuration is not configured.");
 
-                services.AddKeyedScoped(serviceKey, (serviceProvider, _) =>
+                services.AddKeyedScoped<BaseHttpService>(serviceKey, (serviceProvider, _) =>
                 {
                     var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
                     var logger = serviceProvider.GetRequiredService<ILogger<BaseHttpService>>();
@@ -152,7 +152,7 @@ public static class InfrastructureDependencyInjection
                         foreach (var header in headers)
                             client.DefaultRequestHeaders.Add(header.Key, header.Value);
 
-                    return new BaseHttpService(client, logger);
+                    return new(client, logger);
                 });
             }
 

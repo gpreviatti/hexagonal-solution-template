@@ -9,10 +9,8 @@ internal static class OrderEndpoints
         var ordersGroup = app.MapGroup("orders").WithTags("orders");
 
         ordersGroup.MapGet("/{id}", async (
-            [FromHeader] Guid correlationId,
             [FromRoute] int id,
-            CancellationToken cancellationToken,
-            [FromHeader] bool cacheEnabled = true
+            CancellationToken cancellationToken
         ) => {
             return Results.Ok(new
             {
@@ -32,7 +30,7 @@ internal static class OrderEndpoints
         });
 
         ordersGroup.MapPost("/", async (
-            [FromBody] dynamic request,
+            [FromBody] object request,
             CancellationToken cancellationToken
         ) =>
         {

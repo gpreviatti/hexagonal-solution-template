@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Infrastructure;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Scalar.AspNetCore;
 using WebApp.Endpoints;
 using WebApp.GrpcServices;
 using WebApp.HealthChecks;
@@ -20,6 +21,7 @@ public sealed class Program
 
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddGrpc();
+        builder.Services.AddOpenApi();
 
         builder.Services.AddCustomHealthChecks(builder.Configuration);
 
@@ -44,6 +46,9 @@ public sealed class Program
         ));
 
         var app = builder.Build();
+
+        app.MapOpenApi();
+        app.MapScalarApiReference();
 
         app.UseHttpsRedirection();
 
