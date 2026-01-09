@@ -1,47 +1,28 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Http.Json;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
+﻿using Microsoft.AspNetCore.Server.Kestrel.Core;
 using MockApi.Endpoints;
 using MockApi.GrpcServices;
 
-namespace MockApi;
+var builder = WebApplication.CreateBuilder(args);
 
-public sealed class Program
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddGrpc();
+
+builder.Services.AddResponseCompression(options =>
 {
-    private static async Task Main(string[] args)
-    {
-        var builder = WebApplication.CreateBuilder(args);
+    options.EnableForHttps = true;
+});
 
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddGrpc();
+builder.WebHost.ConfigureKestrel(options =>
+    options.ConfigureEndpointDefaults(listenOptions =>
+        listenOptions.Protocols = HttpProtocols.Http1AndHttp2AndHttp3
+));
 
-        builder.Services.AddResponseCompression(options =>
-        {
-            options.EnableForHttps = true;
-        });
+var app = builder.Build();
 
-        builder.Services.Configure<JsonOptions>(options =>
-        {
-            options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-            options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-            options.SerializerOptions.ReadCommentHandling = JsonCommentHandling.Skip;
-            options.SerializerOptions.PropertyNameCaseInsensitive = true;
-        });
+app.UseHttpsRedirection();
 
-        builder.WebHost.ConfigureKestrel(options =>
-            options.ConfigureEndpointDefaults(listenOptions =>
-                listenOptions.Protocols = HttpProtocols.Http1AndHttp2AndHttp3
-        ));
+app.MapEndpoints()
+    .MapGrpcServices()
+    .UseResponseCompression();
 
-        var app = builder.Build();
-
-        app.UseHttpsRedirection();
-
-        app.MapEndpoints()
-            .MapGrpcServices()
-            .UseResponseCompression();
-
-        await app.RunAsync();
-    }
-}
+await app.RunAsync();
