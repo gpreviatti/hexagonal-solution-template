@@ -9,7 +9,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Infrastructure.Cache;
 using Infrastructure.Http;
-using Infrastructure.Common;
+using Polly;
+using Polly.Extensions.Http;
 
 namespace Infrastructure;
 
@@ -126,8 +127,6 @@ public static class InfrastructureDependencyInjection
 
         internal IServiceCollection AddHttp(IConfiguration configuration)
         {
-            services.AddHttpClient();
-
             var httpConfigurations = configuration.GetSection("Http").Get<List<ServiceConfigurations>>()
                 ?? throw new NullReferenceException("Http services configuration is not configured.");
 
@@ -137,22 +136,27 @@ public static class InfrastructureDependencyInjection
             {
                 var serviceName = serviceKey.ToString();
 
-                var serviceConfiguration = httpConfigurations.FirstOrDefault(x => 
-                    string.Equals(x.Name, serviceName, StringComparison.OrdinalIgnoreCase)) 
+                var serviceConfiguration = httpConfigurations.FirstOrDefault(x =>
+                    string.Equals(x.Name, serviceName, StringComparison.OrdinalIgnoreCase))
                     ?? throw new NullReferenceException($"{serviceName} service configuration is not configured.");
 
-                services.AddKeyedScoped<BaseHttpService>(serviceKey, (serviceProvider, _) =>
+                services.AddHttpClient(serviceName, client =>
                 {
-                    var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
-                    var logger = serviceProvider.GetRequiredService<ILogger<BaseHttpService>>();
-                    var client = httpClientFactory.CreateClient(serviceKey.ToString());
-
                     client.BaseAddress = new Uri(serviceConfiguration.BaseAddress)
                         ?? throw new NullReferenceException($"{serviceName} service address is not configured.");
 
                     if (serviceConfiguration.Headers is Dictionary<string, string> headers && headers.Count > 0)
                         foreach (var header in headers)
                             client.DefaultRequestHeaders.Add(header.Key, header.Value);
+                })
+                .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+                .AddPolicyHandler(GetRetryPolicy());
+
+                services.AddKeyedScoped<BaseHttpService>(serviceKey, (serviceProvider, _) =>
+                {
+                    var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+                    var logger = serviceProvider.GetRequiredService<ILogger<BaseHttpService>>();
+                    var client = httpClientFactory.CreateClient(serviceName);
 
                     return new(client, logger);
                 });
@@ -160,5 +164,9 @@ public static class InfrastructureDependencyInjection
 
             return services;
         }
+
+        internal static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy() => HttpPolicyExtensions
+            .HandleTransientHttpError()
+            .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
     }
 }
