@@ -1,8 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <ItemGroup>
+    <PackageReference Include="AutoFixture" />
     <PackageReference Include="Grpc.AspNetCore" />
   </ItemGroup>
   <ItemGroup>
     <Protobuf Include="Protos\*" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Contracts\Contracts.csproj" />
   </ItemGroup>
 </Project>

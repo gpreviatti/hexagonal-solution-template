@@ -14,6 +14,6 @@ COPY --from=build-env /app/out .
 RUN apt-get update \
     && apt-get install -y curl
 
-EXPOSE 5000
+EXPOSE 5011
 
-ENTRYPOINT ["dotnet", "WebApp.dll", "--urls", "http://+:5000"]
+ENTRYPOINT ["dotnet", "WebApp.dll", "--urls", "http://+:5011"]

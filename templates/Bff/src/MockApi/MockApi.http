@@ -1,14 +1,4 @@
-@WebApp_HostAddress = https://localhost:7176
-
-###
-GET {{WebApp_HostAddress}}/health HTTP/2
-Accept: application/json
-
-###
-GET {{WebApp_HostAddress}}/live HTTP/2
-
-###
-GET {{WebApp_HostAddress}}/ready HTTP/2
+@WebApp_HostAddress = https://localhost:7177
 
 ###
 GET {{WebApp_HostAddress}}/orders/1 HTTP/2
@@ -37,4 +27,3 @@ Content-Type: application/json
     }
   ]
 }
-

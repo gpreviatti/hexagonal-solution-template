@@ -146,9 +146,13 @@
           "Pipelines.Sockets.Unofficial": "2.2.8"
         }
       },
+      "contracts": {
+        "type": "Project"
+      },
       "infrastructure": {
         "type": "Project",
         "dependencies": {
+          "Contracts": "[1.0.0, )",
           "Microsoft.Extensions.Caching.Hybrid": "[10.1.0, )",
           "Microsoft.Extensions.Caching.StackExchangeRedis": "[10.0.1, )",
           "OpenTelemetry.Exporter.OpenTelemetryProtocol": "[1.14.0, )",

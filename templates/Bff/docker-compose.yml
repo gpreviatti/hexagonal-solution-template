@@ -11,8 +11,8 @@ services:
 
   mockApi:
     build:
-      context: ./mocks/MockApi
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile.MockApi
     ports:
       - "5012:5012"
     networks:

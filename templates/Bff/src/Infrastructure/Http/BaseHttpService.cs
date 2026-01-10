@@ -11,28 +11,53 @@ public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> log
     protected readonly JsonSerializerOptions _jsonSerializerOptions = new(JsonSerializerDefaults.Web);
     protected readonly Stopwatch _stopwatch = new();
 
-    public async Task<dynamic?> SendAsync(
+    public async Task<TResponse?> SendAsync<TRequest, TResponse>(
         string requestUri,
         HttpMethod method,
         CancellationToken cancellationToken,
-        dynamic? request = null,
+        TRequest request,
         Dictionary<string, string>? headers = null
-    )
+    ) where TRequest : class where TResponse : class
     {
         _stopwatch.Start();
         _logger.LogDebug("[BaseHttpService] | [SendAsync] | [{Method}] | [{RequestUri}] | Sending request", method, requestUri);
 
         var requestMessage = new HttpRequestMessage(method, requestUri);
 
-        if (request != null)
-        {
-            var memoryStream = new MemoryStream();
-            await JsonSerializer.SerializeAsync(memoryStream, request, _jsonSerializerOptions, cancellationToken);
+        var memoryStream = new MemoryStream();
+        await JsonSerializer.SerializeAsync(memoryStream, request, _jsonSerializerOptions, cancellationToken);
 
-            memoryStream.Seek(0, SeekOrigin.Begin);
-            using var requestContent = new StreamContent(memoryStream);
-            requestMessage.Content = requestContent;
-        }
+        memoryStream.Seek(0, SeekOrigin.Begin);
+        using var requestContent = new StreamContent(memoryStream);
+        requestMessage.Content = requestContent;
+
+        if (headers != null) foreach (var header in headers)
+            requestMessage.Headers.Add(header.Key, header.Value);
+
+        using var response = await _httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var content = await response.Content.ReadAsStreamAsync(cancellationToken);
+
+        var result = await JsonSerializer.DeserializeAsync<dynamic>(content, _jsonSerializerOptions, cancellationToken);
+
+        _logger.LogDebug("[BaseHttpService] | [SendAsync] | [{Method}] | [{RequestUri}] | Request completed in {ElapsedMilliseconds} ms", method, requestUri, _stopwatch.ElapsedMilliseconds);
+
+        return result;
+    }
+    
+    public async Task<TResponse?> SendAsync<TResponse>(
+        string requestUri,
+        HttpMethod method,
+        CancellationToken cancellationToken,
+        Dictionary<string, string>? headers = null
+    ) where TResponse : class
+    {
+        _stopwatch.Start();
+        _logger.LogDebug("[BaseHttpService] | [SendAsync] | [{Method}] | [{RequestUri}] | Sending request", method, requestUri);
+
+        var requestMessage = new HttpRequestMessage(method, requestUri);
 
         if (headers != null) foreach (var header in headers)
             requestMessage.Headers.Add(header.Key, header.Value);

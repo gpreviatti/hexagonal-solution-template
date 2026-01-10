@@ -263,6 +263,9 @@
           "Pipelines.Sockets.Unofficial": "2.2.8"
         }
       },
+      "contracts": {
+        "type": "Project"
+      },
       "Microsoft.Extensions.DependencyInjection": {
         "type": "CentralTransitive",
         "requested": "[10.0.1, )",

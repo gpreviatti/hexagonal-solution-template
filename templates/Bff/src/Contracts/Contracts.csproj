@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <ItemGroup>
+        <Protobuf Include="Protos\*" />
+    </ItemGroup>
+</Project>

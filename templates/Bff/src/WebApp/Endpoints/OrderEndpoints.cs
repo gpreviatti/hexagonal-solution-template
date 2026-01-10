@@ -1,6 +1,8 @@
 using Infrastructure.Http;
 using Microsoft.AspNetCore.Mvc;
 using Infrastructure.Cache;
+using Contracts.Orders;
+using Contracts.Common;
 
 namespace WebApp.Endpoints;
 
@@ -13,6 +15,7 @@ internal static class OrderEndpoints
         var ordersGroup = app.MapGroup(serviceKey).WithTags(serviceKey);
 
         ordersGroup.MapGet("/{id}", async (
+            
             [FromKeyedServices(ServicesKeys.Orders)] BaseHttpService httpService,
             [FromRoute] int id,
             [FromServices] HybridCacheService cache,
@@ -24,42 +27,52 @@ internal static class OrderEndpoints
             {
                 true => await cache.GetOrCreateAsync(
                     $"{nameof(OrderEndpoints)}-{id}",
-                    async (cancellationToken) => await httpService.SendAsync($"/orders/{id}", HttpMethod.Get, cancellationToken, headers: new()
+                    async (cancellationToken) => await httpService.SendAsync<BaseResponse<OrderDto>>($"/orders/{id}", HttpMethod.Get, cancellationToken, headers: new()
                     {
                         { "CorrelationId", (correlationId ?? Guid.NewGuid()).ToString() }
                     }),
                     cancellationToken
                 ),
-                false or _ => await httpService.SendAsync($"/orders/{id}", HttpMethod.Get, cancellationToken, headers: new()
+                false or _ => await httpService.SendAsync<BaseResponse<OrderDto>>($"/orders/{id}", HttpMethod.Get, cancellationToken, headers: new()
                 {
                     { "CorrelationId", (correlationId ?? Guid.NewGuid()).ToString() }
                 }),
             };
 
-            return response?.Success ? Results.Ok(response) : Results.NotFound(response);
-        });
+            return response != null && response.Success ? Results.Ok(response) : Results.NotFound(response);
+        })
+        .Produces<BaseResponse<OrderDto>>(StatusCodes.Status200OK)
+        .Produces<BaseResponse>(StatusCodes.Status404NotFound)
+        .Produces<BaseResponse>(StatusCodes.Status400BadRequest)
+        .Produces<BaseResponse>(StatusCodes.Status500InternalServerError)
+        .WithDescription("Gets an order by its identifier")
+        .WithName("GetOrderById");
 
         ordersGroup.MapPost("/", async (
-            [FromBody] object request,
+            [FromBody] CreateOrderRequest request,
             [FromKeyedServices(ServicesKeys.Orders)] BaseHttpService httpService,
             CancellationToken cancellationToken
         ) =>
         {
-            var response = await httpService.SendAsync("orders", HttpMethod.Post, cancellationToken, request);
+            var response = await httpService.SendAsync<CreateOrderRequest, BaseResponse<OrderDto>>("orders", HttpMethod.Post, cancellationToken, request);
 
             if (response == null)
                 return Results.BadRequest(new { Success = false, Message = "No response from service" });
 
-            bool success = response.Success ?? false;
-            if (!success || response.Data == null)
+            if (!response.Success || response.Data == null)
                 return Results.BadRequest(response);
 
             var data = response.Data;
             
-            var id = data?.Id?.ToString() ?? "unknown";
+            var id = data?.Id.ToString() ?? "unknown";
 
             return Results.Created($"/orders/{id}", response);
-        });
+        })
+        .Produces<BaseResponse<OrderDto>>(StatusCodes.Status201Created)
+        .Produces<BaseResponse>(StatusCodes.Status400BadRequest)
+        .Produces<BaseResponse>(StatusCodes.Status500InternalServerError)
+        .WithDescription("Creates a new order")
+        .WithName("CreateOrder");
 
         return app;
     }

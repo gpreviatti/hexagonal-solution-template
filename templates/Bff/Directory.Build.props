@@ -9,5 +9,10 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="[9.0.0,)" />
+    <None Include="compilerconfig.json" />
+    <Content Remove="packages.lock.json" />
+    <None Include="packages.lock.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
