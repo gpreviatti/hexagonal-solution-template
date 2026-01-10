@@ -22,13 +22,8 @@ public sealed class Program
 
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddGrpc();
-
         builder.Services.AddCustomHealthChecks(builder.Configuration);
-
-        builder.Services.AddResponseCompression(options =>
-        {
-            options.EnableForHttps = true;
-        });
+        builder.Services.AddResponseCompression();
 
         builder.Services.Configure<JsonOptions>(options =>
         {
