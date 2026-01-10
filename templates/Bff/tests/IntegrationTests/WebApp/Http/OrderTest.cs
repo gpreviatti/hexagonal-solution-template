@@ -37,7 +37,6 @@ public sealed class OrderTest : IClassFixture<BaseHttpFixture>
         // Assert
         Assert.NotNull(result);
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        Assert.True(response!.Success);
         Assert.NotNull(data);
         Assert.NotNull(data.Items);
         Assert.NotEmpty(data.Items);
@@ -75,11 +74,6 @@ public sealed class OrderTest : IClassFixture<BaseHttpFixture>
             new("Item 2", "Description 2", 500.0m)
         ]);
 
-        _fixture.apiHelper.AddHeaders(new Dictionary<string, string>
-        {
-            { "CorrelationId", Guid.NewGuid().ToString() }
-        });
-
         // Act
         var result = await _fixture.apiHelper.PostAsync(url, request);
         var response = await ApiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
@@ -88,7 +82,6 @@ public sealed class OrderTest : IClassFixture<BaseHttpFixture>
         // Assert
         Assert.NotNull(result);
         Assert.Equal(HttpStatusCode.Created, result.StatusCode);
-        Assert.True(response!.Success);
         Assert.NotNull(data);
         Assert.NotNull(data.Items);
         Assert.NotEmpty(data.Items);

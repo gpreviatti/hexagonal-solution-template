@@ -4,13 +4,8 @@ using MockApi.GrpcServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddGrpc();
-
-builder.Services.AddResponseCompression(options =>
-{
-    options.EnableForHttps = true;
-});
+builder.Services.AddResponseCompression();
 
 builder.WebHost.ConfigureKestrel(options =>
     options.ConfigureEndpointDefaults(listenOptions =>

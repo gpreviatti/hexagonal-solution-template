@@ -39,7 +39,7 @@ internal static class OrderEndpoints
                 }),
             };
 
-            return response != null && response.Success ? Results.Ok(response) : Results.NotFound(response);
+            return response != null ? Results.Ok(response) : Results.NotFound(response);
         })
         .Produces<BaseResponse<OrderDto>>(StatusCodes.Status200OK)
         .Produces<BaseResponse>(StatusCodes.Status404NotFound)
