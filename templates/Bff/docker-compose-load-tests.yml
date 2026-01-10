@@ -46,7 +46,7 @@ services:
     networks:
       - hexagonal_solution_template_network
 
-  mockApi:
+  mock-api:
     extends:
       file: docker-compose.yml
       service: mockApi

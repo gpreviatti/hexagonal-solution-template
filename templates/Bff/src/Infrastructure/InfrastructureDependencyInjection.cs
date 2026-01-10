@@ -126,6 +126,8 @@ public static class InfrastructureDependencyInjection
 
         internal IServiceCollection AddHttp(IConfiguration configuration)
         {
+            services.AddHttpClient();
+
             var httpConfigurations = configuration.GetSection("Http").Get<List<ServiceConfigurations>>()
                 ?? throw new NullReferenceException("Http services configuration is not configured.");
 
