@@ -1,4 +1,4 @@
-name: hexagonal-solution-template
+name: hexagonal-solution-template-bff
 
 services:
   aspire-dashboard:

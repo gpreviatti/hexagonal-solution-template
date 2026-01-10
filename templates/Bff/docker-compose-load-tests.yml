@@ -1,4 +1,4 @@
-name: hexagonal-solution-template-load-tests
+name: hexagonal-solution-template-bff-load-tests
 
 services:
   k6:
