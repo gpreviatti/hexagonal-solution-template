@@ -16,7 +16,8 @@ public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> log
         HttpMethod method,
         CancellationToken cancellationToken,
         TRequest request,
-        Dictionary<string, string>? headers = null
+        Dictionary<string, string>? headers = null,
+        string contentType = "application/json"
     ) where TRequest : class where TResponse : class
     {
         _stopwatch.Start();
@@ -29,12 +30,22 @@ public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> log
 
         memoryStream.Seek(0, SeekOrigin.Begin);
         using var requestContent = new StreamContent(memoryStream);
+        requestContent.Headers.ContentType = new(contentType);
         requestMessage.Content = requestContent;
 
         if (headers != null) foreach (var header in headers)
             requestMessage.Headers.Add(header.Key, header.Value);
 
-        using var response = await _httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        using var response = await _httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseContentRead, cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogWarning(
+                "[BaseHttpService] | [SendAsync] | [{Method}] | [{RequestUri}] | [{Message}] | {StatusCode} | Request failed with status in {ElapsedMilliseconds} ms",
+                method, requestUri, response.ReasonPhrase, response.StatusCode, _stopwatch.ElapsedMilliseconds
+            );
+            return null;
+        }
 
         var content = await response.Content.ReadAsStreamAsync(cancellationToken);
 
@@ -61,6 +72,15 @@ public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> log
             requestMessage.Headers.Add(header.Key, header.Value);
 
         using var response = await _httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogWarning(
+                "[BaseHttpService] | [SendAsync] | [{Method}] | [{RequestUri}] | [{Message}] | {StatusCode} | Request failed with status in {ElapsedMilliseconds} ms",
+                method, requestUri, response.ReasonPhrase, response.StatusCode, _stopwatch.ElapsedMilliseconds
+            );
+            return null;
+        }
         
         var content = await response.Content.ReadAsStreamAsync(cancellationToken);
 

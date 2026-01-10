@@ -2,7 +2,7 @@
 using System.Text.Json;
 using Grpc.Net.Client;
 
-namespace IntegrationTests.WebApp.Http.Common;
+namespace IntegrationTests.WebApp.Http;
 public sealed class ApiHelper(HttpClient httpClient)
 {
     public HttpClient httpClient = httpClient;
@@ -43,8 +43,11 @@ public sealed class ApiHelper(HttpClient httpClient)
         return new StringContent(json, Encoding.UTF8, "application/json");
     }
 
-    public async Task<T?> DeSerializeResponse<T>(HttpResponseMessage response)
+    public static async Task<T?> DeSerializeResponse<T>(HttpResponseMessage response)
     {
+        if (response.Content == null)
+            return default;
+
         var content = await response.Content.ReadAsStreamAsync();
 
         return JsonSerializer.Deserialize<T>(content, _jsonSerializerOptions);

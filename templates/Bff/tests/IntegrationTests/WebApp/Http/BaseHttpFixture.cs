@@ -1,8 +1,8 @@
-using CommonTests.Fixtures;
 using IntegrationTests.Common;
+using IntegrationTests.Fixtures;
 using WebApp;
 
-namespace IntegrationTests.WebApp.Http.Common;
+namespace IntegrationTests.WebApp.Http;
 
 public class BaseHttpFixture : BaseFixture
 {

@@ -46,7 +46,7 @@ internal static class OrderEndpoints
         .Produces<BaseResponse>(StatusCodes.Status400BadRequest)
         .Produces<BaseResponse>(StatusCodes.Status500InternalServerError)
         .WithDescription("Gets an order by its identifier")
-        .WithName("GetOrderById");
+        .WithName("GetById");
 
         ordersGroup.MapPost("/", async (
             [FromBody] CreateOrderRequest request,
@@ -57,14 +57,9 @@ internal static class OrderEndpoints
             var response = await httpService.SendAsync<CreateOrderRequest, BaseResponse<OrderDto>>("orders", HttpMethod.Post, cancellationToken, request);
 
             if (response == null)
-                return Results.BadRequest(new { Success = false, Message = "No response from service" });
+                return Results.BadRequest();
 
-            if (!response.Success || response.Data == null)
-                return Results.BadRequest(response);
-
-            var data = response.Data;
-            
-            var id = data?.Id.ToString() ?? "unknown";
+            var id = response.Data?.Id.ToString() ?? "unknown";
 
             return Results.Created($"/orders/{id}", response);
         })
@@ -72,7 +67,7 @@ internal static class OrderEndpoints
         .Produces<BaseResponse>(StatusCodes.Status400BadRequest)
         .Produces<BaseResponse>(StatusCodes.Status500InternalServerError)
         .WithDescription("Creates a new order")
-        .WithName("CreateOrder");
+        .WithName("Create");
 
         return app;
     }
