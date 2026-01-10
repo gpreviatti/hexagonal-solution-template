@@ -8,6 +8,21 @@ Accept-Encoding: gzip, deflate
 Accept: application/json
 
 ###
+GET {{WebApp_HostAddress}}/orders/2 HTTP/2
+CorrelationId: {{$guid}}
+CacheEnabled: false
+Accept-Encoding: gzip, deflate
+Accept: application/json
+
+###
+GET {{WebApp_HostAddress}}/orders/4 HTTP/2
+CorrelationId: {{$guid}}
+CacheEnabled: false
+Accept-Encoding: gzip, deflate
+Accept: application/json
+
+
+###
 POST {{WebApp_HostAddress}}/orders HTTP/2
 Content-Type: application/json
 
