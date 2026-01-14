@@ -18,6 +18,7 @@ public sealed record OrderDto
     /// <summary>
     /// The total value of the order
     /// </summary>
+    /// <example>99.99</example>
     public decimal Total { get; set; }
 
     /// <summary>
@@ -49,5 +50,6 @@ public sealed record ItemDto
     /// <summary>
     /// The value of the item
     /// </summary>
+    /// <example>99.99</example>
     public decimal Value { get; set; }
 };
