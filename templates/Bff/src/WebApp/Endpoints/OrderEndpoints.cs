@@ -12,7 +12,9 @@ internal static class OrderEndpoints
     {
         var serviceKey = ServicesKeys.Orders.ToString();
 
-        var ordersGroup = app.MapGroup(serviceKey).WithTags(serviceKey);
+        var ordersGroup = app.MapGroup(serviceKey)
+            .WithTags(serviceKey)
+            .RequireRateLimiting(serviceKey);
 
         ordersGroup.MapGet("/{id}", async (
             

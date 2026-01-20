@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Server.Kestrel.Core;
 using MockApi.Endpoints;
+using MockApi.Extensions;
 using MockApi.GrpcServices;
-using MockApi.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 

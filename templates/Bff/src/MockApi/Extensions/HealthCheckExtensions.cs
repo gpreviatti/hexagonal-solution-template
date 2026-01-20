@@ -2,7 +2,7 @@ using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace MockApi.HealthChecks;
+namespace MockApi.Extensions;
 
 internal static class HealthCheckExtensions
 {

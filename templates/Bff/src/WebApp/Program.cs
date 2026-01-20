@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Scalar.AspNetCore;
 using WebApp.Endpoints;
+using WebApp.Extensions;
 using WebApp.GrpcServices;
-using WebApp.HealthChecks;
 using WebApp.Middlewares;
 
 namespace WebApp;
@@ -23,6 +23,7 @@ public sealed class Program
         builder.Services.AddGrpc();
         builder.Services.AddOpenApi();
         builder.Services.AddCustomHealthChecks(builder.Configuration);
+        builder.Services.AddRateLimiting(builder.Configuration);
         builder.Services.AddResponseCompression();
         builder.Services.Configure<JsonOptions>(options =>
         {
@@ -45,6 +46,8 @@ public sealed class Program
         app.MapScalarApiReference();
 
         app.UseHttpsRedirection();
+
+        app.UseRateLimiter();
 
         app.MapEndpoints()
             .MapGrpcServices()

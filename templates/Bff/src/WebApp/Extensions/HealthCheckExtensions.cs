@@ -3,7 +3,7 @@ using Infrastructure.Http;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace WebApp.HealthChecks;
+namespace WebApp.Extensions;
 
 internal static class HealthCheckExtensions
 {
