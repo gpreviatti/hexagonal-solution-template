@@ -2,33 +2,52 @@ syntax = "proto3";
 
 option csharp_namespace = "GrpcOrder";
 
-package order;
+package Protos;
 
+// Service for managing orders
 service OrderService {
+  // Retrieves an order by its ID
   rpc Get (GetOrderRequest) returns (OrderReply);
 }
 
+// Request message for getting an order
 message GetOrderRequest {
+  // Unique identifier for the order
   int32 id = 1;
-  string correlationId = 2;
+  // Correlation ID for tracking requests
+  string correlation_id = 2;
 }
 
+// Data transfer object for an item
 message ItemDto {
+  // Unique identifier for the item
   int32 id = 1;
+  // Name of the item
   string name = 2;
+  // Description of the item
   string description = 3;
+  // Price of the item
   double value = 4;
 }
 
+// Data transfer object for an order
 message OrderDto {
+  // Unique identifier for the order
   int32 id = 1;
+  // Description of the order
   string description = 2;
+  // Total amount for the order
   double total = 3;
+  // List of items in the order
   repeated ItemDto items = 4;
 }
 
+// Reply message for order retrieval
 message OrderReply {
+  // Indicates if the operation was successful
   bool success = 1;
+  // Message providing additional information
   string message = 2;
+  // The order data
   OrderDto data = 3;
 }
