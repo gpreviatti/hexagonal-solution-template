@@ -15,6 +15,12 @@ services:
       dockerfile: Dockerfile.MockApi
     ports:
       - "5012:5012"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5012/health"]
+      interval: 3s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
     networks:
       - hexagonal_solution_template_network
 

@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Server.Kestrel.Core;
 using MockApi.Endpoints;
 using MockApi.GrpcServices;
+using MockApi.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddGrpc();
 builder.Services.AddResponseCompression();
+builder.Services.AddCustomHealthChecks();
 
 builder.WebHost.ConfigureKestrel(options =>
     options.ConfigureEndpointDefaults(listenOptions =>
@@ -18,6 +20,7 @@ app.UseHttpsRedirection();
 
 app.MapEndpoints()
     .MapGrpcServices()
-    .UseResponseCompression();
+    .UseResponseCompression()
+    .UseCustomHealthChecks();
 
 await app.RunAsync();

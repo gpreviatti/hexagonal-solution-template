@@ -1,4 +1,5 @@
 using HealthChecks.UI.Client;
+using Infrastructure.Http;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -11,7 +12,7 @@ internal static class HealthCheckExtensions
         IConfiguration configuration
     )
     {
-        services
+        var healthChecksBuilder = services
             .AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
             .AddRedis(
@@ -19,6 +20,23 @@ internal static class HealthCheckExtensions
                 name: "Redis",
                 tags: ["services"]
             );
+
+        var serviceKeys = Enum.GetValues<ServicesKeys>();
+        foreach (var serviceKey in serviceKeys)
+        {
+            var baseAddress = configuration.GetSection("Http")
+                .GetChildren()
+                .FirstOrDefault(x => x["Name"] == serviceKey.ToString())?["BaseAddress"];
+            
+            if (!string.IsNullOrEmpty(baseAddress))
+            {
+                healthChecksBuilder.AddUrlGroup(
+                    new Uri($"{baseAddress}/health"),
+                    name: serviceKey.ToString(),
+                    tags: ["services"]
+                );
+            }
+        }
 
         return services;
     }
