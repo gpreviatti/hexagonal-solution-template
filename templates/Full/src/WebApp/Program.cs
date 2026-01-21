@@ -6,8 +6,8 @@ using Infrastructure;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using WebApp.Endpoints;
+using WebApp.Extensions;
 using WebApp.GrpcServices;
-using WebApp.HealthChecks;
 using WebApp.Middlewares;
 
 namespace WebApp;

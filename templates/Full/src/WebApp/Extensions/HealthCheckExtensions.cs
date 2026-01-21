@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using RabbitMQ.Client;
 
-namespace WebApp.HealthChecks;
+namespace WebApp.Extensions;
 
 internal static class HealthCheckExtensions
 {
