@@ -3,6 +3,9 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="Grpc.AspNetCore" />
+    </ItemGroup>
+    <ItemGroup>
         <Protobuf Include="Protos\*" />
     </ItemGroup>
 </Project>

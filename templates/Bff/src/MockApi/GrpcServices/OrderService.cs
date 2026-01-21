@@ -1,59 +1,14 @@
-// using System.Globalization;
-// using Application.Common.Requests;
-// using Application.Common.Services;
-// using Application.Common.UseCases;
-// using Grpc.Core;
-// using GrpcOrder;
-// using static GrpcOrder.OrderService;
-// using GetOrderRequest = Application.Orders.GetOrderRequest;
-// using OrderDto = Application.Orders.OrderDto;
+using AutoFixture;
+using Grpc.Core;
+using GrpcOrder;
+using static GrpcOrder.OrderService;
 
-// namespace MockApi.GrpcServices;
+namespace MockApi.GrpcServices;
 
-// public class OrderService(
-//     IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>> useCase,
-//     IHybridCacheService cache
-// ) : OrderServiceBase
-// {
-//     private readonly IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>> _useCase = useCase;
-//     private readonly IHybridCacheService _cache = cache;
-
-//     public override async Task<OrderReply> Get(
-//         GrpcOrder.GetOrderRequest request,
-//         ServerCallContext context
-//     )
-//     {
-//         var response = await _cache.GetOrCreateAsync(
-//             $"{nameof(OrderService)}-{request.Id}",
-//             async cancellationToken =>
-//             {
-//                 var correlationId = Guid.TryParse(request.CorrelationId, out var guid) ? guid : Guid.Empty;
-//                 return await _useCase.HandleAsync(new(correlationId, request.Id), cancellationToken);
-//             },
-//             context.CancellationToken
-//         );
-
-//         if (!response.Success || response.Data == null)
-//             return new() { Success = false, Message = response.Message };
-
-//         OrderReply orderReply = new()
-//         {
-//             Success = true,
-//             Message = string.Empty,
-//             Data = new()
-//             {
-//                 Id = response.Data.Id,
-//                 Total = double.TryParse(response.Data.Total.ToString(CultureInfo.InvariantCulture), NumberStyles.Any, CultureInfo.InvariantCulture, out var total) ? total : 0.0
-//             }
-//         };
-
-//         orderReply.Data.Items?.AddRange(response.Data.Items?.Select(i => new GrpcOrder.ItemDto
-//         {
-//             Id = i.Id,
-//             Name = i.Name,
-//             Value = double.TryParse(i.Value.ToString(CultureInfo.InvariantCulture), NumberStyles.Any, CultureInfo.InvariantCulture, out var value) ? value : 0.0
-//         }));
-
-//         return orderReply;
-//     }
-// }
+public class OrderService : OrderServiceBase
+{
+    public override async Task<OrderReply> Get(
+        GetOrderRequest request,
+        ServerCallContext context
+    ) => new Fixture().Create<OrderReply>();
+}

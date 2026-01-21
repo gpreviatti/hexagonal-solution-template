@@ -546,7 +546,10 @@
         }
       },
       "contracts": {
-        "type": "Project"
+        "type": "Project",
+        "dependencies": {
+          "Grpc.AspNetCore": "[2.76.0, )"
+        }
       },
       "infrastructure": {
         "type": "Project",

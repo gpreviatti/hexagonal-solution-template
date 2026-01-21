@@ -4,7 +4,7 @@ internal static class GrpcServiceExtensions
 {
     public static WebApplication MapGrpcServices(this WebApplication app)
     {
-        // app.MapGrpcService<OrderService>();
+        app.MapGrpcService<OrderService>();
 
         return app;
     }

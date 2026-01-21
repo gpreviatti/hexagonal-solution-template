@@ -26,17 +26,6 @@
         "resolved": "9.0.0",
         "contentHash": "XYdNlA437KeF8p9qOpZFyNqAN+c0FXt/JjTvzH/Qans0q0O3pPE8KPnn39ucQQjR/Roum1vLTP3kXiUs8VHyuA=="
       },
-      "Grpc.AspNetCore": {
-        "type": "Direct",
-        "requested": "[2.76.0, )",
-        "resolved": "2.76.0",
-        "contentHash": "LyXMmpN2Ba0TE35SOLSKbGqIYtJuhc1UgiaGfoW1X8KJERV70QI5KGW+ckEY7MrXoFWN/uWo4B70siVhbDmCgQ==",
-        "dependencies": {
-          "Google.Protobuf": "3.31.1",
-          "Grpc.AspNetCore.Server.ClientFactory": "2.76.0",
-          "Grpc.Tools": "2.76.0"
-        }
-      },
       "Microsoft.AspNetCore.OpenApi": {
         "type": "Direct",
         "requested": "[10.0.1, )",
@@ -166,7 +155,10 @@
         }
       },
       "contracts": {
-        "type": "Project"
+        "type": "Project",
+        "dependencies": {
+          "Grpc.AspNetCore": "[2.76.0, )"
+        }
       },
       "infrastructure": {
         "type": "Project",
@@ -182,6 +174,17 @@
           "OpenTelemetry.Instrumentation.GrpcNetClient": "[1.12.0-beta.1, )",
           "OpenTelemetry.Instrumentation.Http": "[1.14.0, )",
           "OpenTelemetry.Instrumentation.StackExchangeRedis": "[1.12.0-beta.2, )"
+        }
+      },
+      "Grpc.AspNetCore": {
+        "type": "CentralTransitive",
+        "requested": "[2.76.0, )",
+        "resolved": "2.76.0",
+        "contentHash": "LyXMmpN2Ba0TE35SOLSKbGqIYtJuhc1UgiaGfoW1X8KJERV70QI5KGW+ckEY7MrXoFWN/uWo4B70siVhbDmCgQ==",
+        "dependencies": {
+          "Google.Protobuf": "3.31.1",
+          "Grpc.AspNetCore.Server.ClientFactory": "2.76.0",
+          "Grpc.Tools": "2.76.0"
         }
       },
       "Microsoft.Extensions.Caching.Hybrid": {
