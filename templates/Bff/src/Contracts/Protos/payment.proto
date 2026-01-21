@@ -6,7 +6,7 @@ package Protos;
 
 // Service for managing payments
 service PaymentService {
-    // Creates a payment
+    // Creates a payment request for an order
     rpc Create (CreatePaymentRequest) returns (PaymentReply);
 }
 
