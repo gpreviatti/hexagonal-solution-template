@@ -9,6 +9,9 @@ internal static class RateLimitExtensions
     {
         internal IServiceCollection AddRateLimiting(IConfiguration configuration)
         {
+            if (!configuration.GetValue<bool>("RATE_LIMITING_ENABLED"))
+                return services;
+
             var serviceKeys = Enum.GetValues<ServicesKeys>();
             foreach (var serviceKey in serviceKeys)
             {

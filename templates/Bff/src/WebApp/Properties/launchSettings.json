@@ -4,11 +4,11 @@
         "Development": {
             "commandName": "Project",
             "dotnetRunMessages": true,
-            "sqlDebugging": true,
             "launchBrowser": false,
             "applicationUrl": "https://*:7176;http://*:5011",
             "environmentVariables": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
+                "RATE_LIMITING_ENABLED": "true",
                 "LOGGING__LOGLEVEL__DEFAULT": "Debug",
                 "LOGGING__LOGLEVEL__MICROSOFT": "Information",
                 "LOGGING__LOGLEVEL__MICROSOFT_HOSTING_LIFETIME": "Information",
