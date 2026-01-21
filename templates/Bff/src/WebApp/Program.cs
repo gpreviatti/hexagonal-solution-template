@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Scalar.AspNetCore;
 using WebApp.Endpoints;
 using WebApp.Extensions;
-using WebApp.GrpcServices;
 using WebApp.Middlewares;
 
 namespace WebApp;
@@ -50,7 +49,6 @@ public sealed class Program
         app.UseRateLimiter();
 
         app.MapEndpoints()
-            .MapGrpcServices()
             .UseCustomHealthChecks()
             .UseResponseCompression()
             .UseMiddleware<ExceptionHandlingMiddleware>();

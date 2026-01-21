@@ -16,4 +16,18 @@ public sealed record CreatePaymentRequest(
     double Amount,
     string Currency,
     string PaymentMethod
-) : BaseRequest(CorrelationId);
+) : BaseRequest(CorrelationId)
+{
+    /// <summary>
+    /// Implicit conversion to gRPC CreatePaymentRequest
+    /// </summary>
+    /// <param name="request"></param>
+    public static implicit operator GrpcPayment.CreatePaymentRequest(CreatePaymentRequest request) => new()
+    {
+        CorrelationId = request.CorrelationId.ToString(),
+        OrderId = request.OrderId,
+        Amount = request.Amount,
+        Currency = request.Currency,
+        PaymentMethod = request.PaymentMethod
+    };
+}

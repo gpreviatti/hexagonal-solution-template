@@ -4,7 +4,10 @@ internal static class EndpointExtensions
 {
     public static WebApplication MapEndpoints(this WebApplication app)
     {
-        app.MapOrderEndpoints();
+        app
+            .MapOrderEndpoints()
+            .MapPaymentEndpoints();
+
         return app;
     }
 }

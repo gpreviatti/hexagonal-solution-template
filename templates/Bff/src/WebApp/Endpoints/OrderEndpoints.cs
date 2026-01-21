@@ -17,7 +17,6 @@ internal static class OrderEndpoints
             .RequireRateLimiting(serviceKey);
 
         ordersGroup.MapGet("/{id}", async (
-            
             [FromKeyedServices(ServicesKeys.Orders)] BaseHttpService httpService,
             [FromRoute] int id,
             [FromServices] HybridCacheService cache,
