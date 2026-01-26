@@ -1,5 +1,5 @@
 using Contracts.Common;
-using Contracts.Payments;
+using GrpcPayment;
 using Infrastructure.Grpc;
 using Infrastructure.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +22,7 @@ public static partial class PaymentEndpoints
             [FromBody] CreatePaymentRequest request
         ) =>
         {
-            var result = await paymentsService.CreateAsync(request);
+            var result = await paymentsService.HandleAsync<CreatePaymentRequest, PaymentReply>(request);
 
             return result.Success ? Results.Ok(result) : Results.BadRequest(result);
         })
