@@ -7,27 +7,27 @@ namespace Infrastructure.Http;
 
 public partial class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> logger)
 {
-    protected readonly HttpClient _httpClient = httpClient;
-    protected readonly ILogger<BaseHttpService> _logger = logger;
-    protected readonly JsonSerializerOptions _jsonSerializerOptions = new(JsonSerializerDefaults.Web);
-    protected readonly Stopwatch _stopwatch = new();
+    public HttpClient HttpClient { get; } = httpClient;
+    public ILogger<BaseHttpService> Logger { get; } = logger;
+    public JsonSerializerOptions JsonSerializerOptions { get; } = new(JsonSerializerDefaults.Web);
+    public Stopwatch Stopwatch { get; } = new();
 
     public async Task<TResponse?> SendAsync<TRequest, TResponse>(
         string requestUri,
         HttpMethod method,
-        CancellationToken cancellationToken,
         TRequest request,
         Dictionary<string, string>? headers = null,
-        string contentType = "application/json"
+        string contentType = "application/json",
+        CancellationToken cancellationToken = default
     ) where TRequest : class where TResponse : class
     {
-        _stopwatch.Start();
-        SendingRequest(_logger, method, requestUri);
+        Stopwatch.Start();
+        SendingRequest(Logger, method, requestUri);
 
         HttpRequestMessage requestMessage = new(method, requestUri);
 
         using MemoryStream memoryStream = new();
-        await JsonSerializer.SerializeAsync(memoryStream, request, _jsonSerializerOptions, cancellationToken);
+        await JsonSerializer.SerializeAsync(memoryStream, request, JsonSerializerOptions, cancellationToken);
 
         memoryStream.Seek(0, SeekOrigin.Begin);
         using var requestContent = new StreamContent(memoryStream);
@@ -37,19 +37,19 @@ public partial class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpServ
         if (headers != null) foreach (var header in headers)
             requestMessage.Headers.Add(header.Key, header.Value);
 
-        using var response = await _httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseContentRead, cancellationToken);
+        using var response = await HttpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseContentRead, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
         {
-            RequestFailed(_logger, method, requestUri, response.ReasonPhrase, response.StatusCode, _stopwatch.ElapsedMilliseconds);
+            RequestFailed(Logger, method, requestUri, response.ReasonPhrase, response.StatusCode, Stopwatch.ElapsedMilliseconds);
             return null;
         }
 
         var content = await response.Content.ReadAsStreamAsync(cancellationToken);
 
-        var result = await JsonSerializer.DeserializeAsync<TResponse?>(content, _jsonSerializerOptions, cancellationToken);
+        var result = await JsonSerializer.DeserializeAsync<TResponse?>(content, JsonSerializerOptions, cancellationToken);
 
-        RequestCompleted(_logger, method, requestUri, _stopwatch.ElapsedMilliseconds);
+        RequestCompleted(Logger, method, requestUri, Stopwatch.ElapsedMilliseconds);
 
         return result;
     }
@@ -61,27 +61,27 @@ public partial class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpServ
         Dictionary<string, string>? headers = null
     ) where TResponse : class
     {
-        _stopwatch.Start();
-        SendingRequest(_logger, method, requestUri);
+        Stopwatch.Start();
+        SendingRequest(Logger, method, requestUri);
 
         var requestMessage = new HttpRequestMessage(method, requestUri);
 
         if (headers != null) foreach (var header in headers)
             requestMessage.Headers.Add(header.Key, header.Value);
 
-        using var response = await _httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        using var response = await HttpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
         {
-            RequestFailed(_logger, method, requestUri, response.ReasonPhrase, response.StatusCode, _stopwatch.ElapsedMilliseconds);
+            RequestFailed(Logger, method, requestUri, response.ReasonPhrase, response.StatusCode, Stopwatch.ElapsedMilliseconds);
             return null;
         }
         
         var content = await response.Content.ReadAsStreamAsync(cancellationToken);
 
-        var result = await JsonSerializer.DeserializeAsync<TResponse?>(content, _jsonSerializerOptions, cancellationToken);
+        var result = await JsonSerializer.DeserializeAsync<TResponse?>(content, JsonSerializerOptions, cancellationToken);
 
-        RequestCompleted(_logger, method, requestUri, _stopwatch.ElapsedMilliseconds);
+        RequestCompleted(Logger, method, requestUri, Stopwatch.ElapsedMilliseconds);
         
         return result;
     }

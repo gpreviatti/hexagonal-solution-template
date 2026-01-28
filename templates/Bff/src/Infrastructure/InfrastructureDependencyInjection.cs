@@ -15,7 +15,9 @@ using System.Globalization;
 
 namespace Infrastructure;
 
+#pragma warning disable CA1708 // Identifiers should differ by more than case
 public static class InfrastructureDependencyInjection
+#pragma warning restore CA1708 // Identifiers should differ by more than case
 {
     extension(WebApplicationBuilder builder)
     {
@@ -109,7 +111,7 @@ public static class InfrastructureDependencyInjection
             services
             .AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = configuration.GetConnectionString("Redis") ?? throw new NullReferenceException("Redis connection string is not configured.");
+                options.Configuration = configuration.GetConnectionString("Redis") ?? throw new ArgumentNullException(configuration.GetConnectionString("Redis"),"Redis connection string is not configured.");
                 options.Configuration += ",abortConnect=false,connectTimeout=5000,syncTimeout=5000";
             })
             .AddHybridCache(options =>
@@ -129,7 +131,7 @@ public static class InfrastructureDependencyInjection
         internal IServiceCollection AddHttp(IConfiguration configuration)
         {
             var httpConfigurations = configuration.GetSection("Http").Get<List<ServiceConfigurations>>()
-                ?? throw new NullReferenceException("Http services configuration is not configured.");
+                ?? throw new ArgumentNullException(configuration.GetSection("Http").Path, "Http services configuration is not configured.");
 
             var serviceKeys = Enum.GetValues<ServicesKeys>();
 
@@ -139,12 +141,12 @@ public static class InfrastructureDependencyInjection
 
                 var serviceConfiguration = httpConfigurations.FirstOrDefault(x =>
                     string.Equals(x.Name, serviceName, StringComparison.OrdinalIgnoreCase))
-                    ?? throw new NullReferenceException($"{serviceName} service configuration is not configured.");
+                    ?? throw new ArgumentNullException($"{serviceName} service configuration is not configured.");
 
                 services.AddHttpClient(serviceName, client =>
                 {
                     client.BaseAddress = new Uri(serviceConfiguration.BaseAddress)
-                        ?? throw new NullReferenceException($"{serviceName} service address is not configured.");
+                        ?? throw new ArgumentNullException($"{serviceName} service address is not configured.");
 
                     if (serviceConfiguration.Headers is Dictionary<string, string> headers && headers.Count > 0)
                         foreach (var header in headers)
