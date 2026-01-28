@@ -5,53 +5,65 @@ using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Grpc;
 
-public abstract class BaseGrpcService
+public partial class BaseGrpcService
 {
     protected GrpcChannel Channel { get; }
-    protected readonly ILogger logger;
-    protected readonly Stopwatch stopwatch = new();
-    protected readonly string className;
+    public ILogger Logger { get; }
+    public Stopwatch Stopwatch { get; } = new();
+    public string ClassName { get; }
 
     public BaseGrpcService(string baseAddress, ILogger logger)
     {
         var classType = GetType();
-        className = classType.Name;
+        ClassName = classType.Name;
         Channel = GrpcChannel.ForAddress(baseAddress);
-        this.logger = logger;
+        Logger = logger;
     }
 
-    public async Task<TResponse> HandleAsync<TRequest, TResponse>(TRequest request)
+    protected async Task<TResponse> ExecuteHandlerAsync<TRequest, TResponse>(
+        TRequest request,
+        Func<TRequest, Task<AsyncUnaryCall<TResponse>>> handler
+    )
         where TRequest : class
         where TResponse : class
     {
-        stopwatch.Start();
+        Stopwatch.Restart();
         try
         {
-            logger.LogInformation("[{ClassName}] | [HandleAsync] | Sending gRPC request", className);
+            StartingRequest(Logger, ClassName);
 
-            var response = await HandleInternalAsync<TRequest, TResponse>(request);
+            var response = await handler(request);
 
-            logger.LogInformation(
-                "[{ClassName}] | [HandleAsync] | gRPC request completed in {ElapsedMilliseconds} ms",
-                className,
-                stopwatch.ElapsedMilliseconds
-            );
-
-            return response;
+            RequestCompleted(Logger, ClassName, Stopwatch.ElapsedMilliseconds);
+            return await response.ResponseAsync;
         }
-        catch (RpcException rpcException)
+        catch (Exception ex)
         {
-            logger.LogError(
-                rpcException,
-                "[{ClassName}] | [HandleAsync] | gRPC request failed with status {Status} in {ElapsedMilliseconds} ms",
-                className,
-                rpcException.Status,
-                stopwatch.ElapsedMilliseconds
-            );
+            RequestFailed(Logger, ClassName, Stopwatch.ElapsedMilliseconds, ex);
+
             throw;
         }
     }
 
-    public abstract Task<TResponse> HandleInternalAsync<TRequest, TResponse>(TRequest request) where TRequest : class where TResponse : class;
+    [LoggerMessage(
+        EventId = 1,
+        Level = LogLevel.Information,
+        Message = "[{ClassName}] | [ExecuteHandlerAsync] | Starting request"
+    )]
+    public static partial void StartingRequest(ILogger logger, string className);
+
+    [LoggerMessage(
+        EventId = 2,
+        Level = LogLevel.Information,
+        Message = "[{ClassName}] | [ExecuteHandlerAsync] | Completed in {ElapsedMilliseconds} ms"
+    )]
+    public static partial void RequestCompleted(ILogger logger, string className, long elapsedMilliseconds);
+
+    [LoggerMessage(
+        EventId = 3,
+        Level = LogLevel.Error,
+        Message = "[{ClassName}] | [ExecuteHandlerAsync] | Failed in {ElapsedMilliseconds} ms"
+    )]
+    public static partial void RequestFailed(ILogger logger, string className, long elapsedMilliseconds, Exception exception);
 }
 
