@@ -11,6 +11,7 @@ using Infrastructure.Cache;
 using Infrastructure.Http;
 using Polly;
 using Polly.Extensions.Http;
+using System.Globalization;
 
 namespace Infrastructure;
 
@@ -34,7 +35,7 @@ public static class InfrastructureDependencyInjection
         internal WebApplicationBuilder AddOpenTelemetry()
         {
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            var exporterProtocol = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_PROTOCOL")?.ToLower() == "grpc"
+            var exporterProtocol = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_PROTOCOL")?.ToLower(CultureInfo.CurrentCulture) == "grpc"
                 ? OtlpExportProtocol.Grpc
                 : OtlpExportProtocol.HttpProtobuf;
             var exporterMetricsEndpoint = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_METRICS_ENDPOINT");
