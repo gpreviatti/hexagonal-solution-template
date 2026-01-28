@@ -30,16 +30,16 @@ public partial class BaseGrpcService
         Stopwatch.Restart();
         try
         {
-            StartingRequest(Logger, ClassName);
+            StartingRequestLog(Logger, ClassName);
 
             var response = await handler(request);
 
-            RequestCompleted(Logger, ClassName, Stopwatch.ElapsedMilliseconds);
+            RequestCompletedLog(Logger, ClassName, Stopwatch.ElapsedMilliseconds);
             return await response.ResponseAsync;
         }
         catch (Exception ex)
         {
-            RequestFailed(Logger, ClassName, Stopwatch.ElapsedMilliseconds, ex);
+            RequestFailedLog(Logger, ClassName, Stopwatch.ElapsedMilliseconds, ex);
 
             throw;
         }
@@ -49,18 +49,18 @@ public partial class BaseGrpcService
         Level = LogLevel.Information,
         Message = "[{ClassName}] | [ExecuteHandlerAsync] | Starting request"
     )]
-    public static partial void StartingRequest(ILogger logger, string className);
+    public static partial void StartingRequestLog(ILogger logger, string className);
 
     [LoggerMessage(
         Level = LogLevel.Information,
         Message = "[{ClassName}] | [ExecuteHandlerAsync] | Completed in {ElapsedMilliseconds} ms"
     )]
-    public static partial void RequestCompleted(ILogger logger, string className, long elapsedMilliseconds);
+    public static partial void RequestCompletedLog(ILogger logger, string className, long elapsedMilliseconds);
 
     [LoggerMessage(
         Level = LogLevel.Error,
         Message = "[{ClassName}] | [ExecuteHandlerAsync] | Failed in {ElapsedMilliseconds} ms"
     )]
-    public static partial void RequestFailed(ILogger logger, string className, long elapsedMilliseconds, Exception exception);
+    public static partial void RequestFailedLog(ILogger logger, string className, long elapsedMilliseconds, Exception exception);
 }
 
