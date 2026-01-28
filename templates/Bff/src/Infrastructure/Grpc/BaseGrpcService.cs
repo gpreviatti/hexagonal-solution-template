@@ -46,21 +46,18 @@ public partial class BaseGrpcService
     }
 
     [LoggerMessage(
-        EventId = 1,
         Level = LogLevel.Information,
         Message = "[{ClassName}] | [ExecuteHandlerAsync] | Starting request"
     )]
     public static partial void StartingRequest(ILogger logger, string className);
 
     [LoggerMessage(
-        EventId = 2,
         Level = LogLevel.Information,
         Message = "[{ClassName}] | [ExecuteHandlerAsync] | Completed in {ElapsedMilliseconds} ms"
     )]
     public static partial void RequestCompleted(ILogger logger, string className, long elapsedMilliseconds);
 
     [LoggerMessage(
-        EventId = 3,
         Level = LogLevel.Error,
         Message = "[{ClassName}] | [ExecuteHandlerAsync] | Failed in {ElapsedMilliseconds} ms"
     )]

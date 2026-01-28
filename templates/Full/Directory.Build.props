@@ -9,7 +9,4 @@
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <InvariantGlobalization>false</InvariantGlobalization>
   </PropertyGroup>
-  <ItemGroup>
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="[9.0.0,)" />
-  </ItemGroup>
 </Project>
