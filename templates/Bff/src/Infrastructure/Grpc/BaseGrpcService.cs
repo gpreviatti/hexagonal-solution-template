@@ -20,9 +20,7 @@ public partial class BaseGrpcService
         Logger = logger;
     }
 
-    protected async Task<TResponse> ExecuteHandlerAsync<TRequest, TResponse>(Func<AsyncUnaryCall<TResponse>> handler)
-        where TRequest : class
-        where TResponse : class
+    protected async Task<TResponse> ExecuteHandlerAsync<TResponse>(Func<AsyncUnaryCall<TResponse>> handler) where TResponse : class
     {
         Stopwatch.Restart();
 

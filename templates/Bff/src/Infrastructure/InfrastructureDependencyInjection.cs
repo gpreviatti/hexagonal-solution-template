@@ -28,7 +28,8 @@ public static class InfrastructureDependencyInjection
 
             builder.Services
                 .AddCache(configuration)
-                .AddHttp(configuration);
+                .AddHttp(configuration)
+                .AddGrpc(configuration);
 
             builder.AddOpenTelemetry();
 
@@ -169,7 +170,7 @@ public static class InfrastructureDependencyInjection
             return services;
         }
 
-        internal IServiceCollection AddGrpc(this IServiceCollection services)
+        internal IServiceCollection AddGrpc(IConfiguration configuration)
         {
             services.AddKeyedScoped<PaymentsService>(ServicesKeys.Payments, (serviceProvider, _) =>
             {

@@ -11,5 +11,5 @@ public sealed class PaymentsService : BaseGrpcService
         : base(baseAddress, logger) => _Client = new PaymentService.PaymentServiceClient(Channel);
 
     public async Task<PaymentReply> CreatePaymentAsync(CreatePaymentRequest request) =>
-        await ExecuteHandlerAsync<CreatePaymentRequest, PaymentReply>(() => _Client.CreateAsync(request));
+        await ExecuteHandlerAsync(() => _Client.CreateAsync(request));
 }
