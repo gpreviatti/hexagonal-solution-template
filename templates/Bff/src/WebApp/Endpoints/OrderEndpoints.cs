@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Infrastructure.Cache;
 using Contracts.Orders;
 using Contracts.Common;
+using System.Globalization;
 
 namespace WebApp.Endpoints;
 
@@ -55,12 +56,15 @@ internal static class OrderEndpoints
             CancellationToken cancellationToken
         ) =>
         {
-            var response = await httpService.SendAsync<CreateOrderRequest, BaseResponse<OrderDto>>("orders", HttpMethod.Post, cancellationToken, request);
+            var response = await httpService.SendAsync<CreateOrderRequest, BaseResponse<OrderDto>>(
+                "orders", HttpMethod.Post, request,
+                cancellationToken: cancellationToken
+            );
 
             if (response == null)
                 return Results.BadRequest();
 
-            var id = response.Data?.Id.ToString() ?? "unknown";
+            var id = response.Data?.Id.ToString(CultureInfo.InvariantCulture) ?? "unknown";
 
             return Results.Created($"/orders/{id}", response);
         })

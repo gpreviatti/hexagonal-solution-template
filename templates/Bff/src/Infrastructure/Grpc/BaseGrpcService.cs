@@ -20,22 +20,27 @@ public partial class BaseGrpcService
         Logger = logger;
     }
 
-    protected async Task<TResponse> ExecuteHandlerAsync<TRequest, TResponse>(
-        TRequest request,
-        Func<TRequest, Task<AsyncUnaryCall<TResponse>>> handler
-    )
+    protected async Task<TResponse> ExecuteHandlerAsync<TRequest, TResponse>(Func<AsyncUnaryCall<TResponse>> handler)
         where TRequest : class
         where TResponse : class
     {
         Stopwatch.Restart();
+
         try
         {
             StartingRequestLog(Logger, ClassName);
 
-            var response = await handler(request);
+            var response = handler.Invoke();
 
             RequestCompletedLog(Logger, ClassName, Stopwatch.ElapsedMilliseconds);
+
             return await response.ResponseAsync;
+        }
+        catch (RpcException rpcEx)
+        {
+            RequestFailedLog(Logger, ClassName, Stopwatch.ElapsedMilliseconds, rpcEx);
+
+            throw;
         }
         catch (Exception ex)
         {

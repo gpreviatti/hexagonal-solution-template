@@ -1,3 +1,4 @@
+using GrpcPayment;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Grpc;
@@ -9,6 +10,6 @@ public sealed class PaymentsService : BaseGrpcService
     public PaymentsService(string baseAddress, ILogger<PaymentsService> logger)
         : base(baseAddress, logger) => _Client = new GrpcPayment.PaymentService.PaymentServiceClient(Channel);
 
-    // public async Task<GrpcPayment.PaymentReply> CreatePaymentAsync(GrpcPayment.CreatePaymentRequest request) =>
-    //     await ExecuteHandlerAsync(request, _Client.CreateAsync);
+    public async Task<PaymentReply> CreatePaymentAsync(CreatePaymentRequest request) =>
+        await ExecuteHandlerAsync<CreatePaymentRequest, PaymentReply>(() => _Client.CreateAsync(request));
 }

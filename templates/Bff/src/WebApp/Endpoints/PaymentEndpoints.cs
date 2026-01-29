@@ -13,6 +13,7 @@ public static partial class PaymentEndpoints
     public static IEndpointRouteBuilder MapPaymentEndpoints(this IEndpointRouteBuilder endpoints)
     {
         var serviceKey = ServicesKeys.Payments.ToString();
+
         var group = endpoints.MapGroup(BasePath)
             .WithTags(serviceKey)
             .RequireRateLimiting(serviceKey);
@@ -22,7 +23,7 @@ public static partial class PaymentEndpoints
             [FromBody] CreatePaymentRequest request
         ) =>
         {
-            var result = await paymentsService.HandleAsync<CreatePaymentRequest, PaymentReply>(request);
+            var result = await paymentsService.CreatePaymentAsync(request);
 
             return result.Success ? Results.Ok(result) : Results.BadRequest(result);
         })
