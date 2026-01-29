@@ -12,6 +12,7 @@ using Infrastructure.Http;
 using Polly;
 using Polly.Extensions.Http;
 using System.Globalization;
+using Infrastructure.Grpc;
 
 namespace Infrastructure;
 
@@ -164,6 +165,18 @@ public static class InfrastructureDependencyInjection
                     return new(client, logger);
                 });
             }
+
+            return services;
+        }
+
+        internal IServiceCollection AddGrpc(this IServiceCollection services)
+        {
+            services.AddKeyedScoped<PaymentsService>(ServicesKeys.Payments, (serviceProvider, _) =>
+            {
+                var logger = serviceProvider.GetRequiredService<ILogger<PaymentsService>>();
+
+                return new PaymentsService(logger);
+            });
 
             return services;
         }

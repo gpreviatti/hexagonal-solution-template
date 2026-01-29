@@ -8,13 +8,11 @@ namespace WebApp.Endpoints;
 
 public static partial class PaymentEndpoints
 {
-    private const string BasePath = "api/payments";
-
     public static IEndpointRouteBuilder MapPaymentEndpoints(this IEndpointRouteBuilder endpoints)
     {
         var serviceKey = ServicesKeys.Payments.ToString();
 
-        var group = endpoints.MapGroup(BasePath)
+        var group = endpoints.MapGroup(serviceKey)
             .WithTags(serviceKey)
             .RequireRateLimiting(serviceKey);
 

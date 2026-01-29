@@ -19,7 +19,7 @@ internal static class HealthCheckExtensions
         this IApplicationBuilder app
     )
     {
-        app.UseHealthChecks("/health", new HealthCheckOptions()
+        app.UseHealthChecks("/health", new HealthCheckOptions
         {
             Predicate = _ => true,
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
