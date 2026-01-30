@@ -4,6 +4,7 @@ using Infrastructure.Cache;
 using Contracts.Orders;
 using Contracts.Common;
 using System.Globalization;
+using Infrastructure.Common;
 
 namespace WebApp.Endpoints;
 
@@ -11,14 +12,14 @@ internal static class OrderEndpoints
 {
     public static WebApplication MapOrderEndpoints(this WebApplication app)
     {
-        var serviceKey = ServicesKeys.Orders.ToString();
+        var serviceKey = ServicesKey.Orders.ToString();
 
         var ordersGroup = app.MapGroup(serviceKey)
             .WithTags(serviceKey)
             .RequireRateLimiting(serviceKey);
 
         ordersGroup.MapGet("/{id}", async (
-            [FromKeyedServices(ServicesKeys.Orders)] BaseHttpService httpService,
+            [FromKeyedServices(ServicesKey.Orders)] BaseHttpService httpService,
             [FromRoute] int id,
             [FromServices] HybridCacheService cache,
             CancellationToken cancellationToken,
@@ -52,7 +53,7 @@ internal static class OrderEndpoints
 
         ordersGroup.MapPost("/", async (
             [FromBody] CreateOrderRequest request,
-            [FromKeyedServices(ServicesKeys.Orders)] BaseHttpService httpService,
+            [FromKeyedServices(ServicesKey.Orders)] BaseHttpService httpService,
             CancellationToken cancellationToken
         ) =>
         {

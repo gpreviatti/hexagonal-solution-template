@@ -13,6 +13,8 @@ using Polly;
 using Polly.Extensions.Http;
 using System.Globalization;
 using Infrastructure.Grpc;
+using Infrastructure.Common;
+using GrpcPayment;
 
 namespace Infrastructure;
 
@@ -26,10 +28,13 @@ public static class InfrastructureDependencyInjection
         {
             var configuration = builder.Configuration;
 
+            var serviceConfiguration = configuration.GetSection("Services").Get<List<ServiceConfiguration>>()
+                ?? throw new ArgumentNullException(configuration.GetSection("Services").Path, "Services configuration is not configured.");
+
             builder.Services
                 .AddCache(configuration)
-                .AddHttp(configuration)
-                .AddGrpc(configuration);
+                .AddHttp(serviceConfiguration)
+                .AddGrpc(serviceConfiguration);
 
             builder.AddOpenTelemetry();
 
@@ -130,27 +135,25 @@ public static class InfrastructureDependencyInjection
             return services;
         }
 
-        internal IServiceCollection AddHttp(IConfiguration configuration)
+        internal IServiceCollection AddHttp(List<ServiceConfiguration> serviceConfiguration)
         {
-            var httpConfigurations = configuration.GetSection("Http").Get<List<ServiceConfigurations>>()
-                ?? throw new ArgumentNullException(configuration.GetSection("Http").Path, "Http services configuration is not configured.");
 
-            var serviceKeys = Enum.GetValues<ServicesKeys>();
+            var serviceKeys = Enum.GetValues<ServicesKey>();
 
             foreach (var serviceKey in serviceKeys)
             {
                 var serviceName = serviceKey.ToString();
 
-                var serviceConfiguration = httpConfigurations.FirstOrDefault(x =>
+                var serviceConfig = serviceConfiguration.FirstOrDefault(x =>
                     string.Equals(x.Name, serviceName, StringComparison.OrdinalIgnoreCase))
                     ?? throw new ArgumentNullException($"{serviceName} service configuration is not configured.");
 
                 services.AddHttpClient(serviceName, client =>
                 {
-                    client.BaseAddress = new Uri(serviceConfiguration.BaseAddress)
+                    client.BaseAddress = new Uri(serviceConfig.BaseAddress)
                         ?? throw new ArgumentNullException($"{serviceName} service address is not configured.");
 
-                    if (serviceConfiguration.Headers is Dictionary<string, string> headers && headers.Count > 0)
+                    if (serviceConfig.Headers is Dictionary<string, string> headers && headers.Count > 0)
                         foreach (var header in headers)
                             client.DefaultRequestHeaders.Add(header.Key, header.Value);
                 })
@@ -170,14 +173,21 @@ public static class InfrastructureDependencyInjection
             return services;
         }
 
-        internal IServiceCollection AddGrpc(IConfiguration configuration)
+        internal IServiceCollection AddGrpc(List<ServiceConfiguration> serviceConfiguration)
         {
-            services.AddKeyedScoped<PaymentsService>(ServicesKeys.Payments, (serviceProvider, _) =>
-            {
-                var logger = serviceProvider.GetRequiredService<ILogger<PaymentsService>>();
+            services
+                .AddGrpcClient<PaymentService.PaymentServiceClient>(o =>
+                {
+                    var paymentsConfiguration = serviceConfiguration.FirstOrDefault(x =>
+                        string.Equals(x.Name, ServicesKey.Payments.ToString(), StringComparison.OrdinalIgnoreCase))
+                        ?? throw new ArgumentNullException($"{ServicesKey.Payments} gRPC service configuration is not configured.");
 
-                return new PaymentsService(logger);
-            });
+                    o.Address = new Uri(paymentsConfiguration.BaseAddress);
+                })
+                .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+                .AddPolicyHandler(GetRetryPolicy());
+
+            services.AddScoped<PaymentsService>();
 
             return services;
         }

@@ -1,6 +1,6 @@
-namespace Infrastructure.Http;
+namespace Infrastructure.Common;
 
-public sealed class ServiceConfigurations
+public sealed class ServiceConfiguration
 {
     public string Name { get; set; }
     public string BaseAddress { get; set; }

@@ -1,7 +1,7 @@
 using Contracts.Common;
 using GrpcPayment;
+using Infrastructure.Common;
 using Infrastructure.Grpc;
-using Infrastructure.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.Endpoints;
@@ -10,7 +10,7 @@ public static partial class PaymentEndpoints
 {
     public static IEndpointRouteBuilder MapPaymentEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        var serviceKey = ServicesKeys.Payments.ToString();
+        var serviceKey = ServicesKey.Payments.ToString();
 
         var group = endpoints.MapGroup(serviceKey)
             .WithTags(serviceKey)

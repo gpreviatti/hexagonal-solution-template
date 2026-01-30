@@ -1,5 +1,5 @@
 using HealthChecks.UI.Client;
-using Infrastructure.Http;
+using Infrastructure.Common;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -21,7 +21,7 @@ internal static class HealthCheckExtensions
                 tags: ["services"]
             );
 
-        var serviceKeys = Enum.GetValues<ServicesKeys>();
+        var serviceKeys = Enum.GetValues<ServicesKey>();
         foreach (var serviceKey in serviceKeys)
         {
             var baseAddress = configuration.GetSection("Http")

@@ -1,4 +1,4 @@
-using Infrastructure.Http;
+using Infrastructure.Common;
 using Microsoft.AspNetCore.RateLimiting;
 
 namespace WebApp.Extensions;
@@ -12,10 +12,10 @@ internal static class RateLimitExtensions
             if (!configuration.GetValue<bool>("RATE_LIMITING_ENABLED"))
                 return services;
 
-            var serviceKeys = Enum.GetValues<ServicesKeys>();
+            var serviceKeys = Enum.GetValues<ServicesKey>();
             foreach (var serviceKey in serviceKeys)
             {
-                var serviceConfig = configuration.GetSection("Http")
+                var serviceConfig = configuration.GetSection("Services")
                     .GetChildren()
                     .FirstOrDefault(x => x["Name"] == serviceKey.ToString());
 
@@ -30,12 +30,6 @@ internal static class RateLimitExtensions
                         });
 
                         options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-                        
-                        options.OnRejected = async (context, cancellationToken) =>
-                        {
-                            context.HttpContext.Response.Headers.RetryAfter = "60 seconds";
-                            await Task.CompletedTask;
-                        };
                     });
                 }
             }
