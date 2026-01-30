@@ -2,5 +2,5 @@
 public class BaseFixture
 {
 
-    public CancellationToken cancellationToken = CancellationToken.None;
+    public CancellationToken CancellationToken { get; } = CancellationToken.None;
 }

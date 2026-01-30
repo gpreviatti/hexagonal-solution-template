@@ -5,7 +5,7 @@ using Grpc.Net.Client;
 namespace IntegrationTests.WebApp.Http;
 public sealed class ApiHelper(HttpClient httpClient)
 {
-    public HttpClient httpClient = httpClient;
+    readonly HttpClient _httpClient = httpClient;
 
     private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
     {
@@ -16,28 +16,28 @@ public sealed class ApiHelper(HttpClient httpClient)
     {
         foreach (var header in headers)
         {
-            if (httpClient.DefaultRequestHeaders.Contains(header.Key))
+            if (_httpClient.DefaultRequestHeaders.Contains(header.Key))
             {
-                httpClient.DefaultRequestHeaders.Remove(header.Key);
+                _httpClient.DefaultRequestHeaders.Remove(header.Key);
             }
 
-            httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+            _httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
         }
     }
 
     public async Task<HttpResponseMessage> GetAsync(string resourceUrl) =>
-        await httpClient.GetAsync(resourceUrl);
+        await _httpClient.GetAsync(resourceUrl);
 
     public async Task<HttpResponseMessage> PostAsync(string resourceUrl, dynamic dataClass) =>
-        await httpClient.PostAsync(resourceUrl, SerializeRequest(dataClass));
+        await _httpClient.PostAsync(resourceUrl, SerializeRequest(dataClass));
 
     public async Task<HttpResponseMessage> PutAsync(string resourceUrl, dynamic data) =>
-        await httpClient.PutAsync(resourceUrl, SerializeRequest(data));
+        await _httpClient.PutAsync(resourceUrl, SerializeRequest(data));
 
     public async Task<HttpResponseMessage> DeleteAsync(string resourceUrl) =>
-        await httpClient.DeleteAsync(resourceUrl);
+        await _httpClient.DeleteAsync(resourceUrl);
 
-    public StringContent SerializeRequest(dynamic data)
+    public static StringContent SerializeRequest(dynamic data)
     {
         var json = JsonSerializer.Serialize(data);
         return new StringContent(json, Encoding.UTF8, "application/json");
@@ -53,8 +53,8 @@ public sealed class ApiHelper(HttpClient httpClient)
         return JsonSerializer.Deserialize<T>(content, _jsonSerializerOptions);
     }
 
-    public GrpcChannel AsGrpcClientChannel() => GrpcChannel.ForAddress(httpClient.BaseAddress!, new GrpcChannelOptions
+    public GrpcChannel AsGrpcClientChannel() => GrpcChannel.ForAddress(_httpClient.BaseAddress!, new GrpcChannelOptions
     {
-        HttpClient = httpClient
+        HttpClient = _httpClient
     });
 }
