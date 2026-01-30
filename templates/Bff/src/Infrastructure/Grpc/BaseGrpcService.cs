@@ -1,6 +1,8 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Grpc.Core;
 using Grpc.Net.ClientFactory;
+using Infrastructure.Common;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Grpc;
@@ -42,51 +44,36 @@ public partial class BaseGrpcService<TGrpcService> where TGrpcService : ClientBa
     /// </summary>
     /// <typeparam name="TResponse">TResponse type returned by the gRPC handler</typeparam>
     /// <param name="handler">handler function representing the gRPC call</param>
+    /// <param name="methodName">name of the calling method (automatically provided)</param>
     /// <returns>Task representing the asynchronous operation, containing the gRPC response</returns>
-    protected async Task<TResponse> ExecuteHandlerAsync<TResponse>(Func<AsyncUnaryCall<TResponse>> handler) where TResponse : class
+    protected async Task<TResponse> ExecuteHandlerAsync<TResponse>(
+        Func<AsyncUnaryCall<TResponse>> handler,
+        [CallerMemberName] string? methodName = null
+    ) where TResponse : class
     {
         Stopwatch.Restart();
 
         try
         {
-            StartingRequestLog(Logger, ClassName);
+           Logs.SendingRequest(Logger, ClassName, methodName!);
 
             var response = handler.Invoke();
 
-            RequestCompletedLog(Logger, ClassName, Stopwatch.ElapsedMilliseconds);
-
+            Logs.RequestCompletedWithElapsed(Logger, ClassName, methodName!, Stopwatch.ElapsedMilliseconds);
             return await response.ResponseAsync;
         }
         catch (RpcException rpcEx)
         {
-            RequestFailedLog(Logger, ClassName, Stopwatch.ElapsedMilliseconds, rpcEx);
+            Logs.RequestFailedWithElapsed(Logger, ClassName, methodName!, Stopwatch.ElapsedMilliseconds, rpcEx);
 
             throw;
         }
         catch (Exception ex)
         {
-            RequestFailedLog(Logger, ClassName, Stopwatch.ElapsedMilliseconds, ex);
+            Logs.RequestFailedWithElapsed(Logger, ClassName, methodName!, Stopwatch.ElapsedMilliseconds, ex);
 
             throw;
         }
     }
-
-    [LoggerMessage(
-        Level = LogLevel.Information,
-        Message = "[{ClassName}] | [ExecuteHandlerAsync] | Starting request"
-    )]
-    public static partial void StartingRequestLog(ILogger logger, string className);
-
-    [LoggerMessage(
-        Level = LogLevel.Information,
-        Message = "[{ClassName}] | [ExecuteHandlerAsync] | Completed in {ElapsedMilliseconds} ms"
-    )]
-    public static partial void RequestCompletedLog(ILogger logger, string className, long elapsedMilliseconds);
-
-    [LoggerMessage(
-        Level = LogLevel.Error,
-        Message = "[{ClassName}] | [ExecuteHandlerAsync] | Failed in {ElapsedMilliseconds} ms"
-    )]
-    public static partial void RequestFailedLog(ILogger logger, string className, long elapsedMilliseconds, Exception exception);
 }
 

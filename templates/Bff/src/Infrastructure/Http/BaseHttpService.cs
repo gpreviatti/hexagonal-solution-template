@@ -1,20 +1,22 @@
 using System.Diagnostics;
-using System.Net;
 using System.Text.Json;
+using Infrastructure.Common;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Http;
 
-public partial class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> logger)
+public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> logger)
 {
     public HttpClient HttpClient { get; } = httpClient;
     public ILogger<BaseHttpService> Logger { get; } = logger;
     public JsonSerializerOptions JsonSerializerOptions { get; } = new(JsonSerializerDefaults.Web);
     public Stopwatch Stopwatch { get; } = new();
+    private readonly string _className = nameof(BaseHttpService);
+    private readonly string _method = nameof(SendAsync);
 
     public async Task<TResponse?> SendAsync<TRequest, TResponse>(
         string requestUri,
-        HttpMethod method,
+        HttpMethod httpMethod,
         TRequest request,
         Dictionary<string, string>? headers = null,
         string contentType = "application/json",
@@ -22,9 +24,9 @@ public partial class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpServ
     ) where TRequest : class where TResponse : class
     {
         Stopwatch.Start();
-        SendingRequestLog(Logger, method, requestUri);
+        Logs.SendingRequest(Logger, _className, _method, httpMethod, requestUri);
 
-        HttpRequestMessage requestMessage = new(method, requestUri);
+        HttpRequestMessage requestMessage = new(httpMethod, requestUri);
 
         using MemoryStream memoryStream = new();
         await JsonSerializer.SerializeAsync(memoryStream, request, JsonSerializerOptions, cancellationToken);
@@ -41,7 +43,7 @@ public partial class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpServ
 
         if (!response.IsSuccessStatusCode)
         {
-            RequestFailedLog(Logger, method, requestUri, response.ReasonPhrase, response.StatusCode, Stopwatch.ElapsedMilliseconds);
+            Logs.RequestFailedWithElapsed(Logger, _className, _method, httpMethod, requestUri, response.ReasonPhrase, response.StatusCode, Stopwatch.ElapsedMilliseconds);
             return null;
         }
 
@@ -49,22 +51,22 @@ public partial class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpServ
 
         var result = await JsonSerializer.DeserializeAsync<TResponse?>(content, JsonSerializerOptions, cancellationToken);
 
-        RequestCompletedLog(Logger, method, requestUri, Stopwatch.ElapsedMilliseconds);
+        Logs.RequestCompletedWithElapsed(Logger, _className, _method, httpMethod, requestUri, Stopwatch.ElapsedMilliseconds);
 
         return result;
     }
     
     public async Task<TResponse?> SendAsync<TResponse>(
         string requestUri,
-        HttpMethod method,
+        HttpMethod httpMethod,
         CancellationToken cancellationToken,
         Dictionary<string, string>? headers = null
     ) where TResponse : class
     {
         Stopwatch.Start();
-        SendingRequestLog(Logger, method, requestUri);
+        Logs.SendingRequest(Logger, _className, _method, httpMethod, requestUri);
 
-        var requestMessage = new HttpRequestMessage(method, requestUri);
+        var requestMessage = new HttpRequestMessage(httpMethod, requestUri);
 
         if (headers != null) foreach (var header in headers)
             requestMessage.Headers.Add(header.Key, header.Value);
@@ -73,7 +75,7 @@ public partial class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpServ
 
         if (!response.IsSuccessStatusCode)
         {
-            RequestFailedLog(Logger, method, requestUri, response.ReasonPhrase, response.StatusCode, Stopwatch.ElapsedMilliseconds);
+            Logs.RequestFailedWithElapsed(Logger, _className, _method, httpMethod, requestUri, response.ReasonPhrase, response.StatusCode, Stopwatch.ElapsedMilliseconds);
             return null;
         }
         
@@ -81,26 +83,8 @@ public partial class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpServ
 
         var result = await JsonSerializer.DeserializeAsync<TResponse?>(content, JsonSerializerOptions, cancellationToken);
 
-        RequestCompletedLog(Logger, method, requestUri, Stopwatch.ElapsedMilliseconds);
+        Logs.RequestCompletedWithElapsed(Logger, _className, _method, httpMethod, requestUri, Stopwatch.ElapsedMilliseconds);
         
         return result;
     }
-
-    [LoggerMessage(
-        Level = LogLevel.Debug,
-        Message = "[BaseHttpService] | [SendAsync] | [{Method}] | [{RequestUri}] | Sending request"
-    )]
-    private static partial void SendingRequestLog(ILogger logger, HttpMethod method, string requestUri);
-
-    [LoggerMessage(
-        Level = LogLevel.Warning,
-        Message = "[BaseHttpService] | [SendAsync] | [{Method}] | [{RequestUri}] | [{Message}] | {StatusCode} | Request failed with status in {ElapsedMilliseconds} ms"
-    )]
-    private static partial void RequestFailedLog(ILogger logger, HttpMethod method, string requestUri, string? message, HttpStatusCode statusCode, long elapsedMilliseconds);
-
-    [LoggerMessage(
-        Level = LogLevel.Debug,
-        Message = "[BaseHttpService] | [SendAsync] | [{Method}] | [{RequestUri}] | Request completed in {ElapsedMilliseconds} ms"
-    )]
-    private static partial void RequestCompletedLog(ILogger logger, HttpMethod method, string requestUri, long elapsedMilliseconds);
 }
