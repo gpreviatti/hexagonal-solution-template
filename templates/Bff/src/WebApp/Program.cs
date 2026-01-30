@@ -19,7 +19,6 @@ public sealed class Program
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddGrpc();
         builder.Services.AddOpenApi();
         builder.Services.AddCustomHealthChecks(builder.Configuration);
         builder.Services.AddRateLimiting(builder.Configuration);

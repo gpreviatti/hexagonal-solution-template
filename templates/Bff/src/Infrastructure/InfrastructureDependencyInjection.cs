@@ -175,8 +175,9 @@ public static class InfrastructureDependencyInjection
 
         internal IServiceCollection AddGrpc(List<ServiceConfiguration> serviceConfiguration)
         {
+            services.AddGrpc();
             services
-                .AddGrpcClient<PaymentService.PaymentServiceClient>(o =>
+                .AddGrpcClient<PaymentService.PaymentServiceClient>(nameof(PaymentsService), o =>
                 {
                     var paymentsConfiguration = serviceConfiguration.FirstOrDefault(x =>
                         string.Equals(x.Name, ServicesKey.Payments.ToString(), StringComparison.OrdinalIgnoreCase))
