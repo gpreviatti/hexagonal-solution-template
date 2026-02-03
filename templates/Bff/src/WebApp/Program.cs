@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 using Infrastructure;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Scalar.AspNetCore;
 using WebApp.Endpoints;
@@ -22,7 +23,14 @@ public sealed class Program
         builder.Services.AddOpenApi();
         builder.Services.AddCustomHealthChecks(builder.Configuration);
         builder.Services.AddRateLimiting(builder.Configuration);
-        builder.Services.AddResponseCompression();
+        builder.Services.AddResponseCompression(
+            options =>
+            {
+                options.EnableForHttps = true;
+                options.MimeTypes = ResponseCompressionDefaults.MimeTypes;
+                options.Providers.Add<GzipCompressionProvider>();
+            }
+        );
         builder.Services.Configure<JsonOptions>(options =>
         {
             options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;

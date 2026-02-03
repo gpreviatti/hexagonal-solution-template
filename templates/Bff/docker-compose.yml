@@ -23,8 +23,6 @@ services:
       start_period: 15s
     networks:
       - hexagonal_solution_template_network
-    environment:
-      - KESTREL__ENDPOINTS__HTTP__PROTOCOLS=http2
 
   redis:
     image: redis:8

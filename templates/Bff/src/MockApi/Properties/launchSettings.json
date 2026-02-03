@@ -7,8 +7,7 @@
             "launchBrowser": false,
             "applicationUrl": "https://*:7177;http://*:5012",
             "environmentVariables": {
-                "ASPNETCORE_ENVIRONMENT": "Development",
-                "KESTREL__ENDPOINTS__HTTP__PROTOCOLS": "http2"
+                "ASPNETCORE_ENVIRONMENT": "Development"
             }
         }
     }
