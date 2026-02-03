@@ -153,6 +153,8 @@ public static class InfrastructureDependencyInjection
                     client.BaseAddress = new Uri(serviceConfig.BaseAddress)
                         ?? throw new ArgumentNullException($"{serviceName} service address is not configured.");
 
+                    client.DefaultRequestVersion = new(serviceConfig.Version, 0);
+
                     if (serviceConfig.Headers is Dictionary<string, string> headers && headers.Count > 0)
                         foreach (var header in headers)
                             client.DefaultRequestHeaders.Add(header.Key, header.Value);

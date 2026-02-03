@@ -7,4 +7,5 @@ public sealed class ServiceConfiguration
     public object Authentication { get; set; }
     public object Headers { get; set; }
     public int LimitPerMinute { get; set; }
+    public int Version { get; set; }
 }
