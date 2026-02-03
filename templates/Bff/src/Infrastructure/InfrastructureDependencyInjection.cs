@@ -153,7 +153,7 @@ public static class InfrastructureDependencyInjection
                     client.BaseAddress = new Uri(serviceConfig.BaseAddress)
                         ?? throw new ArgumentNullException($"{serviceName} service address is not configured.");
 
-                    client.DefaultRequestVersion = new(serviceConfig.Version, 0);
+                    client.DefaultRequestVersion = new(serviceConfig.ProtocolVersion, 0);
 
                     if (serviceConfig.Headers is Dictionary<string, string> headers && headers.Count > 0)
                         foreach (var header in headers)
@@ -168,7 +168,7 @@ public static class InfrastructureDependencyInjection
                     var logger = serviceProvider.GetRequiredService<ILogger<BaseHttpService>>();
                     var client = httpClientFactory.CreateClient(serviceName);
 
-                    return new(client, logger);
+                    return new(client, logger, serviceConfig.ProtocolVersion);
                 });
             }
 

@@ -1,18 +1,27 @@
 using System.Diagnostics;
+using System.Net;
 using System.Text.Json;
 using Infrastructure.Common;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Http;
 
-public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> logger)
+public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> logger, int httpProtocolVersion = 2)
 {
     public HttpClient HttpClient { get; } = httpClient;
     public ILogger<BaseHttpService> Logger { get; } = logger;
+    public int HttpProtocolVersion { get; } = httpProtocolVersion;
     public JsonSerializerOptions JsonSerializerOptions { get; } = new(JsonSerializerDefaults.Web);
     public Stopwatch Stopwatch { get; } = new();
     private readonly string _className = nameof(BaseHttpService);
     private readonly string _method = nameof(SendAsync);
+
+    private static Version GetHttpVersion(int httpVersion) => httpVersion switch
+    {
+        1 => HttpVersion.Version11,
+        3 => HttpVersion.Version30,
+        2 or _ => HttpVersion.Version20
+    };
 
     public async Task<TResponse?> SendAsync<TRequest, TResponse>(
         string requestUri,
@@ -26,7 +35,11 @@ public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> log
         Stopwatch.Start();
         Logs.SendingRequest(Logger, _className, _method, httpMethod, requestUri);
 
-        HttpRequestMessage requestMessage = new(httpMethod, requestUri);
+        HttpRequestMessage requestMessage = new(httpMethod, requestUri)
+        {
+            Version = GetHttpVersion(HttpProtocolVersion),
+            VersionPolicy = HttpVersionPolicy.RequestVersionOrHigher
+        };
 
         using MemoryStream memoryStream = new();
         await JsonSerializer.SerializeAsync(memoryStream, request, JsonSerializerOptions, cancellationToken);
@@ -66,7 +79,11 @@ public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> log
         Stopwatch.Start();
         Logs.SendingRequest(Logger, _className, _method, httpMethod, requestUri);
 
-        var requestMessage = new HttpRequestMessage(httpMethod, requestUri);
+        var requestMessage = new HttpRequestMessage(httpMethod, requestUri)
+        {
+            Version = GetHttpVersion(HttpProtocolVersion),
+            VersionPolicy = HttpVersionPolicy.RequestVersionOrHigher
+        };
 
         if (headers != null) foreach (var header in headers)
             requestMessage.Headers.Add(header.Key, header.Value);
