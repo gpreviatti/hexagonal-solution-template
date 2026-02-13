@@ -12,7 +12,7 @@ public sealed class Notification : DomainEntity
         string notificationStatus,
         string? createdBy = null,
         object? message = null
-    ) : base(DateTime.UtcNow, createdBy)
+    ) : base(createdBy)
     {
         NotificationType = notificationType;
         NotificationStatus = notificationStatus;

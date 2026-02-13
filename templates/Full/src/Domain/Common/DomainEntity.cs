@@ -3,9 +3,9 @@
 public abstract class DomainEntity
 {
     protected DomainEntity() {}
-    protected DomainEntity(DateTime currentDate, string? user = null, string timezoneId = "")
+    protected DomainEntity(string? user = null, string timezoneId = "")
     {
-        CreatedAt = currentDate == default ? DateTime.UtcNow : currentDate;
+        CreatedAt = DateTime.UtcNow;
         CreatedBy = user ?? "System";
         UpdatedAt = CreatedAt;
         UpdatedBy = CreatedBy;

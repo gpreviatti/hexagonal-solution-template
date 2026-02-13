@@ -9,7 +9,7 @@ namespace IntegrationTests.WebApp.Http.Orders;
 
 public class GetAllOrdersTestFixture : BaseHttpFixture
 {
-    public BasePaginatedRequest SetValidRequest() =>
+    public static BasePaginatedRequest SetValidRequest() =>
         new(Guid.NewGuid(), 1, 10);
 
     public BasePaginatedRequest SetInvalidPageRequest() =>
@@ -34,7 +34,7 @@ public class GetAllOrdersTest : IClassFixture<GetAllOrdersTestFixture>
     public async Task GivenAValidRequestThenPass()
     {
         // Arrange
-        var request = _fixture.SetValidRequest();
+        var request = GetAllOrdersTestFixture.SetValidRequest();
 
         // Act
         var result = await _fixture.apiHelper.PostAsync(_fixture.resourceUrl, request);
