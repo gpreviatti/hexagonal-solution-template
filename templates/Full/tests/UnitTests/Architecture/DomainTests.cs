@@ -9,7 +9,7 @@ public sealed class DomainTests
 {
     private static readonly Assembly _domainAssembly = typeof(Result).Assembly;
 
-    [Theory(DisplayName = nameof(Domain_Do_Not_Have_Classes_With_Not_Allowed_Names))]
+    [Theory(DisplayName = nameof(DomainDoNotHaveClassesWithNotAllowedNames))]
     [InlineData("Dto")]
     [InlineData("Dtos")]
     [InlineData("UseCase")]
@@ -21,7 +21,7 @@ public sealed class DomainTests
     [InlineData("Controller")]
     [InlineData("Repository")]
     [InlineData("Query")]
-    public void Domain_Do_Not_Have_Classes_With_Not_Allowed_Names(string notAllowedClassName)
+    public void DomainDoNotHaveClassesWithNotAllowedNames(string notAllowedClassName)
     {
         // Arrange, Act
         var result = Types
@@ -36,8 +36,8 @@ public sealed class DomainTests
         Assert.True(result.IsSuccessful);
     }
 
-    [Fact(DisplayName = nameof(Domain_Do_Not_Have_Application_Dependency))]
-    public void Domain_Do_Not_Have_Application_Dependency()
+    [Fact(DisplayName = nameof(DomainDoNotHaveApplicationDependency))]
+    public void DomainDoNotHaveApplicationDependency()
     {
         // Arrange, Act
         var result = Types
@@ -50,8 +50,8 @@ public sealed class DomainTests
         Assert.True(result.IsSuccessful);
     }
 
-    [Fact(DisplayName = nameof(Domain_Do_Not_Have_Infrastructure_Dependency))]
-    public void Domain_Do_Not_Have_Infrastructure_Dependency()
+    [Fact(DisplayName = nameof(DomainDoNotHaveInfrastructureDependency))]
+    public void DomainDoNotHaveInfrastructureDependency()
     {
         // Arrange, Act
         var result = Types
@@ -64,8 +64,8 @@ public sealed class DomainTests
         Assert.True(result.IsSuccessful);
     }
 
-    [Fact(DisplayName = nameof(Domain_Should_Has_Valid_Scopes))]
-    public void Domain_Should_Has_Valid_Scopes()
+    [Fact(DisplayName = nameof(DomainShouldHasValidScopes))]
+    public void DomainShouldHasValidScopes()
     {
         // Arrange
         ServiceCollection serviceCollection = new();

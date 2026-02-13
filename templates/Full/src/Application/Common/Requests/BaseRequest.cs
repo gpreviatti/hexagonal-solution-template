@@ -1,16 +1,17 @@
 ﻿using FluentValidation;
 
 namespace Application.Common.Requests;
-public record BaseRequest(Guid CorrelationId);
+public record BaseRequest(Guid CorrelationId, int TimezoneId = 0);
 
 public record BasePaginatedRequest(
     Guid CorrelationId,
+    int TimezoneId = 0,
     int Page = 1,
     int PageSize = 10,
     string? SortBy = null,
     bool SortDescending = false,
     Dictionary<string, string>? SearchByValues = null
-) : BaseRequest(CorrelationId);
+) : BaseRequest(CorrelationId, TimezoneId);
 
 public sealed class BasePaginatedRequestValidator : AbstractValidator<BasePaginatedRequest>
 {

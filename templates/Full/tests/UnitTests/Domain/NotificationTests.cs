@@ -4,8 +4,8 @@ namespace UnitTests.Domain;
 
 public sealed class NotificationTests
 {
-    [Fact(DisplayName = nameof(Given_A_New_Notification_When_Properties_Are_Provided_Then_Should_Create_Notification_With_Success))]
-    public void Given_A_New_Notification_When_Properties_Are_Provided_Then_Should_Create_Notification_With_Success()
+    [Fact(DisplayName = nameof(GivenANewNotificationWhenPropertiesAreProvidedThenShouldCreateNotificationWithSuccess))]
+    public void GivenANewNotificationWhenPropertiesAreProvidedThenShouldCreateNotificationWithSuccess()
     {
         /// Arrange
         var notificationType = "TestNotification";
@@ -25,8 +25,8 @@ public sealed class NotificationTests
         Assert.Contains("\"Test\":\"Message\"", notification.Message);
     }
 
-    [Fact(DisplayName = nameof(Given_A_New_Notification_When_Message_Is_Null_Then_Should_Create_Notification_With_Empty_Message))]
-    public void Given_A_New_Notification_When_Message_Is_Null_Then_Should_Create_Notification_With_Empty_Message()
+    [Fact(DisplayName = nameof(GivenANewNotificationWhenMessageIsNullThenShouldCreateNotificationWithEmptyMessage))]
+    public void GivenANewNotificationWhenMessageIsNullThenShouldCreateNotificationWithEmptyMessage()
     {
         /// Arrange
         var notificationType = "TestNotification";

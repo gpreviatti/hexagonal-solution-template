@@ -140,8 +140,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyProduce<CreateNotificationMessage>(0);
     }
 
-    [Fact(DisplayName = nameof(Given_A_Invalid_Request_Then_Fails_When_There_Is_No_Items))]
-    public async Task Given_A_Invalid_Request_Then_Fails_When_There_Is_No_Items()
+    [Fact(DisplayName = nameof(GivenAInvalidRequestThenFailsWhenThereIsNoItems))]
+    public async Task GivenAInvalidRequestThenFailsWhenThereIsNoItems()
     {
         // Arrange
         var request = CreateOrderUseCaseFixture.SetInvalidRequestWithNoItems();
@@ -167,8 +167,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyProduce<CreateNotificationMessage>();
     }
 
-    [Fact(DisplayName = nameof(Given_A_Valid_Request_Then_Fails_When_Repository_Returns_Zero))]
-    public async Task Given_A_Valid_Request_Then_Fails_When_Repository_Returns_Zero()
+    [Fact(DisplayName = nameof(GivenAValidRequestThenFailsWhenRepositoryReturnsZero))]
+    public async Task GivenAValidRequestThenFailsWhenRepositoryReturnsZero()
     {
         // Arrange
         var request = _fixture.SetValidRequest();

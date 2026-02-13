@@ -9,13 +9,13 @@ public sealed class ApplicationTests
 {
     private static readonly Assembly _applicationAssembly = typeof(BaseResponse).Assembly;
 
-    [Theory(DisplayName = nameof(Application_Do_Not_Have_Classes_With_Not_Allowed_Names))]
+    [Theory(DisplayName = nameof(ApplicationDoNotHaveClassesWithNotAllowedNames))]
     [InlineData("Entity")]
     [InlineData("ValueObject")]
     [InlineData("Vo")]
     [InlineData("Service")]
     [InlineData("Controller")]
-    public void Application_Do_Not_Have_Classes_With_Not_Allowed_Names(string notAllowedClassName)
+    public void ApplicationDoNotHaveClassesWithNotAllowedNames(string notAllowedClassName)
     {
         // Arrange, Act
         var result = Types
@@ -30,8 +30,8 @@ public sealed class ApplicationTests
         Assert.True(result.IsSuccessful);
     }
 
-    [Fact(DisplayName = nameof(Application_Do_Not_Have_Infrastructure_Dependency))]
-    public void Application_Do_Not_Have_Infrastructure_Dependency()
+    [Fact(DisplayName = nameof(ApplicationDoNotHaveInfrastructureDependency))]
+    public void ApplicationDoNotHaveInfrastructureDependency()
     {
         // Arrange, Act
         var result = Types
@@ -44,8 +44,8 @@ public sealed class ApplicationTests
         Assert.True(result.IsSuccessful);
     }
 
-    [Fact(DisplayName = nameof(Application_Should_Has_Valid_Scopes))]
-    public void Application_Should_Has_Valid_Scopes()
+    [Fact(DisplayName = nameof(ApplicationShouldHasValidScopes))]
+    public void ApplicationShouldHasValidScopes()
     {
         // Arrange
         ServiceCollection serviceCollection = new();

@@ -3,12 +3,13 @@
 public abstract class DomainEntity
 {
     protected DomainEntity() {}
-    protected DomainEntity(DateTime currentDate, string? user = null)
+    protected DomainEntity(DateTime currentDate, string? user = null, string timezoneId = "")
     {
-        CreatedAt = currentDate;
+        CreatedAt = currentDate == default ? DateTime.UtcNow : currentDate;
         CreatedBy = user ?? "System";
-        UpdatedAt = currentDate;
-        UpdatedBy = user ?? "System";
+        UpdatedAt = CreatedAt;
+        UpdatedBy = CreatedBy;
+        SetTimezoneId(timezoneId);
     }
 
     public int Id { get; init; }
@@ -16,10 +17,24 @@ public abstract class DomainEntity
     public string? CreatedBy { get; init; }
     public DateTime UpdatedAt { get; private set; }
     public string? UpdatedBy { get; private set; }
+    public string TimezoneId { get; private set; }
 
-    public virtual void Update(string? user = null)
+    private void SetTimezoneId(string timezoneId)
+    {
+        if (string.IsNullOrWhiteSpace(timezoneId))
+        {
+            TimezoneId = TimeZoneInfo.Utc.Id;
+            return;
+        }
+
+        TimeZoneInfo.FindSystemTimeZoneById(timezoneId);
+        TimezoneId = timezoneId;
+    }
+
+    public virtual void Update(string? user = null, string timezoneId = "")
     {
         UpdatedAt = DateTime.UtcNow;
+        SetTimezoneId(timezoneId);
         UpdatedBy = user ?? "System";
     }
 }
