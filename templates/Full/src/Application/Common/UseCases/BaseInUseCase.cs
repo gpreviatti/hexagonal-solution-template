@@ -17,9 +17,9 @@ public interface IBaseInUseCase<TRequest> where TRequest : BaseRequest
 
 public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TRequest> where TRequest : BaseRequest
 {
-    protected readonly IHybridCacheService _cache;
-    protected readonly IProduceService _produceService;
-    protected readonly IBaseRepository _repository;
+    protected IHybridCacheService Cache { get; }
+    protected IProduceService ProduceService { get; }
+    protected IBaseRepository Repository { get; }
     private readonly IValidator<TRequest> _validator;
     private readonly Histogram<int> _useCaseExecuted;
     private readonly Gauge<long> _useCaseExecutionElapsedTime;
@@ -27,9 +27,9 @@ public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TReq
 
     protected BaseInUseCase(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
-        _produceService = serviceProvider.GetRequiredService<IProduceService>();
-        _repository = serviceProvider.GetRequiredService<IBaseRepository>();
+        Cache = serviceProvider.GetRequiredService<IHybridCacheService>();
+        ProduceService = serviceProvider.GetRequiredService<IProduceService>();
+        Repository = serviceProvider.GetRequiredService<IBaseRepository>();
         _validator = serviceProvider.GetRequiredService<IValidator<TRequest>>();
 
         _useCaseExecuted = DefaultConfigurations.Meter
@@ -44,9 +44,9 @@ public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TReq
         CancellationToken cancellationToken
     )
     {
-        stopWatch.Restart();
+        StopWatch.Restart();
 
-        Logs.StartToExecuteUseCase(logger, ClassName, HandleMethodName, request.CorrelationId);
+        Logs.StartToExecuteUseCase(Logger, ClassName, HandleMethodName, request.CorrelationId);
 
         if (_validator != null)
         {
@@ -54,7 +54,7 @@ public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TReq
             if (!validationResult.IsValid)
             {
                 var errors = string.Join(", ", validationResult.Errors);
-                Logs.ValidationErrors(logger, ClassName, HandleMethodName, request.CorrelationId, errors);
+                Logs.ValidationErrors(Logger, ClassName, HandleMethodName, request.CorrelationId, errors);
 
                 return;
             }
@@ -62,10 +62,10 @@ public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TReq
 
         await HandleInternalAsync(request, cancellationToken);
 
-        Logs.FinishedExecutingUseCase(logger, ClassName, HandleMethodName, request.CorrelationId, stopWatch.ElapsedMilliseconds);
+        Logs.FinishedExecutingUseCase(Logger, ClassName, HandleMethodName, request.CorrelationId, StopWatch.ElapsedMilliseconds);
 
         _useCaseExecuted.Record(1);
-        _useCaseExecutionElapsedTime.Record(stopWatch.ElapsedMilliseconds);
+        _useCaseExecutionElapsedTime.Record(StopWatch.ElapsedMilliseconds);
     }
 
     public abstract Task HandleInternalAsync(TRequest request, CancellationToken cancellationToken);

@@ -24,7 +24,7 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider)  : BaseInO
         CancellationToken cancellationToken
     )
     {
-        var order = await _repository.GetByIdAsNoTrackingAsync<Order, OrderDto>(
+        var order = await Repository.GetByIdAsNoTrackingAsync<Order, OrderDto>(
             request.Id,
             request.CorrelationId,
             o => new OrderDto()
@@ -43,7 +43,7 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider)  : BaseInO
 
         if (order is null)
         {
-            Logs.OrderNotFound(logger, ClassName, HandleMethodName, request.CorrelationId);
+            Logs.NotFound(Logger, ClassName, HandleMethodName, request.CorrelationId, nameof(order));
             return new(false, null, "Order not found.");
         }
 

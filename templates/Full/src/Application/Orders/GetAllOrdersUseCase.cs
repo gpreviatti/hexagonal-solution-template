@@ -15,7 +15,7 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider)
         CancellationToken cancellationToken
     )
     {
-        var (orders, totalRecords) = await _repository.GetAllPaginatedAsync<Order, OrderDto>(
+        var (orders, totalRecords) = await Repository.GetAllPaginatedAsync<Order, OrderDto>(
             request.CorrelationId,
             request.Page,
             request.PageSize,
@@ -32,7 +32,7 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider)
 
         if (orders is null || !orders.Any())
         {
-            Logs.NoOrdersFound(logger, ClassName, HandleMethodName, request.CorrelationId);
+            Logs.NotFound(Logger, ClassName, HandleMethodName, request.CorrelationId, nameof(orders));
             return new(false, 0, 0, [], "No orders found.");
         }
 

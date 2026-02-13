@@ -6,18 +6,18 @@ namespace Application.Common.UseCases;
 
 public abstract class BaseUseCase
 {
-    protected readonly IServiceProvider serviceProvider;
-    protected readonly ILogger logger;
-    protected readonly Stopwatch stopWatch = new();
-    protected string ClassName;
+    protected IServiceProvider ServiceProvider { get; }
+    protected ILogger Logger { get; }
+    protected Stopwatch StopWatch { get; } = new();
+    protected string ClassName { get; set; }
 
     protected BaseUseCase(IServiceProvider serviceProvider)
     {
         var classType = GetType();
         ClassName = classType.Name;
 
-        this.serviceProvider = serviceProvider;
+        ServiceProvider = serviceProvider;
 
-        logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(classType);
+        Logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(classType);
     }
 }

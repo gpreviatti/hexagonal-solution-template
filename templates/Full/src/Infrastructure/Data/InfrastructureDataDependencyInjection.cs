@@ -11,15 +11,15 @@ internal static class InfrastructureDataDependencyInjection
     {
         public IServiceCollection AddData(IConfiguration configuration)
         {
-            bool.TryParse(
+            var enableSensitiveDataLogging = bool.TryParse(
                 Environment.GetEnvironmentVariable("ENABLE_SENSITIVE_DATA_LOGGING"),
-                out var enableSensitiveDataLogging
-            );
+                out var parsedValue
+            ) && parsedValue;
 
             services.AddPooledDbContextFactory<MyDbContext>(options =>
             {
                 options.UseSqlServer(
-                    configuration.GetConnectionString("OrderDb") ?? throw new NullReferenceException("OrderDb connection string is not configured.")
+                    configuration.GetConnectionString("OrderDb") ?? throw new InvalidOperationException("OrderDb connection string is not configured.")
                 );
                 options.EnableSensitiveDataLogging(enableSensitiveDataLogging);
             });

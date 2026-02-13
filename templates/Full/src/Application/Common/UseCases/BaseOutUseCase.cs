@@ -15,16 +15,16 @@ public interface IBaseOutUseCase<TResponseData> where TResponseData : BaseRespon
 
 public abstract class BaseOutUseCase<TResponseData> : BaseUseCase, IBaseOutUseCase<TResponseData> where TResponseData : BaseResponse
 {
-    protected readonly IHybridCacheService _cache;
-    protected readonly IProduceService _produceService;
+    protected IHybridCacheService Cache { get; }
+    protected IProduceService ProduceService { get; }
     private readonly Histogram<int> _useCaseExecuted;
     private readonly Gauge<long> _useCaseExecutionElapsedTime;
     protected const string HandleMethodName = nameof(HandleAsync);
 
     protected BaseOutUseCase(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
-        _produceService = serviceProvider.GetRequiredService<IProduceService>();
+        Cache = serviceProvider.GetRequiredService<IHybridCacheService>();
+        ProduceService = serviceProvider.GetRequiredService<IProduceService>();
 
         _useCaseExecuted = DefaultConfigurations.Meter
             .CreateHistogram<int>($"{ClassName}.Executed", "total", "Number of times the use case was executed");
@@ -35,16 +35,16 @@ public abstract class BaseOutUseCase<TResponseData> : BaseUseCase, IBaseOutUseCa
 
     public async Task<TResponseData> HandleAsync(CancellationToken cancellationToken)
     {
-        stopWatch.Restart();
+        StopWatch.Restart();
         var correlationId = Guid.NewGuid();
-        Logs.StartToExecuteUseCase(logger, ClassName, HandleMethodName, correlationId);
+        Logs.StartToExecuteUseCase(Logger, ClassName, HandleMethodName, correlationId);
 
         var response = await HandleInternalAsync(cancellationToken);
 
-        Logs.FinishedExecutingUseCase(logger, ClassName, HandleMethodName, correlationId, stopWatch.ElapsedMilliseconds);
+        Logs.FinishedExecutingUseCase(Logger, ClassName, HandleMethodName, correlationId, StopWatch.ElapsedMilliseconds);
 
         _useCaseExecuted.Record(1);
-        _useCaseExecutionElapsedTime.Record(stopWatch.ElapsedMilliseconds);
+        _useCaseExecutionElapsedTime.Record(StopWatch.ElapsedMilliseconds);
 
         return response;
     }

@@ -1,5 +1,6 @@
 using Application.Common.Constants;
 using Application.Common.Services;
+using Infrastructure.Common;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
@@ -16,30 +17,30 @@ internal sealed class HybridCacheService(HybridCache cache, ILogger<HybridCacheS
         CancellationToken cancellationToken
     )
     {
-        _logger.LogDebug("[HybridCacheService] | [GetOrCreateAsync] | [{Key}] | Retrieving cache entry", key);
+        Logs.RetrievingCacheEntry(_logger, key);
 
         var result = await _cache.GetOrCreateAsync($"{DefaultConfigurations.ApplicationName}:{key}", factory, cancellationToken: cancellationToken);
 
-        _logger.LogDebug("[HybridCacheService] | [GetOrCreateAsync] | [{Key}] | Cache entry retrieved", key);
+        Logs.CacheEntryRetrieved(_logger, key);
 
         return result;
     }
 
     public async ValueTask CreateAsync<TResult>(string key, TResult value, CancellationToken cancellationToken)
     {
-        _logger.LogDebug("[HybridCacheService] | [CreateAsync] | [{Key}] | Creating cache entry", key);
+        Logs.CreatingCacheEntry(_logger, key);
 
         await _cache.SetAsync($"{DefaultConfigurations.ApplicationName}:{key}", value, cancellationToken: cancellationToken);
 
-        _logger.LogDebug("[HybridCacheService] | [CreateAsync] | [{Key}] | Cache entry created", key);
+        Logs.CacheEntryCreated(_logger, key);
     }
 
     public async ValueTask DeleteAsync(string key, CancellationToken cancellationToken)
     {
-        _logger.LogDebug("[HybridCacheService] | [DeleteAsync] | [{Key}] | Deleting cache entry", key);
+        Logs.DeletingCacheEntry(_logger, key);
 
         await _cache.RemoveAsync($"{DefaultConfigurations.ApplicationName}:{key}", cancellationToken);
 
-        _logger.LogDebug("[HybridCacheService] | [DeleteAsync] | [{Key}] | Cache entry deleted", key);
+        Logs.CacheEntryDeleted(_logger, key);
     }
 }

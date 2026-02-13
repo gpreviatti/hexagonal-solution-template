@@ -30,7 +30,7 @@ public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)
         CancellationToken cancellationToken
     )
     {
-        var notification = await _repository.GetByIdAsNoTrackingAsync<Notification, NotificationDto>(
+        var notification = await Repository.GetByIdAsNoTrackingAsync<Notification, NotificationDto>(
             request.Id,
             request.CorrelationId,
             n => new()
@@ -45,7 +45,7 @@ public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)
 
         if (notification is null)
         {
-            Logs.NotificationNotFound(logger, ClassName, HandleMethodName, request.CorrelationId);
+            Logs.NotFound(Logger, ClassName, HandleMethodName, request.CorrelationId, nameof(notification));
             return new(false, null, "Notification not found.");
         }
 

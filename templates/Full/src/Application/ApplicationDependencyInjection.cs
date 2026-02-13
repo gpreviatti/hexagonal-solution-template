@@ -22,7 +22,7 @@ public static class ApplicationDependencyInjection
     private static void RegisterUseCases(IServiceCollection services, Assembly applicationAssembly)
     {
         var useCaseTypes = applicationAssembly.GetTypes()
-            .Where(t => t.IsClass && !t.IsAbstract && t.Name.EndsWith("UseCase"))
+            .Where(t => t.IsClass && !t.IsAbstract && t.Name.EndsWith("UseCase", StringComparison.Ordinal))
             .ToList();
 
         foreach (var useCaseType in useCaseTypes)

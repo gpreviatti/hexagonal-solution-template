@@ -15,7 +15,7 @@ public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
         CancellationToken cancellationToken
     )
     {
-        var (notifications, totalRecords) = await _repository.GetAllPaginatedAsync<Notification, NotificationDto>(
+        var (notifications, totalRecords) = await Repository.GetAllPaginatedAsync<Notification, NotificationDto>(
             request.CorrelationId,
             request.Page,
             request.PageSize,
@@ -34,7 +34,7 @@ public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
 
         if (notifications is null || !notifications.Any())
         {
-            Logs.NoNotificationsFound(logger, ClassName, HandleMethodName, request.CorrelationId);
+            Logs.NotFound(Logger, ClassName, HandleMethodName, request.CorrelationId, nameof(Notification));
             return new(false, 0, 0, [], "No notifications found.");
         }
 

@@ -52,7 +52,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
         var createResult = newOrder.SetTotal();
         if (createResult.IsFailure)
         {
-            Logs.OperationFailed(logger, ClassName, HandleMethodName, correlationId, createResult.Message);
+            Logs.OperationFailed(Logger, ClassName, HandleMethodName, correlationId, createResult.Message);
 
             response = new(false, null, createResult.Message);
 
@@ -61,10 +61,10 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
             return response;
         }
 
-        var addResult = await _repository.AddAsync(newOrder, correlationId, cancellationToken);
+        var addResult = await Repository.AddAsync(newOrder, correlationId, cancellationToken);
         if (addResult == 0)
         {
-            Logs.OperationFailed(logger, ClassName, HandleMethodName, correlationId, "Failed to create order.");
+            Logs.OperationFailed(Logger, ClassName, HandleMethodName, correlationId, "Failed to create order.");
 
             response = new(false, null, "Failed to create order.");
 
@@ -91,7 +91,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
         return response;
     }
 
-    private void CreateNotification(Guid correlationId, string notificationStatus, object message) => _ = _produceService.HandleAsync(
+    private void CreateNotification(Guid correlationId, string notificationStatus, object message) => _ = ProduceService.HandleAsync(
         new CreateNotificationMessage(
             correlationId,
             NotificationType.OrderCreated,

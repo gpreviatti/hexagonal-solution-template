@@ -39,11 +39,11 @@ public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider) 
             request.Message
         );
 
-        var addResult = await _repository.AddAsync(notification, request.CorrelationId, cancellationToken);
+        var addResult = await Repository.AddAsync(notification, request.CorrelationId, cancellationToken);
 
         if (addResult == 0)
         {
-            Logs.OperationFailed(logger, ClassName, HandleMethodName, request.CorrelationId, "Failed to create notification");
+            Logs.OperationFailed(Logger, ClassName, HandleMethodName, request.CorrelationId, "Failed to create notification");
         }
     }
 }

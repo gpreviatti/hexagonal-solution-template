@@ -21,9 +21,9 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
     where TRequest : BaseRequest
     where TResponseData : BaseResponse
 {
-    protected readonly IHybridCacheService _cache;
-    protected readonly IProduceService _produceService;
-    protected readonly IBaseRepository _repository;
+    protected IHybridCacheService Cache { get; }
+    protected IProduceService ProduceService { get; }
+    protected IBaseRepository Repository { get; }
     private readonly IValidator<TRequest> _validator;
     private readonly Histogram<int> _useCaseExecuted;
     private readonly Gauge<long> _useCaseExecutionElapsedTime;
@@ -31,9 +31,9 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
 
     protected BaseInOutUseCase(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _cache = serviceProvider.GetRequiredService<IHybridCacheService>();
-        _produceService = serviceProvider.GetRequiredService<IProduceService>();
-        _repository = serviceProvider.GetRequiredService<IBaseRepository>();
+        Cache = serviceProvider.GetRequiredService<IHybridCacheService>();
+        ProduceService = serviceProvider.GetRequiredService<IProduceService>();
+        Repository = serviceProvider.GetRequiredService<IBaseRepository>();
         _validator = serviceProvider.GetRequiredService<IValidator<TRequest>>();
 
         _useCaseExecuted = DefaultConfigurations.Meter
@@ -48,9 +48,9 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
         CancellationToken cancellationToken
     )
     {
-        stopWatch.Restart();
+        StopWatch.Restart();
 
-        Logs.StartToExecuteUseCase(logger, ClassName, HandleMethodName, request.CorrelationId);
+        Logs.StartToExecuteUseCase(Logger, ClassName, HandleMethodName, request.CorrelationId);
         TResponseData response;
 
         if (_validator != null)
@@ -59,7 +59,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
             if (!validationResult.IsValid)
             {
                 string errors = string.Join(", ", validationResult.Errors);
-                Logs.ValidationErrors(logger, ClassName, HandleMethodName, request.CorrelationId, errors);
+                Logs.ValidationErrors(Logger, ClassName, HandleMethodName, request.CorrelationId, errors);
 
                 response = Activator.CreateInstance<TResponseData>();
                 response = response with
@@ -74,10 +74,10 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
 
         response = await HandleInternalAsync(request, cancellationToken);
 
-        Logs.FinishedExecutingUseCase(logger, ClassName, HandleMethodName, request.CorrelationId, stopWatch.ElapsedMilliseconds);
+        Logs.FinishedExecutingUseCase(Logger, ClassName, HandleMethodName, request.CorrelationId, StopWatch.ElapsedMilliseconds);
 
         _useCaseExecuted.Record(1);
-        _useCaseExecutionElapsedTime.Record(stopWatch.ElapsedMilliseconds);
+        _useCaseExecutionElapsedTime.Record(StopWatch.ElapsedMilliseconds);
 
         return response;
     }
