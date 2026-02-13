@@ -3,6 +3,7 @@ using Application.Common.Constants;
 using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Common.UseCases;
+using Application.Common.Helpers;
 using Domain.Notifications;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,12 +45,7 @@ public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)
 
         if (notification is null)
         {
-            logger.LogWarning(
-                "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Notification not found.",
-                ClassName,
-                HandleMethodName,
-                request.CorrelationId
-            );
+            Logs.NotificationNotFound(logger, ClassName, HandleMethodName, request.CorrelationId);
             return new(false, null, "Notification not found.");
         }
 

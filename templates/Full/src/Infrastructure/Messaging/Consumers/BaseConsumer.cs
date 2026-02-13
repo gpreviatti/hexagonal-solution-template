@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text.Json;
 using Application.Common.Messages;
 using Application.Common.Services;
+using Application.Common.Helpers;
 using Infrastructure.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,10 +53,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
                 var hybridCacheService = serviceProvider.GetRequiredService<IHybridCacheService>();
 
 
-                logger.LogInformation(
-                    "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Received message: {MessageType}",
-                    _className, message.CorrelationId, typeof(TMessage).Name
-                );
+                Logs.ReceivedMessage(logger, _className, message.CorrelationId, typeof(TMessage).Name);
 
                 var isExecutedKey = _className + "-" + message.CorrelationId;
                 var isExecuted = await hybridCacheService.GetOrCreateAsync(
@@ -66,33 +64,21 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
 
                 if (isExecuted)
                 {
-                    logger.LogWarning(
-                        "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Duplicate message detected. Skipping processing.",
-                        _className, message.CorrelationId
-                    );
+                    Logs.DuplicateMessageDetected(logger, _className, message.CorrelationId);
                     return;
                 }
 
-                logger.LogInformation(
-                    "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Start processing message.",
-                    _className, message.CorrelationId
-                );
+                Logs.StartProcessingMessage(logger, _className, message.CorrelationId);
 
                 await HandleUseCaseAsync(serviceProvider, message, cancellationToken);
 
                 await hybridCacheService.CreateAsync(isExecutedKey, true, cancellationToken);
 
-                logger.LogInformation(
-                    "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Processed message in {ElapsedMilliseconds} ms",
-                    _className, message.CorrelationId, _stopwatch.ElapsedMilliseconds
-                );
+                Logs.ProcessedMessage(logger, _className, message.CorrelationId, _stopwatch.ElapsedMilliseconds);
             }
             catch (Exception ex)
             {
-                logger.LogError(
-                    "[{ClassName}] | [HandleMessageAsync] | CorrelationId: {CorrelationId} | Error processing message: {ErrorMessage} | StackTrace: {StackTrace}",
-                    _className, message?.CorrelationId, ex.Message, ex.StackTrace
-                );
+                Logs.ErrorProcessingMessage(logger, _className, message?.CorrelationId, ex.Message, ex.StackTrace);
 
                 _ = producerService.HandleAsync(message!, CancellationToken.None, _queueName + "_deadLetter");
 
@@ -140,28 +126,19 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
 
                 if (message == null || message.GetType() != typeof(TMessage))
                 {
-                    logger.LogWarning(
-                        "[{ClassName}] | [HandleMessageAsync] | Received null message of type {MessageType}",
-                        _className, typeof(TMessage).Name
-                    );
+                    Logs.ReceivedNullMessage(logger, _className, typeof(TMessage).Name);
                     return;
                 }
             }
             catch (JsonException ex)
             {
-                logger.LogError(
-                    "[{ClassName}] | [HandleRabbitMqAsync] | [{CorrelationId}] | AppId: {AppId} | ClusterId: {ClusterId} | Error deserializing message: {ErrorMessage} | StackTrace: {StackTrace}",
-                    _className, basicProperties.CorrelationId, basicProperties.AppId, basicProperties.ClusterId, ex.Message, ex.StackTrace
-                );
+                Logs.ErrorDeserializingMessage(logger, _className, basicProperties.CorrelationId, basicProperties.AppId, basicProperties.ClusterId, ex.Message, ex.StackTrace);
 
                 throw;
             }
             catch (Exception ex)
             {
-                logger.LogError(
-                    "[{ClassName}] | [HandleRabbitMqAsync] | [{CorrelationId}] | AppId: {AppId} | ClusterId: {ClusterId} | Unexpected error: {ErrorMessage} | StackTrace: {StackTrace}",
-                    _className, basicProperties.CorrelationId, basicProperties.AppId, basicProperties.ClusterId, ex.Message, ex.StackTrace
-                );
+                Logs.UnexpectedError(logger, _className, basicProperties.CorrelationId, basicProperties.AppId, basicProperties.ClusterId, ex.Message, ex.StackTrace);
 
                 throw;
             }

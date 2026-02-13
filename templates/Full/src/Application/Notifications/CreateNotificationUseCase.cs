@@ -1,6 +1,7 @@
 using Application.Common.Constants;
 using Application.Common.Requests;
 using Application.Common.UseCases;
+using Application.Common.Helpers;
 using Domain.Notifications;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
@@ -42,12 +43,7 @@ public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider) 
 
         if (addResult == 0)
         {
-            logger.LogWarning(
-                "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Failed to create notification.",
-                ClassName,
-                HandleMethodName,
-                request.CorrelationId
-            );
+            Logs.OperationFailed(logger, ClassName, HandleMethodName, request.CorrelationId, "Failed to create notification");
         }
     }
 }

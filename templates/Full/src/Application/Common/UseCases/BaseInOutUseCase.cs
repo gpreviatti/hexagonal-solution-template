@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.Metrics;
 using Application.Common.Constants;
+using Application.Common.Helpers;
 using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Common.Services;
@@ -49,10 +50,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
     {
         stopWatch.Restart();
 
-        logger.LogInformation(
-            DefaultApplicationMessages.StartToExecuteUseCase,
-            ClassName, HandleMethodName, request.CorrelationId
-        );
+        Logs.StartToExecuteUseCase(logger, ClassName, HandleMethodName, request.CorrelationId);
         TResponseData response;
 
         if (_validator != null)
@@ -61,10 +59,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
             if (!validationResult.IsValid)
             {
                 string errors = string.Join(", ", validationResult.Errors);
-                logger.LogError(
-                    DefaultApplicationMessages.ValidationErrors,
-                    ClassName, HandleMethodName, request.CorrelationId, errors
-                );
+                Logs.ValidationErrors(logger, ClassName, HandleMethodName, request.CorrelationId, errors);
 
                 response = Activator.CreateInstance<TResponseData>();
                 response = response with
@@ -79,10 +74,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
 
         response = await HandleInternalAsync(request, cancellationToken);
 
-        logger.LogInformation(
-            DefaultApplicationMessages.FinishedExecutingUseCase,
-            ClassName, HandleMethodName, request.CorrelationId, stopWatch.ElapsedMilliseconds
-        );
+        Logs.FinishedExecutingUseCase(logger, ClassName, HandleMethodName, request.CorrelationId, stopWatch.ElapsedMilliseconds);
 
         _useCaseExecuted.Record(1);
         _useCaseExecutionElapsedTime.Record(stopWatch.ElapsedMilliseconds);

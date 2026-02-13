@@ -4,6 +4,7 @@ using Application.Common.Requests;
 using Application.Common.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Application.Common.Helpers;
 
 namespace Application.Common.UseCases;
 
@@ -36,14 +37,11 @@ public abstract class BaseOutUseCase<TResponseData> : BaseUseCase, IBaseOutUseCa
     {
         stopWatch.Restart();
         var correlationId = Guid.NewGuid();
-        logger.LogInformation(DefaultApplicationMessages.StartToExecuteUseCase, ClassName, HandleMethodName, correlationId);
+        Logs.StartToExecuteUseCase(logger, ClassName, HandleMethodName, correlationId);
 
         var response = await HandleInternalAsync(cancellationToken);
 
-        logger.LogInformation(
-            DefaultApplicationMessages.FinishedExecutingUseCase,
-            ClassName, HandleMethodName, correlationId, stopWatch.ElapsedMilliseconds
-        );
+        Logs.FinishedExecutingUseCase(logger, ClassName, HandleMethodName, correlationId, stopWatch.ElapsedMilliseconds);
 
         _useCaseExecuted.Record(1);
         _useCaseExecutionElapsedTime.Record(stopWatch.ElapsedMilliseconds);

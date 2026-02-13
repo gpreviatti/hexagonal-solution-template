@@ -1,6 +1,7 @@
 using Application.Common.Constants;
 using Application.Common.Requests;
 using Application.Common.UseCases;
+using Application.Common.Helpers;
 using Domain.Orders;
 using Microsoft.Extensions.Logging;
 
@@ -31,12 +32,7 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider)
 
         if (orders is null || !orders.Any())
         {
-            logger.LogWarning(
-                "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | No orders found.",
-                ClassName,
-                HandleMethodName,
-                request.CorrelationId
-            );
+            Logs.NoOrdersFound(logger, ClassName, HandleMethodName, request.CorrelationId);
             return new(false, 0, 0, [], "No orders found.");
         }
 

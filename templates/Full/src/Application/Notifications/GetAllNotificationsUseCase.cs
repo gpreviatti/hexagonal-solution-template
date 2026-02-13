@@ -1,6 +1,7 @@
 using Application.Common.Constants;
 using Application.Common.Requests;
 using Application.Common.UseCases;
+using Application.Common.Helpers;
 using Domain.Notifications;
 using Microsoft.Extensions.Logging;
 
@@ -33,12 +34,7 @@ public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
 
         if (notifications is null || !notifications.Any())
         {
-            logger.LogWarning(
-                "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | No notifications found.",
-                ClassName,
-                HandleMethodName,
-                request.CorrelationId
-            );
+            Logs.NoNotificationsFound(logger, ClassName, HandleMethodName, request.CorrelationId);
             return new(false, 0, 0, [], "No notifications found.");
         }
 

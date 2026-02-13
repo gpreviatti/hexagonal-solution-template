@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using Application.Common.Requests;
+using Application.Common.Helpers;
 
 namespace WebApp.Middlewares;
 
@@ -23,7 +24,7 @@ internal sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<
 
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        _logger.LogError(exception, "[{ClassName}] | [{Method}] | {Message}", _className, nameof(HandleExceptionAsync), exception.Message);
+        Logs.ExceptionHandlerError(_logger, exception, _className, nameof(HandleExceptionAsync), exception.Message);
 
         BaseResponse response = new(false, exception.Message);
 

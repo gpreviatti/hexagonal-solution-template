@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text.Json;
 using Application.Common.Messages;
 using Application.Common.Services;
+using Application.Common.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
@@ -43,10 +44,7 @@ public sealed class ProducerService : IProduceService
         using var connection = await _factory.CreateConnectionAsync(cancellationToken);
         using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
 
-        _logger.LogInformation(
-            "[{ClassName}] | [HandleAsync] | CorrelationId: {CorrelationId} | Publishing message: {MessageType}",
-            _className, message.CorrelationId, typeof(TMessage).Name
-        );
+        Logs.PublishingMessage(_logger, _className, message.CorrelationId, typeof(TMessage).Name);
 
         await channel.BasicPublishAsync(
             exchange: exchange,
@@ -55,10 +53,7 @@ public sealed class ProducerService : IProduceService
             cancellationToken: cancellationToken
         );
 
-        _logger.LogInformation(
-            "[{ClassName}] | [HandleAsync] | CorrelationId: {CorrelationId} | Message published: {MessageType} | Elapsed time: {ElapsedMilliseconds} ms",
-            _className, message.CorrelationId, typeof(TMessage).Name, _stopWatch.ElapsedMilliseconds
-        );
+        Logs.MessagePublished(_logger, _className, message.CorrelationId, typeof(TMessage).Name, _stopWatch.ElapsedMilliseconds);
     }
 
     public async Task HandleAsync<TMessage>(
@@ -75,10 +70,7 @@ public sealed class ProducerService : IProduceService
         using var connection = await _factory.CreateConnectionAsync(cancellationToken);
         using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
 
-        _logger.LogInformation(
-            "[{ClassName}] | [HandleAsync] | CorrelationId: {CorrelationId} | Publishing batch of messages: {MessageType}",
-            _className, messages.Select(m => m.CorrelationId), typeof(TMessage).Name
-        );
+        Logs.PublishingBatchMessages(_logger, _className, messages.Select(m => m.CorrelationId), typeof(TMessage).Name);
 
         foreach (var message in messages)
             await channel.BasicPublishAsync(
@@ -88,9 +80,6 @@ public sealed class ProducerService : IProduceService
                 cancellationToken: cancellationToken
             );
 
-        _logger.LogInformation(
-            "[{ClassName}] | [HandleAsync] | CorrelationId: {CorrelationId} | Batch of messages published: {MessageType} | Elapsed time: {ElapsedMilliseconds} ms",
-             _className, messages.Select(m => m.CorrelationId), typeof(TMessage).Name, _stopWatch.ElapsedMilliseconds
-        );
+        Logs.BatchMessagesPublished(_logger, _className, messages.Select(m => m.CorrelationId), typeof(TMessage).Name, _stopWatch.ElapsedMilliseconds);
     }
 }

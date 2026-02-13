@@ -2,6 +2,7 @@
 using Application.Common.Messages;
 using Application.Common.Requests;
 using Application.Common.UseCases;
+using Application.Common.Helpers;
 using Domain.Orders;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
@@ -51,7 +52,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
         var createResult = newOrder.SetTotal();
         if (createResult.IsFailure)
         {
-            logger.LogWarning("[{ClassName}] | [{MethodName}] | [{CorrelationId}] | {Message}", ClassName, HandleMethodName, correlationId, createResult.Message);
+            Logs.OperationFailed(logger, ClassName, HandleMethodName, correlationId, createResult.Message);
 
             response = new(false, null, createResult.Message);
 
@@ -63,7 +64,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
         var addResult = await _repository.AddAsync(newOrder, correlationId, cancellationToken);
         if (addResult == 0)
         {
-            logger.LogWarning("[{ClassName}] | [{MethodName}] | [{CorrelationId}] | " + "Failed to create order.", ClassName, HandleMethodName, correlationId);
+            Logs.OperationFailed(logger, ClassName, HandleMethodName, correlationId, "Failed to create order.");
 
             response = new(false, null, "Failed to create order.");
 

@@ -6,6 +6,7 @@ using Application.Common.Services;
 using Application.Common.Constants;
 using System.Diagnostics.Metrics;
 using Application.Common.Repositories;
+using Application.Common.Helpers;
 
 namespace Application.Common.UseCases;
 
@@ -45,10 +46,7 @@ public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TReq
     {
         stopWatch.Restart();
 
-        logger.LogInformation(
-            DefaultApplicationMessages.StartToExecuteUseCase,
-            ClassName, HandleMethodName, request.CorrelationId
-        );
+        Logs.StartToExecuteUseCase(logger, ClassName, HandleMethodName, request.CorrelationId);
 
         if (_validator != null)
         {
@@ -56,10 +54,7 @@ public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TReq
             if (!validationResult.IsValid)
             {
                 var errors = string.Join(", ", validationResult.Errors);
-                logger.LogError(
-                    DefaultApplicationMessages.ValidationErrors,
-                    ClassName, HandleMethodName, request.CorrelationId, errors
-                );
+                Logs.ValidationErrors(logger, ClassName, HandleMethodName, request.CorrelationId, errors);
 
                 return;
             }
@@ -67,10 +62,7 @@ public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TReq
 
         await HandleInternalAsync(request, cancellationToken);
 
-        logger.LogInformation(
-            DefaultApplicationMessages.FinishedExecutingUseCase,
-            ClassName, HandleMethodName, request.CorrelationId, stopWatch.ElapsedMilliseconds
-        );
+        Logs.FinishedExecutingUseCase(logger, ClassName, HandleMethodName, request.CorrelationId, stopWatch.ElapsedMilliseconds);
 
         _useCaseExecuted.Record(1);
         _useCaseExecutionElapsedTime.Record(stopWatch.ElapsedMilliseconds);

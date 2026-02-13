@@ -24,6 +24,9 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
 
     public BaseApplicationFixture()
     {
+        // Setup logger to enable logging by default
+        mockLogger.Setup(l => l.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+        
         MockServiceProviderServices();
     }
 
@@ -97,24 +100,59 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
         It.IsAny<CancellationToken>()
     ));
 
-    public void VerifyStartUseCaseLog(int times = 1) => VerifyLogInformation("Start to execute use case", times);
-    public void VerifyFinishUseCaseLog(int times = 1) => VerifyLogInformation("Finished executing use case", times);
-    public void VerifyFinishUseCaseWithCacheLog(int times = 1) => VerifyLogInformation("Finished executing use case with cache key", times);
+    public void VerifyStartUseCaseLog(int times = 1) => mockLogger.Verify(
+        x => x.Log(
+            LogLevel.Information,
+            It.Is<EventId>(e => e.Id == 1),
+            It.Is<It.IsAnyType>((v, t) =>v.ToString()!.Contains("Start to execute use case")),
+            It.IsAny<Exception>(),
+            It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+        Times.Exactly(times));
 
-    public void VerifyLogInformation(string message, int times = 1) => mockLogger.VerifyLog(
-        l => l.LogInformation($"*{message}*"),
-        Times.Exactly(times)
-    );
+    public void VerifyFinishUseCaseLog(int times = 1) => mockLogger.Verify(
+        x => x.Log(
+            LogLevel.Information,
+            It.Is<EventId>(e => e.Id == 2),
+            It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("Finished executing use case")),
+            It.IsAny<Exception>(),
+            It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+        Times.Exactly(times));
 
-    public void VerifyLogWarning(string message, int times = 1) => mockLogger.VerifyLog(
-        l => l.LogWarning($"*{message}*"),
-        Times.Exactly(times)
-    );
+    public void VerifyFinishUseCaseWithCacheLog(int times = 1) => mockLogger.Verify(
+        x => x.Log(
+            LogLevel.Information,
+            It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("Finished executing use case with cache key")),
+            It.IsAny<Exception>(),
+            It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+        Times.Exactly(times));
 
-    public void VerifyLogError(string message, int times = 1) => mockLogger.VerifyLog(
-        l => l.LogError($"*{message}*"),
-        Times.Exactly(times)
-    );
+    public void VerifyLogInformation(string message, int times = 1) => mockLogger.Verify(
+        x => x.Log(
+            LogLevel.Information,
+            It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains(message)),
+            It.IsAny<Exception>(),
+            It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+        Times.Exactly(times));
+
+    public void VerifyLogWarning(string message, int times = 1) => mockLogger.Verify(
+        x => x.Log(
+            LogLevel.Warning,
+            It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains(message)),
+            It.IsAny<Exception>(),
+            It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+        Times.Exactly(times));
+
+    public void VerifyLogError(string message, int times = 1) => mockLogger.Verify(
+        x => x.Log(
+            LogLevel.Error,
+            It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains(message)),
+            It.IsAny<Exception>(),
+            It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+        Times.Exactly(times));
 
     public void VerifyCache<TResult>(int times) => mockCache.Verify(
         c => c.GetOrCreateAsync(
