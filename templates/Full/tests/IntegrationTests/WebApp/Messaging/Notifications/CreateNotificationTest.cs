@@ -30,8 +30,8 @@ public sealed class CreateNotificationTest : IClassFixture<CreateNotificationTes
         _fixture.SetServices(factory);
     }
 
-    [Fact(DisplayName = nameof(Given_A_Valid_Message_Then_Pass))]
-    public async Task Given_A_Valid_Message_Then_Pass()
+    [Fact(DisplayName = nameof(GivenAValidMessageThenPass))]
+    public async Task GivenAValidMessageThenPass()
     {
         // Arrange
         var message = _fixture.SetValidMessage();
@@ -50,8 +50,8 @@ public sealed class CreateNotificationTest : IClassFixture<CreateNotificationTes
         Assert.Equal(message.NotificationType, notification.NotificationType);
     }
 
-    [Fact(DisplayName = nameof(Given_A_Duplicate_Message_Then_Should_Not_Create_Duplicated_Message))]
-    public async Task Given_A_Duplicate_Message_Then_Should_Not_Create_Duplicated_Message()
+    [Fact(DisplayName = nameof(GivenADuplicateMessageThenShouldNotCreateDuplicatedMessage))]
+    public async Task GivenADuplicateMessageThenShouldNotCreateDuplicatedMessage()
     {
         // Arrange
         var message = _fixture.SetValidMessage();

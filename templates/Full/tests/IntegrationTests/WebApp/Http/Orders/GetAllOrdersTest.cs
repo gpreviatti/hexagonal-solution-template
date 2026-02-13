@@ -30,8 +30,8 @@ public class GetAllOrdersTest : IClassFixture<GetAllOrdersTestFixture>
         _fixture.resourceUrl = "orders/paginated";
     }
 
-    [Fact(DisplayName = nameof(Given_A_Valid_Request_Then_Pass))]
-    public async Task Given_A_Valid_Request_Then_Pass()
+    [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
+    public async Task GivenAValidRequestThenPass()
     {
         // Arrange
         var request = _fixture.SetValidRequest();
@@ -49,8 +49,8 @@ public class GetAllOrdersTest : IClassFixture<GetAllOrdersTestFixture>
         Assert.True(response.TotalRecords >= 0);
     }
 
-    [Fact(DisplayName = nameof(Given_An_Invalid_Page_Request_Then_Fails))]
-    public async Task Given_An_Invalid_Page_Request_Then_Fails()
+    [Fact(DisplayName = nameof(GivenAnInvalidPageRequestThenFails))]
+    public async Task GivenAnInvalidPageRequestThenFails()
     {
         // Arrange
         var request = _fixture.SetInvalidPageRequest();
@@ -66,8 +66,8 @@ public class GetAllOrdersTest : IClassFixture<GetAllOrdersTestFixture>
         Assert.Contains("Page must be greater than 0", response.Message);
     }
 
-    [Fact(DisplayName = nameof(Given_An_Invalid_PageSize_Request_Then_Fails))]
-    public async Task Given_An_Invalid_PageSize_Request_Then_Fails()
+    [Fact(DisplayName = nameof(GivenAnInvalidPageSizeRequestThenFails))]
+    public async Task GivenAnInvalidPageSizeRequestThenFails()
     {
         // Arrange
         var request = _fixture.SetInvalidPageSizeRequest();
@@ -83,8 +83,8 @@ public class GetAllOrdersTest : IClassFixture<GetAllOrdersTestFixture>
         Assert.Contains("PageSize must be greater than 0", response.Message);
     }
 
-    [Fact(DisplayName = nameof(Given_An_Valid_Request_When_Pass_Search_By_Values_Filter_Then_Pass))]
-    public async Task Given_An_Valid_Request_When_Pass_Search_By_Values_Filter_Then_Pass()
+    [Fact(DisplayName = nameof(GivenAnValidRequestWhenPassSearchByValuesFilterThenPass))]
+    public async Task GivenAnValidRequestWhenPassSearchByValuesFilterThenPass()
     {
         // Arrange
         var request = new BasePaginatedRequest(

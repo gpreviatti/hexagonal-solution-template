@@ -16,7 +16,7 @@ public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
     }
 
     [Fact]
-    public async Task Given_A_Id_Then_Return_Order_With_Success()
+    public async Task GivenAIdThenReturnOrderWithSuccess()
     {
         // Arrange
         var id = 1;
@@ -37,7 +37,7 @@ public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
     }
 
     [Fact]
-    public async Task Given_A_Id_Then_Return_OrderDto_With_Success()
+    public async Task GivenAIdThenReturnOrderDtoWithSuccess()
     {
         // Arrange
         var id = 1;
@@ -68,7 +68,7 @@ public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
     }
 
     [Fact]
-    public async Task Given_A_Order_And_Notification_Should_Execute_In_Parallel_With_Success()
+    public async Task GivenAOrderAndNotificationShouldExecuteInParallelWithSuccess()
     {
         // Arrange
         var id = 1;
@@ -102,7 +102,7 @@ public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
     }
 
     [Fact]
-    public async Task Given_A_Valid_Request_Then_Return_All_Orders_Paginated_With_Success()
+    public async Task GivenAValidRequestThenReturnAllOrdersPaginatedWithSuccess()
     {
         // Arrange
         var pageNumber = 1;
@@ -123,7 +123,7 @@ public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
     }
 
     [Fact]
-    public async Task Given_A_Valid_Request_Then_Return_All_OrdersDtos_Paginated_With_Success()
+    public async Task GivenAValidRequestThenReturnAllOrdersDtosPaginatedWithSuccess()
     {
         // Arrange
         var pageNumber = 1;
@@ -156,7 +156,7 @@ public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
     }
 
     [Fact]
-    public async Task Given_A_Valid_Request_Then_Return_No_Orders_Paginated()
+    public async Task GivenAValidRequestThenReturnNoOrdersPaginated()
     {
         // Arrange
         var pageNumber = 50;
@@ -177,7 +177,7 @@ public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
     }
 
     [Fact]
-    public async Task Given_A_Valid_Request_Then_Return_Filtered_Orders_Paginated()
+    public async Task GivenAValidRequestThenReturnFilteredOrdersPaginated()
     {
         // Arrange
         var pageNumber = 1;
@@ -204,7 +204,7 @@ public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
     }
 
     [Fact]
-    public async Task Given_A_Valid_Request_Then_Return_No_Filtered_Orders_Paginated()
+    public async Task GivenAValidRequestThenReturnNoFilteredOrdersPaginated()
     {
         // Arrange
         var pageNumber = 1;
@@ -231,7 +231,7 @@ public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    public async Task Given_A_Valid_Request_Then_Return_Sorted_Orders_Paginated(bool sortDescending)
+    public async Task GivenAValidRequestThenReturnSortedOrdersPaginated(bool sortDescending)
     {
         // Arrange
         var pageNumber = 1;

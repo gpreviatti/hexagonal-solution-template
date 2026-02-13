@@ -29,8 +29,8 @@ public sealed class CreateOrderTest : IClassFixture<CreateOrderTestFixture>
         _fixture.resourceUrl = "orders";
     }
 
-    [Fact(DisplayName = nameof(Given_A_Valid_Request_Then_Pass))]
-    public async Task Given_A_Valid_Request_Then_Pass()
+    [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
+    public async Task GivenAValidRequestThenPass()
     {
         // Arrange
         var request = _fixture.SetValidRequest();
@@ -46,8 +46,8 @@ public sealed class CreateOrderTest : IClassFixture<CreateOrderTestFixture>
         Assert.NotNull(response.Data);
     }
 
-    [Fact(DisplayName = nameof(Given_A_Invalid_Request_Then_Fails))]
-    public async Task Given_A_Invalid_Request_Then_Fails()
+    [Fact(DisplayName = nameof(GivenAInvalidRequestThenFails))]
+    public async Task GivenAInvalidRequestThenFails()
     {
         // Arrange
         var request = _fixture.SetInvalidRequest();

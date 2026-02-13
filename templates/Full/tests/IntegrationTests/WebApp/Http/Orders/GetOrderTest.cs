@@ -18,8 +18,8 @@ public class GetOrderTest : IClassFixture<BaseHttpFixture>
         _fixture.resourceUrl = "orders/{0}";
     }
 
-    [Fact(DisplayName = nameof(Given_A_Valid_Request_Then_Pass))]
-    public async Task Given_A_Valid_Request_Then_Pass()
+    [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
+    public async Task GivenAValidRequestThenPass()
     {
         // Arrange
         var id = 1;
@@ -44,8 +44,8 @@ public class GetOrderTest : IClassFixture<BaseHttpFixture>
         Assert.NotEmpty(data.Items);
     }
 
-    [Fact(DisplayName = nameof(Given_A_Invalid_Request_Then_Fails))]
-    public async Task Given_A_Invalid_Request_Then_Fails()
+    [Fact(DisplayName = nameof(GivenAInvalidRequestThenFails))]
+    public async Task GivenAInvalidRequestThenFails()
     {
         // Arrange
         var id = 9999999;

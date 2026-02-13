@@ -24,8 +24,8 @@ public class GetOrderGrpcTest : BaseFixture
         _service = new(_grpcChannel);
     }
 
-    [Fact(DisplayName = nameof(Given_A_Valid_Request_Then_Pass))]
-    public async Task Given_A_Valid_Request_Then_Pass()
+    [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
+    public async Task GivenAValidRequestThenPass()
     {
         // Arrange
         GetOrderRequest request = new()
@@ -48,8 +48,8 @@ public class GetOrderGrpcTest : BaseFixture
         Assert.Equal(1000.0, response.Data.Total);
     }
 
-    [Fact(DisplayName = nameof(Given_A_Invalid_Request_Then_Fails))]
-    public async Task Given_A_Invalid_Request_Then_Fails()
+    [Fact(DisplayName = nameof(GivenAInvalidRequestThenFails))]
+    public async Task GivenAInvalidRequestThenFails()
     {
         // Arrange
         GetOrderRequest request = new()
