@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Globalization;
+using System.Net;
 using Application.Common.Requests;
 using Application.Orders;
 using IntegrationTests.Common;
@@ -15,7 +16,7 @@ public class GetOrderTest : IClassFixture<BaseHttpFixture>
     {
         _fixture = fixture;
         _fixture.SetApiHelper(customWebApplicationFactory);
-        _fixture.resourceUrl = "orders/{0}";
+        _fixture.ResourceUrl = "orders/{0}";
     }
 
     [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
@@ -23,15 +24,15 @@ public class GetOrderTest : IClassFixture<BaseHttpFixture>
     {
         // Arrange
         var id = 1;
-        var url = string.Format(_fixture.resourceUrl, id);
-        _fixture.apiHelper.AddHeaders(new Dictionary<string, string>
+        var url = string.Format(CultureInfo.InvariantCulture, _fixture.ResourceUrl, id);
+        _fixture.ApiHelper.AddHeaders(new Dictionary<string, string>
         {
             { "CorrelationId", Guid.NewGuid().ToString() }
         });
 
         // Act
-        var result = await _fixture.apiHelper.GetAsync(url);
-        var response = await _fixture.apiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
+        var result = await _fixture.ApiHelper.GetAsync(url);
+        var response = await ApiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
         var data = response?.Data;
 
         // Assert
@@ -49,15 +50,15 @@ public class GetOrderTest : IClassFixture<BaseHttpFixture>
     {
         // Arrange
         var id = 9999999;
-        var url = string.Format(_fixture.resourceUrl, id);
-        _fixture.apiHelper.AddHeaders(new Dictionary<string, string>
+        var url = string.Format(CultureInfo.InvariantCulture, _fixture.ResourceUrl, id);
+        _fixture.ApiHelper.AddHeaders(new Dictionary<string, string>
         {
             { "CorrelationId", Guid.NewGuid().ToString() }
         });
 
         // Act
-        var result = await _fixture.apiHelper.GetAsync(url);
-        var response = await _fixture.apiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
+        var result = await _fixture.ApiHelper.GetAsync(url);
+        var response = await ApiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
 
         // Assert
         Assert.NotNull(result);
