@@ -10,20 +10,20 @@ namespace IntegrationTests.WebApp.Messaging.Common;
 
 public class BaseMessagingFixture : BaseFixture
 {
-    public IProduceService produceService;
-    public IBaseRepository repository;
+    public IProduceService ProduceService { get; set; } = null!;
+    public IBaseRepository Repository { get; set; } = null!;
 
     public void SetServices(AsyncServiceScope scope)
     {
-        produceService = scope.ServiceProvider.GetRequiredService<IProduceService>();
-        repository = scope.ServiceProvider.GetRequiredService<IBaseRepository>();
+        ProduceService = scope.ServiceProvider.GetRequiredService<IProduceService>();
+        Repository = scope.ServiceProvider.GetRequiredService<IBaseRepository>();
     }
 
     public void SetServices(CustomWebApplicationFactory<Program> factory)
     {
         var scope = factory.Services.CreateAsyncScope();
-        produceService = scope.ServiceProvider.GetRequiredService<IProduceService>();
-        repository = scope.ServiceProvider.GetRequiredService<IBaseRepository>();
+        ProduceService = scope.ServiceProvider.GetRequiredService<IProduceService>();
+        Repository = scope.ServiceProvider.GetRequiredService<IBaseRepository>();
     }
 
     public async Task HandleProducerAsync<TMessage>(
@@ -32,8 +32,8 @@ public class BaseMessagingFixture : BaseFixture
         int delay = 1500
     ) where TMessage : BaseMessage
     {
-        await produceService.HandleAsync(message, cancellationToken, queueName);
+        await ProduceService.HandleAsync(message, CancellationToken, queueName);
 
-        await Task.Delay(delay, cancellationToken);
+        await Task.Delay(delay, CancellationToken);
     }
 }
