@@ -10,17 +10,17 @@ namespace IntegrationTests.WebApp.Grpc.Orders;
 [Collection("WebApplicationFactoryCollectionDefinition")]
 public class GetOrderGrpcTest : BaseFixture
 {
-    public CustomWebApplicationFactory<Program> customWebApplicationFactory;
+    public CustomWebApplicationFactory<Program> CustomWebApplicationFactory { get; }
 
-    public ApiGrpcHelper apiGrpcHelper;
+    public ApiGrpcHelper ApiGrpcHelper { get; }
     private readonly GrpcChannel _grpcChannel;
     private readonly OrderService.OrderServiceClient _service;
 
     public GetOrderGrpcTest(CustomWebApplicationFactory<Program> customWebApplicationFactory)
     {
-        this.customWebApplicationFactory = customWebApplicationFactory;
-        apiGrpcHelper = new(this.customWebApplicationFactory.CreateClient());
-        _grpcChannel = apiGrpcHelper.AsGrpcClientChannel();
+        CustomWebApplicationFactory = customWebApplicationFactory;
+        ApiGrpcHelper = new(CustomWebApplicationFactory.CreateClient());
+        _grpcChannel = ApiGrpcHelper.AsGrpcClientChannel();
         _service = new(_grpcChannel);
     }
 

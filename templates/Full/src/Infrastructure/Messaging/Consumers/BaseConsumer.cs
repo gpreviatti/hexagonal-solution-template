@@ -2,13 +2,13 @@ using System.Diagnostics;
 using System.Text.Json;
 using Application.Common.Messages;
 using Application.Common.Services;
-using Application.Common.Helpers;
 using Infrastructure.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using Logs = Application.Common.Helpers.Logs;
 
 namespace Infrastructure.Messaging.Consumers;
 

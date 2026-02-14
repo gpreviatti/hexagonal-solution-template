@@ -12,10 +12,10 @@ public class GetAllOrdersTestFixture : BaseHttpFixture
     public static BasePaginatedRequest SetValidRequest() =>
         new(Guid.NewGuid(), 1, 10);
 
-    public BasePaginatedRequest SetInvalidPageRequest() =>
+    public static BasePaginatedRequest SetInvalidPageRequest() =>
         new(Guid.NewGuid(), 0, 10);
 
-    public BasePaginatedRequest SetInvalidPageSizeRequest() =>
+    public static BasePaginatedRequest SetInvalidPageSizeRequest() =>
         new(Guid.NewGuid(), 1, 0);
 }
 
@@ -27,7 +27,7 @@ public class GetAllOrdersTest : IClassFixture<GetAllOrdersTestFixture>
     {
         _fixture = fixture;
         _fixture.SetApiHelper(customWebApplicationFactory);
-        _fixture.resourceUrl = "orders/paginated";
+        _fixture.ResourceUrl = "orders/paginated";
     }
 
     [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
@@ -37,8 +37,8 @@ public class GetAllOrdersTest : IClassFixture<GetAllOrdersTestFixture>
         var request = GetAllOrdersTestFixture.SetValidRequest();
 
         // Act
-        var result = await _fixture.apiHelper.PostAsync(_fixture.resourceUrl, request);
-        var response = await _fixture.apiHelper.DeSerializeResponse<BasePaginatedResponse<OrderDto>>(result);
+        var result = await _fixture.ApiHelper.PostAsync(_fixture.ResourceUrl, request);
+        var response = await ApiHelper.DeSerializeResponse<BasePaginatedResponse<OrderDto>>(result);
 
         // Assert
         Assert.NotNull(result);
@@ -53,11 +53,11 @@ public class GetAllOrdersTest : IClassFixture<GetAllOrdersTestFixture>
     public async Task GivenAnInvalidPageRequestThenFails()
     {
         // Arrange
-        var request = _fixture.SetInvalidPageRequest();
+        var request = GetAllOrdersTestFixture.SetInvalidPageRequest();
 
         // Act
-        var result = await _fixture.apiHelper.PostAsync(_fixture.resourceUrl, request);
-        var response = await _fixture.apiHelper.DeSerializeResponse<BasePaginatedResponse<OrderDto>>(result);
+        var result = await _fixture.ApiHelper.PostAsync(_fixture.ResourceUrl, request);
+        var response = await ApiHelper.DeSerializeResponse<BasePaginatedResponse<OrderDto>>(result);
 
         // Assert
         Assert.NotNull(result);
@@ -70,11 +70,11 @@ public class GetAllOrdersTest : IClassFixture<GetAllOrdersTestFixture>
     public async Task GivenAnInvalidPageSizeRequestThenFails()
     {
         // Arrange
-        var request = _fixture.SetInvalidPageSizeRequest();
+        var request = GetAllOrdersTestFixture.SetInvalidPageSizeRequest();
 
         // Act
-        var result = await _fixture.apiHelper.PostAsync(_fixture.resourceUrl, request);
-        var response = await _fixture.apiHelper.DeSerializeResponse<BasePaginatedResponse<OrderDto>>(result);
+        var result = await _fixture.ApiHelper.PostAsync(_fixture.ResourceUrl, request);
+        var response = await ApiHelper.DeSerializeResponse<BasePaginatedResponse<OrderDto>>(result);
 
         // Assert
         Assert.NotNull(result);
@@ -93,8 +93,8 @@ public class GetAllOrdersTest : IClassFixture<GetAllOrdersTestFixture>
         );
 
         // Act
-        var result = await _fixture.apiHelper.PostAsync(_fixture.resourceUrl, request);
-        var response = await _fixture.apiHelper.DeSerializeResponse<BasePaginatedResponse<OrderDto>>(result);
+        var result = await _fixture.ApiHelper.PostAsync(_fixture.ResourceUrl, request);
+        var response = await ApiHelper.DeSerializeResponse<BasePaginatedResponse<OrderDto>>(result);
 
         // Assert
         Assert.NotNull(result);

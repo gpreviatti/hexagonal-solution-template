@@ -9,9 +9,9 @@ namespace IntegrationTests.WebApp.Http.Orders;
 
 public class CreateOrderTestFixture : BaseHttpFixture
 {
-    public CreateOrderRequest SetValidRequest() => autoFixture.Create<CreateOrderRequest>();
+    public CreateOrderRequest SetValidRequest() => AutoFixture.Create<CreateOrderRequest>();
 
-    public CreateOrderRequest SetInvalidRequest() => autoFixture
+    public CreateOrderRequest SetInvalidRequest() => AutoFixture
             .Build<CreateOrderRequest>()
             .With(r => r.Description, string.Empty)
             .Create();
@@ -26,7 +26,7 @@ public sealed class CreateOrderTest : IClassFixture<CreateOrderTestFixture>
     {
         _fixture = fixture;
         _fixture.SetApiHelper(customWebApplicationFactory);
-        _fixture.resourceUrl = "orders";
+        _fixture.ResourceUrl = "orders";
     }
 
     [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
@@ -36,8 +36,8 @@ public sealed class CreateOrderTest : IClassFixture<CreateOrderTestFixture>
         var request = _fixture.SetValidRequest();
 
         // Act
-        var result = await _fixture.apiHelper.PostAsync(_fixture.resourceUrl, request);
-        var response = await _fixture.apiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
+        var result = await _fixture.ApiHelper.PostAsync(_fixture.ResourceUrl, request);
+        var response = await ApiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
 
         // Assert
         Assert.NotNull(result);
@@ -53,8 +53,8 @@ public sealed class CreateOrderTest : IClassFixture<CreateOrderTestFixture>
         var request = _fixture.SetInvalidRequest();
 
         // Act
-        var result = await _fixture.apiHelper.PostAsync(_fixture.resourceUrl, request);
-        var response = await _fixture.apiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
+        var result = await _fixture.ApiHelper.PostAsync(_fixture.ResourceUrl, request);
+        var response = await ApiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
         // Assert
         Assert.NotNull(response);
         Assert.NotNull(result);

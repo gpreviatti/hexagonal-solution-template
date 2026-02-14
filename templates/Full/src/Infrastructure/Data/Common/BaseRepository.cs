@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using Application.Common.Repositories;
 using Domain.Common;
+using Infrastructure.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -13,7 +14,6 @@ public class BaseRepository(
     IDbContextFactory<MyDbContext> dbContextFactory
 ) : IBaseRepository
 {
-    protected readonly ILogger<BaseRepository> logger = logger;
     private readonly Stopwatch _stopwatch = new();
     private readonly IDbContextFactory<MyDbContext> _dbContextFactory = dbContextFactory;
     private readonly MyDbContext _dbContext = dbContextFactory.CreateDbContext();
@@ -28,11 +28,7 @@ public class BaseRepository(
     {
         _stopwatch.Restart();
 
-        logger.LogDebug(
-            "[BaseRepository] | [{Method}] | CorrelationId: {CorrelationId} | Starting database operation.",
-            methodName,
-            correlationId
-        );
+        Logs.StartingDatabaseOperation(logger, methodName, correlationId);
 
         var dbSet = _dbContext.Set<TEntity>();
         if (newContext.GetValueOrDefault())
@@ -40,12 +36,7 @@ public class BaseRepository(
 
         var result = await query.Invoke(dbSet);
 
-        logger.LogDebug(
-            "[BaseRepository] | [{Method}] | CorrelationId: {CorrelationId} | Query executed in {ElapsedMilliseconds} ms.",
-            methodName,
-            correlationId,
-            _stopwatch.ElapsedMilliseconds
-        );
+        Logs.QueryExecuted(logger, methodName, correlationId, _stopwatch.ElapsedMilliseconds);
 
         return result;
     }
@@ -246,7 +237,7 @@ public class BaseRepository(
         if (searchByValues != null && searchByValues.Count != 0)
             foreach (var searchByValue in searchByValues)
                 query = query.Where(e =>
-                    EF.Property<string>(e, searchByValue.Key).Contains(searchByValue.Value.ToLowerInvariant())
+                    EF.Property<string>(e, searchByValue.Key).Contains(searchByValue.Value.ToLowerInvariant(), StringComparison.OrdinalIgnoreCase)
                 );
 
         var items = await query
@@ -287,7 +278,7 @@ public class BaseRepository(
         if (searchByValues != null && searchByValues.Count != 0)
             foreach (var searchByValue in searchByValues)
                 query = query.Where(e =>
-                    EF.Property<string>(e, searchByValue.Key).Contains(searchByValue.Value.ToLowerInvariant())
+                    EF.Property<string>(e, searchByValue.Key).Contains(searchByValue.Value.ToLowerInvariant(), StringComparison.OrdinalIgnoreCase)
                 );
 
         var items = await query

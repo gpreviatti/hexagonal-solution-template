@@ -3,12 +3,14 @@
 namespace CommonTests.Fixtures;
 public class BaseFixture
 {
-    public Fixture autoFixture = new();
+    public Fixture AutoFixture { get; }
 
-    public CancellationToken cancellationToken = CancellationToken.None;
+    public CancellationToken CancellationToken { get; }
 
     public BaseFixture()
     {
-        autoFixture.Behaviors.Add(new OmitOnRecursionBehavior());
+        AutoFixture = new Fixture();
+        AutoFixture.Behaviors.Add(new OmitOnRecursionBehavior());
+        CancellationToken = CancellationToken.None;
     }
 }

@@ -14,9 +14,9 @@ public sealed class WebApplicationFactoryCollectionDefinition : IClassFixture<Cu
 
 public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram>, IDisposable where TProgram : class
 {
-    protected string? _connectionString = "Server=127.0.0.1,1433;Database=OrderDb;User Id=sa;Password=cY5VvZkkh4AzES;TrustServerCertificate=true;";
+    protected string? ConnectionString { get; } = "Server=127.0.0.1,1433;Database=OrderDb;User Id=sa;Password=cY5VvZkkh4AzES;TrustServerCertificate=true;";
 
-    public MyDbContext? MyDbContext;
+    public MyDbContext? MyDbContext { get; set; }
 
     public CustomWebApplicationFactory() => SetDbContext();
 
@@ -34,14 +34,14 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
 
             services.Remove(dbConnectionDescriptor!);
 
-            services.AddDbContextFactory<MyDbContext>((options) => options.UseSqlServer(_connectionString));
+            services.AddDbContextFactory<MyDbContext>((options) => options.UseSqlServer(ConnectionString));
         });
     }
 
     public void SetDbContext()
     {
         var contextOptions = new DbContextOptionsBuilder<MyDbContext>()
-            .UseSqlServer(_connectionString)
+            .UseSqlServer(ConnectionString)
             .Options;
 
         MyDbContext = new(contextOptions);
@@ -53,6 +53,7 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
     public new void Dispose()
     {
         MyDbContext!.Dispose();
+        GC.SuppressFinalize(this);
         // base.Dispose();
     }
 }

@@ -28,10 +28,7 @@ internal abstract class BaseBackgroundService<TService>(
         }
         catch (Exception ex)
         {
-            logger.LogError(
-                "[BaseBackgroundService] | [ExecuteAsync] | Unexpected error in background service. | Message: {ErrorMessage} | StackTrace: {StackTrace}",
-                ex.Message, ex.StackTrace
-            );
+            Logs.UnexpectedErrorInBackgroundService(logger, ex.Message, ex.StackTrace);
 
             throw;
         }

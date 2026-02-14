@@ -8,11 +8,11 @@ namespace IntegrationTests.Data;
 
 public class BaseDataFixture : BaseFixture
 {
-    public required IBaseRepository repository;
+    public required IBaseRepository Repository { get; set; }
 
     public void SetRepository(CustomWebApplicationFactory<Program> factory)
     {
         var scope = factory.Services.CreateAsyncScope();
-        repository = scope.ServiceProvider.GetRequiredService<IBaseRepository>();
+        Repository = scope.ServiceProvider.GetRequiredService<IBaseRepository>();
     }
 }

@@ -17,7 +17,7 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
         public WebApplicationBuilder AddOpenTelemetry()
         {
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            var exporterProtocol = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_PROTOCOL")?.ToLower() == "grpc"
+            var exporterProtocol = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_PROTOCOL")?.ToLower(System.Globalization.CultureInfo.InvariantCulture) == "grpc"
                 ? OtlpExportProtocol.Grpc
                 : OtlpExportProtocol.HttpProtobuf;
             var exporterMetricsEndpoint = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_METRICS_ENDPOINT");
