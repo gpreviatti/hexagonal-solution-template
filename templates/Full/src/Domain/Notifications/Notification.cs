@@ -10,9 +10,10 @@ public sealed class Notification : DomainEntity
     public Notification(
         string notificationType,
         string notificationStatus,
+        object? message = null,
         string? createdBy = null,
-        object? message = null
-    ) : base(createdBy)
+        string? timezoneId = null
+    ) : base(createdBy ?? "System", timezoneId)
     {
         NotificationType = notificationType;
         NotificationStatus = notificationStatus;

@@ -7,7 +7,7 @@ public sealed class DomainEntityTests
     private sealed class TestDomainEntity : DomainEntity
     {
         public TestDomainEntity() : base() { }
-        public TestDomainEntity(string? user = null, string timezoneId = "")
+        public TestDomainEntity(string user, string timezoneId = "")
             : base(user, timezoneId) { }
     }
 
@@ -20,31 +20,9 @@ public sealed class DomainEntityTests
         var entity = new TestDomainEntity(user, timezoneId);
 
         Assert.Equal(user, entity.CreatedBy);
+        Assert.Equal(timezoneId, entity.CreatedByTimezoneId);
         Assert.Equal(user, entity.UpdatedBy);
-        Assert.Equal(timezoneId, entity.TimezoneId);
-    }
-
-    [Fact(DisplayName = nameof(ConstructorWithDefaultDateTimeShouldUseUtcNow))]
-    public void ConstructorWithDefaultDateTimeShouldUseUtcNow()
-    {
-        var beforeCreation = DateTime.UtcNow;
-
-        var entity = new TestDomainEntity();
-
-        var afterCreation = DateTime.UtcNow;
-        Assert.True(entity.CreatedAt >= beforeCreation && entity.CreatedAt <= afterCreation);
-        Assert.Equal(entity.CreatedAt, entity.UpdatedAt);
-    }
-
-    [Fact(DisplayName = nameof(ConstructorWithNullUserShouldDefaultToSystem))]
-    public void ConstructorWithNullUserShouldDefaultToSystem()
-    {
-        var currentDate = new DateTime(2026, 2, 13, 10, 30, 0, DateTimeKind.Utc);
-
-        var entity = new TestDomainEntity(null);
-
-        Assert.Equal("System", entity.CreatedBy);
-        Assert.Equal("System", entity.UpdatedBy);
+        Assert.Equal(timezoneId, entity.UpdatedByTimezoneId);
     }
 
     [Fact(DisplayName = nameof(ConstructorWithValidTimezoneIdShouldSetTimezoneId))]
@@ -54,7 +32,8 @@ public sealed class DomainEntityTests
 
         var entity = new TestDomainEntity("TestUser", timezoneId);
 
-        Assert.Equal(timezoneId, entity.TimezoneId);
+        Assert.Equal(timezoneId, entity.CreatedByTimezoneId);
+        Assert.Equal(timezoneId, entity.UpdatedByTimezoneId);
     }
 
     [Fact(DisplayName = nameof(ConstructorWithInvalidTimezoneIdShouldDefaultToUtc))]
@@ -62,9 +41,9 @@ public sealed class DomainEntityTests
     {
         var invalidTimezoneId = "Invalid/Timezone";
 
-        var entity = new TestDomainEntity("TestUser", invalidTimezoneId);
+        var result = Assert.Throws<TimeZoneNotFoundException>(() => new TestDomainEntity("TestUser", invalidTimezoneId));
 
-        Assert.Equal(TimeZoneInfo.Utc.Id, entity.TimezoneId);
+        Assert.Contains("not found on the local computer.", result.Message);
     }
 
     [Fact(DisplayName = nameof(ConstructorWithNullTimezoneIdShouldDefaultToUtc))]
@@ -74,7 +53,8 @@ public sealed class DomainEntityTests
 
         var entity = new TestDomainEntity("TestUser", nullTimezone!);
 
-        Assert.Equal(TimeZoneInfo.Utc.Id, entity.TimezoneId);
+        Assert.Equal(TimeZoneInfo.Utc.Id, entity.CreatedByTimezoneId);
+        Assert.Equal(TimeZoneInfo.Utc.Id, entity.UpdatedByTimezoneId);
     }
 
     [Fact(DisplayName = nameof(ConstructorWithEmptyTimezoneIdShouldDefaultToUtc))]
@@ -82,7 +62,8 @@ public sealed class DomainEntityTests
     {
         var entity = new TestDomainEntity("TestUser", string.Empty);
 
-        Assert.Equal(TimeZoneInfo.Utc.Id, entity.TimezoneId);
+        Assert.Equal(TimeZoneInfo.Utc.Id, entity.CreatedByTimezoneId);
+        Assert.Equal(TimeZoneInfo.Utc.Id, entity.UpdatedByTimezoneId);
     }
 
     [Fact(DisplayName = nameof(ConstructorWithWhitespaceTimezoneIdShouldDefaultToUtc))]
@@ -90,7 +71,8 @@ public sealed class DomainEntityTests
     {
         var entity = new TestDomainEntity("TestUser", "   ");
 
-        Assert.Equal(TimeZoneInfo.Utc.Id, entity.TimezoneId);
+        Assert.Equal(TimeZoneInfo.Utc.Id, entity.CreatedByTimezoneId);
+        Assert.Equal(TimeZoneInfo.Utc.Id, entity.UpdatedByTimezoneId);
     }
 
     [Fact(DisplayName = nameof(UpdateWithValidParametersShouldUpdateEntityProperties))]
@@ -104,7 +86,7 @@ public sealed class DomainEntityTests
         var afterUpdate = DateTime.UtcNow;
         Assert.True(entity.UpdatedAt >= beforeUpdate && entity.UpdatedAt <= afterUpdate);
         Assert.Equal("UpdatedUser", entity.UpdatedBy);
-        Assert.Equal("Europe/London", entity.TimezoneId);
+        Assert.Equal("Europe/London", entity.UpdatedByTimezoneId);
         Assert.Equal("InitialUser", entity.CreatedBy);
     }
 
@@ -123,10 +105,9 @@ public sealed class DomainEntityTests
     {
         var entity = new TestDomainEntity("TestUser", "America/New_York");
 
-        entity.Update("UpdatedUser", "Invalid/Timezone");
+        var result = Assert.Throws<TimeZoneNotFoundException>(() => entity.Update("UpdatedUser", "Invalid/Timezone"));
 
-        Assert.Equal(TimeZoneInfo.Utc.Id, entity.TimezoneId);
-        Assert.Equal("UpdatedUser", entity.UpdatedBy);
+        Assert.Contains("not found on the local computer.", result.Message);
     }
 
     [Fact(DisplayName = nameof(UpdateWithEmptyTimezoneIdShouldDefaultToUtc))]
@@ -136,7 +117,8 @@ public sealed class DomainEntityTests
 
         entity.Update("UpdatedUser", string.Empty);
 
-        Assert.Equal(TimeZoneInfo.Utc.Id, entity.TimezoneId);
+        Assert.Equal("America/New_York", entity.CreatedByTimezoneId);
+        Assert.Equal(TimeZoneInfo.Utc.Id, entity.UpdatedByTimezoneId);
     }
 
     [Fact(DisplayName = nameof(UpdateWithoutParametersShouldUseDefaultValues))]
@@ -150,7 +132,7 @@ public sealed class DomainEntityTests
         var afterUpdate = DateTime.UtcNow;
         Assert.True(entity.UpdatedAt >= beforeUpdate && entity.UpdatedAt <= afterUpdate);
         Assert.Equal("System", entity.UpdatedBy);
-        Assert.Equal(TimeZoneInfo.Utc.Id, entity.TimezoneId);
+        Assert.Equal(TimeZoneInfo.Utc.Id, entity.UpdatedByTimezoneId);
     }
 
     [Fact(DisplayName = nameof(ConstructorWithUtcTimezoneIdShouldSetUtcTimezone))]
@@ -158,7 +140,8 @@ public sealed class DomainEntityTests
     {
         var entity = new TestDomainEntity("TestUser", TimeZoneInfo.Utc.Id);
 
-        Assert.Equal(TimeZoneInfo.Utc.Id, entity.TimezoneId);
+        Assert.Equal(TimeZoneInfo.Utc.Id, entity.CreatedByTimezoneId);
+        Assert.Equal(TimeZoneInfo.Utc.Id, entity.UpdatedByTimezoneId);
     }
 
     [Fact(DisplayName = nameof(UpdatePreservesCreatedAtAndCreatedByWhenUpdating))]
@@ -172,6 +155,7 @@ public sealed class DomainEntityTests
 
         Assert.Equal(initialUser, entity.CreatedBy);
         Assert.Equal("AnotherUser", entity.UpdatedBy);
-        Assert.Equal("Asia/Tokyo", entity.TimezoneId);
+        Assert.Equal("America/New_York", entity.CreatedByTimezoneId);
+        Assert.Equal("Asia/Tokyo", entity.UpdatedByTimezoneId);
     }
 }

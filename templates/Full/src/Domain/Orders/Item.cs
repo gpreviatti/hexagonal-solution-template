@@ -5,7 +5,13 @@ public sealed class Item : DomainEntity
 {
     public Item() { }
 
-    public Item(string name, string description, decimal value) : base()
+    public Item(
+        string name,
+        string description,
+        decimal value,
+        string? createdBy = null,
+        string? timezoneId = null
+    ) : base(createdBy ?? "System", timezoneId)
     {
         Name = name;
         Description = description;

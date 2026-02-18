@@ -3,38 +3,28 @@
 public abstract class DomainEntity
 {
     protected DomainEntity() {}
-    protected DomainEntity(string? user = null, string timezoneId = "")
+    protected DomainEntity(string user, string? timezoneId = null)
     {
         CreatedAt = DateTime.UtcNow;
-        CreatedBy = user ?? "System";
+        CreatedBy = user;
+        CreatedByTimezoneId = TimeZoneInfo.FindSystemTimeZoneById(string.IsNullOrWhiteSpace(timezoneId) ? TimeZoneInfo.Utc.Id : timezoneId).Id;
         UpdatedAt = CreatedAt;
         UpdatedBy = CreatedBy;
-        SetTimezoneId(timezoneId);
+        UpdatedByTimezoneId = CreatedByTimezoneId;
     }
 
     public int Id { get; init; }
     public DateTime CreatedAt { get; init; }
     public string? CreatedBy { get; init; }
+    public string CreatedByTimezoneId { get; init; }
     public DateTime UpdatedAt { get; private set; }
     public string? UpdatedBy { get; private set; }
-    public string TimezoneId { get; private set; }
+    public string? UpdatedByTimezoneId { get; private set; }
 
-    private void SetTimezoneId(string timezoneId)
-    {
-        if (string.IsNullOrWhiteSpace(timezoneId))
-        {
-            TimezoneId = TimeZoneInfo.Utc.Id;
-            return;
-        }
-
-        TimeZoneInfo.FindSystemTimeZoneById(timezoneId);
-        TimezoneId = timezoneId;
-    }
-
-    public virtual void Update(string? user = null, string timezoneId = "")
+    public virtual void Update(string? user = null, string? timezoneId = null)
     {
         UpdatedAt = DateTime.UtcNow;
-        SetTimezoneId(timezoneId);
         UpdatedBy = user ?? "System";
+        UpdatedByTimezoneId = TimeZoneInfo.FindSystemTimeZoneById(string.IsNullOrWhiteSpace(timezoneId) ? TimeZoneInfo.Utc.Id : timezoneId).Id;
     }
 }
