@@ -13,57 +13,57 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
     where TRequest : class
     where TUseCase : class
 {
-    public Mock<IServiceProvider> mockServiceProvider = new();
-    public Mock<ILogger> mockLogger = new();
-    public Mock<ILoggerFactory> mockLoggerFactory = new();
-    public Mock<IProduceService> mockProduceService = new();
-    public Mock<IBaseRepository> mockRepository = new();
-    public Mock<IValidator<TRequest>> mockValidator = new();
-    public Mock<IHybridCacheService> mockCache = new();
-    public TUseCase useCase = default!;
+    public Mock<IServiceProvider> MockServiceProvider { get; } = new();
+    public Mock<ILogger> MockLogger { get; } = new();
+    public Mock<ILoggerFactory> MockLoggerFactory { get; } = new();
+    public Mock<IProduceService> MockProduceService { get; } = new();
+    public Mock<IBaseRepository> MockRepository { get; } = new();
+    public Mock<IValidator<TRequest>> MockValidator { get; } = new();
+    public Mock<IHybridCacheService> MockCache { get; } = new();
+    public TUseCase UseCase { get; set; } = default!;
 
     public BaseApplicationFixture()
     {
         // Setup logger to enable logging by default
-        mockLogger.Setup(l => l.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+        MockLogger.Setup(l => l.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
         
         MockServiceProviderServices();
     }
 
     public void MockServiceProviderServices()
     {
-        mockServiceProvider
+        MockServiceProvider
             .Setup(r => r.GetService(typeof(ILoggerFactory)))
-            .Returns(mockLoggerFactory.Object);
+            .Returns(MockLoggerFactory.Object);
 
-        mockLoggerFactory
+        MockLoggerFactory
             .Setup(l => l.CreateLogger(It.IsAny<string>()))
-            .Returns(mockLogger.Object);
+            .Returns(MockLogger.Object);
 
-        mockServiceProvider
+        MockServiceProvider
         .Setup(r => r.GetService(typeof(IValidator<TRequest>)))
-        .Returns(mockValidator.Object);
+        .Returns(MockValidator.Object);
 
-        mockServiceProvider
+        MockServiceProvider
             .Setup(r => r.GetService(typeof(IHybridCacheService)))
-            .Returns(mockCache.Object);
+            .Returns(MockCache.Object);
 
-        mockServiceProvider
+        MockServiceProvider
             .Setup(r => r.GetService(typeof(IProduceService)))
-            .Returns(mockProduceService.Object);
+            .Returns(MockProduceService.Object);
 
-        mockServiceProvider
+        MockServiceProvider
             .Setup(r => r.GetService(typeof(IBaseRepository)))
-            .Returns(mockRepository.Object);
+            .Returns(MockRepository.Object);
     }
 
     public void ClearInvocations()
     {
-        mockLogger.Reset();
-        mockValidator.Reset();
-        mockCache.Reset();
-        mockProduceService.Reset();
-        mockRepository.Reset();
+        MockLogger.Reset();
+        MockValidator.Reset();
+        MockCache.Reset();
+        MockProduceService.Reset();
+        MockRepository.Reset();
     }
 
     public BasePaginatedRequest SetValidBasePaginatedRequest() => new(Guid.NewGuid(), 1, 10);
@@ -71,8 +71,8 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
     public void SetSuccessfulValidator(TRequest request)
     {
         var validationResult = new ValidationResult();
-        mockValidator
-            .Setup(v => v.ValidateAsync(request, cancellationToken))
+        MockValidator
+            .Setup(v => v.ValidateAsync(request, CancellationToken))
             .ReturnsAsync(validationResult);
     }
 
@@ -82,25 +82,25 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
         {
             Errors = [new("Description", "Description is required")]
         };
-        mockValidator
-            .Setup(v => v.ValidateAsync(request, cancellationToken))
+        MockValidator
+            .Setup(v => v.ValidateAsync(request, CancellationToken))
             .ReturnsAsync(validationResult);
     }
 
-    public void SetValidGetOrCreateAsync<TResult>(TResult result) => mockCache
+    public void SetValidGetOrCreateAsync<TResult>(TResult result) => MockCache
         .Setup(c => c.GetOrCreateAsync(
             It.IsAny<string>(),
             It.IsAny<Func<CancellationToken, ValueTask<TResult>>>(),
             It.IsAny<CancellationToken>()
     )).ReturnsAsync(result);
 
-    public void SetInvalidGetOrCreateAsync<TResult>() => mockCache.Setup(c => c.GetOrCreateAsync(
+    public void SetInvalidGetOrCreateAsync<TResult>() => MockCache.Setup(c => c.GetOrCreateAsync(
         It.IsAny<string>(),
         It.IsAny<Func<CancellationToken, ValueTask<TResult>>>(),
         It.IsAny<CancellationToken>()
     ));
 
-    public void VerifyStartUseCaseLog(int times = 1) => mockLogger.Verify(
+    public void VerifyStartUseCaseLog(int times = 1) => MockLogger.Verify(
         x => x.Log(
             LogLevel.Information,
             It.Is<EventId>(e => e.Id == 1),
@@ -109,7 +109,7 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
             It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
         Times.Exactly(times));
 
-    public void VerifyFinishUseCaseLog(int times = 1) => mockLogger.Verify(
+    public void VerifyFinishUseCaseLog(int times = 1) => MockLogger.Verify(
         x => x.Log(
             LogLevel.Information,
             It.Is<EventId>(e => e.Id == 2),
@@ -118,7 +118,7 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
             It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
         Times.Exactly(times));
 
-    public void VerifyFinishUseCaseWithCacheLog(int times = 1) => mockLogger.Verify(
+    public void VerifyFinishUseCaseWithCacheLog(int times = 1) => MockLogger.Verify(
         x => x.Log(
             LogLevel.Information,
             It.IsAny<EventId>(),
@@ -127,7 +127,7 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
             It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
         Times.Exactly(times));
 
-    public void VerifyLogInformation(string message, int times = 1) => mockLogger.Verify(
+    public void VerifyLogInformation(string message, int times = 1) => MockLogger.Verify(
         x => x.Log(
             LogLevel.Information,
             It.IsAny<EventId>(),
@@ -136,7 +136,7 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
             It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
         Times.Exactly(times));
 
-    public void VerifyLogWarning(string message, int times = 1) => mockLogger.Verify(
+    public void VerifyLogWarning(string message, int times = 1) => MockLogger.Verify(
         x => x.Log(
             LogLevel.Warning,
             It.IsAny<EventId>(),
@@ -145,7 +145,7 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
             It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
         Times.Exactly(times));
 
-    public void VerifyLogError(string message, int times = 1) => mockLogger.Verify(
+    public void VerifyLogError(string message, int times = 1) => MockLogger.Verify(
         x => x.Log(
             LogLevel.Error,
             It.IsAny<EventId>(),
@@ -154,7 +154,7 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
             It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
         Times.Exactly(times));
 
-    public void VerifyCache<TResult>(int times) => mockCache.Verify(
+    public void VerifyCache<TResult>(int times) => MockCache.Verify(
         c => c.GetOrCreateAsync(
             It.IsAny<string>(),
             It.IsAny<Func<CancellationToken, ValueTask<TResult>>>(),
@@ -163,7 +163,7 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
         Times.Exactly(times)
     );
 
-    public void VerifyProduce<TMessage>(int times = 1) where TMessage : BaseMessage => mockProduceService.Verify(
+    public void VerifyProduce<TMessage>(int times = 1) where TMessage : BaseMessage => MockProduceService.Verify(
         p => p.HandleAsync(
             It.IsAny<TMessage>(),
             It.IsAny<CancellationToken>(),

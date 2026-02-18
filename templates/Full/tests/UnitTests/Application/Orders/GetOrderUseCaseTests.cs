@@ -9,12 +9,14 @@ public sealed class GetOrderUseCaseFixture : BaseApplicationFixture<GetOrderRequ
 {
     public GetOrderUseCaseFixture()
     {
-        useCase = new(mockServiceProvider.Object);
+        UseCase = new(MockServiceProvider.Object);
     }
-    public GetOrderRequest SetValidRequest() => new(Guid.NewGuid(), autoFixture.Create<int>());
+    public GetOrderRequest SetValidRequest() => new(Guid.NewGuid(), AutoFixture.Create<int>());
 
+#pragma warning disable CA1848
     public void VerifyOrderNotFoundLog(int times = 1) =>
-        mockLogger.VerifyLog(l => l.LogWarning("*Order not found.*"), Times.Exactly(times));
+        MockLogger.VerifyLog(l => l.LogWarning("*Order not found.*"), Times.Exactly(times));
+#pragma warning restore CA1848
 }
 
 public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
@@ -33,11 +35,11 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         // Arrange
         var request = _fixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
-        var expectedOrder = _fixture.autoFixture.Create<OrderDto>();
-        _fixture.mockRepository.SetupGetByIdAsNoTrackingAsync<Order, OrderDto>(expectedOrder);
+        var expectedOrder = _fixture.AutoFixture.Create<OrderDto>();
+        _fixture.MockRepository.SetupGetByIdAsNoTrackingAsync<Order, OrderDto>(expectedOrder);
 
         // Act
-        var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
+        var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
 
         // Assert
         Assert.NotNull(result);
@@ -68,10 +70,10 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
             Total = 1000m,
             Items = []
         };
-        _fixture.mockRepository.SetupGetByIdAsNoTrackingAsync<Order, OrderDto>(expectedOrder);
+        _fixture.MockRepository.SetupGetByIdAsNoTrackingAsync<Order, OrderDto>(expectedOrder);
 
         // Act
-        var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
+        var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
 
         // Assert
         Assert.NotNull(result);
@@ -96,9 +98,9 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.SetFailedValidator(request);
 
         // Act
-        var result = await _fixture.useCase.HandleAsync(
+        var result = await _fixture.UseCase.HandleAsync(
             request,
-            _fixture.cancellationToken
+            _fixture.CancellationToken
         );
 
         // Assert
@@ -119,9 +121,9 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.SetSuccessfulValidator(request);
 
         // Act
-        var result = await _fixture.useCase.HandleAsync(
+        var result = await _fixture.UseCase.HandleAsync(
             request,
-            _fixture.cancellationToken
+            _fixture.CancellationToken
         );
 
         // Assert

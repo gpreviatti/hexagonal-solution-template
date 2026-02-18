@@ -10,14 +10,16 @@ public sealed class GetAllNotificationsUseCaseFixture : BaseApplicationFixture<B
 {
     public GetAllNotificationsUseCaseFixture()
     {
-        useCase = new(mockServiceProvider.Object);
+        UseCase = new(MockServiceProvider.Object);
     }
 
-    public new BasePaginatedRequest SetValidBasePaginatedRequest() =>
+    public static new BasePaginatedRequest SetValidBasePaginatedRequest() =>
         new(Guid.NewGuid(), 1, 10);
 
+#pragma warning disable CA1848
     public void VerifyNoNotificationsFoundLog(int times = 1) =>
-        mockLogger.VerifyLog(l => l.LogWarning("*No notifications found.*"), Times.Exactly(times));
+        MockLogger.VerifyLog(l => l.LogWarning("*No notifications found.*"), Times.Exactly(times));
+#pragma warning restore CA1848
 }
 
 public sealed class GetAllNotificationsUseCaseTests : IClassFixture<GetAllNotificationsUseCaseFixture>
@@ -35,14 +37,14 @@ public sealed class GetAllNotificationsUseCaseTests : IClassFixture<GetAllNotifi
     {
         // Arrange
         var totalRecords = 5;
-        var request = _fixture.SetValidBasePaginatedRequest();
+        var request = GetAllNotificationsUseCaseFixture.SetValidBasePaginatedRequest();
         _fixture.SetSuccessfulValidator(request);
-        var expectedNotifications = _fixture.autoFixture.CreateMany<NotificationDto>(totalRecords);
+        var expectedNotifications = _fixture.AutoFixture.CreateMany<NotificationDto>(totalRecords);
 
-        _fixture.mockRepository.SetValidGetAllPaginatedAsyncNoIncludes<Notification, NotificationDto>(expectedNotifications, totalRecords);
+        _fixture.MockRepository.SetValidGetAllPaginatedAsyncNoIncludes<Notification, NotificationDto>(expectedNotifications, totalRecords);
 
         // Act
-        var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
+        var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
 
         // Assert
         Assert.NotNull(result);
@@ -62,11 +64,11 @@ public sealed class GetAllNotificationsUseCaseTests : IClassFixture<GetAllNotifi
     public async Task GivenAnInvalidRequestThenFails()
     {
         // Arrange
-        var request = _fixture.SetValidBasePaginatedRequest();
+        var request = GetAllNotificationsUseCaseFixture.SetValidBasePaginatedRequest();
         _fixture.SetFailedValidator(request);
 
         // Act
-        var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
+        var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
 
         // Assert
         Assert.False(result.Success);
@@ -82,12 +84,12 @@ public sealed class GetAllNotificationsUseCaseTests : IClassFixture<GetAllNotifi
     public async Task GivenAValidRequestWhenNoNotificationsFoundThenFails()
     {
         // Arrange
-        var request = _fixture.SetValidBasePaginatedRequest();
+        var request = GetAllNotificationsUseCaseFixture.SetValidBasePaginatedRequest();
         _fixture.SetSuccessfulValidator(request);
-        _fixture.mockRepository.SetInvalidGetAllPaginatedAsync<Notification, NotificationDto>();
+        _fixture.MockRepository.SetInvalidGetAllPaginatedAsync<Notification, NotificationDto>();
 
         // Act
-        var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
+        var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
 
         // Assert
         Assert.False(result.Success);

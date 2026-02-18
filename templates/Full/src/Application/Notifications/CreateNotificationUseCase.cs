@@ -1,10 +1,8 @@
-using Application.Common.Constants;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Application.Common.Helpers;
 using Domain.Notifications;
 using FluentValidation;
-using Microsoft.Extensions.Logging;
 
 namespace Application.Notifications;
 
@@ -35,8 +33,9 @@ public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider) 
         var notification = new Notification(
             request.NotificationType,
             request.NotificationStatus,
+            request.Message,
             request.CreatedBy,
-            request.Message
+            request.TimezoneId
         );
 
         var addResult = await Repository.AddAsync(notification, request.CorrelationId, cancellationToken);

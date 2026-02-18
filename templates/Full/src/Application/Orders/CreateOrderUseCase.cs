@@ -5,11 +5,16 @@ using Application.Common.UseCases;
 using Application.Common.Helpers;
 using Domain.Orders;
 using FluentValidation;
-using Microsoft.Extensions.Logging;
 
 namespace Application.Orders;
 
-public sealed record CreateOrderRequest(Guid CorrelationId, string Description, CreateOrderItemRequest[] Items) : BaseRequest(CorrelationId);
+public sealed record CreateOrderRequest(
+    Guid CorrelationId,
+    string Description,
+    CreateOrderItemRequest[] Items,
+    string CreatedBy = "",
+    string TimezoneId = ""
+) : BaseRequest(CorrelationId, CreatedBy, TimezoneId);
 
 public sealed record CreateOrderItemRequest(string Name, string Description, decimal Value);
 
@@ -48,7 +53,11 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
             .Select(i => new Item(i.Name, i.Description, i.Value))
             .ToList();
 
-        var newOrder = new Order(request.Description, items);
+        var newOrder = new Order(
+            request.Description, items,
+            request.CreatedBy, request.TimezoneId
+        );
+
         var createResult = newOrder.SetTotal();
         if (createResult.IsFailure)
         {

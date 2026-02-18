@@ -9,9 +9,9 @@ namespace UnitTests.Application.Notifications;
 
 public sealed class CreateNotificationRequestValidationFixture
 {
-    public IValidator<CreateNotificationRequest> validator = new CreateNotificationRequestValidator();
+    public IValidator<CreateNotificationRequest> Validator { get; } = new CreateNotificationRequestValidator();
 
-    public CreateNotificationRequest GetValidRequest() =>
+    public static CreateNotificationRequest GetValidRequest() =>
         new(Guid.NewGuid(), "TestNotification", "Success", "System", new { Test = "Message" });
 }
 
@@ -23,10 +23,10 @@ public sealed class CreateNotificationRequestValidationTests(CreateNotificationR
     public async Task GivenAValidRequestThenPass()
     {
         // Arrange
-        var request = _fixture.GetValidRequest();
+        var request = CreateNotificationRequestValidationFixture.GetValidRequest();
 
         // Act
-        var result = await _fixture.validator.TestValidateAsync(request);
+        var result = await _fixture.Validator.TestValidateAsync(request);
 
         // Assert
         result.ShouldNotHaveAnyValidationErrors();
@@ -36,14 +36,14 @@ public sealed class CreateNotificationRequestValidationTests(CreateNotificationR
     public async Task GivenAnInvalidRequestThenFails()
     {
         // Arrange
-        var request = _fixture.GetValidRequest() with
+        var request = CreateNotificationRequestValidationFixture.GetValidRequest() with
         {
             CorrelationId = Guid.Empty,
             NotificationType = string.Empty
         };
 
         // Act
-        var result = await _fixture.validator.TestValidateAsync(request);
+        var result = await _fixture.Validator.TestValidateAsync(request);
 
         // Assert
         result.ShouldHaveValidationErrorFor("CorrelationId");
@@ -55,14 +55,16 @@ public sealed class CreateNotificationUseCaseFixture : BaseApplicationFixture<Cr
 {
     public CreateNotificationUseCaseFixture()
     {
-        useCase = new(mockServiceProvider.Object);
+        UseCase = new(MockServiceProvider.Object);
     }
 
-    public CreateNotificationRequest SetValidRequest() =>
+    public static CreateNotificationRequest SetValidRequest() =>
         new(Guid.NewGuid(), "TestNotification", "Success", "System", new { Test = "Message" });
 
+#pragma warning disable CA1848
     public void VerifyFailedToCreateNotificationLog(int times = 1) =>
-        mockLogger.VerifyLog(l => l.LogWarning("*Failed to create notification.*"), Times.Exactly(times));
+        MockLogger.VerifyLog(l => l.LogWarning("*Failed to create notification.*"), Times.Exactly(times));
+#pragma warning restore CA1848
 }
 
 public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotificationUseCaseFixture>
@@ -79,52 +81,52 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
     public async Task GivenAValidRequestThenPass()
     {
         // Arrange
-        var request = _fixture.SetValidRequest();
+        var request = CreateNotificationUseCaseFixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
-        _fixture.mockRepository.SetSuccessfulAddAsync<Notification>();
+        _fixture.MockRepository.SetSuccessfulAddAsync<Notification>();
 
         // Act
-        await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
+        await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
 
         // Assert
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyFinishUseCaseLog();
         _fixture.VerifyFailedToCreateNotificationLog(0);
-        _fixture.mockRepository.VerifyAddAsync<Notification>(1);
+        _fixture.MockRepository.VerifyAddAsync<Notification>(1);
     }
 
     [Fact(DisplayName = nameof(GivenAnInvalidRequestThenFails))]
     public async Task GivenAnInvalidRequestThenFails()
     {
         // Arrange
-        var request = _fixture.SetValidRequest();
+        var request = CreateNotificationUseCaseFixture.SetValidRequest();
         _fixture.SetFailedValidator(request);
 
         // Act
-        await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
+        await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
 
         // Assert
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyFinishUseCaseLog(0);
         _fixture.VerifyFailedToCreateNotificationLog(0);
-        _fixture.mockRepository.VerifyAddAsync<Notification>(0);
+        _fixture.MockRepository.VerifyAddAsync<Notification>(0);
     }
 
     [Fact(DisplayName = nameof(GivenAValidRequestWhenRepositoryFailsThenFails))]
     public async Task GivenAValidRequestWhenRepositoryFailsThenFails()
     {
         // Arrange
-        var request = _fixture.SetValidRequest();
+        var request = CreateNotificationUseCaseFixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
-        _fixture.mockRepository.SetFailedAddAsync<Notification>();
+        _fixture.MockRepository.SetFailedAddAsync<Notification>();
 
         // Act
-        await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
+        await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
 
         // Assert
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyFinishUseCaseLog();
         _fixture.VerifyFailedToCreateNotificationLog(1);
-        _fixture.mockRepository.VerifyAddAsync<Notification>(1);
+        _fixture.MockRepository.VerifyAddAsync<Notification>(1);
     }
 }

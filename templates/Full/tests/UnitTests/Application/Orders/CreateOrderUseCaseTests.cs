@@ -10,9 +10,9 @@ namespace UnitTests.Application.Orders;
 
 public sealed class CreateOrderRequestValidationFixture
 {
-    public IValidator<CreateOrderRequest> validator = new CreateOrderRequestValidator();
+    public IValidator<CreateOrderRequest> Validator { get; } = new CreateOrderRequestValidator();
 
-    public CreateOrderRequest GetValidRequest() => new(Guid.NewGuid(), "new order", [
+    public static CreateOrderRequest GetValidRequest() => new(Guid.NewGuid(), "new order", [
         new("item1", "description1", 10.0m),
         new("item2", "description2", 20.0m)
     ]);
@@ -22,31 +22,31 @@ public sealed class CreateOrderRequestValidationTests(CreateOrderRequestValidati
 {
     private readonly CreateOrderRequestValidationFixture _fixture = fixture;
 
-    [Fact(DisplayName = nameof(Given_A_Valid_Request_Then_Pass))]
-    public async Task Given_A_Valid_Request_Then_Pass()
+    [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
+    public async Task GivenAValidRequestThenPass()
     {
         // Arrange
-        var request = _fixture.GetValidRequest();
+        var request = CreateOrderRequestValidationFixture.GetValidRequest();
 
         // Act
-        var result = await _fixture.validator.TestValidateAsync(request);
+        var result = await _fixture.Validator.TestValidateAsync(request);
 
         // Assert
         result.ShouldNotHaveAnyValidationErrors();
     }
 
-    [Fact(DisplayName = nameof(Given_A_Invalid_Request_Then_Fails))]
-    public async Task Given_A_Invalid_Request_Then_Fails()
+    [Fact(DisplayName = nameof(GivenAnInvalidRequestThenFails))]
+    public async Task GivenAnInvalidRequestThenFails()
     {
         // Arrange
-        var request = _fixture.GetValidRequest() with
+        var request = CreateOrderRequestValidationFixture.GetValidRequest() with
         {
             CorrelationId = Guid.Empty,
             Description = string.Empty,
             Items = []
         };
         // Act
-        var result = await _fixture.validator.TestValidateAsync(request);
+        var result = await _fixture.Validator.TestValidateAsync(request);
 
         // Assert
         result.ShouldHaveValidationErrorFor("CorrelationId");
@@ -59,12 +59,12 @@ public sealed class CreateOrderUseCaseFixture : BaseApplicationFixture<CreateOrd
 {
     public CreateOrderUseCaseFixture()
     {
-        useCase = new(mockServiceProvider.Object);
+        UseCase = new(MockServiceProvider.Object);
     }
 
     public CreateOrderRequest SetValidRequest()
     {
-        var items = autoFixture
+        var items = AutoFixture
             .CreateMany<CreateOrderItemRequest>(1);
 
         return new CreateOrderRequest(Guid.NewGuid(), "AwesomeComputer", [.. items]);
@@ -73,11 +73,13 @@ public sealed class CreateOrderUseCaseFixture : BaseApplicationFixture<CreateOrd
     public static CreateOrderRequest SetInvalidRequestWithNoItems() =>
         new(Guid.NewGuid(), "AwesomeComputer", []);
 
+#pragma warning disable CA1848
     public void VerifyCreateOrderLogNoItemsError(int times = 1) =>
-        mockLogger.VerifyLog(l => l.LogWarning("*Order must have at least one item.*"), Times.Exactly(times));
+        MockLogger.VerifyLog(l => l.LogWarning("*Order must have at least one item.*"), Times.Exactly(times));
 
     public void VerifyFailedToCreateOrderLog(int times = 1) =>
-        mockLogger.VerifyLog(l => l.LogWarning("*Failed to create order.*"), Times.Exactly(times));
+        MockLogger.VerifyLog(l => l.LogWarning("*Failed to create order.*"), Times.Exactly(times));
+#pragma warning restore CA1848
 }
 
 public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFixture>
@@ -90,16 +92,16 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.ClearInvocations();
     }
 
-    [Fact(DisplayName = nameof(Given_A_Valid_Request_Then_Pass))]
-    public async Task Given_A_Valid_Request_Then_Pass()
+    [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
+    public async Task GivenAValidRequestThenPass()
     {
         // Arrange
         var request = _fixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
-        _fixture.mockRepository.SetSuccessfulAddAsync<Order>();
+        _fixture.MockRepository.SetSuccessfulAddAsync<Order>();
 
         // Act
-        var result = await _fixture.useCase.HandleAsync(request, _fixture.cancellationToken);
+        var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
 
         // Assert
         Assert.NotNull(result);
@@ -110,21 +112,21 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyFinishUseCaseLog();
         _fixture.VerifyCreateOrderLogNoItemsError(0);
         _fixture.VerifyFailedToCreateOrderLog(0);
-        _fixture.mockRepository.VerifyAddAsync<Order>(1);
+        _fixture.MockRepository.VerifyAddAsync<Order>(1);
         _fixture.VerifyProduce<CreateNotificationMessage>();
     }
 
-    [Fact(DisplayName = nameof(Given_A_Invalid_Request_Then_Fails))]
-    public async Task Given_A_Invalid_Request_Then_Fails()
+    [Fact(DisplayName = nameof(GivenAnInvalidRequestThenFails))]
+    public async Task GivenAnInvalidRequestThenFails()
     {
         // Arrange
         var request = _fixture.SetValidRequest();
         _fixture.SetFailedValidator(request);
 
         // Act
-        var result = await _fixture.useCase.HandleAsync(
+        var result = await _fixture.UseCase.HandleAsync(
             request,
-            _fixture.cancellationToken
+            _fixture.CancellationToken
         );
 
         // Assert
@@ -136,7 +138,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyFinishUseCaseLog(0);
         _fixture.VerifyCreateOrderLogNoItemsError(0);
         _fixture.VerifyFailedToCreateOrderLog(0);
-        _fixture.mockRepository.VerifyAddAsync<Order>(0);
+        _fixture.MockRepository.VerifyAddAsync<Order>(0);
         _fixture.VerifyProduce<CreateNotificationMessage>(0);
     }
 
@@ -148,9 +150,9 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.SetSuccessfulValidator(request);
 
         // Act
-        var result = await _fixture.useCase.HandleAsync(
+        var result = await _fixture.UseCase.HandleAsync(
             request,
-            _fixture.cancellationToken
+            _fixture.CancellationToken
         );
 
         // Assert
@@ -162,7 +164,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyCreateOrderLogNoItemsError(1);
         _fixture.VerifyFailedToCreateOrderLog(0);
-        _fixture.mockRepository.VerifyAddAsync<Order>(0);
+        _fixture.MockRepository.VerifyAddAsync<Order>(0);
         _fixture.VerifyFinishUseCaseLog();
         _fixture.VerifyProduce<CreateNotificationMessage>();
     }
@@ -173,12 +175,12 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         // Arrange
         var request = _fixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
-        _fixture.mockRepository.SetFailedAddAsync<Order>();
+        _fixture.MockRepository.SetFailedAddAsync<Order>();
 
         // Act
-        var result = await _fixture.useCase.HandleAsync(
+        var result = await _fixture.UseCase.HandleAsync(
             request,
-            _fixture.cancellationToken
+            _fixture.CancellationToken
         );
 
         // Assert
@@ -188,7 +190,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         Assert.Equal("Failed to create order.", result.Message);
 
         _fixture.VerifyStartUseCaseLog();
-        _fixture.mockRepository.VerifyAddAsync<Order>(1);
+        _fixture.MockRepository.VerifyAddAsync<Order>(1);
         _fixture.VerifyCreateOrderLogNoItemsError(0);
         _fixture.VerifyFailedToCreateOrderLog(1);
         _fixture.VerifyFinishUseCaseLog();
