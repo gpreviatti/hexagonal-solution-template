@@ -1,17 +1,18 @@
 ﻿using FluentValidation;
 
 namespace Application.Common.Requests;
-public record BaseRequest(Guid CorrelationId, int TimezoneId = 0);
+public record BaseRequest(Guid CorrelationId, string User = "", string TimezoneId = "");
 
 public record BasePaginatedRequest(
     Guid CorrelationId,
-    int TimezoneId = 0,
     int Page = 1,
     int PageSize = 10,
     string? SortBy = null,
     bool SortDescending = false,
-    Dictionary<string, string>? SearchByValues = null
-) : BaseRequest(CorrelationId, TimezoneId);
+    Dictionary<string, string>? SearchByValues = null,
+    string User = "",
+    string TimezoneId = ""
+) : BaseRequest(CorrelationId, User, TimezoneId);
 
 public sealed class BasePaginatedRequestValidator : AbstractValidator<BasePaginatedRequest>
 {
@@ -23,8 +24,14 @@ public sealed class BasePaginatedRequestValidator : AbstractValidator<BasePagina
 
         RuleFor(r => r.PageSize)
             .GreaterThan(0)
+
             .WithMessage("PageSize must be greater than 0")
             .LessThanOrEqualTo(100)
             .WithMessage("PageSize must be less than or equal to 100");
+
+        RuleFor(r => r.TimezoneId)
+            .NotEmpty()
+            .When(r => !string.IsNullOrEmpty(r.User))
+            .WithMessage("TimezoneId is required when User is provided");
     }
 }
