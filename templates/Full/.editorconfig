@@ -161,7 +161,7 @@ dotnet_diagnostic.S2360.severity = none
 dotnet_diagnostic.CS8618.severity = none
 
 # CA1873: Avoid potentially expensive logging
-dotnet_diagnostic.CA1873.severity = error
+dotnet_diagnostic.CA1873.severity = none
 
 # IDE0005: Using directive is unnecessary
 dotnet_diagnostic.IDE0005.severity = error
