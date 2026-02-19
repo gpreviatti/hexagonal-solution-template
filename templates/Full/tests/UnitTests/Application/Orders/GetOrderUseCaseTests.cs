@@ -1,22 +1,13 @@
 using Application.Orders;
 using Domain.Orders;
-using Microsoft.Extensions.Logging;
 using UnitTests.Application.Common;
 
 namespace UnitTests.Application.Orders;
 
 public sealed class GetOrderUseCaseFixture : BaseApplicationFixture<GetOrderRequest, GetOrderUseCase>
 {
-    public GetOrderUseCaseFixture()
-    {
-        UseCase = new(MockServiceProvider.Object);
-    }
+    public GetOrderUseCaseFixture() => UseCase = new(MockServiceProvider.Object);
     public GetOrderRequest SetValidRequest() => new(Guid.NewGuid(), AutoFixture.Create<int>());
-
-#pragma warning disable CA1848
-    public void VerifyOrderNotFoundLog(int times = 1) =>
-        MockLogger.VerifyLog(l => l.LogWarning("*Order not found.*"), Times.Exactly(times));
-#pragma warning restore CA1848
 }
 
 public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
@@ -53,7 +44,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         Assert.Equal(expectedOrder.Items?.Count, result.Data.Items!.Count);
 
         _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyOrderNotFoundLog(0);
+        _fixture.VerifyNotFoundLog(0);
         _fixture.VerifyFinishUseCaseLog();
     }
 
@@ -86,7 +77,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         Assert.Equal(0, result.Data.Items?.Count);
 
         _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyOrderNotFoundLog(0);
+        _fixture.VerifyNotFoundLog(0);
         _fixture.VerifyFinishUseCaseLog();
     }
 
@@ -109,7 +100,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         Assert.NotEmpty(result.Message);
 
         _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyOrderNotFoundLog(0);
+        _fixture.VerifyNotFoundLog(0);
         _fixture.VerifyFinishUseCaseLog(0);
     }
 
@@ -133,7 +124,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         Assert.Equal("Order not found.", result.Message);
 
         _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyOrderNotFoundLog(1);
+        _fixture.VerifyNotFoundLog(1);
         _fixture.VerifyFinishUseCaseLog();
     }
 }
