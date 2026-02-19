@@ -1,7 +1,6 @@
 using Application.Common.Requests;
 using Application.Notifications;
 using Domain.Notifications;
-using Microsoft.Extensions.Logging;
 using UnitTests.Application.Common;
 
 namespace UnitTests.Application.Notifications;
@@ -15,11 +14,6 @@ public sealed class GetAllNotificationsUseCaseFixture : BaseApplicationFixture<B
 
     public static new BasePaginatedRequest SetValidBasePaginatedRequest() =>
         new(Guid.NewGuid(), 1, 10);
-
-#pragma warning disable CA1848
-    public void VerifyNoNotificationsFoundLog(int times = 1) =>
-        MockLogger.VerifyLog(l => l.LogWarning("*No notifications found.*"), Times.Exactly(times));
-#pragma warning restore CA1848
 }
 
 public sealed class GetAllNotificationsUseCaseTests : IClassFixture<GetAllNotificationsUseCaseFixture>
@@ -56,7 +50,7 @@ public sealed class GetAllNotificationsUseCaseTests : IClassFixture<GetAllNotifi
         Assert.Equal(totalRecords, result.TotalRecords);
 
         _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyNoNotificationsFoundLog(0);
+        _fixture.VerifyNotFoundLog(0);
         _fixture.VerifyFinishUseCaseLog();
     }
 
@@ -76,7 +70,7 @@ public sealed class GetAllNotificationsUseCaseTests : IClassFixture<GetAllNotifi
         Assert.NotEmpty(result.Message);
 
         _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyNoNotificationsFoundLog(0);
+        _fixture.VerifyNotFoundLog(0);
         _fixture.VerifyFinishUseCaseLog(0);
     }
 
@@ -98,7 +92,7 @@ public sealed class GetAllNotificationsUseCaseTests : IClassFixture<GetAllNotifi
         Assert.Equal("No notifications found.", result.Message);
 
         _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyNoNotificationsFoundLog(1);
+        _fixture.VerifyNotFoundLog(1);
         _fixture.VerifyFinishUseCaseLog();
     }
 }

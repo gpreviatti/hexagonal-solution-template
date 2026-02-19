@@ -2,7 +2,6 @@ using Application.Notifications;
 using Domain.Notifications;
 using FluentValidation;
 using FluentValidation.TestHelper;
-using Microsoft.Extensions.Logging;
 using UnitTests.Application.Common;
 
 namespace UnitTests.Application.Notifications;
@@ -60,11 +59,6 @@ public sealed class CreateNotificationUseCaseFixture : BaseApplicationFixture<Cr
 
     public static CreateNotificationRequest SetValidRequest() =>
         new(Guid.NewGuid(), "TestNotification", "Success", "System", new { Test = "Message" });
-
-#pragma warning disable CA1848
-    public void VerifyFailedToCreateNotificationLog(int times = 1) =>
-        MockLogger.VerifyLog(l => l.LogWarning("*Failed to create notification.*"), Times.Exactly(times));
-#pragma warning restore CA1848
 }
 
 public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotificationUseCaseFixture>
@@ -91,7 +85,7 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
         // Assert
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyFinishUseCaseLog();
-        _fixture.VerifyFailedToCreateNotificationLog(0);
+        _fixture.VerifyOperationFailedLog(0);
         _fixture.MockRepository.VerifyAddAsync<Notification>(1);
     }
 
@@ -108,7 +102,7 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
         // Assert
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyFinishUseCaseLog(0);
-        _fixture.VerifyFailedToCreateNotificationLog(0);
+        _fixture.VerifyOperationFailedLog(0);
         _fixture.MockRepository.VerifyAddAsync<Notification>(0);
     }
 
@@ -126,7 +120,7 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
         // Assert
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyFinishUseCaseLog();
-        _fixture.VerifyFailedToCreateNotificationLog(1);
+        _fixture.VerifyOperationFailedLog();
         _fixture.MockRepository.VerifyAddAsync<Notification>(1);
     }
 }

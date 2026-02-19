@@ -135,6 +135,15 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
         Times.Exactly(times)
     );
 
+    public void VerifyOperationFailedLog(int times = 1) => MockLogger.Verify(l => l.Log(
+        LogLevel.Warning,
+        It.IsAny<EventId>(),
+        It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("Operation failed")),
+        null,
+        It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+        Times.Exactly(times)
+    );
+
     public void VerifyLogInformation(string message, int times = 1) => MockLogger.Verify(
         x => x.Log(
             LogLevel.Information,
