@@ -1,22 +1,13 @@
 using Application.Common.Requests;
 using Application.Orders;
 using Domain.Orders;
-using Microsoft.Extensions.Logging;
 using UnitTests.Application.Common;
 
 namespace UnitTests.Application.Orders;
 
 public sealed class GetAllOrdersUseCaseFixture : BaseApplicationFixture<BasePaginatedRequest, GetAllOrdersUseCase>
 {
-    public GetAllOrdersUseCaseFixture()
-    {
-        UseCase = new(MockServiceProvider.Object);
-    }
-
-#pragma warning disable CA1848
-    public void VerifyNoOrdersFoundLog(int times = 1) =>
-        MockLogger.VerifyLog(l => l.LogWarning("*No orders found.*"), Times.Exactly(times));
-#pragma warning restore CA1848
+    public GetAllOrdersUseCaseFixture() => UseCase = new(MockServiceProvider.Object);
 }
 
 public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseFixture>
@@ -54,7 +45,7 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
 
         _fixture.VerifyStartUseCaseLog();
         _fixture.MockRepository.VerifyGetAllPaginatedNoIncludes<Order, OrderDto>(1);
-        _fixture.VerifyNoOrdersFoundLog(0);
+        _fixture.VerifyNotFoundLog(0);
         _fixture.VerifyFinishUseCaseLog();
     }
 
@@ -77,7 +68,7 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
 
         _fixture.VerifyStartUseCaseLog();
         _fixture.MockRepository.VerifyGetAllPaginatedNoIncludes<Order, OrderDto>(1);
-        _fixture.VerifyNoOrdersFoundLog(1);
+        _fixture.VerifyNotFoundLog(1);
         _fixture.VerifyFinishUseCaseLog();
     }
 
@@ -98,7 +89,7 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
 
         _fixture.VerifyStartUseCaseLog();
         _fixture.MockRepository.VerifyGetAllPaginatedNoIncludes<Order, OrderDto>(0);
-        _fixture.VerifyNoOrdersFoundLog(0);
+        _fixture.VerifyNotFoundLog(0);
         _fixture.VerifyFinishUseCaseLog(0);
     }
 }

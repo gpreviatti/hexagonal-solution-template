@@ -3,7 +3,6 @@ using Application.Common.UseCases;
 using Application.Common.Helpers;
 using Domain.Orders;
 using FluentValidation;
-using Microsoft.Extensions.Logging;
 
 namespace Application.Orders;
 

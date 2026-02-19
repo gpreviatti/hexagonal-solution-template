@@ -24,7 +24,6 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
 
     public BaseApplicationFixture()
     {
-        // Setup logger to enable logging by default
         MockLogger.Setup(l => l.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
         
         MockServiceProviderServices();
@@ -59,7 +58,7 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
 
     public void ClearInvocations()
     {
-        MockLogger.Reset();
+        MockLogger.Invocations.Clear();
         MockValidator.Reset();
         MockCache.Reset();
         MockProduceService.Reset();
@@ -126,6 +125,15 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
             It.IsAny<Exception>(),
             It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
         Times.Exactly(times));
+
+    public void VerifyNotFoundLog(int times = 1) => MockLogger.Verify(l => l.Log(
+        LogLevel.Warning,
+        It.IsAny<EventId>(),
+        It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("not found.")),
+        null,
+        It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+        Times.Exactly(times)
+    );
 
     public void VerifyLogInformation(string message, int times = 1) => MockLogger.Verify(
         x => x.Log(

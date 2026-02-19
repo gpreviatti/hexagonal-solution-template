@@ -6,7 +6,6 @@ using Application.Common.Requests;
 using Application.Common.Services;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace Application.Common.UseCases;
 
