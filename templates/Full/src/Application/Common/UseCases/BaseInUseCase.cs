@@ -1,7 +1,6 @@
 ﻿using Application.Common.Requests;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Application.Common.Services;
 using Application.Common.Constants;
 using System.Diagnostics.Metrics;

@@ -1,13 +1,8 @@
-using System.Linq.Expressions;
-using Application.Common.Constants;
-using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Application.Common.Helpers;
 using Domain.Notifications;
 using FluentValidation;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace Application.Notifications;
 

@@ -81,7 +81,6 @@ dotnet_naming_style.camel_case_underscore_style.capitalization = camel_case
 # Code style defaults
 csharp_using_directive_placement = outside_namespace:suggestion
 dotnet_sort_system_directives_first = true
-csharp_prefer_braces = true:silent
 csharp_preserve_single_line_blocks = true:none
 csharp_preserve_single_line_statements = false:none
 csharp_prefer_static_local_function = true:suggestion
@@ -162,7 +161,10 @@ dotnet_diagnostic.S2360.severity = none
 dotnet_diagnostic.CS8618.severity = none
 
 # CA1873: Avoid potentially expensive logging
-dotnet_diagnostic.CA1873.severity = none
+dotnet_diagnostic.CA1873.severity = error
+
+# IDE0005: Using directive is unnecessary
+dotnet_diagnostic.IDE0005.severity = error
 
 # Xml project files
 [*.{csproj,vbproj,vcxproj,vcxproj.filters,proj,nativeproj,locproj}]

@@ -70,7 +70,8 @@ public sealed class ProducerService : IProduceService
         using var connection = await _factory.CreateConnectionAsync(cancellationToken);
         using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
 
-        Logs.PublishingBatchMessages(_logger, _className, messages.Select(m => m.CorrelationId), typeof(TMessage).Name);
+        var correlationIds = messages.Select(m => m.CorrelationId);
+        Logs.PublishingBatchMessages(_logger, _className, correlationIds, typeof(TMessage).Name);
 
         foreach (var message in messages)
             await channel.BasicPublishAsync(
@@ -80,6 +81,6 @@ public sealed class ProducerService : IProduceService
                 cancellationToken: cancellationToken
             );
 
-        Logs.BatchMessagesPublished(_logger, _className, messages.Select(m => m.CorrelationId), typeof(TMessage).Name, _stopWatch.ElapsedMilliseconds);
+        Logs.BatchMessagesPublished(_logger, _className, correlationIds, typeof(TMessage).Name, _stopWatch.ElapsedMilliseconds);
     }
 }
