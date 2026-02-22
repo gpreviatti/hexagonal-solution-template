@@ -37,7 +37,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
             Id = request.Id
         };
         expectedOrder.SetTotal();
-        _fixture.MockRepository.SetupQueryable([expectedOrder]);
+        _fixture.MockRepository.SetupQueryable(request.CorrelationId, null, [expectedOrder]);
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
@@ -73,7 +73,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
             Id = request.Id
         };
 
-        _fixture.MockRepository.SetupQueryable([expectedOrder]);
+        _fixture.MockRepository.SetupQueryable(request.CorrelationId, null, [expectedOrder]);
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
@@ -121,7 +121,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         // Arrange
         var request = _fixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
-        _fixture.MockRepository.SetupQueryable<Order>([]);
+        _fixture.MockRepository.SetupQueryable<Order>(request.CorrelationId, null, []);
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);

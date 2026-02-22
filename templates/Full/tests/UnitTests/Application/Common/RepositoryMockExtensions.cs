@@ -18,6 +18,9 @@ public static class RepositoryMockExtensions
     public static void SetupQueryable<TEntity>(this Mock<IBaseRepository> mockRepository, ICollection<TEntity> entities) where TEntity : DomainEntity => mockRepository
             .Setup(r => r.GetQueryable<TEntity>(It.IsAny<Guid>(), It.IsAny<bool?>(), It.IsAny<string>())).Returns(entities.BuildMock());
 
+    public static void SetupQueryable<TEntity>(this Mock<IBaseRepository> mockRepository, Guid correlationId, bool? newContext, ICollection<TEntity> entities) where TEntity : DomainEntity => mockRepository
+            .Setup(r => r.GetQueryable<TEntity>(correlationId, newContext, It.IsAny<string>())).Returns(entities.BuildMock());
+
     public static void VerifyAddAsync<TEntity>(this Mock<IBaseRepository> mockRepository, int times) where TEntity : DomainEntity => mockRepository.Verify(
         d => d.AddAsync(It.IsAny<TEntity>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()),
         Times.Exactly(times)
