@@ -9,6 +9,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="ILogger.Moq" />
+    <PackageReference Include="MockQueryable.Moq" />
     <PackageReference Include="Moq" />
     <PackageReference Include="NetArchTest.Rules" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
