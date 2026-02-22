@@ -30,6 +30,13 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider)  : BaseInO
             Id = o.Id,
             Description = o.Description,
             Total = o.Total,
+            Items = o.Items.Select(i => new ItemDto
+            {
+                Id = i.Id,
+                Name = i.Name,
+                Description = i.Description,
+                Value = i.Value
+            }).ToList()
         }).FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
         if (order is null)

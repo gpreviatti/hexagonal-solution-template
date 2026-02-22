@@ -40,8 +40,8 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
             .Returns(MockLogger.Object);
 
         MockServiceProvider
-        .Setup(r => r.GetService(typeof(IValidator<TRequest>)))
-        .Returns(MockValidator.Object);
+            .Setup(r => r.GetService(typeof(IValidator<TRequest>)))
+            .Returns(MockValidator.Object);
 
         MockServiceProvider
             .Setup(r => r.GetService(typeof(IHybridCacheService)))

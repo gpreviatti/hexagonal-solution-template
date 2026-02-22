@@ -1,6 +1,5 @@
 using Application.Notifications;
 using Domain.Notifications;
-using Microsoft.Extensions.Logging;
 using UnitTests.Application.Common;
 
 namespace UnitTests.Application.Notifications;
@@ -14,11 +13,6 @@ public sealed class GetNotificationUseCaseFixture : BaseApplicationFixture<GetNo
 
     public GetNotificationRequest SetValidRequest() =>
         new(Guid.NewGuid(), Math.Abs(AutoFixture.Create<int>()) + 1);
-
-#pragma warning disable CA1848
-    public void VerifyNotificationNotFoundLog(int times = 1) =>
-        MockLogger.VerifyLog(l => l.LogWarning("*Notification not found.*"), Times.Exactly(times));
-#pragma warning restore CA1848
 }
 
 public sealed class GetNotificationUseCaseTests : IClassFixture<GetNotificationUseCaseFixture>
@@ -37,8 +31,10 @@ public sealed class GetNotificationUseCaseTests : IClassFixture<GetNotificationU
         // Arrange
         var request = _fixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
-        var expectedNotification = _fixture.AutoFixture.Create<NotificationDto>();
-        _fixture.MockRepository.SetupGetByIdAsNoTrackingAsync<Notification, NotificationDto>(expectedNotification);
+        var expectedNotification = _fixture.AutoFixture.Build<Notification>()
+            .With(n => n.Id, request.Id)
+            .Create();
+        _fixture.MockRepository.SetupQueryable([expectedNotification]);
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
@@ -52,8 +48,9 @@ public sealed class GetNotificationUseCaseTests : IClassFixture<GetNotificationU
         Assert.Equal(expectedNotification.NotificationType, result.Data.NotificationType);
         Assert.Equal(expectedNotification.NotificationStatus, result.Data.NotificationStatus);
 
+        _fixture.MockRepository.VerifyQueryable<Notification>();
         _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyNotificationNotFoundLog(0);
+        _fixture.VerifyNotFoundLog(0);
         _fixture.VerifyFinishUseCaseLog();
     }
 
@@ -72,8 +69,9 @@ public sealed class GetNotificationUseCaseTests : IClassFixture<GetNotificationU
         Assert.NotNull(result.Message);
         Assert.NotEmpty(result.Message);
 
+        _fixture.MockRepository.VerifyQueryable<Notification>(0);
         _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyNotificationNotFoundLog(0);
+        _fixture.VerifyNotFoundLog(0);
         _fixture.VerifyFinishUseCaseLog(0);
     }
 
@@ -83,6 +81,7 @@ public sealed class GetNotificationUseCaseTests : IClassFixture<GetNotificationU
         // Arrange
         var request = _fixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
+        _fixture.MockRepository.SetupQueryable<Notification>([]);
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
@@ -93,8 +92,9 @@ public sealed class GetNotificationUseCaseTests : IClassFixture<GetNotificationU
         Assert.NotEmpty(result.Message);
         Assert.Equal("Notification not found.", result.Message);
 
+        _fixture.MockRepository.VerifyQueryable<Notification>();
         _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyNotificationNotFoundLog(1);
+        _fixture.VerifyNotFoundLog(1);
         _fixture.VerifyFinishUseCaseLog();
     }
 }

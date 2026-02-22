@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Application.Common.Repositories;
 using Domain.Common;
+using MockQueryable;
 
 namespace UnitTests.Application.Common;
 
@@ -14,39 +15,8 @@ public static class RepositoryMockExtensions
         .Setup(d => d.AddAsync(It.IsAny<TEntity>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
         .ReturnsAsync(0);
 
-    public static void SetupGetByIdAsNoTrackingAsync<TEntity>(this Mock<IBaseRepository> mockRepository, TEntity entity) where TEntity : DomainEntity => mockRepository
-        .Setup(r => r.GetByIdAsNoTrackingAsync<TEntity>(
-            It.IsAny<int>(),
-            It.IsAny<Guid>(),
-            It.IsAny<CancellationToken>(),
-            It.IsAny<bool?>(),
-            It.IsAny<Expression<Func<TEntity, object>>[]>()
-    )).ReturnsAsync(entity);
-
-    public static void SetupGetByIdAsNoTrackingAsync<TEntity, TResult>(this Mock<IBaseRepository> mockRepository, TResult result) where TEntity : DomainEntity => mockRepository
-        .Setup(r => r.GetByIdAsNoTrackingAsync(
-            It.IsAny<int>(),
-            It.IsAny<Guid>(),
-            It.IsAny<Expression<Func<TEntity, TResult>>>(),
-            It.IsAny<CancellationToken>()
-    )).ReturnsAsync(result);
-
-    public static void SetupGetByIdAsNoTrackingAsyncNotFound<TEntity>(this Mock<IBaseRepository> mockRepository) where TEntity : DomainEntity => mockRepository
-        .Setup(r => r.GetByIdAsNoTrackingAsync(
-            It.IsAny<int>(),
-            It.IsAny<Guid>(),
-            It.IsAny<CancellationToken>(),
-            It.IsAny<bool?>(),
-            It.IsAny<Expression<Func<TEntity, object>>[]>()
-    )).ReturnsAsync((TEntity) null!);
-
-    public static void SetupGetByIdAsNoTrackingAsyncNotFound<TEntity, TResult>(this Mock<IBaseRepository> mockRepository) where TEntity : DomainEntity => mockRepository
-        .Setup(r => r.GetByIdAsNoTrackingAsync(
-            It.IsAny<int>(),
-            It.IsAny<Guid>(),
-            It.IsAny<Expression<Func<TEntity, TResult>>>(),
-            It.IsAny<CancellationToken>()
-    ));
+    public static void SetupQueryable<TEntity>(this Mock<IBaseRepository> mockRepository, ICollection<TEntity> entities) where TEntity : DomainEntity => mockRepository
+            .Setup(r => r.GetQueryable<TEntity>(It.IsAny<Guid>(), It.IsAny<bool?>(), It.IsAny<string>())).Returns(entities.BuildMock());
 
     public static void VerifyAddAsync<TEntity>(this Mock<IBaseRepository> mockRepository, int times) where TEntity : DomainEntity => mockRepository.Verify(
         d => d.AddAsync(It.IsAny<TEntity>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()),
@@ -94,7 +64,7 @@ public static class RepositoryMockExtensions
         It.IsAny<Expression<Func<TEntity, bool>>>()
     )).ReturnsAsync(([], 0));
 
-    public static void VerifyGetAllPaginatedNoIncludes<TEntity, TResult>(this Mock<IBaseRepository> mockRepository, int times) where TEntity : DomainEntity where TResult : class => mockRepository
+    public static void VerifyGetAllPaginatedNoIncludes<TEntity, TResult>(this Mock<IBaseRepository> mockRepository, int times = 1) where TEntity : DomainEntity where TResult : class => mockRepository
         .Verify(r => r.GetAllPaginatedAsync(
             It.IsAny<Guid>(),
             It.IsAny<int>(),
@@ -107,12 +77,7 @@ public static class RepositoryMockExtensions
             It.IsAny<Expression<Func<TEntity, bool>>>()
     ), Times.Exactly(times));
 
-    public static void VerifyGetByIdAsync<TEntity>(this Mock<IBaseRepository> mockRepository, int times) where TEntity : DomainEntity => mockRepository
-        .Verify(r => r.GetByIdAsNoTrackingAsync(
-            It.IsAny<int>(),
-            It.IsAny<Guid>(),
-            It.IsAny<CancellationToken>(),
-            It.IsAny<bool>(),
-            It.IsAny<Expression<Func<TEntity, object>>[]>()
+    public static void VerifyQueryable<TEntity>(this Mock<IBaseRepository> mockRepository, int times = 1) where TEntity : DomainEntity => mockRepository
+        .Verify(r => r.GetQueryable<TEntity>(It.IsAny<Guid>(), It.IsAny<bool?>(), It.IsAny<string>()
     ), Times.Exactly(times));
 }

@@ -26,8 +26,18 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         // Arrange
         var request = _fixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
-        var expectedOrder = _fixture.AutoFixture.Create<OrderDto>();
-        _fixture.MockRepository.SetupGetByIdAsNoTrackingAsync<Order, OrderDto>(expectedOrder);
+        Order expectedOrder = new(
+            "Test Order",
+            [
+                new("Item 1", "Description 1", 500m),
+                new("Item 2", "Description 2", 500m)
+            ]
+        )
+        {
+            Id = request.Id
+        };
+        expectedOrder.SetTotal();
+        _fixture.MockRepository.SetupQueryable([expectedOrder]);
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
@@ -43,6 +53,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         Assert.NotNull(result.Data.Items);
         Assert.Equal(expectedOrder.Items?.Count, result.Data.Items!.Count);
 
+        _fixture.MockRepository.VerifyQueryable<Order>();
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyNotFoundLog(0);
         _fixture.VerifyFinishUseCaseLog();
@@ -54,14 +65,15 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         // Arrange
         var request = _fixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
-        OrderDto expectedOrder = new()
+        Order expectedOrder = new(
+            "Test Order",
+            []
+        )
         {
-            Id = 1,
-            Description = "Test Order",
-            Total = 1000m,
-            Items = []
+            Id = request.Id
         };
-        _fixture.MockRepository.SetupGetByIdAsNoTrackingAsync<Order, OrderDto>(expectedOrder);
+
+        _fixture.MockRepository.SetupQueryable([expectedOrder]);
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
@@ -76,6 +88,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         Assert.Equal(expectedOrder.Total, result.Data.Total);
         Assert.Equal(0, result.Data.Items?.Count);
 
+        _fixture.MockRepository.VerifyQueryable<Order>();
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyNotFoundLog(0);
         _fixture.VerifyFinishUseCaseLog();
@@ -89,16 +102,14 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.SetFailedValidator(request);
 
         // Act
-        var result = await _fixture.UseCase.HandleAsync(
-            request,
-            _fixture.CancellationToken
-        );
+        var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
 
         // Assert
         Assert.False(result.Success);
         Assert.NotNull(result.Message);
         Assert.NotEmpty(result.Message);
 
+        _fixture.MockRepository.VerifyQueryable<Order>(0);
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyNotFoundLog(0);
         _fixture.VerifyFinishUseCaseLog(0);
@@ -110,12 +121,10 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         // Arrange
         var request = _fixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
+        _fixture.MockRepository.SetupQueryable<Order>([]);
 
         // Act
-        var result = await _fixture.UseCase.HandleAsync(
-            request,
-            _fixture.CancellationToken
-        );
+        var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
 
         // Assert
         Assert.False(result.Success);
@@ -123,6 +132,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         Assert.NotEmpty(result.Message);
         Assert.Equal("Order not found.", result.Message);
 
+        _fixture.MockRepository.VerifyQueryable<Order>();
         _fixture.VerifyStartUseCaseLog();
         _fixture.VerifyNotFoundLog(1);
         _fixture.VerifyFinishUseCaseLog();
