@@ -1,6 +1,7 @@
 ﻿using Application.Orders;
 using Domain.Orders;
 using IntegrationTests.Common;
+using Microsoft.EntityFrameworkCore;
 using WebApp;
 
 namespace IntegrationTests.Data;
@@ -16,37 +17,15 @@ public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
     }
 
     [Fact]
-    public async Task GivenAIdThenReturnOrderWithSuccess()
-    {
-        // Arrange
-        var id = 1;
-
-        // Act
-        var result = await _fixture!.Repository!.GetByIdAsNoTrackingAsync<Order>(
-            id,
-            Guid.NewGuid(),
-            _fixture.CancellationToken,
-            includes: o => o.Items
-        );
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal(id, result!.Id);
-        Assert.NotNull(result.Items);
-        Assert.NotEmpty(result.Items);
-    }
-
-    [Fact]
     public async Task GivenAIdThenReturnOrderDtoWithSuccess()
     {
         // Arrange
         var id = 1;
 
         // Act
-        var result = await _fixture!.Repository!.GetByIdAsNoTrackingAsync<Order, OrderDto>(
-            id,
-            Guid.NewGuid(),
-            selector: o => new OrderDto()
+        var result = await _fixture!.Repository!.GetQueryable<Order>(Guid.NewGuid())
+            .Where(o => o.Id == id)
+            .Select(o => new OrderDto()
             {
                 Id = o.Id,
                 Total = o.Total,
@@ -56,9 +35,7 @@ public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
                     Name = i.Name,
                     Value = i.Value
                 }).ToArray()
-            },
-            _fixture.CancellationToken
-        );
+            }).FirstOrDefaultAsync(_fixture.CancellationToken);
 
         // Assert
         Assert.NotNull(result);
@@ -74,31 +51,44 @@ public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
         var id = 1;
 
         // Act
-        var orderTask = _fixture!.Repository!.GetByIdAsNoTrackingAsync<Order>(
-            id,
-            Guid.NewGuid(),
-            _fixture.CancellationToken
-        );
+        var orderTask1 = _fixture!.Repository!.GetQueryable<Order>(Guid.NewGuid())
+            .Where(o => o.Id == id)
+            .Select(o => new OrderDto()
+            {
+                Id = o.Id,
+                Total = o.Total,
+                Items = o.Items.Select(i => new ItemDto
+                {
+                    Id = i.Id,
+                    Name = i.Name,
+                    Value = i.Value
+                }).ToArray()
+            }).FirstOrDefaultAsync(_fixture.CancellationToken);
 
-        var notificationTask = _fixture!.Repository!.GetByIdAsNoTrackingAsync<Domain.Notifications.Notification>(
-            id,
-            Guid.NewGuid(),
-            _fixture.CancellationToken,
-            newContext: true
-        );
+        var orderTask2 = _fixture!.Repository!.GetQueryable<Order>(Guid.NewGuid(), true)
+            .Where(n => n.Id == id)
+            .Select(o => new OrderDto()
+            {
+                Id = o.Id,
+                Total = o.Total,
+                Items = o.Items.Select(i => new ItemDto
+                {
+                    Id = i.Id,
+                    Name = i.Name,
+                    Value = i.Value
+                }).ToArray()
+            })
+            .FirstOrDefaultAsync(_fixture.CancellationToken);
 
-        await Task.WhenAll(orderTask, notificationTask);
-        var order = await orderTask;
-        var notification = await notificationTask;
+        await Task.WhenAll(orderTask1, orderTask2);
+        var order1 = await orderTask1;
+        var order2 = await orderTask2;
 
         // Assert
-        Assert.NotNull(order);
-        Assert.Equal(id, order!.Id);
-
-        Assert.NotNull(notification);
-        Assert.Equal(id, notification!.Id);
-        Assert.NotNull(notification.NotificationType);
-        Assert.NotNull(notification.NotificationStatus);
+        Assert.NotNull(order1);
+        Assert.Equal(id, order1!.Id);
+        Assert.NotNull(order2);
+        Assert.Equal(id, order2!.Id);
     }
 
     [Fact]

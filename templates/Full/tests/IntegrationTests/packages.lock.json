@@ -742,6 +742,7 @@
           "Domain": "[1.0.0, )",
           "FluentValidation": "[12.1.1, )",
           "FluentValidation.DependencyInjectionExtensions": "[12.1.1, )",
+          "Microsoft.EntityFrameworkCore": "[10.0.1, )",
           "Microsoft.Extensions.Logging": "[10.0.1, )"
         }
       },
@@ -763,7 +764,6 @@
         "type": "Project",
         "dependencies": {
           "Application": "[1.0.0, )",
-          "Microsoft.EntityFrameworkCore": "[10.0.1, )",
           "Microsoft.EntityFrameworkCore.SqlServer": "[10.0.1, )",
           "Microsoft.Extensions.Caching.Hybrid": "[10.1.0, )",
           "Microsoft.Extensions.Caching.StackExchangeRedis": "[10.0.1, )",

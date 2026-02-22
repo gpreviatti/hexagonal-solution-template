@@ -5,6 +5,7 @@ using IntegrationTests.Common;
 using IntegrationTests.WebApp.Messaging.Common;
 using Microsoft.Extensions.DependencyInjection;
 using WebApp;
+using Microsoft.EntityFrameworkCore;
 
 namespace IntegrationTests.WebApp.Messaging.Notifications;
 
@@ -39,11 +40,9 @@ public sealed class CreateNotificationTest : IClassFixture<CreateNotificationTes
         // Act
         await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated);
 
-        var notification = await _fixture.Repository.FirstOrDefaultAsNoTrackingAsync<Notification>(
-            Guid.NewGuid(),
-            n => n.NotificationType == message.NotificationType && n.NotificationStatus == message.NotificationStatus,
-            _fixture.CancellationToken
-        );
+        var notification = await _fixture.Repository.GetQueryable<Notification>(Guid.NewGuid())
+            .Where(n => n.NotificationType == message.NotificationType && n.NotificationStatus == message.NotificationStatus)
+            .FirstOrDefaultAsync(_fixture.CancellationToken);
 
         // Assert
         Assert.NotNull(notification);
@@ -60,11 +59,9 @@ public sealed class CreateNotificationTest : IClassFixture<CreateNotificationTes
         await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated);
         await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated);
 
-        var notifications = await _fixture.Repository.GetByWhereAsNoTrackingAsync<Notification>(
-            Guid.NewGuid(),
-            n => n.NotificationType == message.NotificationType && n.NotificationStatus == message.NotificationStatus,
-            cancellationToken: _fixture.CancellationToken
-        );
+        var notifications = await _fixture.Repository.GetQueryable<Notification>(Guid.NewGuid())
+            .Where(n => n.NotificationType == message.NotificationType && n.NotificationStatus == message.NotificationStatus)
+            .ToListAsync(_fixture.CancellationToken);
 
         // Assert
         Assert.Single(notifications);

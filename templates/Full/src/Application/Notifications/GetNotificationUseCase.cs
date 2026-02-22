@@ -3,6 +3,7 @@ using Application.Common.UseCases;
 using Application.Common.Helpers;
 using Domain.Notifications;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Notifications;
 
@@ -25,18 +26,16 @@ public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)
         CancellationToken cancellationToken
     )
     {
-        var notification = await Repository.GetByIdAsNoTrackingAsync<Notification, NotificationDto>(
-            request.Id,
-            request.CorrelationId,
-            n => new()
+        var notification = await Repository.GetQueryable<Notification>(request.CorrelationId)
+            .Where(n => n.Id == request.Id)
+            .Select(n => new NotificationDto()
             {
                 Id = n.Id,
                 Message = n.Message,
                 NotificationType = n.NotificationType,
-                NotificationStatus = n.NotificationStatus,
-            },
-            cancellationToken
-        );
+                NotificationStatus = n.NotificationStatus
+            })
+            .FirstOrDefaultAsync(cancellationToken);
 
         if (notification is null)
         {

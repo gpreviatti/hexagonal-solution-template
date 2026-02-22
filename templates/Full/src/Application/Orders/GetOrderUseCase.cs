@@ -3,6 +3,7 @@ using Application.Common.UseCases;
 using Application.Common.Helpers;
 using Domain.Orders;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Orders;
 
@@ -23,22 +24,13 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider)  : BaseInO
         CancellationToken cancellationToken
     )
     {
-        var order = await Repository.GetByIdAsNoTrackingAsync<Order, OrderDto>(
-            request.Id,
-            request.CorrelationId,
-            o => new OrderDto()
-            {
-                Id = o.Id,
-                Total = o.Total,
-                Items = o.Items.Select(i => new ItemDto
-                {
-                    Id = i.Id,
-                    Name = i.Name,
-                    Value = i.Value
-                }).ToArray()
-            },
-            cancellationToken
-        );
+        var order = await Repository.GetQueryable<Order>(request.CorrelationId)
+        .Select(o => new OrderDto
+        {
+            Id = o.Id,
+            Description = o.Description,
+            Total = o.Total,
+        }).FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
         if (order is null)
         {

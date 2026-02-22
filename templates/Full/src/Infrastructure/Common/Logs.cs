@@ -26,7 +26,7 @@ internal static partial class Logs
     [LoggerMessage(
         EventId = 201,
         Level = LogLevel.Debug,
-        Message = "[BaseRepository] | [{Method}] | CorrelationId: {CorrelationId} | Starting database operation."
+        Message = "[BaseRepository] | [{Method}] | [{CorrelationId}] | Starting database operation."
     )]
     public static partial void StartingDatabaseOperation(ILogger logger, string method, Guid correlationId);
 
@@ -40,9 +40,9 @@ internal static partial class Logs
     [LoggerMessage(
         EventId = 202,
         Level = LogLevel.Debug,
-        Message = "[BaseRepository] | [{Method}] | CorrelationId: {CorrelationId} | Query executed in {ElapsedMilliseconds} ms."
+        Message = "[BaseRepository] | [{Method}] | [{CorrelationId}] | Finished database operation executed in {ElapsedMilliseconds} ms."
     )]
-    public static partial void QueryExecuted(ILogger logger, string method, Guid correlationId, long elapsedMilliseconds);
+    public static partial void FinishedDatabaseOperation(ILogger logger, string method, Guid correlationId, long elapsedMilliseconds);
 
     /// <summary>
     /// Logs the start of retrieving a cache entry.
