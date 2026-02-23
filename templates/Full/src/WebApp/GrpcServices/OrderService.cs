@@ -23,11 +23,12 @@ public class OrderService(
         ServerCallContext context
     )
     {
+        var correlationId = Guid.TryParse(request.CorrelationId, out var guid) ? guid : Guid.Empty;
         var response = await _cache.GetOrCreateAsync(
+            correlationId,
             $"{nameof(OrderService)}-{request.Id}",
             async cancellationToken =>
             {
-                var correlationId = Guid.TryParse(request.CorrelationId, out var guid) ? guid : Guid.Empty;
                 return await _useCase.HandleAsync(new(correlationId, request.Id), cancellationToken);
             },
             context.CancellationToken

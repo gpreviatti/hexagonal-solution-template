@@ -44,7 +44,7 @@ public sealed class ProducerService : IProduceService
         using var connection = await _factory.CreateConnectionAsync(cancellationToken);
         using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
 
-        Logs.PublishingMessage(_logger, _className, message.CorrelationId, typeof(TMessage).Name);
+        Logs.DebugStartingOperation(_logger, _className, nameof(HandleAsync), message.CorrelationId, typeof(TMessage).Name + " publishing started.");
 
         await channel.BasicPublishAsync(
             exchange: exchange,
@@ -53,7 +53,7 @@ public sealed class ProducerService : IProduceService
             cancellationToken: cancellationToken
         );
 
-        Logs.MessagePublished(_logger, _className, message.CorrelationId, typeof(TMessage).Name, _stopWatch.ElapsedMilliseconds);
+        Logs.DebugFinishedOperation(_logger, _className, nameof(HandleAsync), message.CorrelationId, _stopWatch.ElapsedMilliseconds, typeof(TMessage).Name + " published.");
     }
 
     public async Task HandleAsync<TMessage>(
@@ -66,14 +66,16 @@ public sealed class ProducerService : IProduceService
         await Task.Yield();
 
         _stopWatch.Restart();
+        
+        Logs.Debug(_logger, _className, nameof(HandleAsync), messages.FirstOrDefault()?.CorrelationId ?? Guid.Empty, typeof(TMessage).Name + " batch publishing started.");
 
         using var connection = await _factory.CreateConnectionAsync(cancellationToken);
         using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
 
-        var correlationIds = messages.Select(m => m.CorrelationId);
-        Logs.PublishingBatchMessages(_logger, _className, correlationIds, typeof(TMessage).Name);
-
         foreach (var message in messages)
+        {
+            Logs.DebugStartingOperation(_logger, _className, nameof(HandleAsync), message.CorrelationId, typeof(TMessage).Name + " batch publishing started.");
+
             await channel.BasicPublishAsync(
                 exchange: exchange,
                 routingKey: queue,
@@ -81,6 +83,9 @@ public sealed class ProducerService : IProduceService
                 cancellationToken: cancellationToken
             );
 
-        Logs.BatchMessagesPublished(_logger, _className, correlationIds, typeof(TMessage).Name, _stopWatch.ElapsedMilliseconds);
+            Logs.DebugFinishedOperation(_logger, _className, nameof(HandleAsync), message.CorrelationId, _stopWatch.ElapsedMilliseconds, typeof(TMessage).Name + " batch published.");
+        }
+        
+        Logs.Debug(_logger, _className, nameof(HandleAsync), messages.FirstOrDefault()?.CorrelationId ?? Guid.Empty, typeof(TMessage).Name + " batch publishing finished.");
     }
 }

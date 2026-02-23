@@ -25,6 +25,7 @@ internal static class OrderEndpoints
             var response = cacheEnabled switch
             {
                 true => await cache.GetOrCreateAsync(
+                    correlationId,
                     $"{nameof(OrderEndpoints)}-{id}",
                     async (cancellationToken) => await useCase.HandleAsync(new(correlationId, id), cancellationToken),
                     cancellationToken

@@ -36,11 +36,11 @@ public abstract class BaseOutUseCase<TResponseData> : BaseUseCase, IBaseOutUseCa
     {
         StopWatch.Restart();
         var correlationId = Guid.NewGuid();
-        Logs.StartToExecuteUseCase(Logger, ClassName, HandleMethodName, correlationId);
+        Logs.StartingOperation(Logger, ClassName, HandleMethodName, correlationId);
 
         var response = await HandleInternalAsync(cancellationToken);
 
-        Logs.FinishedExecutingUseCase(Logger, ClassName, HandleMethodName, correlationId, StopWatch.ElapsedMilliseconds);
+        Logs.FinishedOperation(Logger, ClassName, HandleMethodName, correlationId, StopWatch.ElapsedMilliseconds);
 
         _useCaseExecuted.Record(1);
         _useCaseExecutionElapsedTime.Record(StopWatch.ElapsedMilliseconds);

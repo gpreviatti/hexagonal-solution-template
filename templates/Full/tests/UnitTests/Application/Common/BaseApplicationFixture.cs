@@ -88,12 +88,14 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
 
     public void SetValidGetOrCreateAsync<TResult>(TResult result) => MockCache
         .Setup(c => c.GetOrCreateAsync(
+            It.IsAny<Guid>(),
             It.IsAny<string>(),
             It.IsAny<Func<CancellationToken, ValueTask<TResult>>>(),
             It.IsAny<CancellationToken>()
     )).ReturnsAsync(result);
 
     public void SetInvalidGetOrCreateAsync<TResult>() => MockCache.Setup(c => c.GetOrCreateAsync(
+        It.IsAny<Guid>(),
         It.IsAny<string>(),
         It.IsAny<Func<CancellationToken, ValueTask<TResult>>>(),
         It.IsAny<CancellationToken>()
@@ -173,6 +175,7 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
 
     public void VerifyCache<TResult>(int times) => MockCache.Verify(
         c => c.GetOrCreateAsync(
+            It.IsAny<Guid>(),
             It.IsAny<string>(),
             It.IsAny<Func<CancellationToken, ValueTask<TResult>>>(),
             It.IsAny<CancellationToken>()

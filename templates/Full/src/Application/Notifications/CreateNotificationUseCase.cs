@@ -42,7 +42,7 @@ public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider) 
 
         if (addResult == 0)
         {
-            Logs.OperationFailed(Logger, ClassName, HandleMethodName, request.CorrelationId, "Failed to create notification");
+            Logs.FailedOperation(Logger, ClassName, HandleMethodName, request.CorrelationId, "Failed to create notification");
         }
     }
 }

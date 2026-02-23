@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using Application.Common.Helpers;
 using Application.Common.Repositories;
 using Domain.Common;
-using Infrastructure.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -17,6 +17,7 @@ public class BaseRepository(
     private readonly Stopwatch _stopwatch = new();
     private readonly IDbContextFactory<MyDbContext> _dbContextFactory = dbContextFactory;
     private readonly MyDbContext _dbContext = dbContextFactory.CreateDbContext();
+    private readonly string _className = nameof(BaseRepository);
 
     private async Task<TResult> HandleBaseQueryAsync<TEntity, TResult>(
         Func<DbSet<TEntity>, Task<TResult>> query,
@@ -28,7 +29,7 @@ public class BaseRepository(
     {
         _stopwatch.Restart();
 
-        Logs.StartingDatabaseOperation(logger, methodName, correlationId);
+        Logs.DebugStartingOperation(logger, _className, methodName, correlationId);
 
         var dbSet = _dbContext.Set<TEntity>();
         if (newContext.GetValueOrDefault())
@@ -36,7 +37,7 @@ public class BaseRepository(
 
         var result = await query.Invoke(dbSet);
 
-        Logs.FinishedDatabaseOperation(logger, methodName, correlationId, _stopwatch.ElapsedMilliseconds);
+        Logs.DebugFinishedOperation(logger, _className, methodName, correlationId, _stopwatch.ElapsedMilliseconds);
 
         return result;
     }
@@ -50,13 +51,13 @@ public class BaseRepository(
     {
         _stopwatch.Restart();
 
-        Logs.StartingDatabaseOperation(logger, methodName, correlationId);
+        Logs.DebugStartingOperation(logger, _className, methodName, correlationId);
 
         var dbSet = _dbContext.Set<TEntity>();
         if (newContext.GetValueOrDefault())
             dbSet = _dbContextFactory.CreateDbContext().Set<TEntity>();
 
-        Logs.FinishedDatabaseOperation(logger, methodName, correlationId, _stopwatch.ElapsedMilliseconds);
+        Logs.DebugFinishedOperation(logger, _className, methodName, correlationId, _stopwatch.ElapsedMilliseconds);
 
         return dbSet;
     }

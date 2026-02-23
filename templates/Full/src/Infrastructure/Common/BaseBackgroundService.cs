@@ -1,4 +1,4 @@
-using System.Diagnostics;
+using Application.Common.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,7 +28,7 @@ internal abstract class BaseBackgroundService<TService>(
         }
         catch (Exception ex)
         {
-            Logs.UnexpectedErrorInBackgroundService(logger, ex.Message, ex.StackTrace);
+            Logs.Error(logger, nameof(BaseBackgroundService<>), nameof(ExecuteAsync), Guid.NewGuid(), ex.Message);
 
             throw;
         }

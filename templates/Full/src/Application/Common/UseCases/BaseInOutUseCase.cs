@@ -49,7 +49,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
     {
         StopWatch.Restart();
 
-        Logs.StartToExecuteUseCase(Logger, ClassName, HandleMethodName, request.CorrelationId);
+        Logs.StartingOperation(Logger, ClassName, HandleMethodName, request.CorrelationId);
         TResponseData response;
 
         if (_validator != null)
@@ -73,7 +73,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
 
         response = await HandleInternalAsync(request, cancellationToken);
 
-        Logs.FinishedExecutingUseCase(Logger, ClassName, HandleMethodName, request.CorrelationId, StopWatch.ElapsedMilliseconds);
+        Logs.FinishedOperation(Logger, ClassName, HandleMethodName, request.CorrelationId, StopWatch.ElapsedMilliseconds);
 
         _useCaseExecuted.Record(1);
         _useCaseExecutionElapsedTime.Record(StopWatch.ElapsedMilliseconds);

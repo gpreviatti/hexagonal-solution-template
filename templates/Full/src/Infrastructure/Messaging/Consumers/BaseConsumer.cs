@@ -47,16 +47,19 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
         async (message, cancellationToken) =>
         {
             producerService = serviceProvider.GetRequiredService<IProduceService>();
+            var methodName = nameof(ExecuteInternalAsync);
+
             try
             {
                 _stopwatch.Restart();
                 var hybridCacheService = serviceProvider.GetRequiredService<IHybridCacheService>();
 
 
-                Logs.ReceivedMessage(logger, _className, message.CorrelationId, typeof(TMessage).Name);
+                Logs.Debug(logger, _className, methodName, message.CorrelationId, typeof(TMessage).Name + " received. Checking if it has already been processed.");
 
                 var isExecutedKey = _className + "-" + message.CorrelationId;
                 var isExecuted = await hybridCacheService.GetOrCreateAsync(
+                    message.CorrelationId,
                     isExecutedKey,
                     async (cancellationToken) => false,
                     cancellationToken
@@ -64,21 +67,21 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
 
                 if (isExecuted)
                 {
-                    Logs.DuplicateMessageDetected(logger, _className, message.CorrelationId);
+                    Logs.Warning(logger, _className, methodName, message.CorrelationId, typeof(TMessage).Name + " has already been processed. Skipping.");
                     return;
                 }
 
-                Logs.StartProcessingMessage(logger, _className, message.CorrelationId);
+                Logs.DebugStartingOperation(logger, _className, methodName, message.CorrelationId, typeof(TMessage).Name + " processing started.");
 
                 await HandleUseCaseAsync(serviceProvider, message, cancellationToken);
 
-                await hybridCacheService.CreateAsync(isExecutedKey, true, cancellationToken);
+                await hybridCacheService.CreateAsync(message.CorrelationId, isExecutedKey, true, cancellationToken);
 
-                Logs.ProcessedMessage(logger, _className, message.CorrelationId, _stopwatch.ElapsedMilliseconds);
+                Logs.DebugFinishedOperation(logger, _className, methodName, message.CorrelationId, _stopwatch.ElapsedMilliseconds, typeof(TMessage).Name + " processing finished.");
             }
             catch (Exception ex)
             {
-                Logs.ErrorProcessingMessage(logger, _className, message?.CorrelationId, ex.Message, ex.StackTrace);
+                Logs.Error(logger, _className, methodName, message.CorrelationId, ex.Message);
 
                 _ = producerService.HandleAsync(message!, CancellationToken.None, _queueName + "_deadLetter");
 
@@ -95,6 +98,9 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
     {
         var connection = await _factory.CreateConnectionAsync(cancellationToken);
         var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
+        var methodName = nameof(HandleRabbitMqAsync);
+
+        Logs.Debug(logger, _className, methodName, Guid.NewGuid(), "Connected to RabbitMQ. Declaring queues.");
 
         await channel.QueueDeclareAsync(
             queue: _queueName,
@@ -114,6 +120,8 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
 
         AsyncEventingBasicConsumer consumer = new(channel);
 
+        Logs.Debug(logger, _className, methodName, Guid.NewGuid(), "Queues declared. Starting to consume messages.");
+
         consumer.ReceivedAsync += async (model, eventArguments) =>
         {
             var basicProperties = eventArguments.BasicProperties;
@@ -122,28 +130,36 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
             TMessage message = null!;
             try
             {
+                Logs.Debug(logger, _className, methodName, Guid.NewGuid(), "Message received. Deserializing.");
+
                 message = JsonSerializer.Deserialize<TMessage>(body)!;
+
+                Logs.Debug(logger, _className, methodName, message.CorrelationId, "Message deserialized. Validating.");
 
                 if (message == null || message.GetType() != typeof(TMessage))
                 {
-                    Logs.ReceivedNullMessage(logger, _className, typeof(TMessage).Name);
+                    Logs.Warning(logger, _className, methodName, Guid.NewGuid(), typeof(TMessage).Name + " is null or of incorrect type.");
                     return;
                 }
             }
             catch (JsonException ex)
             {
-                Logs.ErrorDeserializingMessage(logger, _className, basicProperties.CorrelationId, basicProperties.AppId, basicProperties.ClusterId, ex.Message, ex.StackTrace);
+                Logs.Error(logger, _className, methodName, Guid.NewGuid(), ex.Message);
 
                 throw;
             }
             catch (Exception ex)
             {
-                Logs.UnexpectedError(logger, _className, basicProperties.CorrelationId, basicProperties.AppId, basicProperties.ClusterId, ex.Message, ex.StackTrace);
+                Logs.Error(logger, _className, methodName, Guid.NewGuid(), ex.Message);
 
                 throw;
             }
 
+            Logs.Debug(logger, _className, methodName, message.CorrelationId, "Message validated. Handling use case.");
+
             await handleAsync.Invoke(message, cancellationToken);
+
+            Logs.Debug(logger, _className, methodName, message.CorrelationId, "Use case handled.");
         };
 
         await channel.BasicConsumeAsync(
