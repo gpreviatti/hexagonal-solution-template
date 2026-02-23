@@ -83,9 +83,9 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
         await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
 
         // Assert
-        _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyFinishUseCaseLog();
-        _fixture.VerifyOperationFailedLog(0);
+        _fixture.MockLogger.VerifyStartOperation();
+        _fixture.MockLogger.VerifyFinishOperation();
+        _fixture.MockLogger.VerifyOperationFailed(0);
         _fixture.MockRepository.VerifyAddAsync<Notification>(1);
     }
 
@@ -100,9 +100,9 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
         await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
 
         // Assert
-        _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyFinishUseCaseLog(0);
-        _fixture.VerifyOperationFailedLog(0);
+        _fixture.MockLogger.VerifyStartOperation();
+        _fixture.MockLogger.VerifyFinishOperation(0);
+        _fixture.MockLogger.VerifyOperationFailed(0);
         _fixture.MockRepository.VerifyAddAsync<Notification>(0);
     }
 
@@ -118,9 +118,9 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
         await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
 
         // Assert
-        _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyFinishUseCaseLog();
-        _fixture.VerifyOperationFailedLog();
+        _fixture.MockLogger.VerifyStartOperation();
+        _fixture.MockLogger.VerifyOperationFailed();
+        _fixture.MockLogger.VerifyFinishOperation();
         _fixture.MockRepository.VerifyAddAsync<Notification>(1);
     }
 }

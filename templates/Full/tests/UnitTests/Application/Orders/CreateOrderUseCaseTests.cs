@@ -3,7 +3,6 @@ using Application.Orders;
 using Domain.Orders;
 using FluentValidation;
 using FluentValidation.TestHelper;
-using Microsoft.Extensions.Logging;
 using UnitTests.Application.Common;
 
 namespace UnitTests.Application.Orders;
@@ -72,14 +71,6 @@ public sealed class CreateOrderUseCaseFixture : BaseApplicationFixture<CreateOrd
 
     public static CreateOrderRequest SetInvalidRequestWithNoItems() =>
         new(Guid.NewGuid(), "AwesomeComputer", []);
-
-#pragma warning disable CA1848
-    public void VerifyCreateOrderLogNoItemsError(int times = 1) =>
-        MockLogger.VerifyLog(l => l.LogWarning("*Order must have at least one item.*"), Times.Exactly(times));
-
-    public void VerifyFailedToCreateOrderLog(int times = 1) =>
-        MockLogger.VerifyLog(l => l.LogWarning("*Failed to create order.*"), Times.Exactly(times));
-#pragma warning restore CA1848
 }
 
 public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFixture>
@@ -108,10 +99,10 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         Assert.True(result.Success);
         Assert.Null(result.Message);
 
-        _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyFinishUseCaseLog();
-        _fixture.VerifyCreateOrderLogNoItemsError(0);
-        _fixture.VerifyFailedToCreateOrderLog(0);
+        _fixture.MockLogger.VerifyStartOperation();
+        _fixture.MockLogger.VerifyFinishOperation();
+        _fixture.MockLogger.VerifyWarning("Order must have at least one item.", 0);
+        _fixture.MockLogger.VerifyWarning("Failed to create order.", 0);
         _fixture.MockRepository.VerifyAddAsync<Order>(1);
         _fixture.VerifyProduce<CreateNotificationMessage>();
     }
@@ -134,10 +125,10 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         Assert.NotNull(result.Message);
         Assert.NotEmpty(result.Message);
 
-        _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyFinishUseCaseLog(0);
-        _fixture.VerifyCreateOrderLogNoItemsError(0);
-        _fixture.VerifyFailedToCreateOrderLog(0);
+        _fixture.MockLogger.VerifyStartOperation();
+        _fixture.MockLogger.VerifyFinishOperation(0);
+        _fixture.MockLogger.VerifyWarning("Order must have at least one item.", 0);
+        _fixture.MockLogger.VerifyWarning("Failed to create order.", 0);
         _fixture.MockRepository.VerifyAddAsync<Order>(0);
         _fixture.VerifyProduce<CreateNotificationMessage>(0);
     }
@@ -161,11 +152,11 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         Assert.NotEmpty(result.Message);
         Assert.Equal("Order must have at least one item.", result.Message);
 
-        _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyCreateOrderLogNoItemsError(1);
-        _fixture.VerifyFailedToCreateOrderLog(0);
+        _fixture.MockLogger.VerifyStartOperation();
+        _fixture.MockLogger.VerifyFinishOperation();
+        _fixture.MockLogger.VerifyWarning("Order must have at least one item.", 1);
+        _fixture.MockLogger.VerifyWarning("Failed to create order.", 0);
         _fixture.MockRepository.VerifyAddAsync<Order>(0);
-        _fixture.VerifyFinishUseCaseLog();
         _fixture.VerifyProduce<CreateNotificationMessage>();
     }
 
@@ -189,11 +180,11 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         Assert.NotEmpty(result.Message);
         Assert.Equal("Failed to create order.", result.Message);
 
-        _fixture.VerifyStartUseCaseLog();
+        _fixture.MockLogger.VerifyStartOperation();
+        _fixture.MockLogger.VerifyFinishOperation();
+        _fixture.MockLogger.VerifyWarning("Order must have at least one item.", 0);
+        _fixture.MockLogger.VerifyWarning("Failed to create order.", 1);
         _fixture.MockRepository.VerifyAddAsync<Order>(1);
-        _fixture.VerifyCreateOrderLogNoItemsError(0);
-        _fixture.VerifyFailedToCreateOrderLog(1);
-        _fixture.VerifyFinishUseCaseLog();
         _fixture.VerifyProduce<CreateNotificationMessage>();
     }
 }

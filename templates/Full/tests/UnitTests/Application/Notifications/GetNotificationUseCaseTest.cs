@@ -49,9 +49,9 @@ public sealed class GetNotificationUseCaseTests : IClassFixture<GetNotificationU
         Assert.Equal(expectedNotification.NotificationStatus, result.Data.NotificationStatus);
 
         _fixture.MockRepository.VerifyQueryable<Notification>();
-        _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyNotFoundLog(0);
-        _fixture.VerifyFinishUseCaseLog();
+        _fixture.MockLogger.VerifyStartOperation();
+        _fixture.MockLogger.VerifyNotFound(0);
+        _fixture.MockLogger.VerifyFinishOperation();
     }
 
     [Fact(DisplayName = nameof(GivenAnInvalidRequestThenFails))]
@@ -70,9 +70,9 @@ public sealed class GetNotificationUseCaseTests : IClassFixture<GetNotificationU
         Assert.NotEmpty(result.Message);
 
         _fixture.MockRepository.VerifyQueryable<Notification>(0);
-        _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyNotFoundLog(0);
-        _fixture.VerifyFinishUseCaseLog(0);
+        _fixture.MockLogger.VerifyStartOperation();
+        _fixture.MockLogger.VerifyNotFound(0);
+        _fixture.MockLogger.VerifyFinishOperation(0);
     }
 
     [Fact(DisplayName = nameof(GivenAValidRequestWhenNotificationNotFoundThenFails))]
@@ -93,8 +93,8 @@ public sealed class GetNotificationUseCaseTests : IClassFixture<GetNotificationU
         Assert.Equal("Notification not found.", result.Message);
 
         _fixture.MockRepository.VerifyQueryable<Notification>();
-        _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyNotFoundLog(1);
-        _fixture.VerifyFinishUseCaseLog();
+        _fixture.MockLogger.VerifyStartOperation();
+        _fixture.MockLogger.VerifyNotFound(1);
+        _fixture.MockLogger.VerifyFinishOperation();
     }
 }

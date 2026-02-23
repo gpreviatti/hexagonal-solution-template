@@ -5,7 +5,7 @@ using MockQueryable;
 
 namespace UnitTests.Application.Common;
 
-public static class RepositoryMockExtensions
+internal static class RepositoryMockExtensions
 {
     public static void SetSuccessfulAddAsync<TEntity>(this Mock<IBaseRepository> mockRepository) where TEntity : DomainEntity => mockRepository
         .Setup(d => d.AddAsync(It.IsAny<TEntity>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))

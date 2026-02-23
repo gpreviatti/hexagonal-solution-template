@@ -54,9 +54,9 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         Assert.Equal(expectedOrder.Items?.Count, result.Data.Items!.Count);
 
         _fixture.MockRepository.VerifyQueryable<Order>();
-        _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyNotFoundLog(0);
-        _fixture.VerifyFinishUseCaseLog();
+        _fixture.MockLogger.VerifyStartOperation();
+        _fixture.MockLogger.VerifyNotFound(0);
+        _fixture.MockLogger.VerifyFinishOperation();
     }
 
     [Fact(DisplayName = nameof(GivenAValidRequestWithoutItemsThenPass))]
@@ -89,9 +89,9 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         Assert.Equal(0, result.Data.Items?.Count);
 
         _fixture.MockRepository.VerifyQueryable<Order>();
-        _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyNotFoundLog(0);
-        _fixture.VerifyFinishUseCaseLog();
+        _fixture.MockLogger.VerifyStartOperation();
+        _fixture.MockLogger.VerifyNotFound(0);
+        _fixture.MockLogger.VerifyFinishOperation();
     }
 
     [Fact(DisplayName = nameof(GivenAInvalidRequestThenFails))]
@@ -110,9 +110,9 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         Assert.NotEmpty(result.Message);
 
         _fixture.MockRepository.VerifyQueryable<Order>(0);
-        _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyNotFoundLog(0);
-        _fixture.VerifyFinishUseCaseLog(0);
+        _fixture.MockLogger.VerifyStartOperation();
+        _fixture.MockLogger.VerifyNotFound(0);
+        _fixture.MockLogger.VerifyFinishOperation(0);
     }
 
     [Fact(DisplayName = nameof(GivenAValidRequestWhenOrderNotFoundThenFails))]
@@ -133,8 +133,8 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         Assert.Equal("Order not found.", result.Message);
 
         _fixture.MockRepository.VerifyQueryable<Order>();
-        _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyNotFoundLog(1);
-        _fixture.VerifyFinishUseCaseLog();
+        _fixture.MockLogger.VerifyStartOperation();
+        _fixture.MockLogger.VerifyNotFound(1);
+        _fixture.MockLogger.VerifyFinishOperation();
     }
 }

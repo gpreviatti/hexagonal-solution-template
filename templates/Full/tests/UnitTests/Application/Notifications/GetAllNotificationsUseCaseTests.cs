@@ -49,9 +49,9 @@ public sealed class GetAllNotificationsUseCaseTests : IClassFixture<GetAllNotifi
         Assert.Equal(1, result.TotalPages);
         Assert.Equal(totalRecords, result.TotalRecords);
 
-        _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyNotFoundLog(0);
-        _fixture.VerifyFinishUseCaseLog();
+        _fixture.MockLogger.VerifyStartOperation();
+        _fixture.MockLogger.VerifyNotFound(0);
+        _fixture.MockLogger.VerifyFinishOperation();
     }
 
     [Fact(DisplayName = nameof(GivenAnInvalidRequestThenFails))]
@@ -69,9 +69,9 @@ public sealed class GetAllNotificationsUseCaseTests : IClassFixture<GetAllNotifi
         Assert.NotNull(result.Message);
         Assert.NotEmpty(result.Message);
 
-        _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyNotFoundLog(0);
-        _fixture.VerifyFinishUseCaseLog(0);
+        _fixture.MockLogger.VerifyStartOperation();
+        _fixture.MockLogger.VerifyNotFound(0);
+        _fixture.MockLogger.VerifyFinishOperation(0);
     }
 
     [Fact(DisplayName = nameof(GivenAValidRequestWhenNoNotificationsFoundThenFails))]
@@ -91,8 +91,8 @@ public sealed class GetAllNotificationsUseCaseTests : IClassFixture<GetAllNotifi
         Assert.NotEmpty(result.Message);
         Assert.Equal("No notifications found.", result.Message);
 
-        _fixture.VerifyStartUseCaseLog();
-        _fixture.VerifyNotFoundLog(1);
-        _fixture.VerifyFinishUseCaseLog();
+        _fixture.MockLogger.VerifyStartOperation();
+        _fixture.MockLogger.VerifyNotFound(1);
+        _fixture.MockLogger.VerifyFinishOperation();
     }
 }
