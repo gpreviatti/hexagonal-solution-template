@@ -18,7 +18,7 @@ internal static class InfrastructureDataDependencyInjection
 
             services.AddPooledDbContextFactory<MyDbContext>(options =>
             {
-                options.UseSqlServer(
+                options.UseNpgsql(
                     configuration.GetConnectionString("OrderDb") ?? throw new InvalidOperationException("OrderDb connection string is not configured.")
                 );
                 options.EnableSensitiveDataLogging(enableSensitiveDataLogging);

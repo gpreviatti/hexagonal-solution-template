@@ -24,7 +24,7 @@ services:
     ports:
       - "5000:5000"
     depends_on:
-      sqlserver:
+      postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -51,21 +51,21 @@ services:
       - OTEL_EXPORTER_OTLP_LOGS_ENDPOINT=http://aspire-dashboard:18889
       - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
       - OTEL_RESOURCE_ATTRIBUTES=service.namespace=load-tests
-      - ConnectionStrings__OrderDb=Server=sqlserver,1433;Database=OrderDb;User Id=sa;Password=cY5VvZkkh4AzES;TrustServerCertificate=true;
+      - ConnectionStrings__OrderDb=Host=postgres;Port=5432;Database=OrderDb;Username=postgres;Password=cY5VvZkkh4AzES
       - ConnectionStrings__Redis=redis:6379
       - ConnectionStrings__RabbitMQ=amqp://guest:guest@rabbitmq:5672/
     networks:
       - hexagonal_solution_template_network
 
-  sqlserver:
+  postgres:
     extends:
       file: docker-compose.yml
-      service: sqlserver
+      service: postgres
 
-  mssqltools:
+  postgres-init:
     extends:
       file: docker-compose.yml
-      service: mssqltools
+      service: postgres-init
 
   aspire-dashboard:
     extends:

@@ -23,9 +23,9 @@ internal static class HealthCheckExtensions
             })
             .AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy())
-            .AddSqlServer(
+            .AddNpgSql(
                 configuration.GetConnectionString("OrderDb")!,
-                name: "SqlServer",
+                name: "PostgreSQL",
                 tags: ["services"]
             )
             .AddRedis(

@@ -14,7 +14,7 @@ public sealed class WebApplicationFactoryCollectionDefinition : IClassFixture<Cu
 
 public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram>, IDisposable where TProgram : class
 {
-    protected string? ConnectionString { get; } = "Server=127.0.0.1,1433;Database=OrderDb;User Id=sa;Password=cY5VvZkkh4AzES;TrustServerCertificate=true;";
+    protected string? ConnectionString { get; } = "Host=127.0.0.1;Port=5432;Database=OrderDb;Username=postgres;Password=cY5VvZkkh4AzES";
 
     public MyDbContext? MyDbContext { get; set; }
 
@@ -34,14 +34,14 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
 
             services.Remove(dbConnectionDescriptor!);
 
-            services.AddDbContextFactory<MyDbContext>((options) => options.UseSqlServer(ConnectionString));
+            services.AddDbContextFactory<MyDbContext>((options) => options.UseNpgsql(ConnectionString));
         });
     }
 
     public void SetDbContext()
     {
         var contextOptions = new DbContextOptionsBuilder<MyDbContext>()
-            .UseSqlServer(ConnectionString)
+            .UseNpgsql(ConnectionString)
             .Options;
 
         MyDbContext = new(contextOptions);

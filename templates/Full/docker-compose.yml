@@ -1,27 +1,40 @@
 name: hexagonal-solution-template-full
 
 services:
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2025-latest
+  postgres:
+    image: postgres:17-alpine
     environment:
-      SA_PASSWORD: "cY5VvZkkh4AzES"
-      ACCEPT_EULA: "Y"
-      MSSQL_PID: "Developer"
+      POSTGRES_PASSWORD: "cY5VvZkkh4AzES"
+      POSTGRES_USER: "postgres"
+      POSTGRES_DB: "OrderDb"
     networks:
       - hexagonal_solution_template_network
     healthcheck:
-      test: /opt/mssql-tools18/bin/sqlcmd -U sa -P "cY5VvZkkh4AzES" -C -Q "SELECT 1" || exit 1
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 3s
       timeout: 10s
       retries: 10
       start_period: 15s
     ports:
-      - "1433:1433"
+      - "5432:5432"
 
-  mssqltools:
-    image: mcr.microsoft.com/mssql-tools
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "admin@admin.com"
+      PGADMIN_DEFAULT_PASSWORD: "admin"
     depends_on:
-      sqlserver:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "5050:80"
+    networks:
+      - hexagonal_solution_template_network
+
+  postgres-init:
+    image: postgres:17-alpine
+    depends_on:
+      postgres:
         condition: service_healthy
     networks:
       - hexagonal_solution_template_network
@@ -29,11 +42,13 @@ services:
       - ./scripts/migrations.sql:/tmp/migrations.sql
       - ./scripts/seeds.sql:/tmp/seeds.sql
     command:
-      - /bin/bash
+      - /bin/sh
       - -c
       - |
-        ./opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P "cY5VvZkkh4AzES" -C -d master -i ./tmp/migrations.sql &&
-        ./opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P "cY5VvZkkh4AzES" -C -d master -i ./tmp/seeds.sql
+        psql -h postgres -U postgres -d postgres -f /tmp/migrations.sql &&
+        psql -h postgres -U postgres -d postgres -f /tmp/seeds.sql
+    environment:
+      PGPASSWORD: "cY5VvZkkh4AzES"
 
   aspire-dashboard:
     image: mcr.microsoft.com/dotnet/aspire-dashboard:13
