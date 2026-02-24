@@ -14,7 +14,7 @@ public sealed class MyDbContext(
     {
         configurationBuilder
             .Properties<string>()
-            .HaveColumnType("varchar")
+            .HaveColumnType("text")
             .HaveMaxLength(100);
 
         configurationBuilder
@@ -27,6 +27,6 @@ public sealed class MyDbContext(
 
         configurationBuilder
             .Properties<DateTime>()
-            .HaveColumnType("datetime2");
+            .HaveColumnType("timestamp without time zone");
     }
 }
