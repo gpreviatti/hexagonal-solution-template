@@ -3,6 +3,7 @@ name: hexagonal-solution-template-full
 services:
   postgres:
     image: postgres:17-alpine
+    container_name: postgres
     environment:
       POSTGRES_PASSWORD: "cY5VvZkkh4AzES"
       POSTGRES_USER: "postgres"
@@ -20,6 +21,7 @@ services:
 
   postgres-init:
     image: postgres:17-alpine
+    container_name: postgres-init
     depends_on:
       postgres:
         condition: service_healthy
@@ -39,6 +41,7 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4:9.12.0
+    container_name: pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: "admin@admin.com"
       PGADMIN_DEFAULT_PASSWORD: "admin"
@@ -52,6 +55,7 @@ services:
 
   aspire-dashboard:
     image: mcr.microsoft.com/dotnet/aspire-dashboard:13
+    container_name: aspire-dashboard
     ports:
       - "18888:18888"
       - "18889:18889"
@@ -60,6 +64,7 @@ services:
 
   redis:
     image: redis:8
+    container_name: redis
     ports:
       - "6379:6379"
     healthcheck:
@@ -73,6 +78,7 @@ services:
 
   rabbitmq:
     image: rabbitmq:management
+    container_name: rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
