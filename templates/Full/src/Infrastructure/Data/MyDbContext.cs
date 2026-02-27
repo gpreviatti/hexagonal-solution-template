@@ -27,6 +27,6 @@ public sealed class MyDbContext(
 
         configurationBuilder
             .Properties<DateTime>()
-            .HaveColumnType("timestamp without time zone");
+            .HaveColumnType("timestamp with time zone");
     }
 }
