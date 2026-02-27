@@ -27,7 +27,7 @@ dotnet ef database update --project src/Infrastructure --startup-project src/Inf
 ### Create a new migration
 
 ```bash
-dotnet ef migrations add <MigrationName> --project src/Infrastructure --startup-project src/Infrastructure --output-dir src/Infrastructure/Data/Migrations
+dotnet ef migrations add <MigrationName> --project src/Infrastructure --startup-project src/Infrastructure --output-dir Data/Migrations 
 ```
 
 ### Generate SQL script for migrations with idempotent option
