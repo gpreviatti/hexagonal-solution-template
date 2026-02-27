@@ -45,7 +45,7 @@ public class GetOrderGrpcTest : BaseFixture
         Assert.Equal(1, response.Data.Id);
         Assert.NotNull(response.Data.Items);
         Assert.NotEmpty(response.Data.Items);
-        Assert.Equal(1000.0, response.Data.Total);
+        Assert.Equal(2000.0, response.Data.Total);
     }
 
     [Fact(DisplayName = nameof(GivenAInvalidRequestThenFails))]

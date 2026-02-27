@@ -132,7 +132,7 @@ public class BaseRepository(
         if (searchByValues != null && searchByValues.Count != 0)
             foreach (var searchByValue in searchByValues)
                 query = query.Where(e =>
-                    EF.Property<string>(e, searchByValue.Key).Contains(searchByValue.Value.ToLowerInvariant(), StringComparison.OrdinalIgnoreCase)
+                    EF.Functions.ILike(EF.Property<string>(e, searchByValue.Key), $"%{searchByValue.Value}%")
                 );
 
         var items = await query
@@ -173,7 +173,7 @@ public class BaseRepository(
         if (searchByValues != null && searchByValues.Count != 0)
             foreach (var searchByValue in searchByValues)
                 query = query.Where(e =>
-                    EF.Property<string>(e, searchByValue.Key).Contains(searchByValue.Value.ToLowerInvariant(), StringComparison.OrdinalIgnoreCase)
+                    EF.Functions.ILike(EF.Property<string>(e, searchByValue.Key), $"%{searchByValue.Value}%")
                 );
 
         var items = await query
