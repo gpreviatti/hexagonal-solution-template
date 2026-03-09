@@ -54,6 +54,8 @@ public sealed class Program
             .UseResponseCompression()
             .UseMiddleware<ExceptionHandlingMiddleware>();
 
+        app.UseOpenTelemetryPrometheusScrapingEndpoint();
+
         await app.RunAsync();
     }
 }

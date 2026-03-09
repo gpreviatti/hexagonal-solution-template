@@ -1,4 +1,5 @@
 using Application.Common.Constants;
+using Grafana.OpenTelemetry;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -36,32 +37,47 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
 
             builder.Services.AddOpenTelemetry()
             .ConfigureResource(resource => resource.AddEnvironmentVariableDetector())
-            .WithMetrics(metrics => metrics
-                .AddAspNetCoreInstrumentation()
-                .AddMeter(DefaultConfigurations.Meter.Name)
-                .AddHttpClientInstrumentation()
-                .AddOtlpExporter(options =>
-                {
-                    options.Protocol = exporterProtocol;
-                    options.Endpoint = new Uri(exporterMetricsEndpoint);
-                })
+            .WithMetrics(metrics =>
+            {
+                metrics.AddView(
+                    "http.server.request.duration",
+                    new ExplicitBucketHistogramConfiguration()
+                    {
+                        Boundaries = [0, 0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1, 2.5, 5, 7.5, 10]
+                    }
+                );
+                metrics.AddMeter(
+                    DefaultConfigurations.Meter.Name,
+                    "System.Diagnostics.Metrics",
+                    "Microsoft.AspNetCore.Hosting",
+                    "Microsoft.AspNetCore.Server.Kestrel",
+                    "System.Net.Http"
+                );
+
+                metrics
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddRuntimeInstrumentation()
+                    .AddProcessInstrumentation()
+                    .AddSqlClientInstrumentation()
+                    .AddPrometheusExporter()
+                    .AddOtlpExporter(options =>
+                    {
+                        options.Protocol = exporterProtocol;
+                        options.Endpoint = new Uri(exporterMetricsEndpoint);
+                    })
+                    .UseGrafana();
+            }
             )
             .WithTracing(tracing => tracing
-                .AddAspNetCoreInstrumentation()
-                .AddHttpClientInstrumentation(options =>
-                {
-                    options.RecordException = true;
-                })
-                .AddEntityFrameworkCoreInstrumentation(
-                    options =>
-                    {
-                        options.SetDbStatementForText = true;
-                        options.SetDbStatementForStoredProcedure = true;
-                    }
-                )
+                .AddSqlClientInstrumentation()
                 .AddRedisInstrumentation()
                 .AddRabbitMQInstrumentation()
                 .AddGrpcClientInstrumentation()
+                .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddEntityFrameworkCoreInstrumentation()
+                .UseGrafana()
                 .AddOtlpExporter(options =>
                 {
                     options.Protocol = exporterProtocol;
@@ -69,6 +85,7 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
                 })
             )
             .WithLogging(logging => logging
+                .AddConsoleExporter()
                 .AddOtlpExporter(options =>
                 {
                     options.Protocol = exporterProtocol;
@@ -76,10 +93,13 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
                 })
             );
 
-            builder.Services.AddLogging(logging => logging.AddOpenTelemetry(openTelemetryLoggerOptions =>
+            builder.Services.AddLogging(logging => logging.AddOpenTelemetry(options =>
             {
-                openTelemetryLoggerOptions.IncludeScopes = true;
-                openTelemetryLoggerOptions.IncludeFormattedMessage = true;
+                options.IncludeFormattedMessage = true;
+                options.IncludeScopes = true;
+                options.ParseStateValues = true;
+                options.AttachLogsToActivityEvent();
+                options.UseGrafana();
             }));
 
             return builder;

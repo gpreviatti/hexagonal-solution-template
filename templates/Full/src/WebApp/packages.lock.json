@@ -49,15 +49,90 @@
           "Grpc.Tools": "2.76.0"
         }
       },
+      "Amazon.Lambda.APIGatewayEvents": {
+        "type": "Transitive",
+        "resolved": "2.7.0",
+        "contentHash": "HAbdRKLzvUqRg/fItan7up/PWsj6vQfYF+1a4YV6sv1bq5TuK/ra+ndJwWMlzL+MFJzJaHwCmtkyBbh/vz8Oig=="
+      },
+      "Amazon.Lambda.ApplicationLoadBalancerEvents": {
+        "type": "Transitive",
+        "resolved": "2.2.0",
+        "contentHash": "UtCd9tFuVyED8+DmDKEkdXJbAb/TdHIz51R/CsJCexKerO6HGOG87FGId4Ce9IXE+qjlBGyNQsKCw9oLLNe0hw=="
+      },
+      "Amazon.Lambda.Core": {
+        "type": "Transitive",
+        "resolved": "2.8.0",
+        "contentHash": "mZnqCrLuNvB9T9/bCIcu/7H8HWd3yi6sEDzRE76D9ym06D+CoEfJ/EG4w7FucclvpSXO7ui/MKpzqhEnR2FAVg=="
+      },
+      "Amazon.Lambda.SNSEvents": {
+        "type": "Transitive",
+        "resolved": "2.1.0",
+        "contentHash": "w2PKM5eQ6DNCR07H6SwHdcPXAr/qKQhNoAD+8bWydpgh4QdS2O4heo9vxhxn1g5FMSKeOxVa2zMKUZ9xeSYPZw=="
+      },
+      "Amazon.Lambda.SQSEvents": {
+        "type": "Transitive",
+        "resolved": "2.2.0",
+        "contentHash": "RyYLgEa6nh+VJrCfTDKxvTLS1+eLDIIDyHgwDY3TR1WQz1+UeDIcccOJvoDk2nmjkSA0TfWJmZX9Ld0ySf57lA=="
+      },
       "AspNetCore.HealthChecks.UI.Core": {
         "type": "Transitive",
         "resolved": "9.0.0",
         "contentHash": "TVriy4hgYnhfqz6NAzv8qe62Q8wf82iKUL6WV9selqeFZTq1ILi39Sic6sFQegRysvAVcnxKP/vY8z9Fk8x6XQ=="
       },
+      "AWSSDK.Core": {
+        "type": "Transitive",
+        "resolved": "4.0.3.3",
+        "contentHash": "YQv10JuxnciWh0QwnkarSbge4gXQV1qTURf5jkBjNUH/3jYS9QrbxopA4TK1qdjfOfP37tqiJkLSrRRNqX81aw=="
+      },
+      "AWSSDK.SimpleNotificationService": {
+        "type": "Transitive",
+        "resolved": "4.0.2.7",
+        "contentHash": "WO0xjj2demSh3hPKQtSS3XyncITIUlENCeLv/FZsteMJh4HpfGwxp1dbq8YnaR90ddzvyPU6uj675WGuMf6zgg==",
+        "dependencies": {
+          "AWSSDK.Core": "[4.0.3.3, 5.0.0)"
+        }
+      },
+      "AWSSDK.SQS": {
+        "type": "Transitive",
+        "resolved": "4.0.2.5",
+        "contentHash": "bHA9m/2RZHNKt6NGvQ56rfEDj/pfUlcwPeCg2HmPJ3jZPyoerBuEsYvFkMP3YJNv3aoycNWZoiDk0/ULP0tEyA==",
+        "dependencies": {
+          "AWSSDK.Core": "[4.0.3.3, 5.0.0)"
+        }
+      },
+      "CassandraCSharpDriver": {
+        "type": "Transitive",
+        "resolved": "3.22.0",
+        "contentHash": "T5vjErmZ42Q1TAzbYSJvOrAzOZmb/d+v3OoIYrKfbcqjDuvedd61e0bAaaLpgiujPBBO+qFpxR4T0WSXkMr/fA==",
+        "dependencies": {
+          "K4os.Compression.LZ4": "1.1.11",
+          "Newtonsoft.Json": "9.0.1",
+          "System.Management": "4.7.0"
+        }
+      },
       "Google.Protobuf": {
         "type": "Transitive",
         "resolved": "3.31.1",
         "contentHash": "gSnJbUmGiOTdWddPhqzrEscHq9Ls6sqRDPB9WptckyjTUyx70JOOAaDLkFff8gManZNN3hllQ4aQInnQyq/Z/A=="
+      },
+      "Grafana.OpenTelemetry.Base": {
+        "type": "Transitive",
+        "resolved": "1.5.2",
+        "contentHash": "MS8yH+QFubR0Kllsxo7o2w9A2OwVeI2iB8gfGr7YPKEfwBYAcul4bHzPA9dyhtHE7hxGBuhh07bdNzMG8oRhyw==",
+        "dependencies": {
+          "OpenTelemetry": "1.15.0",
+          "OpenTelemetry.Exporter.OpenTelemetryProtocol": "1.15.0",
+          "OpenTelemetry.Instrumentation.GrpcNetClient": "1.15.0-beta.1",
+          "OpenTelemetry.Instrumentation.Http": "1.15.0",
+          "OpenTelemetry.Instrumentation.Process": "1.15.0-beta.1",
+          "OpenTelemetry.Instrumentation.Runtime": "1.15.0",
+          "OpenTelemetry.Instrumentation.SqlClient": "1.15.0",
+          "OpenTelemetry.Resources.Container": "1.15.0-beta.1",
+          "OpenTelemetry.Resources.Host": "1.15.0-beta.2",
+          "OpenTelemetry.Resources.OperatingSystem": "1.15.0-beta.1",
+          "OpenTelemetry.Resources.Process": "1.15.0-beta.1",
+          "OpenTelemetry.Resources.ProcessRuntime": "1.15.0-beta.1"
+        }
       },
       "Grpc.AspNetCore.Server": {
         "type": "Transitive",
@@ -110,6 +185,19 @@
         "resolved": "2.76.0",
         "contentHash": "goRzYZVMgQtyLvkWdgTnPycg49hlNxnMkqGGgR3l7nCOm0bUh0YeAneiJ9JFk3XLgF4suQUdETYkl2Mg/TBr0w=="
       },
+      "Hangfire.Core": {
+        "type": "Transitive",
+        "resolved": "1.7.0",
+        "contentHash": "ZWfWcE+kOWjKy7l/rsVtZmxs5XdltJY5ndx+vy7enD85ZVgc0Z+nIOZ/PfBhQQ68vGOfwOudpQVHuwXlSn7/fQ==",
+        "dependencies": {
+          "Newtonsoft.Json": "11.0.1"
+        }
+      },
+      "K4os.Compression.LZ4": {
+        "type": "Transitive",
+        "resolved": "1.1.11",
+        "contentHash": "RNvJw0UGkedPhCqVBNIogtfQebY+bQt0PN7xDbVe5LWLra0ZEqPfjPSl7iStj3rgDnkqkkTTpm+vCX3hU1qKmA=="
+      },
       "Microsoft.EntityFrameworkCore.Abstractions": {
         "type": "Transitive",
         "resolved": "10.0.2",
@@ -120,6 +208,19 @@
         "resolved": "10.0.2",
         "contentHash": "5C8aKN2HFhXfLhkrVvQ6yH990nw35pS7HNnwdBc628zIREaKJ4/rkdCXzxOdZo/SnCT3Kg7a/CqnhlzuJhlD4Q=="
       },
+      "Microsoft.NETCore.Platforms": {
+        "type": "Transitive",
+        "resolved": "3.1.4",
+        "contentHash": "9/y05/CuxE+j184Nr4KihhB9KcUkvGojmD4JV4Vt/mHhVZR+eOCD5WCM+CXye9K0OFMsaPXbN+IcaIpjgBGZmg=="
+      },
+      "Microsoft.Win32.SystemEvents": {
+        "type": "Transitive",
+        "resolved": "4.7.0",
+        "contentHash": "mtVirZr++rq+XCDITMUdnETD59XoeMxSpLRIII7JRI6Yj0LEDiO1pPn0ktlnIj12Ix8bfvQqQDMMIF9wC98oCA==",
+        "dependencies": {
+          "Microsoft.NETCore.Platforms": "3.1.0"
+        }
+      },
       "Npgsql": {
         "type": "Transitive",
         "resolved": "10.0.0",
@@ -127,23 +228,157 @@
       },
       "OpenTelemetry": {
         "type": "Transitive",
-        "resolved": "1.14.0",
-        "contentHash": "aiPBAr1+0dPDItH++MQQr5UgMf4xiybruzNlAoYYMYN3UUk+mGRcoKuZy4Z4rhhWUZIpK2Xhe7wUUXSTM32duQ==",
+        "resolved": "1.15.0",
+        "contentHash": "7mS/oZFF8S6xyqGQfMU1btp0nXJQUPWV535Vp/XMLYwRAUv36xQN+U4vufWBF1+z4HnRTOwuFHtUSGnHbyN6FQ==",
         "dependencies": {
-          "OpenTelemetry.Api.ProviderBuilderExtensions": "1.14.0"
+          "OpenTelemetry.Api.ProviderBuilderExtensions": "1.15.0"
         }
       },
       "OpenTelemetry.Api": {
         "type": "Transitive",
-        "resolved": "1.14.0",
-        "contentHash": "foHci6viUw1f3gUB8qzz3Rk02xZIWMo299X0rxK0MoOWok/3dUVru+KKdY7WIoSHwRGpxGKkmAz9jIk2RFNbsQ=="
+        "resolved": "1.15.0",
+        "contentHash": "vk5OGdf6K9kQScCWo3bRjhDWCv6Pqw92IpX4dlARZ8B1WL7/2NGTDtCkkw42eQf7UdwyoHKzVvMH/PtL8d6z7w=="
       },
       "OpenTelemetry.Api.ProviderBuilderExtensions": {
         "type": "Transitive",
-        "resolved": "1.14.0",
-        "contentHash": "i/lxOM92v+zU5I0rGl5tXAGz6EJtxk2MvzZ0VN6F6L5pMqT6s6RCXnGWXg6fW+vtZJsllBlQaf/VLPTzgefJpg==",
+        "resolved": "1.15.0",
+        "contentHash": "OnuSUlRpGvowkOzGFQfy+KZFu0cITfKfh2IYJJiZskxVJiOuexwOOuvfDAgpJdmTzVWAHjYdz2shcHZaJ06UjQ==",
         "dependencies": {
-          "OpenTelemetry.Api": "1.14.0"
+          "OpenTelemetry.Api": "1.15.0"
+        }
+      },
+      "OpenTelemetry.Exporter.OpenTelemetryProtocol": {
+        "type": "Transitive",
+        "resolved": "1.15.0",
+        "contentHash": "VH8ANc/js9IRvfYt0Q2UaAxNCOWm+IU+vWrtoH7pfx4oWPVdISUt+9uWfBCFMWZg5WzQip5dhslyDjeyZXXfSQ==",
+        "dependencies": {
+          "OpenTelemetry": "1.15.0"
+        }
+      },
+      "OpenTelemetry.Extensions.AWS": {
+        "type": "Transitive",
+        "resolved": "1.15.0",
+        "contentHash": "XO2mKJSF3cjzNepezUcKdYqnk1Ex3VCQ8UMbNH8oo3eN/tZ6EXVnI/9daXgEoXIJLPHjeHHT/+aEy3wd74lF8A==",
+        "dependencies": {
+          "OpenTelemetry": "[1.15.0, 2.0.0)"
+        }
+      },
+      "OpenTelemetry.Instrumentation.AWS": {
+        "type": "Transitive",
+        "resolved": "1.15.0",
+        "contentHash": "CVI0H47mfFHAw4cFoUf6QO1H5O1fK7MQY8+T7CriEp4rOBto65ncZMnbEQtwQhcfeeNqbOTED8TayMPWY1yMRA==",
+        "dependencies": {
+          "AWSSDK.Core": "[4.0.3.3, 5.0.0)",
+          "AWSSDK.SQS": "[4.0.2.5, 5.0.0)",
+          "AWSSDK.SimpleNotificationService": "[4.0.2.7, 5.0.0)",
+          "OpenTelemetry.Extensions.AWS": "1.15.0"
+        }
+      },
+      "OpenTelemetry.Instrumentation.AWSLambda": {
+        "type": "Transitive",
+        "resolved": "1.15.0",
+        "contentHash": "cO+iqR2lFriHg89QNSbpbFJm0o2BsMPxEThMbH9z/OLeVcxAh3EJ6PPAfw6NuicJhntN9I00iCYPpo22T5R+Zg==",
+        "dependencies": {
+          "Amazon.Lambda.APIGatewayEvents": "2.7.0",
+          "Amazon.Lambda.ApplicationLoadBalancerEvents": "2.2.0",
+          "Amazon.Lambda.Core": "2.8.0",
+          "Amazon.Lambda.SNSEvents": "2.1.0",
+          "Amazon.Lambda.SQSEvents": "2.2.0",
+          "OpenTelemetry.Extensions.AWS": "1.15.0"
+        }
+      },
+      "OpenTelemetry.Instrumentation.Cassandra": {
+        "type": "Transitive",
+        "resolved": "1.0.0-beta.5",
+        "contentHash": "4FwPZqw/mQUfHlQsjwi3qG2OPFutOJSQsY+7oa5kI1Vu5U3tGiua+WNGxSyMsrid3MhXbC4Ax5013Fx6/vHVDg==",
+        "dependencies": {
+          "CassandraCSharpDriver": "3.17.0",
+          "Newtonsoft.Json": "13.0.1",
+          "OpenTelemetry.Api": "[1.15.0, 2.0.0)"
+        }
+      },
+      "OpenTelemetry.Instrumentation.ElasticsearchClient": {
+        "type": "Transitive",
+        "resolved": "1.15.0-beta.1",
+        "contentHash": "hETsgn/JfHPfiUa5mItGu0EiCai7PnGSD5IubdmOyZntqeG/Wf8YIx3rjlF6KVbBb+JAezgGKX4oqTTlrxJQbw==",
+        "dependencies": {
+          "OpenTelemetry": "[1.15.0, 2.0.0)"
+        }
+      },
+      "OpenTelemetry.Instrumentation.Hangfire": {
+        "type": "Transitive",
+        "resolved": "1.15.0-beta.1",
+        "contentHash": "Rog5ojlXL+WB4Li/L1yisvfuKVmnPIOh62g1rfUJYgJGvPLQbm5FtGuIvvRJlMPLtu7f73tYmqouw9EiWExJIQ==",
+        "dependencies": {
+          "Hangfire.Core": "1.7.0",
+          "Newtonsoft.Json": "13.0.1",
+          "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.15.0, 2.0.0)"
+        }
+      },
+      "OpenTelemetry.Instrumentation.Quartz": {
+        "type": "Transitive",
+        "resolved": "1.15.0-beta.1",
+        "contentHash": "C3TR/iDaXeZKpB8QTZjsSrbOlE6D+NYwMw3xDwMyt1T7s/1/4yqyZNQA3M5h3FKlinTvFdBxIbN6ghT/A1g5Jw==",
+        "dependencies": {
+          "OpenTelemetry.Api": "[1.15.0, 2.0.0)"
+        }
+      },
+      "OpenTelemetry.Instrumentation.SqlClient": {
+        "type": "Transitive",
+        "resolved": "1.15.0",
+        "contentHash": "J0lI7lCngS4TJD4T7KNsAerOIjJHNV0T2MK0iuS2tK8wF7iqL1dp4MKW05FiyfvrIXkwsvFc1okKchxS8B0+SQ==",
+        "dependencies": {
+          "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.15.0, 2.0.0)"
+        }
+      },
+      "OpenTelemetry.Instrumentation.Wcf": {
+        "type": "Transitive",
+        "resolved": "1.15.0-beta.1",
+        "contentHash": "2U34rv1JvdB8jDS1LC7yknm+iINO+hBIZeEtKyUgUUaJT1FOINSQpIhofEtdsTR+++cIHOnvWHcru60QmiT5Cw==",
+        "dependencies": {
+          "OpenTelemetry": "[1.15.0, 2.0.0)",
+          "System.Drawing.Common": "4.7.2",
+          "System.ServiceModel.Primitives": "4.7.0"
+        }
+      },
+      "OpenTelemetry.Resources.Container": {
+        "type": "Transitive",
+        "resolved": "1.15.0-beta.1",
+        "contentHash": "b3W+tt2P9E6MybwFv/5nGLcfwDFyNcKw9fLaXrqSt3PpXrE533f+Vas00VLH0Qs5Z1fqDZSFqzgNwxmmTxvKHg==",
+        "dependencies": {
+          "OpenTelemetry": "[1.15.0, 2.0.0)"
+        }
+      },
+      "OpenTelemetry.Resources.Host": {
+        "type": "Transitive",
+        "resolved": "1.15.0-beta.2",
+        "contentHash": "Ars2cy8gRmQ4n29V9L58eiFYucB8QwTfagFlNfMl3JpgkEeTsNtMInNTTJBDtnLM//7187C70n6lkc8fr2aGIA==",
+        "dependencies": {
+          "OpenTelemetry": "[1.15.0, 2.0.0)"
+        }
+      },
+      "OpenTelemetry.Resources.OperatingSystem": {
+        "type": "Transitive",
+        "resolved": "1.15.0-beta.1",
+        "contentHash": "I32LVRlWDsBALEQKD2jQx69iGjE+PZ2RdD0LoWzaKx7IsfsXoykvH7XgfF8o+/bzkAwKDr0zVe1Yb6so2zw7lw==",
+        "dependencies": {
+          "OpenTelemetry": "[1.15.0, 2.0.0)"
+        }
+      },
+      "OpenTelemetry.Resources.Process": {
+        "type": "Transitive",
+        "resolved": "1.15.0-beta.1",
+        "contentHash": "ZyrUlfsSusSZd9PYB90x6bQUCuCf+gbd18wu4y8FDscW1ASS2a9bM8BRiaFIyUHh8Ztou4Sjqes2Pob2s+mZkw==",
+        "dependencies": {
+          "OpenTelemetry": "[1.15.0, 2.0.0)"
+        }
+      },
+      "OpenTelemetry.Resources.ProcessRuntime": {
+        "type": "Transitive",
+        "resolved": "1.15.0-beta.1",
+        "contentHash": "bejo+D0Fkt/IeLUtR1MaDQYbFKhMibdVEtlDm5s7CapDls+U8p20MCwkQwZBIeL+gzacWR7+IhKR1EozbvW2ew==",
+        "dependencies": {
+          "OpenTelemetry": "[1.15.0, 2.0.0)"
         }
       },
       "Pipelines.Sockets.Unofficial": {
@@ -157,6 +392,42 @@
         "contentHash": "Uqc2OQHglqj9/FfGQ6RkKFkZfHySfZlfmbCl+hc+u2I/IqunfelQ7QJi7ZhvAJxUtu80pildVX6NPLdDaUffOw==",
         "dependencies": {
           "Pipelines.Sockets.Unofficial": "2.2.8"
+        }
+      },
+      "System.CodeDom": {
+        "type": "Transitive",
+        "resolved": "4.7.0",
+        "contentHash": "Hs9pw/kmvH3lXaZ1LFKj3pLQsiGfj2xo3sxSzwiLlRL6UcMZUTeCfoJ9Udalvn3yq5dLlPEZzYegrTQ1/LhPOQ=="
+      },
+      "System.Drawing.Common": {
+        "type": "Transitive",
+        "resolved": "4.7.2",
+        "contentHash": "I2y4KBK3VCvU/WqE2xv7NjQ67maXHttkFSHYKgU2evrG9Yqh0oFjfORXt5hZTk+BVjdyFo2h0/YQZsca33BGmg==",
+        "dependencies": {
+          "Microsoft.NETCore.Platforms": "3.1.4",
+          "Microsoft.Win32.SystemEvents": "4.7.0"
+        }
+      },
+      "System.Management": {
+        "type": "Transitive",
+        "resolved": "4.7.0",
+        "contentHash": "IY+uuGhgzWiCg21i8IvQeY/Z7m1tX8VuPF+ludfn7iTCaccTtJo5HkjZbBEL8kbBubKhAKKtNXr7uMtmAc28Pw==",
+        "dependencies": {
+          "Microsoft.NETCore.Platforms": "3.1.0",
+          "System.CodeDom": "4.7.0"
+        }
+      },
+      "System.Private.ServiceModel": {
+        "type": "Transitive",
+        "resolved": "4.7.0",
+        "contentHash": "BItrYCkoTV3VzVPsrew+uc34fmLb+3ncgspa7vbO3vkfY9JQCea4u34pHE+Bcv1Iy16MgRs3n2jKVRCDg0rPfg=="
+      },
+      "System.ServiceModel.Primitives": {
+        "type": "Transitive",
+        "resolved": "4.7.0",
+        "contentHash": "YUXIMO4kL1v6dUVptJGixAx/8Ai5trQzVn3gbk0mpwxh77kGAs+MyBRoHN/5ZoxtwNn4E1dq3N4rJCAgAUaiJA==",
+        "dependencies": {
+          "System.Private.ServiceModel": "4.7.0"
         }
       },
       "application": {
@@ -175,16 +446,21 @@
         "type": "Project",
         "dependencies": {
           "Application": "[1.0.0, )",
+          "Grafana.OpenTelemetry": "[1.5.2, )",
           "Microsoft.Extensions.Caching.Hybrid": "[10.1.0, )",
           "Microsoft.Extensions.Caching.StackExchangeRedis": "[10.0.2, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.0.0, )",
-          "OpenTelemetry.Exporter.OpenTelemetryProtocol": "[1.14.0, )",
-          "OpenTelemetry.Extensions.Hosting": "[1.14.0, )",
-          "OpenTelemetry.Instrumentation.AspNetCore": "[1.14.0, )",
-          "OpenTelemetry.Instrumentation.EntityFrameworkCore": "[1.12.0-beta.2, )",
-          "OpenTelemetry.Instrumentation.GrpcNetClient": "[1.12.0-beta.1, )",
-          "OpenTelemetry.Instrumentation.Http": "[1.14.0, )",
-          "OpenTelemetry.Instrumentation.StackExchangeRedis": "[1.12.0-beta.2, )",
+          "OpenTelemetry.Exporter.Console": "[1.15.0, )",
+          "OpenTelemetry.Exporter.Prometheus.AspNetCore": "[1.15.0-beta.1, )",
+          "OpenTelemetry.Extensions": "[1.14.0-beta.1, )",
+          "OpenTelemetry.Extensions.Hosting": "[1.15.0, )",
+          "OpenTelemetry.Instrumentation.AspNetCore": "[1.15.0, )",
+          "OpenTelemetry.Instrumentation.EntityFrameworkCore": "[1.15.0-beta.1, )",
+          "OpenTelemetry.Instrumentation.GrpcNetClient": "[1.15.0-beta.1, )",
+          "OpenTelemetry.Instrumentation.Http": "[1.15.0, )",
+          "OpenTelemetry.Instrumentation.Process": "[1.15.0-beta.1, )",
+          "OpenTelemetry.Instrumentation.Runtime": "[1.15.0, )",
+          "OpenTelemetry.Instrumentation.StackExchangeRedis": "[1.15.0-beta.1, )",
           "RabbitMQ.Client": "[7.2.0, )",
           "RabbitMQ.Client.OpenTelemetry": "[1.0.0-rc.2, )"
         }
@@ -202,6 +478,27 @@
         "contentHash": "D0VXh4dtjjX2aQizuaa0g6R8X3U1JaVqJPfGCvLwZX9t/O2h7tkpbitbadQMfwcgSPdDbI2vDxuwRMv/Uf9dHA==",
         "dependencies": {
           "FluentValidation": "12.1.1"
+        }
+      },
+      "Grafana.OpenTelemetry": {
+        "type": "CentralTransitive",
+        "requested": "[1.5.2, )",
+        "resolved": "1.5.2",
+        "contentHash": "5QDzhHq7vMd22uCXT7+TL7LRRxJ/wtsLcDosb81qKQxoxnKixLb0zjzEV157WcU3vbwlTXP07AIH3kpZzFrEWQ==",
+        "dependencies": {
+          "CassandraCSharpDriver": "3.22.0",
+          "Grafana.OpenTelemetry.Base": "1.5.2",
+          "OpenTelemetry.Extensions.Hosting": "1.15.0",
+          "OpenTelemetry.Instrumentation.AWS": "1.15.0",
+          "OpenTelemetry.Instrumentation.AWSLambda": "1.15.0",
+          "OpenTelemetry.Instrumentation.AspNetCore": "1.15.0",
+          "OpenTelemetry.Instrumentation.Cassandra": "1.0.0-beta.5",
+          "OpenTelemetry.Instrumentation.ElasticsearchClient": "1.15.0-beta.1",
+          "OpenTelemetry.Instrumentation.EntityFrameworkCore": "1.15.0-beta.1",
+          "OpenTelemetry.Instrumentation.Hangfire": "1.15.0-beta.1",
+          "OpenTelemetry.Instrumentation.Quartz": "1.15.0-beta.1",
+          "OpenTelemetry.Instrumentation.StackExchangeRedis": "1.15.0-beta.1",
+          "OpenTelemetry.Instrumentation.Wcf": "1.15.0-beta.1"
         }
       },
       "Microsoft.EntityFrameworkCore": {
@@ -238,6 +535,12 @@
           "StackExchange.Redis": "2.7.27"
         }
       },
+      "Newtonsoft.Json": {
+        "type": "CentralTransitive",
+        "requested": "[13.0.4, )",
+        "resolved": "13.0.4",
+        "contentHash": "pdgNNMai3zv51W5aq268sujXUyx7SNdE2bj1wZcWjAQrKMFZV260lbqYop1d2GM67JI1huLRwxo9ZqnfF/lC6A=="
+      },
       "Npgsql.EntityFrameworkCore.PostgreSQL": {
         "type": "CentralTransitive",
         "requested": "[10.0.0, )",
@@ -249,68 +552,104 @@
           "Npgsql": "10.0.0"
         }
       },
-      "OpenTelemetry.Exporter.OpenTelemetryProtocol": {
+      "OpenTelemetry.Exporter.Console": {
         "type": "CentralTransitive",
-        "requested": "[1.14.0, )",
-        "resolved": "1.14.0",
-        "contentHash": "7ELExeje+T/KOywHuHwZBGQNtYlepUaYRFXWgoEaT1iKpFJVwOlE1Y2+uqHI2QQmah0Ue+XgRmDy924vWHfJ6Q==",
+        "requested": "[1.15.0, )",
+        "resolved": "1.15.0",
+        "contentHash": "Jweov3Q70xmy5U8bwab8xd+xAuaFBI4695q/IpH4/dcAwKytyB+WhV5HufmKfXiKZhRbSEo8piG+i1ENEmdFXw==",
         "dependencies": {
-          "OpenTelemetry": "1.14.0"
+          "OpenTelemetry": "1.15.0"
+        }
+      },
+      "OpenTelemetry.Exporter.Prometheus.AspNetCore": {
+        "type": "CentralTransitive",
+        "requested": "[1.15.0-beta.1, )",
+        "resolved": "1.15.0-beta.1",
+        "contentHash": "015RkS1PLohpIRXQA9mhi+KLUSIz4kdZ683ur1IIJ1YuCT1sf0maXTKZ3zNy6JtBzBXCIUmzt8ug1lRK8qLQ0A==",
+        "dependencies": {
+          "OpenTelemetry": "[1.15.0, 2.0.0)"
+        }
+      },
+      "OpenTelemetry.Extensions": {
+        "type": "CentralTransitive",
+        "requested": "[1.14.0-beta.1, )",
+        "resolved": "1.14.0-beta.1",
+        "contentHash": "4DxYvBgz3OaCD8DE2lutiMiaEZh/PvWW05ewhAeqS6lKAETultAzfCveDXxMcIkaVwc93PR/Z22/P5zZ2rmHZA==",
+        "dependencies": {
+          "OpenTelemetry": "[1.14.0, 2.0.0)"
         }
       },
       "OpenTelemetry.Extensions.Hosting": {
         "type": "CentralTransitive",
-        "requested": "[1.14.0, )",
-        "resolved": "1.14.0",
-        "contentHash": "ZAxkCIa3Q3YWZ1sGrolXfkhPqn2PFSz2Cel74em/fATZgY5ixlw6MQp2icmqKCz4C7M1W2G0b92K3rX8mOtFRg==",
+        "requested": "[1.15.0, )",
+        "resolved": "1.15.0",
+        "contentHash": "RixjKyB1pbYGhWdvPto4KJs+exdQknJsnjUO9WszdLles5Vcd0EYzxPNJdwmLjYfP+Jfbr4B5nktM4ZgeHSWtg==",
         "dependencies": {
-          "OpenTelemetry": "1.14.0"
+          "OpenTelemetry": "1.15.0"
         }
       },
       "OpenTelemetry.Instrumentation.AspNetCore": {
         "type": "CentralTransitive",
-        "requested": "[1.14.0, )",
-        "resolved": "1.14.0",
-        "contentHash": "NQAQpFa3a4ofPUYwxcwtNPGpuRNwwx1HM7MnLEESYjYkhfhER+PqqGywW65rWd7bJEc1/IaL+xbmHH99pYDE0A==",
+        "requested": "[1.15.0, )",
+        "resolved": "1.15.0",
+        "contentHash": "mte1nRYefxjed2syXgVWq3UCfMKO7MkebvTZmf0O1aLgVgCktLsVjQ6mftyjIbWGBBCHN0wg+Glxj8BSFS70pQ==",
         "dependencies": {
-          "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.14.0, 2.0.0)"
+          "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.15.0, 2.0.0)"
         }
       },
       "OpenTelemetry.Instrumentation.EntityFrameworkCore": {
         "type": "CentralTransitive",
-        "requested": "[1.12.0-beta.2, )",
-        "resolved": "1.12.0-beta.2",
-        "contentHash": "4D2PLiJWbBbQbauojkIflT11WGVXoRU+xgox1mvOkpfm7YXIfwTtROOlcdscS51sMh5fgwjGKJtLWpLKppe7dw==",
+        "requested": "[1.15.0-beta.1, )",
+        "resolved": "1.15.0-beta.1",
+        "contentHash": "N01GzP+r8lpSBiqjRX0/WjSp17r+zk6dKvGKthiASyFzF44lrJo8cA3ihXnw3p4Rnqg1mVjOYy19R6iJ84NTpg==",
         "dependencies": {
-          "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.12.0, 2.0.0)"
+          "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.15.0, 2.0.0)"
         }
       },
       "OpenTelemetry.Instrumentation.GrpcNetClient": {
         "type": "CentralTransitive",
-        "requested": "[1.12.0-beta.1, )",
-        "resolved": "1.12.0-beta.1",
-        "contentHash": "mi3Njei+Y5bn7oJYwIy/XWON+TK/sDUZy1m8UPw4ihtaCVjBTUdPWCjOW1sv3mZoctnJAT6PjNXD9222rqO65w==",
+        "requested": "[1.15.0-beta.1, )",
+        "resolved": "1.15.0-beta.1",
+        "contentHash": "SBas5+C4kGUqoy8OPpQis+QIgJ7/aaJl4H3oLzHCJnZLCb8TXZmQL2/r753RXXJUH8oIeLIzdW+EXgujSy+cpQ==",
         "dependencies": {
-          "OpenTelemetry": "[1.12.0, 2.0.0)"
+          "OpenTelemetry": "[1.15.0, 2.0.0)"
         }
       },
       "OpenTelemetry.Instrumentation.Http": {
         "type": "CentralTransitive",
-        "requested": "[1.14.0, )",
-        "resolved": "1.14.0",
-        "contentHash": "uH8X1fYnywrgaUrSbemKvFiFkBwY7ZbBU7Wh4A/ORQmdpF3G/5STidY4PlK4xYuIv9KkdMXH/vkpvzQcayW70g==",
+        "requested": "[1.15.0, )",
+        "resolved": "1.15.0",
+        "contentHash": "uToc7bUp8IEdb0ny9mKsL6FrrYelINPzxxiSShJgOf4XmQc4Azww6S5RjRj24YhsOn2a1MABOrxfVTZXtDk4Eg==",
         "dependencies": {
-          "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.14.0, 2.0.0)"
+          "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.15.0, 2.0.0)"
+        }
+      },
+      "OpenTelemetry.Instrumentation.Process": {
+        "type": "CentralTransitive",
+        "requested": "[1.15.0-beta.1, )",
+        "resolved": "1.15.0-beta.1",
+        "contentHash": "99zSvpwsMpKextd3RkHGY8iRsmw1qg3PjqkjC5hZI0fZG6m+wPsssrX6z9RhwDGcZ8sdGNjoKyLpNOmR154zQg==",
+        "dependencies": {
+          "OpenTelemetry.Api": "[1.15.0, 2.0.0)"
+        }
+      },
+      "OpenTelemetry.Instrumentation.Runtime": {
+        "type": "CentralTransitive",
+        "requested": "[1.15.0, )",
+        "resolved": "1.15.0",
+        "contentHash": "OOvpqR/j2Pb6+tWhHNODIbSJ53Or/MDtTiXEyrsWI02K2lLAgvBFcxUOrHggS/8015cYR3AdSaXv6NZrkz5yQA==",
+        "dependencies": {
+          "OpenTelemetry.Api": "[1.15.0, 2.0.0)"
         }
       },
       "OpenTelemetry.Instrumentation.StackExchangeRedis": {
         "type": "CentralTransitive",
-        "requested": "[1.12.0-beta.2, )",
-        "resolved": "1.12.0-beta.2",
-        "contentHash": "0gfZKwJ5gUHBRL4eD+3VGqumzvS+GPpMmQea8j4TlseBrqi2FDXFfh4YAnanj8ogex90QAwwpOTsMaTGZ9aEzg==",
+        "requested": "[1.15.0-beta.1, )",
+        "resolved": "1.15.0-beta.1",
+        "contentHash": "Igg/3MlBZZ9lZCTzMcvoFKav263+zOcKx9s4LVIdq96YmBHCuPmDiyygAIPdeIVzwN08VwD3RG1nXHDuRF1Ssg==",
         "dependencies": {
-          "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.12.0, 2.0.0)",
-          "StackExchange.Redis": "[2.6.122, 3.0.0)"
+          "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.15.0, 2.0.0)",
+          "StackExchange.Redis": "2.6.122"
         }
       },
       "RabbitMQ.Client": {

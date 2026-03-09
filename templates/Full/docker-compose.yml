@@ -28,8 +28,8 @@ services:
     networks:
       - hexagonal_solution_template_network
     volumes:
-      - ./scripts/migrations.sql:/tmp/migrations.sql
-      - ./scripts/seeds.sql:/tmp/seeds.sql
+      - ./scripts/sql/migrations.sql:/tmp/migrations.sql
+      - ./scripts/sql/seeds.sql:/tmp/seeds.sql
     command:
       - /bin/sh
       - -c
