@@ -72,11 +72,6 @@ services:
   #     file: docker-compose.yml
   #     service: pgadmin
 
-  # aspire-dashboard:
-  #   extends:
-  #     file: docker-compose.yml
-  #     service: aspire-dashboard
-
   redis:
     extends:
       file: docker-compose.yml
