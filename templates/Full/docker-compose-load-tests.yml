@@ -45,7 +45,6 @@ services:
       - LOGGING__LOGLEVEL__MICROSOFT_ENTITY_FRAMEWORK_CORE_DATABASE_COMMAND=Warning
       - ENABLE_SENSITIVE_DATA_LOGGING=false
       - OTEL_SERVICE_NAME=Hexagonal.Solution.Template.WebApp
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:18889
       - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://aspire-dashboard:18889
       - OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=http://aspire-dashboard:18889
       - OTEL_EXPORTER_OTLP_LOGS_ENDPOINT=http://aspire-dashboard:18889
