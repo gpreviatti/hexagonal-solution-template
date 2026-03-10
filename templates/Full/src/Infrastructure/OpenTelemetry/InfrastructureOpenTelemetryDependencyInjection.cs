@@ -58,7 +58,8 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
                     {
                         options.Protocol = exporterProtocol;
                         options.Endpoint = new Uri(exporterMetricsEndpoint);
-                    });
+                    })
+                    .UseGrafana();
             })
             .WithTracing(tracing => tracing
                 .AddSqlClientInstrumentation()
@@ -73,22 +74,21 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
                     options.Protocol = exporterProtocol;
                     options.Endpoint = new Uri(exporterTracesEndpoint!);
                 })
-            )
-            .WithLogging(logging => logging
-                .AddOtlpExporter(options =>
-                {
-                    options.Protocol = exporterProtocol;
-                    options.Endpoint = new Uri(exporterLogsEndpoint!);
-                })
-            )
-            .UseGrafana();
+                .UseGrafana()
+            );
 
             builder.Services.AddLogging(logging => logging.AddOpenTelemetry(options =>
             {
                 options.IncludeFormattedMessage = true;
                 options.IncludeScopes = true;
                 options.ParseStateValues = true;
-                options.AttachLogsToActivityEvent();
+                options
+                    .AttachLogsToActivityEvent()
+                    .AddOtlpExporter(exporterOptions =>
+                    {
+                        exporterOptions.Protocol = exporterProtocol;
+                        exporterOptions.Endpoint = new Uri(exporterLogsEndpoint!);
+                    }).UseGrafana();
             }));
 
             return builder;
