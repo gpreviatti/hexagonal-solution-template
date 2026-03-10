@@ -28,9 +28,9 @@ otelcol.exporter.otlphttp "metrics" {
 }
 
 otelcol.exporter.otlphttp "traces" {
-    client {
-        endpoint = "http://tempo:4318"
-    }
+  client {
+      endpoint = "http://tempo:4318"
+  }
 }
 
 livedebugging {

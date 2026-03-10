@@ -10,9 +10,9 @@
             "environmentVariables": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
                 "OTEL_SERVICE_NAME": "Hexagonal.Solution.Template.WebApp",
-                "OTEL_EXPORTER_OTLP_TRACES_ENDPOINT": "http://localhost:4318",
-                "OTEL_EXPORTER_OTLP_METRICS_ENDPOINT": "http://localhost/api/v1/otlp:9090",
-                "OTEL_EXPORTER_OTLP_LOGS_ENDPOINT": "http://localhost/otlp:3100",
+                "OTEL_EXPORTER_OTLP_TRACES_ENDPOINT": "http://localhost:4317",
+                "OTEL_EXPORTER_OTLP_METRICS_ENDPOINT": "http://localhost:4317",
+                "OTEL_EXPORTER_OTLP_LOGS_ENDPOINT": "http://localhost:4317",
                 "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
                 "OTEL_RESOURCE_ATTRIBUTES": "service.namespace=development"
             }
