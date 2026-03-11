@@ -1,6 +1,5 @@
 ﻿using Infrastructure.Data;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using Infrastructure.OpenTelemetry;
 using Infrastructure.Cache;
 using Infrastructure.Messaging;
