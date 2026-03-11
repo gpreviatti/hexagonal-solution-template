@@ -43,6 +43,10 @@ public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)
             return new(false, null, "Notification not found.");
         }
 
+        Activity?.SetTag("notificationId", notification.Id);
+        Activity?.SetTag("notificationType", notification.NotificationType);
+        Activity?.SetTag("notificationStatus", notification.NotificationStatus);
+
         return new(true, notification);
     }
 }

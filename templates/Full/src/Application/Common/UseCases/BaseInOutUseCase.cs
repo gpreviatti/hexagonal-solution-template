@@ -43,7 +43,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
         CancellationToken cancellationToken
     )
     {
-        using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{ClassName}.{HandleMethodName}")!;
+        Activity = ActivitySource.StartActivity($"{ClassName}.{HandleMethodName}")!;
         
         Logs.StartingOperation(Logger, ClassName, HandleMethodName, request.CorrelationId);
         TResponseData response;
@@ -72,7 +72,8 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
         Logs.FinishedOperation(Logger, ClassName, HandleMethodName, request.CorrelationId);
 
         _useCaseExecuted.Record(1);
-        activity?.SetTag("correlationId", request.CorrelationId);
+        Activity?.SetTag("correlationId", request.CorrelationId);
+        Activity?.Stop();
 
         return response;
     }

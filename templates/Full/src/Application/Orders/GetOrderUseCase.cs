@@ -45,6 +45,9 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider)  : BaseInO
             return new(false, null, "Order not found.");
         }
 
+        Activity?.SetTag("orderId", order.Id);
+        Activity?.SetTag("orderTotal", order.Total);
+
         return new(true, order);
     }
 }

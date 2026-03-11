@@ -30,7 +30,7 @@ public abstract class BaseOutUseCase<TResponseData> : BaseUseCase, IBaseOutUseCa
 
     public async Task<TResponseData> HandleAsync(CancellationToken cancellationToken)
     {
-        using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{ClassName}.{HandleMethodName}")!;
+        Activity = ActivitySource.StartActivity($"{ClassName}.{HandleMethodName}")!;
                 
         var correlationId = Guid.NewGuid();
         Logs.StartingOperation(Logger, ClassName, HandleMethodName, correlationId);
@@ -41,7 +41,8 @@ public abstract class BaseOutUseCase<TResponseData> : BaseUseCase, IBaseOutUseCa
 
         _useCaseExecuted.Record(1);
 
-        activity?.SetTag("correlationId", correlationId);
+        Activity?.SetTag("correlationId", correlationId);
+        Activity?.Stop();
 
         return response;
     }

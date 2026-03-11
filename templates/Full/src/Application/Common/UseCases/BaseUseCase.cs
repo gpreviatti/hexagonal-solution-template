@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using Application.Common.Constants;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -8,6 +10,8 @@ public abstract class BaseUseCase
     protected IServiceProvider ServiceProvider { get; }
     protected ILogger Logger { get; }
     protected string ClassName { get; set; }
+    protected ActivitySource ActivitySource { get; }
+    public Activity Activity { get; set; }
 
     protected BaseUseCase(IServiceProvider serviceProvider)
     {
@@ -17,5 +21,7 @@ public abstract class BaseUseCase
         ServiceProvider = serviceProvider;
 
         Logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(classType);
+
+        ActivitySource = DefaultConfigurations.ActivitySource;
     }
 }

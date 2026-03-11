@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using System.Text.Json;
+using Application.Common.Constants;
 using Application.Common.Messages;
 using Application.Common.Services;
 using Infrastructure.Common;
@@ -20,6 +22,8 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
     private readonly IDictionary<string, object?> _arguments;
     private readonly ConnectionFactory _factory;
     protected IProduceService producerService = null!;
+    private readonly ActivitySource _activitySource = DefaultConfigurations.ActivitySource;
+
 
     public BaseConsumer(
         ILogger<BaseConsumer<TMessage, TConsumer>> logger,
@@ -93,6 +97,8 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
         CancellationToken cancellationToken
     )
     {
+        using var activity = _activitySource.StartActivity($"{_className}.{nameof(HandleRabbitMqAsync)}");
+
         var connection = await _factory.CreateConnectionAsync(cancellationToken);
         var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
         var methodName = nameof(HandleRabbitMqAsync);
@@ -157,6 +163,10 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
             await handleAsync.Invoke(message, cancellationToken);
 
             Logs.Debug(logger, _className, methodName, message.CorrelationId, "Use case handled.");
+
+            activity?.SetTag("CorrelationId", message.CorrelationId.ToString());
+            activity?.SetTag("MessageType", typeof(TMessage).Name);
+            
         };
 
         await channel.BasicConsumeAsync(
@@ -165,6 +175,10 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
             consumer: consumer,
             cancellationToken: cancellationToken
         );
+
+        activity?.SetTag("RabbitMQHostName", _factory.HostName);
+        activity?.SetTag("QueueName", _queueName);
+
     }
 
     protected abstract Task HandleUseCaseAsync(IServiceProvider serviceProvider, TMessage message, CancellationToken cancellationToken);
