@@ -30,7 +30,7 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider)
 
         if (orders is null || !orders.Any())
         {
-            Logs.NotFound(Logger, ClassName, HandleMethodName, request.CorrelationId, nameof(orders));
+            Logs.NotFound(Logger, HandleMethodName, request.CorrelationId, nameof(orders));
             return new(false, 0, 0, [], "No orders found.");
         }
 

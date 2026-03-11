@@ -23,10 +23,10 @@ internal sealed class HybridCacheService(HybridCache cache, ILogger<HybridCacheS
     {
         using var activity = _activitySource.StartActivity($"{_className}.{nameof(GetOrCreateAsync)}");
 
-        Logs.DebugStartingOperation(_logger, _className, nameof(GetOrCreateAsync), correlationId, key);
+        Logs.DebugStartingOperation(_logger, nameof(GetOrCreateAsync), correlationId, key);
         var result = await _cache.GetOrCreateAsync($"{DefaultConfigurations.ApplicationName}:{key}", factory, cancellationToken: cancellationToken);
 
-        Logs.DebugFinishedOperation(_logger, _className, nameof(GetOrCreateAsync), correlationId, $"Cache hit: {result != null} for key: {key}");
+        Logs.DebugFinishedOperation(_logger, nameof(GetOrCreateAsync), correlationId, $"Cache hit: {result != null} for key: {key}");
 
         return result;
     }
@@ -35,21 +35,21 @@ internal sealed class HybridCacheService(HybridCache cache, ILogger<HybridCacheS
     {
         using var activity = _activitySource.StartActivity($"{_className}.{nameof(CreateAsync)}");
 
-        Logs.DebugStartingOperation(_logger, _className, nameof(CreateAsync), correlationId, key);
+        Logs.DebugStartingOperation(_logger, nameof(CreateAsync), correlationId, key);
 
         await _cache.SetAsync($"{DefaultConfigurations.ApplicationName}:{key}", value, cancellationToken: cancellationToken);
 
-        Logs.DebugFinishedOperation(_logger, _className, nameof(CreateAsync), correlationId, $"Cached hit: {value != null} for key: {key}");
+        Logs.DebugFinishedOperation(_logger, nameof(CreateAsync), correlationId, $"Cached hit: {value != null} for key: {key}");
     }
 
     public async ValueTask DeleteAsync(Guid correlationId, string key, CancellationToken cancellationToken)
     {
         using var activity = _activitySource.StartActivity($"{_className}.{nameof(DeleteAsync)}");
 
-        Logs.DebugStartingOperation(_logger, _className, nameof(DeleteAsync), correlationId, key);
+        Logs.DebugStartingOperation(_logger, nameof(DeleteAsync), correlationId, key);
 
         await _cache.RemoveAsync($"{DefaultConfigurations.ApplicationName}:{key}", cancellationToken);
 
-        Logs.DebugFinishedOperation(_logger, _className, nameof(DeleteAsync), correlationId, $"Cache entry removed for key: {key}");
+        Logs.DebugFinishedOperation(_logger, nameof(DeleteAsync), correlationId, $"Cache entry removed for key: {key}");
     }
 }

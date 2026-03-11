@@ -8,7 +8,6 @@ internal sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<
 {
     private readonly RequestDelegate _next = next;
     private readonly ILogger<ExceptionHandlingMiddleware> _logger = logger;
-    private readonly string _className = nameof(ExceptionHandlingMiddleware);
 
     public async Task InvokeAsync(HttpContext context)
     {
@@ -24,7 +23,7 @@ internal sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<
 
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        Logs.Error(_logger, _className, nameof(HandleExceptionAsync), exception.Message);
+        Logs.Error(_logger, nameof(HandleExceptionAsync), exception.Message);
 
         BaseResponse response = new(false, exception.Message);
 

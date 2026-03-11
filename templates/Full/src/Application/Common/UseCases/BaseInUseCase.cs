@@ -41,7 +41,7 @@ public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TReq
     {
         using var activity = ActivitySource.StartActivity($"{ClassName}.{HandleMethodName}")!;
 
-        Logs.StartingOperation(Logger, ClassName, HandleMethodName, request.CorrelationId);
+        Logs.StartingOperation(Logger, HandleMethodName, request.CorrelationId);
 
         if (_validator != null)
         {
@@ -49,7 +49,7 @@ public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TReq
             if (!validationResult.IsValid)
             {
                 var errors = string.Join(", ", validationResult.Errors);
-                Logs.ValidationErrors(Logger, ClassName, HandleMethodName, request.CorrelationId, errors);
+                Logs.ValidationErrors(Logger, HandleMethodName, request.CorrelationId, errors);
 
                 return;
             }
@@ -57,7 +57,7 @@ public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TReq
 
         await HandleInternalAsync(request, cancellationToken);
 
-        Logs.FinishedOperation(Logger, ClassName, HandleMethodName, request.CorrelationId);
+        Logs.FinishedOperation(Logger, HandleMethodName, request.CorrelationId);
 
         _useCaseExecuted.Record(1);
 

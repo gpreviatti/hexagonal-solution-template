@@ -45,7 +45,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
     {
         using var activity = ActivitySource.StartActivity($"{ClassName}.{HandleMethodName}")!;
         
-        Logs.StartingOperation(Logger, ClassName, HandleMethodName, request.CorrelationId);
+        Logs.StartingOperation(Logger, HandleMethodName, request.CorrelationId);
         TResponseData response;
 
         if (_validator != null)
@@ -54,7 +54,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
             if (!validationResult.IsValid)
             {
                 string errors = string.Join(", ", validationResult.Errors);
-                Logs.ValidationErrors(Logger, ClassName, HandleMethodName, request.CorrelationId, errors);
+                Logs.ValidationErrors(Logger, HandleMethodName, request.CorrelationId, errors);
 
                 response = Activator.CreateInstance<TResponseData>();
                 response = response with
@@ -69,7 +69,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
 
         response = await HandleInternalAsync(request, cancellationToken);
 
-        Logs.FinishedOperation(Logger, ClassName, HandleMethodName, request.CorrelationId);
+        Logs.FinishedOperation(Logger, HandleMethodName, request.CorrelationId);
 
         _useCaseExecuted.Record(1);
         activity?.SetTag("correlationId", request.CorrelationId);

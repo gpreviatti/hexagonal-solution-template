@@ -28,7 +28,7 @@ public class BaseRepository(
     {
         using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{_className}.{methodName}")!;
 
-        Logs.DebugStartingOperation(logger, _className, methodName, correlationId);
+        Logs.DebugStartingOperation(logger, methodName, correlationId);
 
         var dbSet = _dbContext.Set<TEntity>();
         if (newContext.GetValueOrDefault())
@@ -36,7 +36,7 @@ public class BaseRepository(
 
         var result = await query.Invoke(dbSet);
 
-        Logs.DebugFinishedOperation(logger, _className, methodName, correlationId);
+        Logs.DebugFinishedOperation(logger, methodName, correlationId);
 
         activity?.SetTag("correlationId", correlationId);
         activity?.Stop();
@@ -53,13 +53,13 @@ public class BaseRepository(
     {
         using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{_className}.{nameof(GetQueryable)}")!;
 
-        Logs.DebugStartingOperation(logger, _className, nameof(GetQueryable), correlationId);
+        Logs.DebugStartingOperation(logger, nameof(GetQueryable), correlationId);
 
         var dbSet = _dbContext.Set<TEntity>();
         if (newContext.GetValueOrDefault())
             dbSet = _dbContextFactory.CreateDbContext().Set<TEntity>();
 
-        Logs.DebugFinishedOperation(logger, _className, nameof(GetQueryable), correlationId);
+        Logs.DebugFinishedOperation(logger, nameof(GetQueryable), correlationId);
 
         activity?.SetTag("correlationId", correlationId);
 

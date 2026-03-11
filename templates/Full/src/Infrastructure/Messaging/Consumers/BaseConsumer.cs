@@ -17,7 +17,7 @@ sealed file record IsExecuted(bool Value);
 
 internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundService<BaseConsumer<TMessage, TConsumer>> where TMessage : BaseMessage
 {
-    private readonly string _className = typeof(TConsumer).Name;
+    private readonly string _consumerName = typeof(TConsumer).Name;
     private readonly string _queueName;
     private readonly IDictionary<string, object?> _arguments;
     private readonly ConnectionFactory _factory;
@@ -56,9 +56,9 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
                 var hybridCacheService = serviceProvider.GetRequiredService<IHybridCacheService>();
 
 
-                Logs.Debug(logger, _className, methodName, message.CorrelationId, typeof(TMessage).Name + " received. Checking if it has already been processed.");
+                Logs.Debug(logger, methodName, message.CorrelationId, typeof(TMessage).Name + " received. Checking if it has already been processed.");
 
-                var isExecutedKey = _className + "-" + message.CorrelationId;
+                var isExecutedKey = _consumerName + "-" + message.CorrelationId;
                 var isExecuted = await hybridCacheService.GetOrCreateAsync(
                     message.CorrelationId,
                     isExecutedKey,
@@ -68,21 +68,21 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
 
                 if (isExecuted)
                 {
-                    Logs.Warning(logger, _className, methodName, message.CorrelationId, typeof(TMessage).Name + " has already been processed. Skipping.");
+                    Logs.Warning(logger, methodName, message.CorrelationId, typeof(TMessage).Name + " has already been processed. Skipping.");
                     return;
                 }
 
-                Logs.DebugStartingOperation(logger, _className, methodName, message.CorrelationId, typeof(TMessage).Name + " processing started.");
+                Logs.DebugStartingOperation(logger, methodName, message.CorrelationId, typeof(TMessage).Name + " processing started.");
 
                 await HandleUseCaseAsync(serviceProvider, message, cancellationToken);
 
                 await hybridCacheService.CreateAsync(message.CorrelationId, isExecutedKey, true, cancellationToken);
 
-                Logs.DebugFinishedOperation(logger, _className, methodName, message.CorrelationId, typeof(TMessage).Name + " processing finished.");
+                Logs.DebugFinishedOperation(logger, methodName, message.CorrelationId, typeof(TMessage).Name + " processing finished.");
             }
             catch (Exception ex)
             {
-                Logs.Error(logger, _className, methodName, message.CorrelationId, ex.Message);
+                Logs.Error(logger, methodName, message.CorrelationId, ex.Message);
 
                 _ = producerService.HandleAsync(message!, CancellationToken.None, _queueName + "_deadLetter");
 
@@ -97,13 +97,13 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
         CancellationToken cancellationToken
     )
     {
-        using var activity = _activitySource.StartActivity($"{_className}.{nameof(HandleRabbitMqAsync)}");
+        using var activity = _activitySource.StartActivity($"{_consumerName}.{nameof(HandleRabbitMqAsync)}");
 
         var connection = await _factory.CreateConnectionAsync(cancellationToken);
         var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
         var methodName = nameof(HandleRabbitMqAsync);
 
-        Logs.Debug(logger, _className, methodName, Guid.NewGuid(), "Connected to RabbitMQ. Declaring queues.");
+        Logs.Debug(logger, methodName, Guid.NewGuid(), "Connected to RabbitMQ. Declaring queues.");
 
         await channel.QueueDeclareAsync(
             queue: _queueName,
@@ -123,7 +123,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
 
         AsyncEventingBasicConsumer consumer = new(channel);
 
-        Logs.Debug(logger, _className, methodName, Guid.NewGuid(), "Queues declared. Starting to consume messages.");
+        Logs.Debug(logger, methodName, Guid.NewGuid(), "Queues declared. Starting to consume messages.");
 
         consumer.ReceivedAsync += async (model, eventArguments) =>
         {
@@ -133,36 +133,36 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
             TMessage message = null!;
             try
             {
-                Logs.Debug(logger, _className, methodName, Guid.NewGuid(), "Message received. Deserializing.");
+                Logs.Debug(logger, methodName, Guid.NewGuid(), "Message received. Deserializing.");
 
                 message = JsonSerializer.Deserialize<TMessage>(body)!;
 
-                Logs.Debug(logger, _className, methodName, message.CorrelationId, "Message deserialized. Validating.");
+                Logs.Debug(logger, methodName, message.CorrelationId, "Message deserialized. Validating.");
 
                 if (message == null || message.GetType() != typeof(TMessage))
                 {
-                    Logs.Warning(logger, _className, methodName, Guid.NewGuid(), typeof(TMessage).Name + " is null or of incorrect type.");
+                    Logs.Warning(logger, methodName, Guid.NewGuid(), typeof(TMessage).Name + " is null or of incorrect type.");
                     return;
                 }
             }
             catch (JsonException ex)
             {
-                Logs.Error(logger, _className, methodName, Guid.NewGuid(), ex.Message);
+                Logs.Error(logger, methodName, Guid.NewGuid(), ex.Message);
 
                 throw;
             }
             catch (Exception ex)
             {
-                Logs.Error(logger, _className, methodName, Guid.NewGuid(), ex.Message);
+                Logs.Error(logger, methodName, Guid.NewGuid(), ex.Message);
 
                 throw;
             }
 
-            Logs.Debug(logger, _className, methodName, message.CorrelationId, "Message validated. Handling use case.");
+            Logs.Debug(logger, methodName, message.CorrelationId, "Message validated. Handling use case.");
 
             await handleAsync.Invoke(message, cancellationToken);
 
-            Logs.Debug(logger, _className, methodName, message.CorrelationId, "Use case handled.");
+            Logs.Debug(logger, methodName, message.CorrelationId, "Use case handled.");
         };
 
         await channel.BasicConsumeAsync(

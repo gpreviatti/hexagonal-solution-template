@@ -41,7 +41,7 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider)  : BaseInO
 
         if (order is null)
         {
-            Logs.NotFound(Logger, ClassName, HandleMethodName, request.CorrelationId, nameof(order));
+            Logs.NotFound(Logger, HandleMethodName, request.CorrelationId, nameof(order));
             return new(false, null, "Order not found.");
         }
 
