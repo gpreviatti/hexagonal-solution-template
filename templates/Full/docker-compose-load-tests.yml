@@ -8,9 +8,12 @@ services:
         condition: service_healthy
     ports:
       - "6565:6565"
+      - "5665:5665"
     environment:
       - WEBAPP_URL=http://webapp:5000
       - K6_SUMMARY_MODE=full
+      - K6_WEB_DASHBOARD=true
+      - K6_WEB_DASHBOARD_EXPORT=html-report.html
     command: ["run", "/LoadTests/scriptHttp.js", ]
     volumes:
       - ./tests/LoadTests:/LoadTests
