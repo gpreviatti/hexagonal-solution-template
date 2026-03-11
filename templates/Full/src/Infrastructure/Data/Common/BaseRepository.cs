@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using Application.Common.Constants;
 using Application.Common.Helpers;
 using Application.Common.Repositories;
 using Domain.Common;
@@ -26,7 +26,7 @@ public class BaseRepository(
         string methodName = null!
     ) where TEntity : DomainEntity
     {
-        using var activity = new ActivitySource("Hexagonal.Solution.Template.WebApp").StartActivity($"{_className}.{methodName}")!;
+        using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{_className}.{methodName}")!;
 
         Logs.DebugStartingOperation(logger, _className, methodName, correlationId);
 
@@ -51,7 +51,7 @@ public class BaseRepository(
         string methodName = null!
     ) where TEntity : DomainEntity
     {
-        using var activity = new ActivitySource("Hexagonal.Solution.Template.WebApp").StartActivity($"{_className}.{nameof(GetQueryable)}")!;
+        using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{_className}.{nameof(GetQueryable)}")!;
 
         Logs.DebugStartingOperation(logger, _className, nameof(GetQueryable), correlationId);
 

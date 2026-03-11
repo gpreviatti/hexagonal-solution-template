@@ -17,7 +17,6 @@ public abstract class BaseOutUseCase<TResponseData> : BaseUseCase, IBaseOutUseCa
     protected IHybridCacheService Cache { get; }
     protected IProduceService ProduceService { get; }
     private readonly Histogram<int> _useCaseExecuted;
-    private readonly Gauge<long> _useCaseExecutionElapsedTime;
     protected const string HandleMethodName = nameof(HandleAsync);
 
     protected BaseOutUseCase(IServiceProvider serviceProvider) : base(serviceProvider)
@@ -27,13 +26,12 @@ public abstract class BaseOutUseCase<TResponseData> : BaseUseCase, IBaseOutUseCa
 
         _useCaseExecuted = DefaultConfigurations.Meter
             .CreateHistogram<int>($"{ClassName}.Executed", "total", "Number of times the use case was executed");
-
-        _useCaseExecutionElapsedTime = DefaultConfigurations.Meter
-            .CreateGauge<long>($"{ClassName}.Elapsed", "elapsed", "Elapsed time taken to execute the use case");
     }
 
     public async Task<TResponseData> HandleAsync(CancellationToken cancellationToken)
     {
+        using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{ClassName}.{HandleMethodName}")!;
+                
         var correlationId = Guid.NewGuid();
         Logs.StartingOperation(Logger, ClassName, HandleMethodName, correlationId);
 
@@ -42,6 +40,8 @@ public abstract class BaseOutUseCase<TResponseData> : BaseUseCase, IBaseOutUseCa
         Logs.FinishedOperation(Logger, ClassName, HandleMethodName, correlationId);
 
         _useCaseExecuted.Record(1);
+
+        activity?.SetTag("correlationId", correlationId);
 
         return response;
     }

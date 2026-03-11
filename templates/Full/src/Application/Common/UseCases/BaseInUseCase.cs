@@ -21,7 +21,6 @@ public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TReq
     protected IBaseRepository Repository { get; }
     private readonly IValidator<TRequest> _validator;
     private readonly Histogram<int> _useCaseExecuted;
-    private readonly Gauge<long> _useCaseExecutionElapsedTime;
     protected const string HandleMethodName = nameof(HandleAsync);
 
     protected BaseInUseCase(IServiceProvider serviceProvider) : base(serviceProvider)
@@ -33,9 +32,6 @@ public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TReq
 
         _useCaseExecuted = DefaultConfigurations.Meter
             .CreateHistogram<int>($"{ClassName}.Executed", "total", "Number of times the use case was executed");
-
-        _useCaseExecutionElapsedTime = DefaultConfigurations.Meter
-            .CreateGauge<long>($"{ClassName}.Elapsed", "elapsed", "Elapsed time taken to execute the use case");
     }
 
     public async Task HandleAsync(
@@ -43,6 +39,8 @@ public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TReq
         CancellationToken cancellationToken
     )
     {
+        using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{ClassName}.{HandleMethodName}")!;
+
         Logs.StartingOperation(Logger, ClassName, HandleMethodName, request.CorrelationId);
 
         if (_validator != null)
@@ -62,6 +60,8 @@ public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TReq
         Logs.FinishedOperation(Logger, ClassName, HandleMethodName, request.CorrelationId);
 
         _useCaseExecuted.Record(1);
+
+        activity?.SetTag("correlationId", request.CorrelationId);
     }
 
     public abstract Task HandleInternalAsync(TRequest request, CancellationToken cancellationToken);

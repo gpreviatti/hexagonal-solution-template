@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Diagnostics.Metrics;
+﻿using System.Diagnostics.Metrics;
 using Application.Common.Constants;
 using Application.Common.Helpers;
 using Application.Common.Repositories;
@@ -26,7 +25,6 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
     protected IBaseRepository Repository { get; }
     private readonly IValidator<TRequest> _validator;
     private readonly Histogram<int> _useCaseExecuted;
-    private readonly Gauge<long> _useCaseExecutionElapsedTime;
     protected const string HandleMethodName = nameof(HandleAsync);
 
     protected BaseInOutUseCase(IServiceProvider serviceProvider) : base(serviceProvider)
@@ -38,9 +36,6 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
 
         _useCaseExecuted = DefaultConfigurations.Meter
             .CreateHistogram<int>($"{ClassName}.Executed", "total", "Number of times the use case was executed");
-
-        _useCaseExecutionElapsedTime = DefaultConfigurations.Meter
-            .CreateGauge<long>($"{ClassName}.Elapsed", "elapsed", "Elapsed time taken to execute the use case");
     }
 
     public async Task<TResponseData> HandleAsync(
@@ -48,7 +43,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
         CancellationToken cancellationToken
     )
     {
-        using var activity = new ActivitySource("Hexagonal.Solution.Template.WebApp").StartActivity($"{ClassName}.{HandleMethodName}")!;
+        using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{ClassName}.{HandleMethodName}")!;
         
         Logs.StartingOperation(Logger, ClassName, HandleMethodName, request.CorrelationId);
         TResponseData response;
