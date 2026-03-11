@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_DB: "OrderDb"
     networks:
-      - hexagonal_solution_template_network
+      - hexagonal_solution_template_full_network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 3s
@@ -26,7 +26,7 @@ services:
       postgres:
         condition: service_healthy
     networks:
-      - hexagonal_solution_template_network
+      - hexagonal_solution_template_full_network
     volumes:
       - ./scripts/sql/migrations.sql:/tmp/migrations.sql
       - ./scripts/sql/seeds.sql:/tmp/seeds.sql
@@ -51,7 +51,7 @@ services:
     ports:
       - "5050:80"
     networks:
-      - hexagonal_solution_template_network
+      - hexagonal_solution_template_full_network
 
   redis:
     image: redis:8
@@ -65,7 +65,7 @@ services:
       retries: 5
       start_period: 15s
     networks:
-      - hexagonal_solution_template_network
+      - hexagonal_solution_template_full_network
 
   rabbitmq:
     image: rabbitmq:management
@@ -83,8 +83,8 @@ services:
       retries: 5
       start_period: 15s
     networks:
-      - hexagonal_solution_template_network
+      - hexagonal_solution_template_full_network
 
 networks:
-  hexagonal_solution_template_network:
+  hexagonal_solution_template_full_network:
     driver: bridge

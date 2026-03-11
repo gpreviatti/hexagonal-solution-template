@@ -74,3 +74,7 @@ services:
     depends_on:
       - tempo-init
       - memcached
+
+networks:
+  hexagonal_solution_template_full_network:
+    driver: bridge

@@ -1,4 +1,4 @@
-name: hexagonal-solution-template-load-tests
+name: hexagonal-solution-template-full-load-tests
 
 services:
   k6:
@@ -15,7 +15,7 @@ services:
     volumes:
       - ./tests/LoadTests:/LoadTests
     networks:
-      - hexagonal_solution_template_network
+      - hexagonal_solution_template_full_network
 
   webapp:
     build:
@@ -45,16 +45,16 @@ services:
       - LOGGING__LOGLEVEL__MICROSOFT_ENTITY_FRAMEWORK_CORE_DATABASE_COMMAND=Warning
       - ENABLE_SENSITIVE_DATA_LOGGING=false
       - OTEL_SERVICE_NAME=Hexagonal.Solution.Template.WebApp
-      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://aspire-dashboard:18889
-      - OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=http://aspire-dashboard:18889
-      - OTEL_EXPORTER_OTLP_LOGS_ENDPOINT=http://aspire-dashboard:18889
+      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://alloy:4317
+      - OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=http://alloy:4317
+      - OTEL_EXPORTER_OTLP_LOGS_ENDPOINT=http://alloy:4317
       - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
       - OTEL_RESOURCE_ATTRIBUTES=service.namespace=load-tests
       - ConnectionStrings__OrderDb=Host=postgres;Port=5432;Database=OrderDb;Username=postgres;Password=cY5VvZkkh4AzES
       - ConnectionStrings__Redis=redis:6379
       - ConnectionStrings__RabbitMQ=amqp://guest:guest@rabbitmq:5672/
     networks:
-      - hexagonal_solution_template_network
+      - hexagonal_solution_template_full_network
 
   postgres:
     extends:
@@ -66,10 +66,10 @@ services:
       file: docker-compose.yml
       service: postgres-init
   
-  # pgadmin:
-  #   extends:
-  #     file: docker-compose.yml
-  #     service: pgadmin
+  pgadmin:
+    extends:
+      file: docker-compose.yml
+      service: pgadmin
 
   redis:
     extends:
@@ -82,5 +82,5 @@ services:
       service: rabbitmq
 
 networks:
-  hexagonal_solution_template_network:
+  hexagonal_solution_template_full_network:
     driver: bridge
