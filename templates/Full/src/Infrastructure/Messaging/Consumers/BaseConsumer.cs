@@ -163,10 +163,6 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
             await handleAsync.Invoke(message, cancellationToken);
 
             Logs.Debug(logger, _className, methodName, message.CorrelationId, "Use case handled.");
-
-            activity?.SetTag("CorrelationId", message.CorrelationId.ToString());
-            activity?.SetTag("MessageType", typeof(TMessage).Name);
-            
         };
 
         await channel.BasicConsumeAsync(
@@ -175,10 +171,6 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
             consumer: consumer,
             cancellationToken: cancellationToken
         );
-
-        activity?.SetTag("RabbitMQHostName", _factory.HostName);
-        activity?.SetTag("QueueName", _queueName);
-
     }
 
     protected abstract Task HandleUseCaseAsync(IServiceProvider serviceProvider, TMessage message, CancellationToken cancellationToken);
