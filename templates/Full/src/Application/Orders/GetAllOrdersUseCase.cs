@@ -36,13 +36,6 @@ public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider)
 
         var totalPages = (int) Math.Ceiling(totalRecords / (double) request.PageSize);
 
-        Activity?.SetTag("page", request.Page);
-        Activity?.SetTag("pageSize", request.PageSize);
-        Activity?.SetTag("sortBy", request.SortBy);
-        Activity?.SetTag("sortDescending", request.SortDescending);
-        Activity?.SetTag("totalRecords", totalRecords);
-        Activity?.SetTag("totalPages", totalPages);
-
         return new(true, totalPages, totalRecords, orders);
     }
 }

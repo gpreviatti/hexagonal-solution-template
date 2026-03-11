@@ -97,9 +97,6 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
 
         CreateNotification(correlationId, "Success", response);
 
-        Activity?.SetTag("orderId", newOrder.Id);
-        Activity?.SetTag("orderTotal", newOrder.Total);
-
         return response;
     }
 

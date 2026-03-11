@@ -28,10 +28,6 @@ internal sealed class HybridCacheService(HybridCache cache, ILogger<HybridCacheS
 
         Logs.DebugFinishedOperation(_logger, _className, nameof(GetOrCreateAsync), correlationId, key);
 
-        activity?.SetTag("CorrelationId", correlationId.ToString());
-        activity?.SetTag("cacheKey", key);
-        activity?.SetTag("cacheHit", result is not null);
-
         return result;
     }
 
@@ -44,10 +40,6 @@ internal sealed class HybridCacheService(HybridCache cache, ILogger<HybridCacheS
         await _cache.SetAsync($"{DefaultConfigurations.ApplicationName}:{key}", value, cancellationToken: cancellationToken);
 
         Logs.DebugFinishedOperation(_logger, _className, nameof(CreateAsync), correlationId, key);
-
-        activity?.SetTag("CorrelationId", correlationId.ToString());
-        activity?.SetTag("cacheKey", key);
-        activity?.SetTag("cacheHit", value is not null);
     }
 
     public async ValueTask DeleteAsync(Guid correlationId, string key, CancellationToken cancellationToken)
@@ -59,8 +51,5 @@ internal sealed class HybridCacheService(HybridCache cache, ILogger<HybridCacheS
         await _cache.RemoveAsync($"{DefaultConfigurations.ApplicationName}:{key}", cancellationToken);
 
         Logs.DebugFinishedOperation(_logger, _className, nameof(DeleteAsync), correlationId, key);
-
-        activity?.SetTag("CorrelationId", correlationId.ToString());
-        activity?.SetTag("cacheKey", key);
     }
 }

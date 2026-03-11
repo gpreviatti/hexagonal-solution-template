@@ -40,13 +40,6 @@ public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
 
         var notificationDtos = notifications.Select(notification => notification);
 
-        Activity?.SetTag("page", request.Page);
-        Activity?.SetTag("pageSize", request.PageSize);
-        Activity?.SetTag("sortBy", request.SortBy);
-        Activity?.SetTag("sortDescending", request.SortDescending);
-        Activity?.SetTag("totalRecords", totalRecords);
-        Activity?.SetTag("totalPages", totalPages);
-
         return new(true, totalPages, totalRecords, notificationDtos);
     }
 }

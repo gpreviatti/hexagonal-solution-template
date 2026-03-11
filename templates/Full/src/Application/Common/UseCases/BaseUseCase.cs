@@ -11,7 +11,6 @@ public abstract class BaseUseCase
     protected ILogger Logger { get; }
     protected string ClassName { get; set; }
     protected ActivitySource ActivitySource { get; }
-    public Activity Activity { get; set; }
 
     protected BaseUseCase(IServiceProvider serviceProvider)
     {
