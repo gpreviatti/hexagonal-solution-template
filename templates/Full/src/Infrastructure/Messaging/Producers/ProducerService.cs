@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Text.Json;
 using Application.Common.Messages;
 using Application.Common.Services;
@@ -14,7 +13,6 @@ public sealed class ProducerService : IProduceService
     private readonly string _className = nameof(ProducerService);
     private readonly ILogger<ProducerService> _logger;
     private readonly ConnectionFactory _factory;
-    private readonly Stopwatch _stopWatch = new();
 
     public ProducerService(ILogger<ProducerService> logger, IConfiguration configuration)
     {
@@ -39,8 +37,6 @@ public sealed class ProducerService : IProduceService
     {
         await Task.Yield();
 
-        _stopWatch.Restart();
-
         using var connection = await _factory.CreateConnectionAsync(cancellationToken);
         using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
 
@@ -53,7 +49,7 @@ public sealed class ProducerService : IProduceService
             cancellationToken: cancellationToken
         );
 
-        Logs.DebugFinishedOperation(_logger, _className, nameof(HandleAsync), message.CorrelationId, _stopWatch.ElapsedMilliseconds, typeof(TMessage).Name + " published.");
+        Logs.DebugFinishedOperation(_logger, _className, nameof(HandleAsync), message.CorrelationId, typeof(TMessage).Name + " published.");
     }
 
     public async Task HandleAsync<TMessage>(
@@ -65,8 +61,6 @@ public sealed class ProducerService : IProduceService
     {
         await Task.Yield();
 
-        _stopWatch.Restart();
-        
         Logs.Debug(_logger, _className, nameof(HandleAsync), messages.FirstOrDefault()?.CorrelationId ?? Guid.Empty, typeof(TMessage).Name + " batch publishing started.");
 
         using var connection = await _factory.CreateConnectionAsync(cancellationToken);
@@ -83,7 +77,7 @@ public sealed class ProducerService : IProduceService
                 cancellationToken: cancellationToken
             );
 
-            Logs.DebugFinishedOperation(_logger, _className, nameof(HandleAsync), message.CorrelationId, _stopWatch.ElapsedMilliseconds, typeof(TMessage).Name + " batch published.");
+            Logs.DebugFinishedOperation(_logger, _className, nameof(HandleAsync), message.CorrelationId, typeof(TMessage).Name + " batch published.");
         }
         
         Logs.Debug(_logger, _className, nameof(HandleAsync), messages.FirstOrDefault()?.CorrelationId ?? Guid.Empty, typeof(TMessage).Name + " batch publishing finished.");

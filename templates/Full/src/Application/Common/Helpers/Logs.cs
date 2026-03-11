@@ -93,19 +93,18 @@ public partial class Logs
     public static partial void StartingOperation(ILogger logger, string className, string methodName, Guid correlationId);
 
     /// <summary>
-    /// Logs the completion of the execution of an operation, including the class name, method name, correlation ID, and elapsed time in milliseconds.
+    /// Logs the completion of the execution of an operation, including the class name, method name, and correlation ID.
     /// </summary>
     /// <param name="logger">The logger instance to use for logging.</param>
     /// <param name="className">The name of the class where the operation is executed.</param>
     /// <param name="methodName">The name of the method where the operation is executed.</param>
     /// <param name="correlationId">The correlation ID for tracking the request.</param>
-    /// <param name="elapsedMilliseconds">The elapsed time in milliseconds for the execution of the operation.</param>
     [LoggerMessage(
         EventId = 7,
         Level = LogLevel.Information,
-        Message = "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Elapsed time: {ElapsedMilliseconds} ms | Finished operation"
+        Message = "[{ClassName}] | [{MethodName}] | [{CorrelationId}] | Finished operation"
     )]
-    public static partial void FinishedOperation(ILogger logger, string className, string methodName, Guid correlationId, long elapsedMilliseconds);
+    public static partial void FinishedOperation(ILogger logger, string className, string methodName, Guid correlationId);
 
     /// <summary>
     /// Logs validation errors encountered during request validation.
@@ -173,11 +172,10 @@ public partial class Logs
     /// <param name="className">The name of the class.</param>
     /// <param name="method">The method name.</param>
     /// <param name="correlationId">The correlation ID for tracking the request.</param>
-    /// <param name="elapsedMilliseconds">The elapsed time in milliseconds.</param>
     [LoggerMessage(
         EventId = 12,
         Level = LogLevel.Debug,
-        Message = "[{ClassName}] | [{Method}] | [{CorrelationId}] | Finished operation executed in {ElapsedMilliseconds} ms. | {Details}"
+        Message = "[{ClassName}] | [{Method}] | [{CorrelationId}] | Finished operation. | {Details}"
     )]
-    public static partial void DebugFinishedOperation(ILogger logger, string className, string method, Guid correlationId, long elapsedMilliseconds, string details = "");
+    public static partial void DebugFinishedOperation(ILogger logger, string className, string method, Guid correlationId, string details = "");
 }

@@ -14,7 +14,6 @@ public class BaseRepository(
     IDbContextFactory<MyDbContext> dbContextFactory
 ) : IBaseRepository
 {
-    private readonly Stopwatch _stopwatch = new();
     private readonly IDbContextFactory<MyDbContext> _dbContextFactory = dbContextFactory;
     private readonly MyDbContext _dbContext = dbContextFactory.CreateDbContext();
     private readonly string _className = nameof(BaseRepository);
@@ -27,7 +26,7 @@ public class BaseRepository(
         string methodName = null!
     ) where TEntity : DomainEntity
     {
-        _stopwatch.Restart();
+        using var activity = new ActivitySource("Hexagonal.Solution.Template.WebApp").StartActivity($"{_className}.{methodName}")!;
 
         Logs.DebugStartingOperation(logger, _className, methodName, correlationId);
 
@@ -37,7 +36,10 @@ public class BaseRepository(
 
         var result = await query.Invoke(dbSet);
 
-        Logs.DebugFinishedOperation(logger, _className, methodName, correlationId, _stopwatch.ElapsedMilliseconds);
+        Logs.DebugFinishedOperation(logger, _className, methodName, correlationId);
+
+        activity?.SetTag("correlationId", correlationId);
+        activity?.Stop();
 
         return result;
     }
@@ -49,15 +51,17 @@ public class BaseRepository(
         string methodName = null!
     ) where TEntity : DomainEntity
     {
-        _stopwatch.Restart();
+        using var activity = new ActivitySource("Hexagonal.Solution.Template.WebApp").StartActivity($"{_className}.{nameof(GetQueryable)}")!;
 
-        Logs.DebugStartingOperation(logger, _className, methodName, correlationId);
+        Logs.DebugStartingOperation(logger, _className, nameof(GetQueryable), correlationId);
 
         var dbSet = _dbContext.Set<TEntity>();
         if (newContext.GetValueOrDefault())
             dbSet = _dbContextFactory.CreateDbContext().Set<TEntity>();
 
-        Logs.DebugFinishedOperation(logger, _className, methodName, correlationId, _stopwatch.ElapsedMilliseconds);
+        Logs.DebugFinishedOperation(logger, _className, nameof(GetQueryable), correlationId);
+
+        activity?.SetTag("correlationId", correlationId);
 
         return dbSet;
     }

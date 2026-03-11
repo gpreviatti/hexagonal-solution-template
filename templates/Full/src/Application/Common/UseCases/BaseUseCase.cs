@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -8,7 +7,6 @@ public abstract class BaseUseCase
 {
     protected IServiceProvider ServiceProvider { get; }
     protected ILogger Logger { get; }
-    protected Stopwatch StopWatch { get; } = new();
     protected string ClassName { get; set; }
 
     protected BaseUseCase(IServiceProvider serviceProvider)

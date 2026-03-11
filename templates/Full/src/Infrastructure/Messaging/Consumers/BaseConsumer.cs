@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Text.Json;
 using Application.Common.Messages;
 using Application.Common.Services;
@@ -20,7 +19,6 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
     private readonly string _queueName;
     private readonly IDictionary<string, object?> _arguments;
     private readonly ConnectionFactory _factory;
-    private readonly Stopwatch _stopwatch = new();
     protected IProduceService producerService = null!;
 
     public BaseConsumer(
@@ -51,7 +49,6 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
 
             try
             {
-                _stopwatch.Restart();
                 var hybridCacheService = serviceProvider.GetRequiredService<IHybridCacheService>();
 
 
@@ -77,7 +74,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
 
                 await hybridCacheService.CreateAsync(message.CorrelationId, isExecutedKey, true, cancellationToken);
 
-                Logs.DebugFinishedOperation(logger, _className, methodName, message.CorrelationId, _stopwatch.ElapsedMilliseconds, typeof(TMessage).Name + " processing finished.");
+                Logs.DebugFinishedOperation(logger, _className, methodName, message.CorrelationId, typeof(TMessage).Name + " processing finished.");
             }
             catch (Exception ex)
             {

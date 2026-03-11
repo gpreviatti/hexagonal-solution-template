@@ -43,8 +43,6 @@ public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TReq
         CancellationToken cancellationToken
     )
     {
-        StopWatch.Restart();
-
         Logs.StartingOperation(Logger, ClassName, HandleMethodName, request.CorrelationId);
 
         if (_validator != null)
@@ -61,10 +59,9 @@ public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TReq
 
         await HandleInternalAsync(request, cancellationToken);
 
-        Logs.FinishedOperation(Logger, ClassName, HandleMethodName, request.CorrelationId, StopWatch.ElapsedMilliseconds);
+        Logs.FinishedOperation(Logger, ClassName, HandleMethodName, request.CorrelationId);
 
         _useCaseExecuted.Record(1);
-        _useCaseExecutionElapsedTime.Record(StopWatch.ElapsedMilliseconds);
     }
 
     public abstract Task HandleInternalAsync(TRequest request, CancellationToken cancellationToken);

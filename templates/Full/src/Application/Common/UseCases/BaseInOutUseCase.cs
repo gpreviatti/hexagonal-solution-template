@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Metrics;
+﻿using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using Application.Common.Constants;
 using Application.Common.Helpers;
 using Application.Common.Repositories;
@@ -47,8 +48,8 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
         CancellationToken cancellationToken
     )
     {
-        StopWatch.Restart();
-
+        using var activity = new ActivitySource("Hexagonal.Solution.Template.WebApp").StartActivity($"{ClassName}.{HandleMethodName}")!;
+        
         Logs.StartingOperation(Logger, ClassName, HandleMethodName, request.CorrelationId);
         TResponseData response;
 
@@ -73,10 +74,10 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
 
         response = await HandleInternalAsync(request, cancellationToken);
 
-        Logs.FinishedOperation(Logger, ClassName, HandleMethodName, request.CorrelationId, StopWatch.ElapsedMilliseconds);
+        Logs.FinishedOperation(Logger, ClassName, HandleMethodName, request.CorrelationId);
 
         _useCaseExecuted.Record(1);
-        _useCaseExecutionElapsedTime.Record(StopWatch.ElapsedMilliseconds);
+        activity?.SetTag("correlationId", request.CorrelationId);
 
         return response;
     }
