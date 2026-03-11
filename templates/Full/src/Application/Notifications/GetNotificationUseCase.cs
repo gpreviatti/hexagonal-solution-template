@@ -39,7 +39,7 @@ public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)
 
         if (notification is null)
         {
-            Logs.NotFound(Logger, HandleMethodName, request.CorrelationId, nameof(notification));
+            Logs.NotFound(Logger, request.CorrelationId, nameof(notification));
             return new(false, null, "Notification not found.");
         }
 

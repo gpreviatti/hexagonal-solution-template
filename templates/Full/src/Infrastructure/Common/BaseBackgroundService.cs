@@ -28,7 +28,7 @@ internal abstract class BaseBackgroundService<TService>(
         }
         catch (Exception ex)
         {
-            Logs.Error(logger, nameof(ExecuteAsync), ex.Message);
+            Logs.Error(logger, ex.Message);
 
             throw;
         }

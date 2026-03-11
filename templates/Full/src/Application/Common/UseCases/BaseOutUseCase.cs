@@ -33,11 +33,11 @@ public abstract class BaseOutUseCase<TResponseData> : BaseUseCase, IBaseOutUseCa
         using var activity = ActivitySource.StartActivity($"{ClassName}.{HandleMethodName}")!;
                 
         var correlationId = Guid.NewGuid();
-        Logs.StartingOperation(Logger, HandleMethodName, correlationId);
+        Logs.StartingOperation(Logger, correlationId);
 
         var response = await HandleInternalAsync(cancellationToken);
 
-        Logs.FinishedOperation(Logger, HandleMethodName, correlationId);
+        Logs.FinishedOperation(Logger, correlationId);
 
         _useCaseExecuted.Record(1);
 

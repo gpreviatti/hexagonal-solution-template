@@ -23,7 +23,7 @@ internal sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<
 
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        Logs.Error(_logger, nameof(HandleExceptionAsync), exception.Message);
+        Logs.Error(_logger, exception.Message);
 
         BaseResponse response = new(false, exception.Message);
 

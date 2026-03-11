@@ -32,7 +32,7 @@ public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
 
         if (notifications is null || !notifications.Any())
         {
-            Logs.NotFound(Logger, HandleMethodName, request.CorrelationId, nameof(Notification));
+            Logs.NotFound(Logger, request.CorrelationId, nameof(Notification));
             return new(false, 0, 0, [], "No notifications found.");
         }
 

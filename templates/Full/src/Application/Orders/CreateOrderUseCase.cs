@@ -61,7 +61,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
         var createResult = newOrder.SetTotal();
         if (createResult.IsFailure)
         {
-            Logs.FailedOperation(Logger, HandleMethodName, correlationId, createResult.Message);
+            Logs.FailedOperation(Logger, correlationId, createResult.Message);
 
             response = new(false, null, createResult.Message);
 
@@ -73,7 +73,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
         var addResult = await Repository.AddAsync(newOrder, correlationId, cancellationToken);
         if (addResult == 0)
         {
-            Logs.FailedOperation(Logger, HandleMethodName, correlationId, "Failed to create order.");
+            Logs.FailedOperation(Logger, correlationId, "Failed to create order.");
 
             response = new(false, null, "Failed to create order.");
 
