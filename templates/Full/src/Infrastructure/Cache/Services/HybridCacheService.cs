@@ -26,7 +26,7 @@ internal sealed class HybridCacheService(HybridCache cache, ILogger<HybridCacheS
         Logs.DebugStartingOperation(_logger, _className, nameof(GetOrCreateAsync), correlationId, key);
         var result = await _cache.GetOrCreateAsync($"{DefaultConfigurations.ApplicationName}:{key}", factory, cancellationToken: cancellationToken);
 
-        Logs.DebugFinishedOperation(_logger, _className, nameof(GetOrCreateAsync), correlationId, key);
+        Logs.DebugFinishedOperation(_logger, _className, nameof(GetOrCreateAsync), correlationId, $"Cache hit: {result != null} for key: {key}");
 
         return result;
     }
@@ -39,7 +39,7 @@ internal sealed class HybridCacheService(HybridCache cache, ILogger<HybridCacheS
 
         await _cache.SetAsync($"{DefaultConfigurations.ApplicationName}:{key}", value, cancellationToken: cancellationToken);
 
-        Logs.DebugFinishedOperation(_logger, _className, nameof(CreateAsync), correlationId, key);
+        Logs.DebugFinishedOperation(_logger, _className, nameof(CreateAsync), correlationId, $"Cached hit: {value != null} for key: {key}");
     }
 
     public async ValueTask DeleteAsync(Guid correlationId, string key, CancellationToken cancellationToken)
@@ -50,6 +50,6 @@ internal sealed class HybridCacheService(HybridCache cache, ILogger<HybridCacheS
 
         await _cache.RemoveAsync($"{DefaultConfigurations.ApplicationName}:{key}", cancellationToken);
 
-        Logs.DebugFinishedOperation(_logger, _className, nameof(DeleteAsync), correlationId, key);
+        Logs.DebugFinishedOperation(_logger, _className, nameof(DeleteAsync), correlationId, $"Cache entry removed for key: {key}");
     }
 }
