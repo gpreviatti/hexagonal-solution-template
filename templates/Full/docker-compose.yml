@@ -2,7 +2,7 @@ name: hexagonal-solution-template-full
 
 services:
   postgres:
-    image: postgres:17-alpine
+    image: &postgresImage postgres:17-alpine
     container_name: postgres
     environment:
       POSTGRES_PASSWORD: "cY5VvZkkh4AzES"
@@ -20,7 +20,7 @@ services:
       - "5432:5432"
 
   postgres-init:
-    image: postgres:17-alpine
+    image: *postgresImage
     container_name: postgres-init
     depends_on:
       postgres:

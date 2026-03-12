@@ -84,6 +84,41 @@ services:
       file: docker-compose.yml
       service: rabbitmq
 
+  alloy:
+    extends:
+      file: docker-compose-grafana.yml
+      service: alloy
+
+  prometheus:
+    extends:
+      file: docker-compose-grafana.yml
+      service: prometheus
+
+  loki:
+    extends:
+      file: docker-compose-grafana.yml
+      service: loki
+
+  grafana:
+    extends:
+      file: docker-compose-grafana.yml
+      service: grafana
+
+  tempo-init:
+    extends:
+      file: docker-compose-grafana.yml
+      service: tempo-init
+
+  memcached:
+    extends:
+      file: docker-compose-grafana.yml
+      service: memcached
+
+  tempo:
+    extends:
+      file: docker-compose-grafana.yml
+      service: tempo
+
 networks:
   hexagonal_solution_template_full_network:
     driver: bridge
