@@ -2,8 +2,6 @@
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Application.Common.Services;
-using Application.Common.Constants;
-using System.Diagnostics.Metrics;
 using Application.Common.Repositories;
 using Application.Common.Helpers;
 
@@ -27,7 +25,7 @@ public abstract class BaseInUseCase<TRequest>(IServiceProvider serviceProvider) 
         CancellationToken cancellationToken
     )
     {
-        using var activity = ActivitySource.StartActivity();
+        using var activity = ActivitySource.StartActivity($"{ClassName}.{HandleMethodName}");
 
         Logs.StartingOperation(Logger, request.CorrelationId);
 

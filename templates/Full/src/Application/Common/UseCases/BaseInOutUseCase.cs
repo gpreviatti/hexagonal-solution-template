@@ -29,7 +29,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData>(IServiceProvider
         CancellationToken cancellationToken
     )
     {
-        using var activity = ActivitySource.StartActivity();
+        using var activity = ActivitySource.StartActivity($"{ClassName}.{HandleMethodName}");
         
         Logs.StartingOperation(Logger, request.CorrelationId);
         TResponseData response;
