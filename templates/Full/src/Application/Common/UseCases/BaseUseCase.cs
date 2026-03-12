@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using Application.Common.Constants;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -9,8 +10,10 @@ public abstract class BaseUseCase
 {
     protected IServiceProvider ServiceProvider { get; }
     protected ILogger Logger { get; }
-    protected string ClassName { get; set; }
-    protected ActivitySource ActivitySource { get; set; } = DefaultConfigurations.ActivitySource;
+    protected string ClassName { get; }
+    protected ActivitySource ActivitySource { get; } = DefaultConfigurations.ActivitySource;
+    protected Counter<int> UseCaseExecutedMetric { get; }
+    protected Counter<int> UseCaseFailedMetric { get; }
 
     protected BaseUseCase(IServiceProvider serviceProvider)
     {
@@ -20,5 +23,11 @@ public abstract class BaseUseCase
         ServiceProvider = serviceProvider;
 
         Logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(classType);
+
+        UseCaseExecutedMetric = DefaultConfigurations.Meter
+            .CreateCounter<int>($"{ClassName}.Executed", "total", "Number of times the use case was executed");
+
+        UseCaseFailedMetric = DefaultConfigurations.Meter
+            .CreateCounter<int>($"{ClassName}.Failed", "total", "Number of times the use case execution failed");
     }
 }

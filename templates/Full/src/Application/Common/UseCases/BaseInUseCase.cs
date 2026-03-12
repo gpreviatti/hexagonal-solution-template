@@ -14,25 +14,13 @@ public interface IBaseInUseCase<TRequest> where TRequest : BaseRequest
     Task HandleAsync(TRequest request, CancellationToken cancellationToken);
 }
 
-public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TRequest> where TRequest : BaseRequest
+public abstract class BaseInUseCase<TRequest>(IServiceProvider serviceProvider) : BaseUseCase(serviceProvider), IBaseInUseCase<TRequest> where TRequest : BaseRequest
 {
-    protected IHybridCacheService Cache { get; }
-    protected IProduceService ProduceService { get; }
-    protected IBaseRepository Repository { get; }
-    private readonly IValidator<TRequest> _validator;
-    private readonly Histogram<int> _useCaseExecuted;
+    protected IHybridCacheService Cache { get; } = serviceProvider.GetRequiredService<IHybridCacheService>();
+    protected IProduceService ProduceService { get; } = serviceProvider.GetRequiredService<IProduceService>();
+    protected IBaseRepository Repository { get; } = serviceProvider.GetRequiredService<IBaseRepository>();
+    private readonly IValidator<TRequest> _validator = serviceProvider.GetRequiredService<IValidator<TRequest>>();
     protected const string HandleMethodName = nameof(HandleAsync);
-
-    protected BaseInUseCase(IServiceProvider serviceProvider) : base(serviceProvider)
-    {
-        Cache = serviceProvider.GetRequiredService<IHybridCacheService>();
-        ProduceService = serviceProvider.GetRequiredService<IProduceService>();
-        Repository = serviceProvider.GetRequiredService<IBaseRepository>();
-        _validator = serviceProvider.GetRequiredService<IValidator<TRequest>>();
-
-        _useCaseExecuted = DefaultConfigurations.Meter
-            .CreateHistogram<int>($"{ClassName}.Executed", "total", "Number of times the use case was executed");
-    }
 
     public async Task HandleAsync(
         TRequest request,
@@ -50,7 +38,7 @@ public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TReq
             {
                 var errors = string.Join(", ", validationResult.Errors);
                 Logs.ValidationErrors(Logger, request.CorrelationId, errors);
-
+                UseCaseFailedMetric.Add(1);
                 return;
             }
         }
@@ -59,7 +47,7 @@ public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TReq
 
         Logs.FinishedOperation(Logger, request.CorrelationId);
 
-        _useCaseExecuted.Record(1);
+        UseCaseExecutedMetric.Add(1);
     }
 
     public abstract Task HandleInternalAsync(TRequest request, CancellationToken cancellationToken);

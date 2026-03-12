@@ -46,7 +46,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
         CancellationToken cancellationToken
     )
     {
-        Guid correlationId = request.CorrelationId;
+        var correlationId = request.CorrelationId;
         BaseResponse<OrderDto> response;
 
         var items = request.Items
@@ -67,6 +67,8 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
 
             CreateNotification(correlationId, "Failed", response);
 
+            UseCaseFailedMetric.Add(1);
+
             return response;
         }
 
@@ -78,6 +80,8 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
             response = new(false, null, "Failed to create order.");
 
             CreateNotification(correlationId, "Failed", response);
+
+            UseCaseFailedMetric.Add(1);
 
             return response;
         }

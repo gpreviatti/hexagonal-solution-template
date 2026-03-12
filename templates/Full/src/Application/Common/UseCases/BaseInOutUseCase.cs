@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.Metrics;
-using Application.Common.Constants;
-using Application.Common.Helpers;
+﻿using Application.Common.Helpers;
 using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Common.Services;
@@ -16,27 +14,15 @@ public interface IBaseInOutUseCase<in TRequest, TResponseData>
     Task<TResponseData> HandleAsync(TRequest request, CancellationToken cancellationToken);
 }
 
-public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, IBaseInOutUseCase<TRequest, TResponseData>
+public abstract class BaseInOutUseCase<TRequest, TResponseData>(IServiceProvider serviceProvider) : BaseUseCase(serviceProvider), IBaseInOutUseCase<TRequest, TResponseData>
     where TRequest : BaseRequest
     where TResponseData : BaseResponse
 {
-    protected IHybridCacheService Cache { get; }
-    protected IProduceService ProduceService { get; }
-    protected IBaseRepository Repository { get; }
-    private readonly IValidator<TRequest> _validator;
-    private readonly Histogram<int> _useCaseExecuted;
+    protected IHybridCacheService Cache { get; } = serviceProvider.GetRequiredService<IHybridCacheService>();
+    protected IProduceService ProduceService { get; } = serviceProvider.GetRequiredService<IProduceService>();
+    protected IBaseRepository Repository { get; } = serviceProvider.GetRequiredService<IBaseRepository>();
+    private readonly IValidator<TRequest> _validator = serviceProvider.GetRequiredService<IValidator<TRequest>>();
     protected const string HandleMethodName = nameof(HandleAsync);
-
-    protected BaseInOutUseCase(IServiceProvider serviceProvider) : base(serviceProvider)
-    {
-        Cache = serviceProvider.GetRequiredService<IHybridCacheService>();
-        ProduceService = serviceProvider.GetRequiredService<IProduceService>();
-        Repository = serviceProvider.GetRequiredService<IBaseRepository>();
-        _validator = serviceProvider.GetRequiredService<IValidator<TRequest>>();
-
-        _useCaseExecuted = DefaultConfigurations.Meter
-            .CreateHistogram<int>($"{ClassName}.Executed", "total", "Number of times the use case was executed");
-    }
 
     public async Task<TResponseData> HandleAsync(
         TRequest request,
@@ -62,7 +48,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
                     Success = false,
                     Message = errors
                 };
-
+                UseCaseFailedMetric.Add(1);
                 return response!;
             }
         }
@@ -71,7 +57,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData> : BaseUseCase, I
 
         Logs.FinishedOperation(Logger, request.CorrelationId);
 
-        _useCaseExecuted.Record(1);
+        UseCaseExecutedMetric.Add(1);
 
         return response;
     }
