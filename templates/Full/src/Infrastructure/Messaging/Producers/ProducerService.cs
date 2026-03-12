@@ -5,6 +5,8 @@ using Application.Common.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
+using Application.Common.Constants;
+using System.Diagnostics;
 
 namespace Infrastructure.Messaging.Producers;
 
@@ -12,6 +14,7 @@ public sealed class ProducerService : IProduceService
 {
     private readonly ILogger<ProducerService> _logger;
     private readonly ConnectionFactory _factory;
+    private readonly ActivitySource _activities = DefaultConfigurations.ActivitySource;
 
     public ProducerService(ILogger<ProducerService> logger, IConfiguration configuration)
     {
@@ -36,7 +39,7 @@ public sealed class ProducerService : IProduceService
     {
         await Task.Yield();
 
-        using var activity = Activities.StartActivity($"{nameof(ProducerService)}.{nameof(HandleAsync)}");
+        using var activity = _activities.StartActivity($"{nameof(ProducerService)}.{nameof(HandleAsync)}.{typeof(TMessage).Name}");
 
         using var connection = await _factory.CreateConnectionAsync(cancellationToken);
         using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
@@ -62,7 +65,7 @@ public sealed class ProducerService : IProduceService
     {
         await Task.Yield();
 
-        using var activity = Activities.StartActivity($"{nameof(ProducerService)}.{nameof(HandleAsync)}");
+        using var activity = _activities.StartActivity($"{nameof(ProducerService)}.{nameof(HandleAsync)}.{typeof(TMessage).Name}.Batch");
 
         Logs.Debug(_logger, messages.FirstOrDefault()?.CorrelationId ?? Guid.Empty, typeof(TMessage).Name + " batch publishing started.");
 

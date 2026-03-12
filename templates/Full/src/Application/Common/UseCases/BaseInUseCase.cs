@@ -39,7 +39,7 @@ public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TReq
         CancellationToken cancellationToken
     )
     {
-        using var activity = Activities.StartActivity($"{ClassName}.{HandleMethodName}")!;
+        using var activity = ActivitySource.StartActivity();
 
         Logs.StartingOperation(Logger, request.CorrelationId);
 

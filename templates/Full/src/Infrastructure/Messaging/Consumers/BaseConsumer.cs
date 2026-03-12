@@ -1,5 +1,6 @@
+using System.Diagnostics;
 using System.Text.Json;
-using Application.Common.Helpers;
+using Application.Common.Constants;
 using Application.Common.Messages;
 using Application.Common.Services;
 using Infrastructure.Common;
@@ -21,6 +22,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
     private readonly IDictionary<string, object?> _arguments;
     private readonly ConnectionFactory _factory;
     protected IProduceService producerService = null!;
+    private readonly ActivitySource _activities = DefaultConfigurations.ActivitySource;
 
     public BaseConsumer(
         ILogger<BaseConsumer<TMessage, TConsumer>> logger,
@@ -93,7 +95,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
         CancellationToken cancellationToken
     )
     {
-        using var activity = Activities.StartActivity($"{_consumerName}.{nameof(HandleRabbitMqAsync)}");
+        using var activity = _activities.StartActivity($"{_consumerName}.{nameof(HandleRabbitMqAsync)}");
 
         var connection = await _factory.CreateConnectionAsync(cancellationToken);
         var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);

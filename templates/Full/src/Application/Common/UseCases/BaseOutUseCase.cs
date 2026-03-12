@@ -30,7 +30,7 @@ public abstract class BaseOutUseCase<TResponseData> : BaseUseCase, IBaseOutUseCa
 
     public async Task<TResponseData> HandleAsync(CancellationToken cancellationToken)
     {
-        using var activity = Activities.StartActivity($"{ClassName}.{HandleMethodName}")!;
+        using var activity = ActivitySource.StartActivity();
                 
         var correlationId = Guid.NewGuid();
         Logs.StartingOperation(Logger, correlationId);

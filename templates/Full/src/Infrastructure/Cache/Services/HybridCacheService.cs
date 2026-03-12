@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Application.Common.Constants;
 using Application.Common.Helpers;
 using Application.Common.Services;
@@ -11,6 +12,7 @@ internal sealed class HybridCacheService(HybridCache cache, ILogger<HybridCacheS
     private readonly HybridCache _cache = cache;
     private readonly ILogger<HybridCacheService> _logger = logger;
     private readonly string _className = nameof(HybridCacheService);
+    private readonly ActivitySource _activities = DefaultConfigurations.ActivitySource;
     public async ValueTask<TResult> GetOrCreateAsync<TResult>(
         Guid correlationId,
         string key,
@@ -18,7 +20,7 @@ internal sealed class HybridCacheService(HybridCache cache, ILogger<HybridCacheS
         CancellationToken cancellationToken
     )
     {
-        using var activity = Activities.StartActivity($"{_className}.{nameof(GetOrCreateAsync)}");
+        using var activity = _activities.StartActivity($"{_className}.{nameof(GetOrCreateAsync)}");
 
         Logs.DebugStartingOperation(_logger, correlationId, key);
         var result = await _cache.GetOrCreateAsync($"{DefaultConfigurations.ApplicationName}:{key}", factory, cancellationToken: cancellationToken);
@@ -32,7 +34,7 @@ internal sealed class HybridCacheService(HybridCache cache, ILogger<HybridCacheS
 
     public async ValueTask CreateAsync<TResult>(Guid correlationId, string key, TResult value, CancellationToken cancellationToken)
     {
-        using var activity = Activities.StartActivity($"{_className}.{nameof(CreateAsync)}");
+        using var activity = _activities.StartActivity($"{_className}.{nameof(CreateAsync)}");
 
         Logs.DebugStartingOperation(_logger, correlationId, key);
 
@@ -45,7 +47,7 @@ internal sealed class HybridCacheService(HybridCache cache, ILogger<HybridCacheS
 
     public async ValueTask DeleteAsync(Guid correlationId, string key, CancellationToken cancellationToken)
     {
-        using var activity = Activities.StartActivity($"{_className}.{nameof(DeleteAsync)}");
+        using var activity = _activities.StartActivity($"{_className}.{nameof(DeleteAsync)}");
 
         Logs.DebugStartingOperation(_logger, correlationId, key);
 

@@ -1,5 +1,7 @@
-﻿using System.Linq.Expressions;
+﻿using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using Application.Common.Constants;
 using Application.Common.Helpers;
 using Application.Common.Repositories;
 using Domain.Common;
@@ -16,6 +18,7 @@ public class BaseRepository(
     private readonly IDbContextFactory<MyDbContext> _dbContextFactory = dbContextFactory;
     private readonly MyDbContext _dbContext = dbContextFactory.CreateDbContext();
     private readonly string _className = nameof(BaseRepository);
+    private readonly ActivitySource _activities = DefaultConfigurations.ActivitySource;
 
     private async Task<TResult> HandleBaseQueryAsync<TEntity, TResult>(
         Func<DbSet<TEntity>, Task<TResult>> query,
@@ -25,7 +28,7 @@ public class BaseRepository(
         string methodName = null!
     ) where TEntity : DomainEntity
     {
-        using var activity = Activities.StartActivity($"{_className}.{methodName}");
+        using var activity = _activities.StartActivity($"{_className}.{methodName}.{typeof(TEntity).Name}");
 
         Logs.DebugStartingOperation(logger, correlationId);
 
@@ -50,7 +53,7 @@ public class BaseRepository(
         string methodName = null!
     ) where TEntity : DomainEntity
     {
-        using var activity = Activities.StartActivity($"{_className}.{nameof(GetQueryable)}");
+        using var activity = _activities.StartActivity($"{_className}.{nameof(GetQueryable)}");
 
         Logs.DebugStartingOperation(logger, correlationId);
 
@@ -59,8 +62,6 @@ public class BaseRepository(
             dbSet = _dbContextFactory.CreateDbContext().Set<TEntity>();
 
         Logs.DebugFinishedOperation(logger, correlationId);
-
-        activity?.SetTag("correlationId", correlationId);
 
         return dbSet;
     }
