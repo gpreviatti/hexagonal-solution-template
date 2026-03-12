@@ -2,7 +2,6 @@ using Application.Common.Constants;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -17,26 +16,13 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
         public WebApplicationBuilder AddOpenTelemetry()
         {
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            var exporterProtocol = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_PROTOCOL")?.ToLower(System.Globalization.CultureInfo.InvariantCulture) == "grpc"
-                ? OtlpExportProtocol.Grpc
-                : OtlpExportProtocol.HttpProtobuf;
-            var exporterMetricsEndpoint = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_METRICS_ENDPOINT");
-            var exporterTracesEndpoint = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_TRACES_ENDPOINT");
-            var exporterLogsEndpoint = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_LOGS_ENDPOINT");
-
-            if (
-                string.Equals(environment, "IntegrationTests", StringComparison.OrdinalIgnoreCase) ||
-                string.IsNullOrWhiteSpace(exporterLogsEndpoint) ||
-                string.IsNullOrWhiteSpace(exporterMetricsEndpoint) ||
-                string.IsNullOrWhiteSpace(exporterTracesEndpoint)
-            )
-            {
+            if (string.Equals(environment, "IntegrationTests", StringComparison.OrdinalIgnoreCase))
                 return builder;
-            }
 
             var serviceName = DefaultConfigurations.ApplicationName;
             var serviceVersion = DefaultConfigurations.Version;
-            var resourceBuilder = ResourceBuilder.CreateDefault()
+            var resourceBuilder = ResourceBuilder
+                .CreateDefault()
                 .AddService(serviceName, serviceVersion: serviceVersion);
 
             builder.Services.AddOpenTelemetry()
@@ -54,11 +40,7 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
                     .AddRuntimeInstrumentation()
                     .AddProcessInstrumentation()
                     .AddPrometheusExporter()
-                    .AddOtlpExporter(options =>
-                    {
-                        options.Protocol = exporterProtocol;
-                        options.Endpoint = new Uri(exporterMetricsEndpoint);
-                    })
+                    .AddOtlpExporter()
                 )
                 .WithTracing(tracing => tracing
                     .AddSource(serviceName)
@@ -69,11 +51,7 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
                     .AddEntityFrameworkCoreInstrumentation()
-                    .AddOtlpExporter(options =>
-                    {
-                        options.Protocol = exporterProtocol;
-                        options.Endpoint = new Uri(exporterTracesEndpoint);
-                    })
+                    .AddOtlpExporter()
                 );
 
             builder.Logging.AddOpenTelemetry(options =>
@@ -84,11 +62,7 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
                 options
                     .SetResourceBuilder(resourceBuilder)
                     .AttachLogsToActivityEvent()
-                    .AddOtlpExporter(exporterOptions =>
-                    {
-                        exporterOptions.Protocol = exporterProtocol;
-                        exporterOptions.Endpoint = new Uri(exporterLogsEndpoint!);
-                    });
+                    .AddOtlpExporter();
             });
 
             return builder;
