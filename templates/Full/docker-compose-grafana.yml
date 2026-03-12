@@ -44,7 +44,6 @@ services:
       - ./scripts/grafana:/etc/grafana/provisioning
       - ./scripts/grafana/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
 
-# Tempo
   # Tempo runs as user 10001, and docker compose creates the volume as root.
   # As such, we need to chown the volume in order for Tempo to start correctly.
   tempo-init:
