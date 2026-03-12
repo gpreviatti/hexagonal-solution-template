@@ -1,6 +1,5 @@
 ﻿using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
-using Application.Common.Constants;
 using Application.Common.Helpers;
 using Application.Common.Repositories;
 using Domain.Common;
@@ -26,7 +25,7 @@ public class BaseRepository(
         string methodName = null!
     ) where TEntity : DomainEntity
     {
-        using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{_className}.{methodName}")!;
+        using var activity = Activities.StartActivity($"{_className}.{methodName}");
 
         Logs.DebugStartingOperation(logger, correlationId);
 
@@ -51,7 +50,7 @@ public class BaseRepository(
         string methodName = null!
     ) where TEntity : DomainEntity
     {
-        using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{_className}.{nameof(GetQueryable)}")!;
+        using var activity = Activities.StartActivity($"{_className}.{nameof(GetQueryable)}");
 
         Logs.DebugStartingOperation(logger, correlationId);
 

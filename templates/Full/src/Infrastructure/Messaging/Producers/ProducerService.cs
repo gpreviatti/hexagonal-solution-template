@@ -5,7 +5,6 @@ using Application.Common.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
-using Application.Common.Constants;
 
 namespace Infrastructure.Messaging.Producers;
 
@@ -37,7 +36,7 @@ public sealed class ProducerService : IProduceService
     {
         await Task.Yield();
 
-        using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{nameof(ProducerService)}.{nameof(HandleAsync)}")!;
+        using var activity = Activities.StartActivity($"{nameof(ProducerService)}.{nameof(HandleAsync)}");
 
         using var connection = await _factory.CreateConnectionAsync(cancellationToken);
         using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
@@ -52,8 +51,6 @@ public sealed class ProducerService : IProduceService
         );
 
         Logs.DebugFinishedOperation(_logger, message.CorrelationId, typeof(TMessage).Name + " published.");
-
-        activity?.SetTag("correlationId", message.CorrelationId);
     }
 
     public async Task HandleAsync<TMessage>(
@@ -65,7 +62,7 @@ public sealed class ProducerService : IProduceService
     {
         await Task.Yield();
 
-        using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{nameof(ProducerService)}.{nameof(HandleAsync)}")!;
+        using var activity = Activities.StartActivity($"{nameof(ProducerService)}.{nameof(HandleAsync)}");
 
         Logs.Debug(_logger, messages.FirstOrDefault()?.CorrelationId ?? Guid.Empty, typeof(TMessage).Name + " batch publishing started.");
 
@@ -84,11 +81,8 @@ public sealed class ProducerService : IProduceService
             );
 
             Logs.DebugFinishedOperation(_logger, message.CorrelationId, typeof(TMessage).Name + " batch published.");
-            activity?.SetTag("correlationId", message.CorrelationId);
         }
 
         Logs.Debug(_logger, messages.FirstOrDefault()?.CorrelationId ?? Guid.Empty, typeof(TMessage).Name + " batch publishing finished.");
-
-        activity?.SetTag("correlationId", messages.FirstOrDefault()?.CorrelationId ?? Guid.Empty);
     }
 }

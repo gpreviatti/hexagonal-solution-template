@@ -39,7 +39,7 @@ public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TReq
         CancellationToken cancellationToken
     )
     {
-        using var activity = ActivitySource.StartActivity($"{ClassName}.{HandleMethodName}")!;
+        using var activity = Activities.StartActivity($"{ClassName}.{HandleMethodName}")!;
 
         Logs.StartingOperation(Logger, request.CorrelationId);
 
@@ -60,8 +60,6 @@ public abstract class BaseInUseCase<TRequest> : BaseUseCase, IBaseInUseCase<TReq
         Logs.FinishedOperation(Logger, request.CorrelationId);
 
         _useCaseExecuted.Record(1);
-
-        activity?.SetTag("correlationId", request.CorrelationId);
     }
 
     public abstract Task HandleInternalAsync(TRequest request, CancellationToken cancellationToken);
