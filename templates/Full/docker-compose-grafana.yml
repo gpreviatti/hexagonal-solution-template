@@ -41,7 +41,7 @@ services:
     ports:
       - 3000:3000/tcp
     volumes:
-      - ./grafana:/etc/grafana/provisioning
+      - ./scripts/grafana:/etc/grafana/provisioning
       - ./scripts/grafana/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
 
 # Tempo
@@ -55,7 +55,7 @@ services:
       - "10001:10001"
       - "/var/tempo"
     volumes:
-      - ./tempo-data:/var/tempo
+      - ./scripts/grafana/tempo-data:/var/tempo
 
   memcached:
     image: memcached:1.6.29
