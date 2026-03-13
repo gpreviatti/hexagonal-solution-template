@@ -14,6 +14,8 @@ services:
       - loki
       - prometheus
       - tempo
+    networks:
+      - hexagonal_solution_template_full_network
 
   prometheus:
     image: prom/prometheus:v3.1.0
@@ -22,6 +24,8 @@ services:
     volumes:
       - ./scripts/grafana/prometheus.yml:/etc/prometheus/prometheus.yml
     command: --config.file=/etc/prometheus/prometheus.yml --web.enable-otlp-receiver --enable-feature=exemplar-storage
+    networks:
+      - hexagonal_solution_template_full_network
 
   loki:
     image: grafana/loki:3.4.2
@@ -30,6 +34,8 @@ services:
     volumes:
       - ./scripts/grafana/loki-config.yaml:/etc/loki/local-config.yaml
     command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - hexagonal_solution_template_full_network
 
   grafana:
     image: grafana/grafana:11.5.2
@@ -43,6 +49,8 @@ services:
     volumes:
       - ./scripts/grafana:/etc/grafana/provisioning
       - ./scripts/grafana/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+    networks:
+      - hexagonal_solution_template_full_network
 
   # Tempo runs as user 10001, and docker compose creates the volume as root.
   # As such, we need to chown the volume in order for Tempo to start correctly.
@@ -55,6 +63,8 @@ services:
       - "/var/tempo"
     volumes:
       - ./scripts/grafana/tempo-data:/var/tempo
+    networks:
+      - hexagonal_solution_template_full_network
 
   memcached:
     image: memcached:1.6.29
@@ -64,6 +74,8 @@ services:
     environment:
       - MEMCACHED_MAX_MEMORY=64m  # Set the maximum memory usage
       - MEMCACHED_THREADS=4       # Number of threads to use
+    networks:
+      - hexagonal_solution_template_full_network
 
   tempo:
     image: *tempoImage
@@ -75,6 +87,8 @@ services:
     depends_on:
       - tempo-init
       - memcached
+    networks:
+      - hexagonal_solution_template_full_network
 
 networks:
   hexagonal_solution_template_full_network:
