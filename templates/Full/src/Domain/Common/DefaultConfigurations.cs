@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 
-namespace Application.Common.Constants;
+namespace Domain.Common;
 
 public static class DefaultConfigurations
 {

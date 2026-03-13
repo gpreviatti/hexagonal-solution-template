@@ -23,11 +23,15 @@ public sealed class Order : DomainEntity
 
     public Result SetTotal(string user = "System", string? timezoneId = null)
     {
+        using var activity = ActivitySource.StartActivity($"{GetType().Name}.{nameof(SetTotal)}");
+
         if (Items == null || Items.Count == 0)
             return Result.Fail("Order must have at least one item.");
 
         Total = Items.Sum(item => item.Value);
         Update(user, timezoneId);
+
+        activity?.SetTag(nameof(Total), Total);
 
         return Result.Ok();
     }

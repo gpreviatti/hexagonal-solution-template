@@ -5,8 +5,8 @@ using Application.Common.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
-using Application.Common.Constants;
 using System.Diagnostics;
+using Domain.Common;
 
 namespace Infrastructure.Messaging.Producers;
 

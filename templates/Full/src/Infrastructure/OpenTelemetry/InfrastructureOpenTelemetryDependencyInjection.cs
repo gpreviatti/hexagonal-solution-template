@@ -1,4 +1,4 @@
-using Application.Common.Constants;
+using Domain.Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
