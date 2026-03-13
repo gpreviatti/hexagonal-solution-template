@@ -15,9 +15,14 @@ public sealed class Notification : DomainEntity
         string? timezoneId = null
     ) : base(createdBy ?? "System", timezoneId)
     {
+        using var activity = ActivitySource.StartActivity($"{GetType().Name}.Constructor");
+
         NotificationType = notificationType;
         NotificationStatus = notificationStatus;
         Message = message != null ? JsonSerializer.Serialize(message) : string.Empty;
+
+        activity?.SetTag(nameof(NotificationType), NotificationType);
+        activity?.SetTag(nameof(NotificationStatus), NotificationStatus);
     }
     public string NotificationType { get; init; }
     public string NotificationStatus { get; init; }
