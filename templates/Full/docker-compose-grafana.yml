@@ -9,13 +9,16 @@ services:
       - 4317:4317
     volumes:
       - ./scripts/grafana/config.alloy:/etc/alloy/config.alloy
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
     command: run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
+    networks:
+      - default
+      - hexagonal-solution-template-full_default
     depends_on:
       - loki
       - prometheus
       - tempo
-    networks:
-      - hexagonal_solution_template_full_network
 
   prometheus:
     image: prom/prometheus:v3.1.0
@@ -24,8 +27,6 @@ services:
     volumes:
       - ./scripts/grafana/prometheus.yml:/etc/prometheus/prometheus.yml
     command: --config.file=/etc/prometheus/prometheus.yml --web.enable-otlp-receiver --enable-feature=exemplar-storage
-    networks:
-      - hexagonal_solution_template_full_network
 
   loki:
     image: grafana/loki:3.4.2
@@ -34,8 +35,6 @@ services:
     volumes:
       - ./scripts/grafana/loki-config.yaml:/etc/loki/local-config.yaml
     command: -config.file=/etc/loki/local-config.yaml
-    networks:
-      - hexagonal_solution_template_full_network
 
   grafana:
     image: grafana/grafana:11.5.2
@@ -49,8 +48,6 @@ services:
     volumes:
       - ./scripts/grafana:/etc/grafana/provisioning
       - ./scripts/grafana/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
-    networks:
-      - hexagonal_solution_template_full_network
 
   # Tempo runs as user 10001, and docker compose creates the volume as root.
   # As such, we need to chown the volume in order for Tempo to start correctly.
@@ -63,8 +60,6 @@ services:
       - "/var/tempo"
     volumes:
       - ./scripts/grafana/tempo-data:/var/tempo
-    networks:
-      - hexagonal_solution_template_full_network
 
   memcached:
     image: memcached:1.6.29
@@ -74,8 +69,6 @@ services:
     environment:
       - MEMCACHED_MAX_MEMORY=64m  # Set the maximum memory usage
       - MEMCACHED_THREADS=4       # Number of threads to use
-    networks:
-      - hexagonal_solution_template_full_network
 
   tempo:
     image: *tempoImage
@@ -87,9 +80,33 @@ services:
     depends_on:
       - tempo-init
       - memcached
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.16.0
+    container_name: postgres-exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postgres:cY5VvZkkh4AzES@postgres:5432/OrderDb?sslmode=disable"
+    ports:
+      - "9187:9187"
     networks:
-      - hexagonal_solution_template_full_network
+      - default
+      - hexagonal-solution-template-full_default
+    depends_on:
+      - prometheus
+
+  redis-exporter:
+    image: oliver006/redis_exporter:v1.66.0
+    container_name: redis-exporter
+    environment:
+      REDIS_ADDR: "redis:6379"
+    ports:
+      - "9121:9121"
+    networks:
+      - default
+      - hexagonal-solution-template-full_default
+    depends_on:
+      - prometheus
 
 networks:
-  hexagonal_solution_template_full_network:
-    driver: bridge
+  hexagonal-solution-template-full_default:
+    external: true

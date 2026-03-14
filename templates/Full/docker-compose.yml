@@ -8,8 +8,6 @@ services:
       POSTGRES_PASSWORD: "cY5VvZkkh4AzES"
       POSTGRES_USER: "postgres"
       POSTGRES_DB: "OrderDb"
-    networks:
-      - hexagonal_solution_template_full_network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 3s
@@ -25,8 +23,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    networks:
-      - hexagonal_solution_template_full_network
     volumes:
       - ./scripts/sql/migrations.sql:/tmp/migrations.sql
       - ./scripts/sql/seeds.sql:/tmp/seeds.sql
@@ -50,8 +46,6 @@ services:
         condition: service_healthy
     ports:
       - "5050:80"
-    networks:
-      - hexagonal_solution_template_full_network
 
   redis:
     image: redis:8
@@ -64,8 +58,6 @@ services:
       timeout: 10s
       retries: 5
       start_period: 15s
-    networks:
-      - hexagonal_solution_template_full_network
 
   rabbitmq:
     image: rabbitmq:management
@@ -73,18 +65,16 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+      - "15692:15692"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+    command: >
+      bash -c "rabbitmq-plugins enable rabbitmq_prometheus &&
+               docker-entrypoint.sh rabbitmq-server"
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
       interval: 3s
       timeout: 10s
       retries: 5
       start_period: 15s
-    networks:
-      - hexagonal_solution_template_full_network
-
-networks:
-  hexagonal_solution_template_full_network:
-    driver: bridge
