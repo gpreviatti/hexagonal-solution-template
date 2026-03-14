@@ -12,9 +12,6 @@ services:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/run/docker.sock:/var/run/docker.sock
     command: run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
-    networks:
-      - default
-      - hexagonal-solution-template-full_default
     depends_on:
       - loki
       - prometheus
@@ -80,33 +77,3 @@ services:
     depends_on:
       - tempo-init
       - memcached
-
-  postgres-exporter:
-    image: prometheuscommunity/postgres-exporter:v0.16.0
-    container_name: postgres-exporter
-    environment:
-      DATA_SOURCE_NAME: "postgresql://postgres:cY5VvZkkh4AzES@postgres:5432/OrderDb?sslmode=disable"
-    ports:
-      - "9187:9187"
-    networks:
-      - default
-      - hexagonal-solution-template-full_default
-    depends_on:
-      - prometheus
-
-  redis-exporter:
-    image: oliver006/redis_exporter:v1.66.0
-    container_name: redis-exporter
-    environment:
-      REDIS_ADDR: "redis:6379"
-    ports:
-      - "9121:9121"
-    networks:
-      - default
-      - hexagonal-solution-template-full_default
-    depends_on:
-      - prometheus
-
-networks:
-  hexagonal-solution-template-full_default:
-    external: true
