@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Text.Json;
 using Application.Common.Messages;
 using Application.Common.Services;
@@ -23,6 +24,8 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
     private readonly ConnectionFactory _factory;
     protected IProduceService producerService = null!;
     private readonly ActivitySource _activities = DefaultConfigurations.ActivitySource;
+    protected Counter<int> ConsumerErrorMetric { get; }
+    protected Counter<int> ConsumerDuplicatedMessageMetric { get; }
 
     public BaseConsumer(
         ILogger<BaseConsumer<TMessage, TConsumer>> logger,
@@ -42,19 +45,30 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
         _queueName = queueName;
         _arguments = arguments;
         _factory = new() { Uri = new(connectionString) };
+
+        ConsumerErrorMetric = DefaultConfigurations.Meter
+            .CreateCounter<int>($"{_consumerName}.Error", "total", "Number of times the consumer encountered an error");
+
+        ConsumerDuplicatedMessageMetric = DefaultConfigurations.Meter
+            .CreateCounter<int>($"{_consumerName}.DuplicatedMessage", "total", "Number of times the consumer received a duplicated message");
     }
 
     protected override async Task ExecuteInternalAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken) => await HandleRabbitMqAsync(
         async (message, cancellationToken) =>
         {
+            var messageType = nameof(TMessage);
+            using var activity = _activities.StartActivity($"{_consumerName}.{messageType}", ActivityKind.Consumer);
+            activity?.SetTag("correlationId", message.CorrelationId);
+            activity?.SetTag("consumerName", _consumerName);
+            activity?.SetTag("queueName", _queueName);
+                    
             producerService = serviceProvider.GetRequiredService<IProduceService>();
 
             try
             {
                 var hybridCacheService = serviceProvider.GetRequiredService<IHybridCacheService>();
 
-
-                Logs.Debug(logger, message.CorrelationId, typeof(TMessage).Name + " received. Checking if it has already been processed.");
+                Logs.Debug(logger, message.CorrelationId, messageType + " received. Checking if it has already been processed.");
 
                 var isExecutedKey = _consumerName + "-" + message.CorrelationId;
                 var isExecuted = await hybridCacheService.GetOrCreateAsync(
@@ -66,23 +80,26 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
 
                 if (isExecuted)
                 {
-                    Logs.Warning(logger, message.CorrelationId, typeof(TMessage).Name + " has already been processed. Skipping.");
+                    Logs.Warning(logger, message.CorrelationId, messageType + " has already been processed. Skipping.");
+                    ConsumerDuplicatedMessageMetric.Add(1);
                     return;
                 }
 
-                Logs.DebugStartingOperation(logger, message.CorrelationId, typeof(TMessage).Name + " processing started.");
+                Logs.DebugStartingOperation(logger, message.CorrelationId, messageType + " processing started.");
 
                 await HandleUseCaseAsync(serviceProvider, message, cancellationToken);
 
                 await hybridCacheService.CreateAsync(message.CorrelationId, isExecutedKey, true, cancellationToken);
 
-                Logs.DebugFinishedOperation(logger, message.CorrelationId, typeof(TMessage).Name + " processing finished.");
+                Logs.DebugFinishedOperation(logger, message.CorrelationId, messageType + " processing finished.");
             }
             catch (Exception ex)
             {
                 Logs.Error(logger, message.CorrelationId, ex.Message);
 
                 _ = producerService.HandleAsync(message!, CancellationToken.None, _queueName + "_deadLetter");
+
+                ConsumerErrorMetric.Add(1);
 
                 throw;
             }
@@ -95,8 +112,6 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
         CancellationToken cancellationToken
     )
     {
-        using var activity = _activities.StartActivity($"{_consumerName}.{nameof(HandleRabbitMqAsync)}");
-
         var connection = await _factory.CreateConnectionAsync(cancellationToken);
         var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
 
@@ -168,9 +183,6 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
             consumer: consumer,
             cancellationToken: cancellationToken
         );
-
-        activity?.SetTag("queueName", _queueName);
-        activity?.SetTag("consumerName", _consumerName);
     }
 
     protected abstract Task HandleUseCaseAsync(IServiceProvider serviceProvider, TMessage message, CancellationToken cancellationToken);
