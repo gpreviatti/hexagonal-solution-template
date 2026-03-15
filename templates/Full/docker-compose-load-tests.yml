@@ -47,8 +47,8 @@ services:
       - LOGGING__LOGLEVEL__MICROSOFT_ENTITY_FRAMEWORK_CORE_DATABASE_COMMAND=Warning
       - ENABLE_SENSITIVE_DATA_LOGGING=false
       - OTEL_SERVICE_NAME=Hexagonal.Solution.Template.WebApp
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4318
-      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4317
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
       - OTEL_RESOURCE_ATTRIBUTES=service.namespace=load-tests
       - ConnectionStrings__OrderDb=Host=postgres;Port=5432;Database=OrderDb;Username=postgres;Password=cY5VvZkkh4AzES
       - ConnectionStrings__Redis=redis:6379
