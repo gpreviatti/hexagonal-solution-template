@@ -97,9 +97,9 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
             {
                 Logs.Error(logger, message.CorrelationId, ex.Message);
 
-                _ = producerService.HandleAsync(message!, CancellationToken.None, _queueName + "_deadLetter");
-
                 ConsumerErrorMetric.Add(1);
+
+                _ = producerService.HandleAsync(message!, CancellationToken.None, _queueName + "_deadLetter");
 
                 throw;
             }
