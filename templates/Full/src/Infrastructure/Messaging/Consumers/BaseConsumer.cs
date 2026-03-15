@@ -56,10 +56,9 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
     protected override async Task ExecuteInternalAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken) => await HandleRabbitMqAsync(
         async (message, cancellationToken) =>
         {
-            var messageType = nameof(TMessage);
-            using var activity = _activities.StartActivity($"{_consumerName}.{messageType}", ActivityKind.Consumer);
+            var messageType = typeof(TMessage).Name;
+            using var activity = _activities.StartActivity($"{_consumerName}", ActivityKind.Consumer);
             activity?.SetTag("correlationId", message.CorrelationId);
-            activity?.SetTag("consumerName", _consumerName);
             activity?.SetTag("queueName", _queueName);
                     
             producerService = serviceProvider.GetRequiredService<IProduceService>();

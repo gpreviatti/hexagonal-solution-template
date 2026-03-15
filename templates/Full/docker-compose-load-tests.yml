@@ -2,6 +2,7 @@ name: hexagonal-solution-template-full-load-tests
 
 services:
   k6:
+    container_name: k6
     image: grafana/k6:1.4.2
     depends_on:
       webapp:
@@ -21,6 +22,7 @@ services:
       - hexagonal_solution_template_full_network
 
   webapp:
+    container_name: webapp
     build:
       context: .
       dockerfile: ./Dockerfile

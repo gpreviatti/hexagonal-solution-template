@@ -2,6 +2,7 @@
 name: hexagonal-solution-template-grafana-full
 services:
   alloy:
+    container_name: alloy
     image: grafana/alloy:v1.7.5
     ports:
       - 12345:12345
@@ -18,6 +19,7 @@ services:
       - tempo
 
   prometheus:
+    container_name: prometheus
     image: prom/prometheus:v3.1.0
     ports:
       - 9090:9090
@@ -26,6 +28,7 @@ services:
     command: --config.file=/etc/prometheus/prometheus.yml --web.enable-otlp-receiver --enable-feature=exemplar-storage
 
   loki:
+    container_name: loki
     image: grafana/loki:3.4.2
     ports:
       - "3100:3100"
@@ -34,6 +37,7 @@ services:
     command: -config.file=/etc/loki/local-config.yaml
 
   grafana:
+    container_name: grafana
     image: grafana/grafana:11.5.2
     environment:
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
@@ -49,6 +53,7 @@ services:
   # Tempo runs as user 10001, and docker compose creates the volume as root.
   # As such, we need to chown the volume in order for Tempo to start correctly.
   tempo-init:
+    container_name: tempo-init
     image: &tempoImage grafana/tempo:2.7.1
     user: root
     entrypoint:
@@ -59,8 +64,8 @@ services:
       - ./scripts/grafana/tempo-data:/var/tempo
 
   memcached:
+    container_name: tempo-memcached
     image: memcached:1.6.29
-    container_name: memcached
     ports:
       - "11211:11211"
     environment:
@@ -68,6 +73,7 @@ services:
       - MEMCACHED_THREADS=4       # Number of threads to use
 
   tempo:
+    container_name: tempo
     image: *tempoImage
     command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:

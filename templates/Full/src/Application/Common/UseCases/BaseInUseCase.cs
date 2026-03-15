@@ -25,7 +25,7 @@ public abstract class BaseInUseCase<TRequest>(IServiceProvider serviceProvider) 
         CancellationToken cancellationToken
     )
     {
-        using var activity = ActivitySource.StartActivity($"{ClassName}.{HandleMethodName}");
+        using var activity = ActivitySource.StartActivity($"{ClassName}");
 
         Logs.StartingOperation(Logger, request.CorrelationId);
 
