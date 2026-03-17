@@ -39,7 +39,6 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
                     .AddHttpClientInstrumentation()
                     .AddRuntimeInstrumentation()
                     .AddProcessInstrumentation()
-                    .AddPrometheusExporter()
                     .AddOtlpExporter()
                 )
                 .WithTracing(tracing => tracing
