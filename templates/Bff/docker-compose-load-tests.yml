@@ -51,7 +51,7 @@ services:
       file: docker-compose.yml
       service: redis
 
-    alloy:
+  alloy:
     extends:
       file: docker-compose-grafana.yml
       service: alloy
