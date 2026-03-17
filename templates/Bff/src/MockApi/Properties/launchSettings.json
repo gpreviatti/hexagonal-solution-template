@@ -7,7 +7,11 @@
             "launchBrowser": false,
             "applicationUrl": "https://*:7177;http://*:5012",
             "environmentVariables": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "OTEL_SERVICE_NAME": "Hexagonal.Solution.Template.Bff.MockApi",
+                "OTEL_EXPORTER_OTLP_ENDPOINT": "http://localhost:4317",
+                "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
+                "OTEL_RESOURCE_ATTRIBUTES": "service.namespace=development",
             }
         }
     }

@@ -34,13 +34,8 @@ services:
       start_period: 15s
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - LOGGING__LOGLEVEL__DEFAULT=Warning
-      - LOGGING__LOGLEVEL__MICROSOFT=Warning
       - OTEL_SERVICE_NAME=Hexagonal.Solution.Template.Bff
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:18889
-      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://aspire-dashboard:18889
-      - OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=http://aspire-dashboard:18889
-      - OTEL_EXPORTER_OTLP_LOGS_ENDPOINT=http://aspire-dashboard:18889
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4317
       - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
       - OTEL_RESOURCE_ATTRIBUTES=service.namespace=load-tests
     networks:
@@ -49,18 +44,62 @@ services:
   mock-api:
     extends:
       file: docker-compose.yml
-      service: mockApi
-
-  aspire-dashboard:
-    extends:
-      file: docker-compose.yml
-      service: aspire-dashboard
+      service: mock-api
 
   redis:
     extends:
       file: docker-compose.yml
       service: redis
 
+    alloy:
+    extends:
+      file: docker-compose-grafana.yml
+      service: alloy
+    networks:
+      - hexagonal_solution_template_bff_network
+
+  prometheus:
+    extends:
+      file: docker-compose-grafana.yml
+      service: prometheus
+    networks:
+      - hexagonal_solution_template_bff_network
+
+  loki:
+    extends:
+      file: docker-compose-grafana.yml
+      service: loki
+    networks:
+      - hexagonal_solution_template_bff_network
+
+  grafana:
+    extends:
+      file: docker-compose-grafana.yml
+      service: grafana
+    networks:
+      - hexagonal_solution_template_bff_network
+
+  tempo-init:
+    extends:
+      file: docker-compose-grafana.yml
+      service: tempo-init
+    networks:
+      - hexagonal_solution_template_bff_network
+
+  memcached:
+    extends:
+      file: docker-compose-grafana.yml
+      service: memcached
+    networks:
+      - hexagonal_solution_template_bff_network
+
+  tempo:
+    extends:
+      file: docker-compose-grafana.yml
+      service: tempo
+    networks:
+      - hexagonal_solution_template_bff_network
+
 networks:
-  hexagonal_solution_template_network:
+  hexagonal_solution_template_bff_network:
     driver: bridge
