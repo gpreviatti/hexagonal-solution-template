@@ -53,7 +53,8 @@ public sealed class Program
 
         app.UseHttpsRedirection();
 
-        app.UseRateLimiter();
+        if (app.Configuration.GetValue<bool>("RATE_LIMITING_ENABLED"))
+            app.UseRateLimiter();
 
         app.MapEndpoints()
             .UseCustomHealthChecks()

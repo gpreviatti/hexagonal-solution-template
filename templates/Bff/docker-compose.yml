@@ -92,15 +92,6 @@ services:
     volumes:
       - ./scripts/grafana/tempo-data:/var/tempo
 
-  memcached:
-    container_name: tempo-memcached
-    image: memcached:1.6.29
-    ports:
-      - "11211:11211"
-    environment:
-      - MEMCACHED_MAX_MEMORY=64m  # Set the maximum memory usage
-      - MEMCACHED_THREADS=4       # Number of threads to use
-
   tempo:
     container_name: tempo
     image: *tempoImage
@@ -111,4 +102,4 @@ services:
       - "3200:3200"   # tempo
     depends_on:
       - tempo-init
-      - memcached
+      - redis

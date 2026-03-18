@@ -5,18 +5,21 @@ services:
     container_name: k6
     image: grafana/k6:1.4.2
     depends_on:
-      webapp:
+      bff:
         condition: service_healthy
     ports:
       - "6565:6565"
     environment:
-      - WEBAPP_URL=http://webapp:5000
+      - WEBAPP_URL=http://bff:5011
       - K6_SUMMARY_MODE=full
+      - K6_WEB_DASHBOARD=true
+      - K6_WEB_DASHBOARD_EXPORT=html-report.html
+      - VUS=50
+      - DURATION=180s
+      - GRACEFUL_STOP=10s
     command: ["run", "/LoadTests/scriptHttp.js", ]
     volumes:
       - ./tests/LoadTests:/LoadTests
-    networks:
-      - hexagonal_solution_template_network
 
   bff:
     container_name: bff
@@ -24,12 +27,12 @@ services:
       context: .
       dockerfile: ./Dockerfile
     ports:
-      - "5000:5000"
+      - "5011:5011"
     depends_on:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health" ]
+      test: ["CMD", "curl", "-f", "http://localhost:5011/health" ]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -40,8 +43,6 @@ services:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4317
       - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
       - OTEL_RESOURCE_ATTRIBUTES=service.namespace=load-tests
-    networks:
-      - hexagonal_solution_template_network
 
   mock-api:
     extends:
@@ -77,11 +78,6 @@ services:
     extends:
       file: docker-compose.yml
       service: tempo-init
-
-  memcached:
-    extends:
-      file: docker-compose.yml
-      service: memcached
 
   tempo:
     extends:
