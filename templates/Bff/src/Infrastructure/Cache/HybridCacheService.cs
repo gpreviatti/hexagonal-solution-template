@@ -1,82 +1,58 @@
+using System.Diagnostics;
 using Infrastructure.Common;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Cache;
 
-public sealed partial class HybridCacheService(HybridCache cache, ILogger<HybridCacheService> logger)
+public sealed class HybridCacheService(HybridCache cache, ILogger<HybridCacheService> logger)
 {
     private readonly HybridCache _cache = cache;
     private readonly ILogger<HybridCacheService> _logger = logger;
-
+    private readonly string _className = nameof(HybridCacheService);
+    private readonly ActivitySource _activities = DefaultConfigurations.ActivitySource;
     public async ValueTask<TResult> GetOrCreateAsync<TResult>(
         string key,
         Func<CancellationToken, ValueTask<TResult>> factory,
         CancellationToken cancellationToken
     )
     {
-        RetrievingCacheEntry(_logger, key);
+        using var activity = _activities.StartActivity($"{_className}.{nameof(GetOrCreateAsync)}");
+
+        Logs.DebugStartingOperation(_logger, $"Key: {key}");
 
         var result = await _cache.GetOrCreateAsync($"{DefaultConfigurations.ApplicationName}:{key}", factory, cancellationToken: cancellationToken);
 
-        CacheEntryRetrieved(_logger, key);
+        Logs.DebugFinishedOperation(_logger, $"Cache hit: {result != null} for key: {key}");
+
+        activity?.SetTag("key", key);
 
         return result;
     }
 
     public async ValueTask CreateAsync<TResult>(string key, TResult value, CancellationToken cancellationToken)
     {
-        CreatingCacheEntry(_logger, key);
+        using var activity = _activities.StartActivity($"{_className}.{nameof(CreateAsync)}");
+
+        Logs.DebugStartingOperation(_logger, $"Key: {key}");
 
         await _cache.SetAsync($"{DefaultConfigurations.ApplicationName}:{key}", value, cancellationToken: cancellationToken);
 
-        CacheEntryCreated(_logger, key);
+        Logs.DebugFinishedOperation(_logger, $"Cached hit: {value != null} for key: {key}");
+
+        activity?.SetTag("key", key);
     }
 
     public async ValueTask DeleteAsync(string key, CancellationToken cancellationToken)
     {
-        DeletingCacheEntry(_logger, key);
+        using var activity = _activities.StartActivity($"{_className}.{nameof(DeleteAsync)}");
+
+        Logs.DebugStartingOperation(_logger, $"Key: {key}");
 
         await _cache.RemoveAsync($"{DefaultConfigurations.ApplicationName}:{key}", cancellationToken);
 
-        CacheEntryDeleted(_logger, key);
+        Logs.DebugFinishedOperation(_logger, $"Cache entry removed for key: {key}");
+
+        activity?.SetTag("key", key);
     }
-
-    [LoggerMessage(
-        EventId = 1,
-        Level = LogLevel.Debug,
-        Message = "[HybridCacheService] | [GetOrCreateAsync] | [{Key}] | Retrieving cache entry"
-    )]
-    private static partial void RetrievingCacheEntry(ILogger logger, string key);
-
-    [LoggerMessage(
-        EventId = 2,
-        Level = LogLevel.Debug,
-        Message = "[HybridCacheService] | [GetOrCreateAsync] | [{Key}] | Cache entry retrieved"
-    )]
-    private static partial void CacheEntryRetrieved(ILogger logger, string key);
-
-    [LoggerMessage(
-        Level = LogLevel.Debug,
-        Message = "[HybridCacheService] | [CreateAsync] | [{Key}] | Creating cache entry"
-    )]
-    private static partial void CreatingCacheEntry(ILogger logger, string key);
-
-    [LoggerMessage(
-        Level = LogLevel.Debug,
-        Message = "[HybridCacheService] | [CreateAsync] | [{Key}] | Cache entry created"
-    )]
-    private static partial void CacheEntryCreated(ILogger logger, string key);
-
-    [LoggerMessage(
-        Level = LogLevel.Debug,
-        Message = "[HybridCacheService] | [DeleteAsync] | [{Key}] | Deleting cache entry"
-    )]
-    private static partial void DeletingCacheEntry(ILogger logger, string key);
-
-    [LoggerMessage(
-        Level = LogLevel.Debug,
-        Message = "[HybridCacheService] | [DeleteAsync] | [{Key}] | Cache entry deleted"
-    )]
-    private static partial void CacheEntryDeleted(ILogger logger, string key);
 }

@@ -7,7 +7,6 @@ internal sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<
 {
     private readonly RequestDelegate _next = next;
     private readonly ILogger<ExceptionHandlingMiddleware> _logger = logger;
-    private readonly string _className = nameof(ExceptionHandlingMiddleware);
 
     public async Task InvokeAsync(HttpContext context)
     {
@@ -26,7 +25,7 @@ internal sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
 
-        Logs.RequestFailed(_logger, _className, nameof(HandleExceptionAsync), exception.Message);
+        Logs.Error(_logger, exception.Message);
     }
 }
 

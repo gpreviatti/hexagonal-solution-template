@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Grpc.Core;
 using Grpc.Net.ClientFactory;
@@ -17,10 +16,6 @@ public partial class BaseGrpcService<TGrpcService> where TGrpcService : ClientBa
     /// Logger instance for logging
     /// </summary>
     public ILogger Logger { get; }
-    /// <summary>
-    /// Stopwatch instance for measuring request duration
-    /// </summary>
-    public Stopwatch Stopwatch { get; } = new();
     /// <summary>
     /// Class name of the derived gRPC service
     /// </summary>
@@ -51,26 +46,24 @@ public partial class BaseGrpcService<TGrpcService> where TGrpcService : ClientBa
         [CallerMemberName] string? methodName = null
     ) where TResponse : class
     {
-        Stopwatch.Restart();
-
         try
         {
-           Logs.SendingRequest(Logger, ClassName, methodName!);
+           Logs.Information(Logger, "Sending request");
 
             var response = handler.Invoke();
 
-            Logs.RequestCompletedWithElapsed(Logger, ClassName, methodName!, Stopwatch.ElapsedMilliseconds);
+            Logs.Information(Logger, "Request completed");
             return await response.ResponseAsync;
         }
         catch (RpcException rpcEx)
         {
-            Logs.RequestFailedWithElapsed(Logger, ClassName, methodName!, Stopwatch.ElapsedMilliseconds, rpcEx);
+            Logs.Error(Logger, $"Request failed: {rpcEx.Message}");
 
             throw;
         }
         catch (Exception ex)
         {
-            Logs.RequestFailedWithElapsed(Logger, ClassName, methodName!, Stopwatch.ElapsedMilliseconds, ex);
+            Logs.Error(Logger, $"Request failed: {ex.Message}");
 
             throw;
         }

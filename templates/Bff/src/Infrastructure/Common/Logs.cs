@@ -1,126 +1,122 @@
-using System.Net;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Common;
 
-public static partial class Logs
+public partial class Logs
 {
     /// <summary>
-    /// Logs the sending of a request
+    /// Logs a generic debug message with a custom message.
     /// </summary>
-    /// <param name="logger">logger instance for logging</param>
-    /// <param name="className">class name of the calling service</param>
-    /// <param name="method">method name of the calling service</param>
+    /// <param name="logger">The logger instance to use for logging.</param>
+    /// <param name="message">The debug message.</param>
+    /// <param name="methodName">The name of the method (auto-captured).</param>
     [LoggerMessage(
         EventId = 1,
-        Level = LogLevel.Information,
-        Message = "[{ClassName}] | [{Method}] | Sending request"
+        Level = LogLevel.Debug,
+        Message = "[{MethodName}] | {Message}"
     )]
-    public static partial void SendingRequest(ILogger logger, string className, string method);
+    public static partial void Debug(ILogger logger, string message, [CallerMemberName] string methodName = null!);
 
     /// <summary>
-    /// Logs the sending of a request
+    /// Logs a generic information message with a custom message.
     /// </summary>
-    /// <param name="logger">logger instance for logging</param>
-    /// <param name="className">class name of the calling service</param>
-    /// <param name="method">method name of the calling service</param>
-    /// <param name="httpMethod">HTTP method of the request</param>
-    /// <param name="requestUri">URI of the request</param>
+    /// <param name="logger">The logger instance to use for logging.</param>
+    /// <param name="message">The information message.</param>
+    /// <param name="methodName">The name of the method (auto-captured).</param>
     [LoggerMessage(
         EventId = 2,
         Level = LogLevel.Information,
-        Message = "[{ClassName}] | [{Method}] | [{HttpMethod}] | [{RequestUri}] | Sending request"
+        Message = "[{MethodName}] | {Message}"
     )]
-    public static partial void SendingRequest(ILogger logger, string className, string method, HttpMethod httpMethod, string requestUri);
+    public static partial void Information(ILogger logger, string message, [CallerMemberName] string methodName = null!);
 
     /// <summary>
-    /// Logs a completed request with elapsed time
+    /// Logs a generic warning message with a custom message.
     /// </summary>
-    /// <param name="logger">logger instance for logging</param>
-    /// <param name="className">class name of the calling service</param>
-    /// <param name="method">method name of the calling service</param>
+    /// <param name="logger">The logger instance to use for logging.</param>
+    /// <param name="message">The warning message.</param>
+    /// <param name="methodName">The name of the method (auto-captured).</param>
     [LoggerMessage(
         EventId = 3,
-        Level = LogLevel.Information,
-        Message = "[{ClassName}] | [{Method}] | Request completed"
+        Level = LogLevel.Warning,
+        Message = "[{MethodName}] | {Message}"
     )]
-    public static partial void RequestCompleted(ILogger logger, string className, string method);
-
+    public static partial void Warning(ILogger logger, string message, [CallerMemberName] string methodName = null!);
 
     /// <summary>
-    /// Logs a completed request with elapsed time
+    /// Logs a generic operation failure with a custom message.
     /// </summary>
-    /// <param name="logger">logger instance for logging</param>
-    /// <param name="className">class name of the calling service</param>
-    /// <param name="method">method name of the calling service</param>
-    /// <param name="elapsedMilliseconds">elapsed time in milliseconds</param>
+    /// <param name="logger">The logger instance to use for logging.</param>
+    /// <param name="message">The failure message.</param>
+    /// <param name="methodName">The name of the method (auto-captured).</param>
     [LoggerMessage(
         EventId = 4,
-        Level = LogLevel.Information,
-        Message = "[{ClassName}] | [{Method}] | Request completed in {ElapsedMilliseconds} ms"
+        Level = LogLevel.Error,
+        Message = "[{MethodName}] | Error: {Message}"
     )]
-    public static partial void RequestCompletedWithElapsed(ILogger logger, string className, string method, long elapsedMilliseconds);
-
+    public static partial void Error(ILogger logger, string message, [CallerMemberName] string methodName = null!);
+    
     /// <summary>
-    /// Logs a completed request with elapsed time
+    /// Logs the start of the execution of an operation, including the method name and correlation ID.
     /// </summary>
-    /// <param name="logger">logger instance for logging</param>
-    /// <param name="className">class name of the calling service</param>
-    /// <param name="method">method name of the calling service</param>
-    /// <param name="httpMethod">HTTP method of the request</param>
-    /// <param name="requestUri">URI of the request</param>
-    /// <param name="elapsedMilliseconds">elapsed time in milliseconds</param>
+    /// <param name="logger">The logger instance to use for logging.</param>
+    /// <param name="methodName">The name of the method where the operation is executed (auto-captured).</param>
     [LoggerMessage(
         EventId = 5,
         Level = LogLevel.Information,
-        Message = "[{ClassName}] | [{Method}] | [{HttpMethod}] | [{RequestUri}] | Request completed in {ElapsedMilliseconds} ms"
+        Message = "[{MethodName}] | Starting operation"
     )]
-    public static partial void RequestCompletedWithElapsed(ILogger logger, string className, string method, HttpMethod httpMethod, string requestUri, long elapsedMilliseconds);
+    public static partial void StartingOperation(ILogger logger, [CallerMemberName] string methodName = null!);
 
     /// <summary>
-    /// Logs a failed request
+    /// Logs the completion of the execution of an operation, including the method name and correlation ID.
     /// </summary>
-    /// <param name="logger">logger instance for logging</param>
-    /// <param name="className">class name of the calling service</param>
-    /// <param name="method">method name of the calling service</param>
-    /// <param name="message">message associated with the request</param>
+    /// <param name="logger">The logger instance to use for logging.</param>
+    /// <param name="methodName">The name of the method where the operation is executed (auto-captured).</param>
     [LoggerMessage(
         EventId = 6,
-        Level = LogLevel.Error,
-        Message = "[{ClassName}] | [{Method}] | Request failed | Message: {Message}"
+        Level = LogLevel.Information,
+        Message = "[{MethodName}] | Finished operation"
     )]
-    public static partial void RequestFailed(ILogger logger, string className, string method, string message);
+    public static partial void FinishedOperation(ILogger logger, [CallerMemberName] string methodName = null!);
 
     /// <summary>
-    /// Logs a failed request with elapsed time
+    /// Logs a generic operation failure with a custom message.
     /// </summary>
-    /// <param name="logger">logger instance for logging</param>
-    /// <param name="className">class name of the calling service</param>
-    /// <param name="method">method name of the calling service</param>
-    /// <param name="elapsedMilliseconds">elapsed time in milliseconds</param>
-    /// <param name="exception">exception that occurred</param>
+    /// <param name="logger">The logger instance to use for logging.</param>
+    /// <param name="message">The failure message.</param>
+    /// <param name="methodName">The name of the method (auto-captured).</param>
     [LoggerMessage(
         EventId = 7,
-        Level = LogLevel.Error,
-        Message = "[{ClassName}] | [{Method}] | Failed in {ElapsedMilliseconds} ms"
+        Level = LogLevel.Warning,
+        Message = "[{MethodName}] | Failed operation: {Message}"
     )]
-    public static partial void RequestFailedWithElapsed(ILogger logger, string className, string method, long elapsedMilliseconds, Exception exception);
+    public static partial void FailedOperation(ILogger logger, string message, [CallerMemberName] string methodName = null!);
 
     /// <summary>
-    /// Logs a failed request with elapsed time
+    /// Logs the start of an operation.
     /// </summary>
-    /// <param name="logger">logger instance for logging</param>
-    /// <param name="className">class name of the calling service</param>
-    /// <param name="method">method name of the calling service</param>
-    /// <param name="httpMethod">HTTP method of the request</param>
-    /// <param name="requestUri">URI of the request</param>
-    /// <param name="message">message associated with the request</param>
-    /// <param name="statusCode">HTTP status code of the response</param>
-    /// <param name="elapsedMilliseconds">elapsed time in milliseconds</param>
+    /// <param name="logger">The logger instance to use for logging.</param>
+    /// <param name="details">Optional details about the operation.</param>
+    /// <param name="method">The method name (auto-captured).</param>
     [LoggerMessage(
         EventId = 8,
-        Level = LogLevel.Error,
-        Message = "[{ClassName}] | [{Method}] | [{HttpMethod}] | [{RequestUri}] | [{Message}] | {StatusCode} | Request failed with status in {ElapsedMilliseconds} ms"
+        Level = LogLevel.Debug,
+        Message = "[{Method}] | Starting operation. | {Details}"
     )]
-    public static partial void RequestFailedWithElapsed(ILogger logger, string className, string method, HttpMethod httpMethod, string requestUri, string? message, HttpStatusCode statusCode, long elapsedMilliseconds);
+    public static partial void DebugStartingOperation(ILogger logger, string details = "", [CallerMemberName] string method = null!);
+
+    /// <summary>
+    /// Logs the completion of an operation.
+    /// </summary>
+    /// <param name="logger">The logger instance to use for logging.</param>
+    /// <param name="details">Optional details about the operation.</param>
+    /// <param name="method">The method name (auto-captured).</param>
+    [LoggerMessage(
+        EventId = 9,
+        Level = LogLevel.Debug,
+        Message = "[{Method}] | Finished operation. | {Details}"
+    )]
+    public static partial void DebugFinishedOperation(ILogger logger, string details = "", [CallerMemberName] string method = null!);
 }
