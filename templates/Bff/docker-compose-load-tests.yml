@@ -2,6 +2,7 @@ name: hexagonal-solution-template-bff-load-tests
 
 services:
   k6:
+    container_name: k6
     image: grafana/k6:1.4.2
     depends_on:
       webapp:
@@ -18,6 +19,7 @@ services:
       - hexagonal_solution_template_network
 
   bff:
+    container_name: bff
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -53,53 +55,35 @@ services:
 
   alloy:
     extends:
-      file: docker-compose-grafana.yml
+      file: docker-compose.yml
       service: alloy
-    networks:
-      - hexagonal_solution_template_bff_network
 
   prometheus:
     extends:
-      file: docker-compose-grafana.yml
+      file: docker-compose.yml
       service: prometheus
-    networks:
-      - hexagonal_solution_template_bff_network
 
   loki:
     extends:
-      file: docker-compose-grafana.yml
+      file: docker-compose.yml
       service: loki
-    networks:
-      - hexagonal_solution_template_bff_network
 
   grafana:
     extends:
-      file: docker-compose-grafana.yml
+      file: docker-compose.yml
       service: grafana
-    networks:
-      - hexagonal_solution_template_bff_network
 
   tempo-init:
     extends:
-      file: docker-compose-grafana.yml
+      file: docker-compose.yml
       service: tempo-init
-    networks:
-      - hexagonal_solution_template_bff_network
 
   memcached:
     extends:
-      file: docker-compose-grafana.yml
+      file: docker-compose.yml
       service: memcached
-    networks:
-      - hexagonal_solution_template_bff_network
 
   tempo:
     extends:
-      file: docker-compose-grafana.yml
+      file: docker-compose.yml
       service: tempo
-    networks:
-      - hexagonal_solution_template_bff_network
-
-networks:
-  hexagonal_solution_template_bff_network:
-    driver: bridge

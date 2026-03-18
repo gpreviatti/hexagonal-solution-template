@@ -28,6 +28,8 @@ public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> log
         CancellationToken cancellationToken = default
     ) where TRequest : class where TResponse : class
     {
+        DefaultConfigurations.ActivitySource.StartActivity($"{nameof(BaseHttpService)}.{nameof(SendAsync)}");
+
         Logs.StartingOperation(Logger);
 
         HttpRequestMessage requestMessage = new(httpMethod, requestUri)
@@ -71,6 +73,8 @@ public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> log
         Dictionary<string, string>? headers = null
     ) where TResponse : class
     {
+        DefaultConfigurations.ActivitySource.StartActivity($"{nameof(BaseHttpService)}.{nameof(SendAsync)}");
+
         Logs.StartingOperation(Logger);
 
         var requestMessage = new HttpRequestMessage(httpMethod, requestUri)

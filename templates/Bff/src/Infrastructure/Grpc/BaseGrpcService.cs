@@ -46,6 +46,8 @@ public partial class BaseGrpcService<TGrpcService> where TGrpcService : ClientBa
         [CallerMemberName] string? methodName = null
     ) where TResponse : class
     {
+        DefaultConfigurations.ActivitySource.StartActivity($"{ClassName}.{methodName}");
+
         try
         {
            Logs.Information(Logger, "Sending request");
