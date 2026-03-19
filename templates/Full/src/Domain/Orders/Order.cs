@@ -13,7 +13,7 @@ public sealed class Order : DomainEntity
         string? timezoneId = null
     ) : base(createdBy ?? "System", timezoneId)
     {
-        using var activity = ActivitySource.StartActivity($"{GetType().Name}.Constructor");
+        using var activity = ActivitySource.StartActivity($"{EntityName}.Constructor");
 
         Description = description;
         Items = items;
@@ -28,7 +28,7 @@ public sealed class Order : DomainEntity
 
     public Result SetTotal(string user = "System", string? timezoneId = null)
     {
-        using var activity = ActivitySource.StartActivity($"{GetType().Name}.{nameof(SetTotal)}");
+        using var activity = ActivitySource.StartActivity($"{EntityName}.{nameof(SetTotal)}");
 
         if (Items == null || Items.Count == 0)
             return Result.Fail("Order must have at least one item.");

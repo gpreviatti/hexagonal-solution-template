@@ -4,9 +4,14 @@ namespace Domain.Common;
 
 public abstract class DomainEntity
 {
-    protected DomainEntity() {}
+    protected virtual string EntityName { get; }
+    protected DomainEntity()
+    {
+        EntityName = GetType().Name;
+    }
     protected DomainEntity(string user, string? timezoneId = null)
     {
+        EntityName = GetType().Name;
         CreatedAt = DateTime.UtcNow;
         CreatedBy = user;
         CreatedByTimezoneId = TimeZoneInfo.FindSystemTimeZoneById(string.IsNullOrWhiteSpace(timezoneId) ? TimeZoneInfo.Utc.Id : timezoneId).Id;
@@ -25,7 +30,7 @@ public abstract class DomainEntity
 
     public virtual void Update(string? user = null, string? timezoneId = null)
     {
-        using var activity = ActivitySource.StartActivity($"{GetType().Name}.{nameof(Update)}");
+        using var activity = ActivitySource.StartActivity($"{EntityName}.{nameof(Update)}");
 
         UpdatedAt = DateTime.UtcNow;
         UpdatedBy = user ?? "System";
