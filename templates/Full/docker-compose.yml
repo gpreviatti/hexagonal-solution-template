@@ -13,7 +13,7 @@ services:
       interval: 3s
       timeout: 10s
       retries: 10
-      start_period: 15s
+      start_period: 10s
     ports:
       - "5432:5432"
 
@@ -57,7 +57,7 @@ services:
       interval: 3s
       timeout: 10s
       retries: 5
-      start_period: 15s
+      start_period: 10s
 
   rabbitmq:
     image: rabbitmq:management
@@ -77,7 +77,7 @@ services:
       interval: 3s
       timeout: 10s
       retries: 5
-      start_period: 15s
+      start_period: 10s
 
   alloy:
     container_name: alloy
