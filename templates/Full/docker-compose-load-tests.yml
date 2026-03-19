@@ -15,6 +15,9 @@ services:
       - K6_SUMMARY_MODE=full
       - K6_WEB_DASHBOARD=true
       - K6_WEB_DASHBOARD_EXPORT=html-report.html
+      - VUS=50
+      - DURATION=180s
+      - GRACEFUL_STOP=10s
     command: ["run", "/LoadTests/scriptHttp.js", ]
     volumes:
       - ./tests/LoadTests:/LoadTests
@@ -106,5 +109,3 @@ services:
     extends:
       file: docker-compose.yml
       service: tempo
-    networks:
-      - hexagonal_solution_template_full_network

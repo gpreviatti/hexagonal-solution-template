@@ -7,9 +7,9 @@ export const options = {
     get_order: {
       exec: 'getOrder',
       executor: 'constant-vus',
-      vus: 10,
-      duration: '60s',
-      gracefulStop: '10s'
+      vus: __ENV.VUS ? parseInt(__ENV.VUS) : 10,
+      duration: __ENV.DURATION ? __ENV.DURATION : '60s',
+      gracefulStop: __ENV.GRACEFUL_STOP ? __ENV.GRACEFUL_STOP : '10s'
     }
   },
   thresholds: {
