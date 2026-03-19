@@ -78,8 +78,7 @@ services:
     ports:
       - 3000:3000/tcp
     volumes:
-      - ./scripts/grafana:/etc/grafana/provisioning
-      - ./scripts/grafana/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - ./scripts/grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
 
   tempo-init:
     container_name: tempo-init
@@ -89,8 +88,6 @@ services:
       - "chown"
       - "10001:10001"
       - "/var/tempo"
-    volumes:
-      - ./scripts/grafana/tempo-data:/var/tempo
 
   tempo:
     container_name: tempo
