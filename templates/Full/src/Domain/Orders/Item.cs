@@ -15,6 +15,10 @@ public sealed class Item : DomainEntity
     {
         Name = name;
         Description = description;
+
+        if (value <= 0)
+            throw new DomainException("Item value cannot be zero or negative.");
+
         Value = value;
     }
 

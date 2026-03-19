@@ -1,4 +1,5 @@
-﻿using Domain.Orders;
+﻿using Domain.Common;
+using Domain.Orders;
 
 namespace UnitTests.Domain;
 
@@ -61,6 +62,19 @@ public sealed class OrderTests
         Assert.Equal("System", order.UpdatedBy);
         Assert.Equal("UTC", order.UpdatedByTimezoneId);
     }
+
+    [Fact(DisplayName = nameof(GivenANewItemWithValueZeroThenShouldBeFailure))]
+    public void GivenANewItemWithValueZeroThenShouldBeFailure()
+    {
+        // Arrange, Act
+        var exception = Assert.Throws<DomainException>(() => new Item("Mouse", "Razer", 0));
+
+        // Assert
+        Assert.NotNull(exception);
+        Assert.Equal("Item value cannot be zero or negative.", exception.Message);
+    }
+
+
 
     [Fact(DisplayName = nameof(GivenANewOrderWhenItemsIsEmptyThenShouldReturnFailure))]
     public void GivenANewOrderWhenItemsIsEmptyThenShouldReturnFailure()
