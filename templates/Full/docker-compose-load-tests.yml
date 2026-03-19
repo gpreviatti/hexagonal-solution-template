@@ -18,8 +18,6 @@ services:
     command: ["run", "/LoadTests/scriptHttp.js", ]
     volumes:
       - ./tests/LoadTests:/LoadTests
-    networks:
-      - hexagonal_solution_template_full_network
 
   webapp:
     container_name: webapp
@@ -53,93 +51,60 @@ services:
       - ConnectionStrings__OrderDb=Host=postgres;Port=5432;Database=OrderDb;Username=postgres;Password=cY5VvZkkh4AzES
       - ConnectionStrings__Redis=redis:6379
       - ConnectionStrings__RabbitMQ=amqp://guest:guest@rabbitmq:5672/
-    networks:
-      - hexagonal_solution_template_full_network
 
   postgres:
     extends:
       file: docker-compose.yml
       service: postgres
-    networks:
-      - hexagonal_solution_template_full_network
 
   postgres-init:
     extends:
       file: docker-compose.yml
       service: postgres-init
-    networks:
-      - hexagonal_solution_template_full_network
   
   pgadmin:
     extends:
       file: docker-compose.yml
       service: pgadmin
-    networks:
-      - hexagonal_solution_template_full_network
 
   redis:
     extends:
       file: docker-compose.yml
       service: redis
-    networks:
-      - hexagonal_solution_template_full_network
 
   rabbitmq:
     extends:
       file: docker-compose.yml
       service: rabbitmq
-    networks:
-      - hexagonal_solution_template_full_network
 
   alloy:
     extends:
-      file: docker-compose-grafana.yml
+      file: docker-compose.yml
       service: alloy
-    networks:
-      - hexagonal_solution_template_full_network
 
   prometheus:
     extends:
-      file: docker-compose-grafana.yml
+      file: docker-compose.yml
       service: prometheus
-    networks:
-      - hexagonal_solution_template_full_network
 
   loki:
     extends:
-      file: docker-compose-grafana.yml
+      file: docker-compose.yml
       service: loki
-    networks:
-      - hexagonal_solution_template_full_network
 
   grafana:
     extends:
-      file: docker-compose-grafana.yml
+      file: docker-compose.yml
       service: grafana
-    networks:
-      - hexagonal_solution_template_full_network
 
   tempo-init:
     extends:
-      file: docker-compose-grafana.yml
+      file: docker-compose.yml
       service: tempo-init
-    networks:
-      - hexagonal_solution_template_full_network
-
-  memcached:
-    extends:
-      file: docker-compose-grafana.yml
-      service: memcached
-    networks:
-      - hexagonal_solution_template_full_network
 
   tempo:
     extends:
-      file: docker-compose-grafana.yml
+      file: docker-compose.yml
       service: tempo
     networks:
       - hexagonal_solution_template_full_network
-
-networks:
-  hexagonal_solution_template_full_network:
-    driver: bridge

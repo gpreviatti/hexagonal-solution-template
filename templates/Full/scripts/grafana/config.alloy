@@ -10,7 +10,15 @@ otelcol.receiver.otlp "default" {
   output {
     metrics = [otelcol.exporter.otlphttp.metrics.input]
     logs    = [otelcol.exporter.otlphttp.logs.input]
-    traces = [otelcol.exporter.otlphttp.traces.input]
+    traces = [otelcol.exporter.otlphttp.traces.input,otelcol.connector.servicegraph.default.input]
+  }
+}
+
+otelcol.connector.servicegraph "default" {
+  dimensions = ["http.method"]
+
+  output {
+    metrics = [otelcol.exporter.otlphttp.metrics.input]
   }
 }
 
@@ -18,7 +26,6 @@ otelcol.exporter.otlphttp "logs" {
   client {
     endpoint = "http://loki:3100/otlp"
   }
-
 }
 
 otelcol.exporter.otlphttp "metrics" {
@@ -29,7 +36,7 @@ otelcol.exporter.otlphttp "metrics" {
 
 otelcol.exporter.otlphttp "traces" {
   client {
-      endpoint = "http://tempo:4318"
+    endpoint = "http://tempo:4318"
   }
 }
 
