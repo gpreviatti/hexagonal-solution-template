@@ -12,7 +12,6 @@ jobs:
       project: "hexagonal-solution-template-full"
       organization: "gpreviatti"
       unit_test_project_path: "./templates/Full/tests/UnitTests/"
-      unit_test_verbosity: 'd'
       dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
       domain_stryker_config_path: "./templates/Full/tests/UnitTests/stryker-config-domain.json"
       application_stryker_config_path: "./templates/Full/tests/UnitTests/stryker-config-application.json"
