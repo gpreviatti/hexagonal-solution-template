@@ -18,10 +18,14 @@
     <RepositoryUrl>git://github.com/gpreviatti/hexagonal-solution-template</RepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>
-      - Add docker support
-      - Add docker-compose file for load tests
-      - Add automatic assembly mapping for entities
-      - Simplify load tests methods definitions
+      - Add new new template with BFF architecture
+      - Remove Repository pattern since it's not needed with modern EF Core and adds unnecessary complexity
+      - Update dependencies to latest versions
+      - Update GitHub Actions workflows to test and analyze both templates
+      - Improve OpenTelemetry configuration and add more metrics and traces
+      - Remove Aspire Dashboard
+      - Add Grafana, Prometheus, Tempo and Loki configuration with Docker Compose for easier local development and testing of observability features
+      - Change DB to PostgreSQL since it's more widely used in production than SQL Server and works better with Docker
     </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>

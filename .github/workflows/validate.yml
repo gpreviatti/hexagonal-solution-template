@@ -13,20 +13,20 @@ jobs:
       unit_test_project_path: "./Full/templates/tests/UnitTests/"
       unit_test_verbosity: 'd'
       dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
-      domain_stryker_config_path: "./Full/templates/tests/UnitTests/stryker-config-domain.json"
-      application_stryker_config_path: "./Full/templates/tests/UnitTests/stryker-config-application.json"
-      integration_test_project_path: "./Full/templates/tests/IntegrationTests"
-      docker_compose_file_path: "./Full/templates/docker-compose.yml"
+      domain_stryker_config_path: "./templates/Full/tests/UnitTests/stryker-config-domain.json"
+      application_stryker_config_path: "./templates/Full/tests/UnitTests/stryker-config-application.json"
+      integration_test_project_path: "./templates/Full/tests/IntegrationTests"
+      docker_compose_file_path: "./templates/Full/docker-compose.yml"
     secrets:
       sonar_token: ${{ secrets.SONAR_TOKEN }}
 
-  validate-minimal-template:
+  validate-bff-template:
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate.yml@v1
     with:
-      project: "hexagonal-solution-template-minimal"
+      project: "hexagonal-solution-template-bff"
       organization: "gpreviatti"
       dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
-      integration_test_project_path: "./Minimal/templates/tests/IntegrationTests"
-      docker_compose_file_path: "./Minimal/templates/docker-compose.yml"
+      integration_test_project_path: "./templates/Bff/tests/IntegrationTests"
+      docker_compose_file_path: "./templates/Bff/docker-compose.yml"
     secrets:
       sonar_token: ${{ secrets.SONAR_TOKEN }}
