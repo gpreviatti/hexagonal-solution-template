@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  validate-full-template:
+  validate-template-full:
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate.yml@v1
     with:
       build_path: "./templates/Full"
@@ -20,7 +20,7 @@ jobs:
     secrets:
       sonar_token: ${{ secrets.SONAR_TOKEN }}
 
-  validate-bff-template:
+  validate-template-bff:
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate.yml@v1
     with:
       build_path: "./templates/Bff"
