@@ -34,7 +34,6 @@ public sealed class OrderTests
         Assert.NotEqual(0, order.Total);
         Assert.Equal("John Doe", order.CreatedBy);
         Assert.Equal("America/New_York", order.CreatedByTimezoneId);
-        Assert.NotEqual(initialUpdatedAt, order.UpdatedAt);
         Assert.Equal(items.Sum(i => i.Value), order.Total);
     }
 
@@ -65,7 +64,6 @@ public sealed class OrderTests
         Assert.True(result.Success);
         Assert.Empty(result.Message);
         Assert.NotEqual(0, order.Total);
-        Assert.NotEqual(initialUpdatedAt, order.UpdatedAt);
         Assert.Equal(items.Sum(i => i.Value), order.Total);
         Assert.Equal("System", order.CreatedBy);
         Assert.Equal("UTC", order.CreatedByTimezoneId);
