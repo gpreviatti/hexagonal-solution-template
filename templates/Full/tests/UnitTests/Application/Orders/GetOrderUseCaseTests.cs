@@ -26,17 +26,14 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         // Arrange
         var request = _fixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
-        Order expectedOrder = new(
+        var resultCreateOrder = Order.Create(
             "Test Order",
             [
                 new("Item 1", "Description 1", 500m),
                 new("Item 2", "Description 2", 500m)
             ]
-        )
-        {
-            Id = request.Id
-        };
-        expectedOrder.SetTotal();
+        );
+        var expectedOrder = resultCreateOrder.Value;
         _fixture.MockRepository.SetupQueryable(request.CorrelationId, null, [expectedOrder]);
 
         // Act
@@ -65,13 +62,11 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         // Arrange
         var request = _fixture.SetValidRequest();
         _fixture.SetSuccessfulValidator(request);
-        Order expectedOrder = new(
+        var resultCreateOrder = Order.Create(
             "Test Order",
             []
-        )
-        {
-            Id = request.Id
-        };
+        );
+        var expectedOrder = resultCreateOrder.Value;
 
         _fixture.MockRepository.SetupQueryable(request.CorrelationId, null, [expectedOrder]);
 

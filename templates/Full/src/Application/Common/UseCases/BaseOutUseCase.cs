@@ -13,7 +13,6 @@ public interface IBaseOutUseCase<TResponseData> where TResponseData : BaseRespon
 public abstract class BaseOutUseCase<TResponseData>(IServiceProvider serviceProvider) : BaseUseCase(serviceProvider), IBaseOutUseCase<TResponseData> where TResponseData : BaseResponse
 {
     protected IHybridCacheService Cache { get; } = serviceProvider.GetRequiredService<IHybridCacheService>();
-    protected IProduceService ProduceService { get; } = serviceProvider.GetRequiredService<IProduceService>();
     protected const string HandleMethodName = nameof(HandleAsync);
 
     public async Task<TResponseData> HandleAsync(CancellationToken cancellationToken)

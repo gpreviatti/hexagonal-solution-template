@@ -56,17 +56,14 @@ public sealed class CreateOrderRequestValidationTests(CreateOrderRequestValidati
 
 public sealed class CreateOrderUseCaseFixture : BaseApplicationFixture<CreateOrderRequest, CreateOrderUseCase>
 {
-    public CreateOrderUseCaseFixture()
-    {
-        UseCase = new(MockServiceProvider.Object);
-    }
+    public CreateOrderUseCaseFixture() => UseCase = new(MockServiceProvider.Object);
 
     public CreateOrderRequest SetValidRequest()
     {
         var items = AutoFixture
             .CreateMany<CreateOrderItemRequest>(1);
 
-        return new CreateOrderRequest(Guid.NewGuid(), "AwesomeComputer", [.. items]);
+        return new(Guid.NewGuid(), "AwesomeComputer", [.. items]);
     }
 
     public static CreateOrderRequest SetInvalidRequestWithNoItems() =>

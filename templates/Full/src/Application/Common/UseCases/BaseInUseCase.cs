@@ -15,7 +15,6 @@ public interface IBaseInUseCase<TRequest> where TRequest : BaseRequest
 public abstract class BaseInUseCase<TRequest>(IServiceProvider serviceProvider) : BaseUseCase(serviceProvider), IBaseInUseCase<TRequest> where TRequest : BaseRequest
 {
     protected IHybridCacheService Cache { get; } = serviceProvider.GetRequiredService<IHybridCacheService>();
-    protected IProduceService ProduceService { get; } = serviceProvider.GetRequiredService<IProduceService>();
     protected IBaseRepository Repository { get; } = serviceProvider.GetRequiredService<IBaseRepository>();
     private readonly IValidator<TRequest> _validator = serviceProvider.GetRequiredService<IValidator<TRequest>>();
     protected const string HandleMethodName = nameof(HandleAsync);

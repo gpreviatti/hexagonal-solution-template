@@ -5,8 +5,8 @@ namespace UnitTests.Domain;
 
 public sealed class OrderTests
 {
-    [Fact(DisplayName = nameof(GivenANewOrderWhenItemsAreProvidedThenShouldSetTotalWithSuccess))]
-    public void GivenANewOrderWhenItemsAreProvidedThenShouldSetTotalWithSuccess()
+    [Fact(DisplayName = nameof(GivenANewOrderWhenItemsAreProvidedThenShouldCreatedWithSuccess))]
+    public void GivenANewOrderWhenItemsAreProvidedThenShouldCreatedWithSuccess()
     {
         /// Arrange
         var items = new List<Item>()
@@ -15,13 +15,18 @@ public sealed class OrderTests
             new("Mouse", "Razer", 100),
             new("Headphone", "Logitech", 100),
         };
-        Order order = new("Amazing Computer", items, "John Doe", "America/New_York");
-        var initialUpdatedAt = order.UpdatedAt;
 
         /// Act
-        var result = order.SetTotal();
+        var result = Order.Create("Amazing Computer", items, "John Doe", "America/New_York");
+        var order = result.Value;
+        var initialUpdatedAt = order.UpdatedAt;
 
         // Assert
+        Assert.NotNull(result);
+        Assert.True(result.Success);
+        Assert.Empty(result.Message);
+        Assert.IsType<Order>(result.Value);
+
         Assert.NotNull(order);
         Assert.NotNull(result);
         Assert.True(result.Success);
@@ -33,8 +38,8 @@ public sealed class OrderTests
         Assert.Equal(items.Sum(i => i.Value), order.Total);
     }
 
-    [Fact(DisplayName = nameof(GivenANewOrderWithoutUserAndTimezoneWhenItemsAreProvidedThenShouldSetTotalWithSuccess))]
-    public void GivenANewOrderWithoutUserAndTimezoneWhenItemsAreProvidedThenShouldSetTotalWithSuccess()
+    [Fact(DisplayName = nameof(GivenANewOrderWithoutUserAndTimezoneWhenItemsAreProvidedThenShouldCreateWithSuccess))]
+    public void GivenANewOrderWithoutUserAndTimezoneWhenItemsAreProvidedThenShouldCreateWithSuccess()
     {
         /// Arrange
         var items = new List<Item>()
@@ -43,13 +48,18 @@ public sealed class OrderTests
             new("Mouse", "Razer", 100),
             new("Headphone", "Logitech", 100),
         };
-        Order order = new("Amazing Computer", items);
-        var initialUpdatedAt = order.UpdatedAt;
 
         /// Act
-        var result = order.SetTotal();
+        var result = Order.Create("Amazing Computer", items);
+        var order = result.Value;
+        var initialUpdatedAt = order.UpdatedAt;
 
         // Assert
+        Assert.NotNull(result);
+        Assert.True(result.Success);
+        Assert.Empty(result.Message);
+        Assert.IsType<Order>(result.Value);
+
         Assert.NotNull(order);
         Assert.NotNull(result);
         Assert.True(result.Success);
@@ -79,14 +89,10 @@ public sealed class OrderTests
     [Fact(DisplayName = nameof(GivenANewOrderWhenItemsIsEmptyThenShouldReturnFailure))]
     public void GivenANewOrderWhenItemsIsEmptyThenShouldReturnFailure()
     {
-        /// Arrange
-        Order order = new("Amazing Computer", Array.Empty<Item>());
-
-        /// Act
-        var result = order.SetTotal("John Doe", "America/New_York");
+        /// Arrange, Act
+        var result = Order.Create("Amazing Computer", Array.Empty<Item>());
 
         // Assert
-        Assert.NotNull(order);
         Assert.NotNull(result);
         Assert.True(result.IsFailure);
         Assert.Equal("Order must have at least one item.", result.Message);

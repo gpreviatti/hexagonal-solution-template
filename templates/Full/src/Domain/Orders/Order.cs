@@ -6,7 +6,7 @@ public sealed class Order : DomainEntity
 {
     public Order() { }
 
-    public Order(
+    private Order(
         string description,
         ICollection<Item> items,
         string? createdBy = null,
@@ -32,7 +32,9 @@ public sealed class Order : DomainEntity
 
         Order order = new (description, items, user, timezoneId);
 
-        order.SetTotal(user, timezoneId);
+        var setTotalResult = order.SetTotal(user, timezoneId);
+        if(setTotalResult.IsFailure)
+            return Result.Fail<Order>(setTotalResult.Message);
 
         activity?.SetTag(nameof(description), description);
 
