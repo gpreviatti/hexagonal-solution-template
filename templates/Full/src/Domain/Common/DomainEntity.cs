@@ -19,7 +19,7 @@ public abstract class DomainEntity
         UpdatedBy = CreatedBy;
         UpdatedByTimezoneId = CreatedByTimezoneId;
     }
-    protected virtual ActivitySource ActivitySource { get; } = DefaultConfigurations.ActivitySource;
+    protected static ActivitySource ActivitySource { get; } = DefaultConfigurations.ActivitySource;
     public int Id { get; init; }
     public DateTime CreatedAt { get; init; }
     public string? CreatedBy { get; init; }

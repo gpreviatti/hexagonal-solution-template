@@ -1,5 +1,8 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using Application.Common.Enums;
+using Application.Common.Messages;
+using Application.Common.Services;
 using Domain.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -12,6 +15,7 @@ public abstract class BaseUseCase
     protected ILogger Logger { get; }
     protected string ClassName { get; }
     protected ActivitySource ActivitySource { get; } = DefaultConfigurations.ActivitySource;
+    protected IProduceService ProduceService { get; }
     protected Counter<int> UseCaseExecutedMetric { get; }
     protected Counter<int> UseCaseFailedMetric { get; }
 
@@ -24,10 +28,30 @@ public abstract class BaseUseCase
 
         Logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(classType);
 
+        ProduceService = serviceProvider.GetRequiredService<IProduceService>();
+
         UseCaseExecutedMetric = DefaultConfigurations.Meter
             .CreateCounter<int>($"{ClassName}.Executed", "total", "Number of times the use case was executed");
 
         UseCaseFailedMetric = DefaultConfigurations.Meter
             .CreateCounter<int>($"{ClassName}.Failed", "total", "Number of times the use case execution failed");
     }
+
+    protected void CreateNotification(
+        Guid correlationId,
+        string notificationStatus,
+        string createdBy,
+        NotificationType notificationType,
+        object message
+    ) => _ = ProduceService.HandleAsync(
+        new CreateNotificationMessage(
+            correlationId,
+            notificationType,
+            notificationStatus,
+            createdBy,
+            message
+        ),
+        CancellationToken.None,
+        queue: notificationType.ToString()
+    );
 }

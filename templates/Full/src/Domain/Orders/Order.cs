@@ -13,18 +13,31 @@ public sealed class Order : DomainEntity
         string? timezoneId = null
     ) : base(createdBy ?? "System", timezoneId)
     {
-        using var activity = ActivitySource.StartActivity($"{EntityName}.Constructor");
-
         Description = description;
         Items = items;
-
-        activity?.SetTag(nameof(Description), Description);
-        activity?.SetTag(nameof(Items), Items.Count);
     }
 
     public string Description { get; private set; }
     public decimal Total { get; private set; }
     public ICollection<Item> Items { get; private set; }
+
+    public static Result<Order> Create(
+        string description,
+        ICollection<Item> items,
+        string user = "System",
+        string? timezoneId = null
+    )
+    {
+        using var activity = ActivitySource.StartActivity($"{nameof(Order)}.{nameof(Create)}");
+
+        Order order = new (description, items, user, timezoneId);
+
+        order.SetTotal(user, timezoneId);
+
+        activity?.SetTag(nameof(description), description);
+
+        return Result.Ok(order);
+    }
 
     public Result SetTotal(string user = "System", string? timezoneId = null)
     {

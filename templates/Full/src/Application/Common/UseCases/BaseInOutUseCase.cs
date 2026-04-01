@@ -19,7 +19,6 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData>(IServiceProvider
     where TResponseData : BaseResponse
 {
     protected IHybridCacheService Cache { get; } = serviceProvider.GetRequiredService<IHybridCacheService>();
-    protected IProduceService ProduceService { get; } = serviceProvider.GetRequiredService<IProduceService>();
     protected IBaseRepository Repository { get; } = serviceProvider.GetRequiredService<IBaseRepository>();
     private readonly IValidator<TRequest> _validator = serviceProvider.GetRequiredService<IValidator<TRequest>>();
     protected const string HandleMethodName = nameof(HandleAsync);
@@ -40,6 +39,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData>(IServiceProvider
             if (!validationResult.IsValid)
             {
                 string errors = string.Join(", ", validationResult.Errors);
+
                 Logs.ValidationErrors(Logger, request.CorrelationId, errors);
 
                 response = Activator.CreateInstance<TResponseData>();
@@ -48,7 +48,9 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData>(IServiceProvider
                     Success = false,
                     Message = errors
                 };
+
                 UseCaseFailedMetric.Add(1);
+                
                 return response!;
             }
         }

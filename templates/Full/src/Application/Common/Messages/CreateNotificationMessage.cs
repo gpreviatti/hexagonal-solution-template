@@ -1,8 +1,10 @@
+using Application.Common.Enums;
+
 namespace Application.Common.Messages;
 
 public sealed record CreateNotificationMessage(
     Guid CorrelationId,
-    string NotificationType,
+    NotificationType NotificationType,
     string NotificationStatus,
     string? CreatedBy = null,
     object? Message = null

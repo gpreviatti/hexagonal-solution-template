@@ -1,8 +1,7 @@
-﻿using Application.Common.Constants;
-using Application.Common.Messages;
+﻿using Application.Common.Enums;
+using Application.Common.Helpers;
 using Application.Common.Requests;
 using Application.Common.UseCases;
-using Application.Common.Helpers;
 using Domain.Orders;
 using FluentValidation;
 
@@ -41,6 +40,7 @@ public sealed class CreateOrderRequestValidator : AbstractValidator<CreateOrderR
 public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
     : BaseInOutUseCase<CreateOrderRequest, BaseResponse<OrderDto>>(serviceProvider)
 {
+    private readonly NotificationType _notificationType = NotificationType.OrderCreated;
     public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(
         CreateOrderRequest request,
         CancellationToken cancellationToken
@@ -53,33 +53,31 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
             .Select(i => new Item(i.Name, i.Description, i.Value))
             .ToList();
 
-        var newOrder = new Order(
+        var createResult = Order.Create(
             request.Description, items,
             request.CreatedBy, request.TimezoneId
         );
-
-        var createResult = newOrder.SetTotal();
         if (createResult.IsFailure)
         {
             Logs.FailedOperation(Logger, correlationId, createResult.Message);
 
             response = new(false, null, createResult.Message);
 
-            CreateNotification(correlationId, "Failed", response);
+            CreateNotification(correlationId, "Failed", request.CreatedBy, _notificationType, response);
 
             UseCaseFailedMetric.Add(1);
 
             return response;
         }
 
-        var addResult = await Repository.AddAsync(newOrder, correlationId, cancellationToken);
-        if (addResult == 0)
+        var newOrder = createResult.Value;
+        if (await Repository.AddAsync(newOrder, correlationId, cancellationToken) == 0)
         {
             Logs.FailedOperation(Logger, correlationId, "Failed to create order. No rows affected.");
 
             response = new(false, null, "Failed to create order.");
 
-            CreateNotification(correlationId, "Failed", response);
+            CreateNotification(correlationId, "Failed", request.CreatedBy, _notificationType, response);
 
             UseCaseFailedMetric.Add(1);
 
@@ -99,20 +97,8 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
             })]
         });
 
-        CreateNotification(correlationId, "Success", response);
+        CreateNotification(correlationId, "Success", request.CreatedBy, _notificationType, response);
 
         return response;
     }
-
-    private void CreateNotification(Guid correlationId, string notificationStatus, object message) => _ = ProduceService.HandleAsync(
-        new CreateNotificationMessage(
-            correlationId,
-            NotificationType.OrderCreated,
-            notificationStatus,
-            "System",
-            message
-        ),
-        CancellationToken.None,
-        NotificationType.OrderCreated
-    );
 }
