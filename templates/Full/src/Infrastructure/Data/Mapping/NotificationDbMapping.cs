@@ -9,7 +9,6 @@ internal sealed class NotificationDbMapping : BaseDbMapping<Notification>
     public override void ConfigureDomainEntity(EntityTypeBuilder<Notification> builder)
     {
         builder.Property(p => p.NotificationType)
-            .HasMaxLength(100)
             .IsRequired();
 
         builder.Property(p => p.NotificationStatus)

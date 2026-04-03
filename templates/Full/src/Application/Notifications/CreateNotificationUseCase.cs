@@ -20,7 +20,7 @@ public sealed class CreateNotificationRequestValidator : AbstractValidator<Creat
     public CreateNotificationRequestValidator()
     {
         RuleFor(r => r.CorrelationId).NotEmpty();
-        RuleFor(r => r.NotificationType).NotEmpty();
+        RuleFor(r => r.NotificationType).IsInEnum();
     }
 }
 

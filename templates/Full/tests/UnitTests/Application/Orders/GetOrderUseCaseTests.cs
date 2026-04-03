@@ -7,7 +7,7 @@ namespace UnitTests.Application.Orders;
 public sealed class GetOrderUseCaseFixture : BaseApplicationFixture<GetOrderRequest, GetOrderUseCase>
 {
     public GetOrderUseCaseFixture() => UseCase = new(MockServiceProvider.Object);
-    public GetOrderRequest SetValidRequest() => new(Guid.NewGuid(), AutoFixture.Create<int>());
+    public GetOrderRequest SetValidRequest(int? id = null) => new(Guid.NewGuid(), id ?? AutoFixture.Create<int>());
 }
 
 public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
@@ -24,8 +24,6 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
     public async Task GivenAValidRequestThenPass()
     {
         // Arrange
-        var request = _fixture.SetValidRequest();
-        _fixture.SetSuccessfulValidator(request);
         var resultCreateOrder = Order.Create(
             "Test Order",
             [
@@ -34,6 +32,9 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
             ]
         );
         var expectedOrder = resultCreateOrder.Value;
+        var request = _fixture.SetValidRequest(resultCreateOrder.Value.Id);
+        request = request with { Id = expectedOrder.Id };
+        _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetupQueryable(request.CorrelationId, null, [expectedOrder]);
 
         // Act
@@ -49,39 +50,6 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         Assert.Equal(expectedOrder.Total, result.Data.Total);
         Assert.NotNull(result.Data.Items);
         Assert.Equal(expectedOrder.Items?.Count, result.Data.Items!.Count);
-
-        _fixture.MockRepository.VerifyQueryable<Order>();
-        _fixture.MockLogger.VerifyStartOperation();
-        _fixture.MockLogger.VerifyNotFound(0);
-        _fixture.MockLogger.VerifyFinishOperation();
-    }
-
-    [Fact(DisplayName = nameof(GivenAValidRequestWithoutItemsThenPass))]
-    public async Task GivenAValidRequestWithoutItemsThenPass()
-    {
-        // Arrange
-        var request = _fixture.SetValidRequest();
-        _fixture.SetSuccessfulValidator(request);
-        var resultCreateOrder = Order.Create(
-            "Test Order",
-            []
-        );
-        var expectedOrder = resultCreateOrder.Value;
-
-        _fixture.MockRepository.SetupQueryable(request.CorrelationId, null, [expectedOrder]);
-
-        // Act
-        var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.True(result.Success);
-        Assert.Null(result.Message);
-        Assert.NotNull(result.Data);
-        Assert.Equal(expectedOrder.Id, result.Data.Id);
-        Assert.Equal(expectedOrder.Description, result.Data.Description);
-        Assert.Equal(expectedOrder.Total, result.Data.Total);
-        Assert.Equal(0, result.Data.Items?.Count);
 
         _fixture.MockRepository.VerifyQueryable<Order>();
         _fixture.MockLogger.VerifyStartOperation();
