@@ -17,7 +17,7 @@ namespace Infrastructure.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.2")
+                .HasAnnotation("ProductVersion", "10.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -51,10 +51,8 @@ namespace Infrastructure.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("text");
 
-                    b.Property<string>("NotificationType")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("text");
+                    b.Property<int>("NotificationType")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");

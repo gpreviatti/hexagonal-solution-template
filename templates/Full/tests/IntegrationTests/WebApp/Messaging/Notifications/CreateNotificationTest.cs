@@ -17,7 +17,9 @@ public class CreateNotificationTestFixture : BaseMessagingFixture
         SetServices(scope);
     }
 
-    public CreateNotificationMessage SetValidMessage() => AutoFixture.Build<CreateNotificationMessage>().Create();
+    public CreateNotificationMessage SetValidMessage() => AutoFixture.Build<CreateNotificationMessage>()
+        .With(m => m.NotificationType, NotificationType.OrderCreated)
+        .Create();
 }
 
 [Collection("WebApplicationFactoryCollectionDefinition")]

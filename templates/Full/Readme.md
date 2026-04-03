@@ -33,7 +33,7 @@ dotnet ef migrations add <MigrationName> --project src/Infrastructure --startup-
 ### Generate SQL script for migrations with idempotent option
 
 ```bash
-dotnet ef migrations script --idempotent --project src/Infrastructure --startup-project src/Infrastructure --output scripts/migrations.sql
+dotnet ef migrations script --idempotent --project src/Infrastructure --startup-project src/Infrastructure --output scripts/sql/migrations.sql
 ```
 
 ### Run the application

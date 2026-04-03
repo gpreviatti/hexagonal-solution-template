@@ -23,7 +23,7 @@ DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM "Notification" WHERE "Id" = 1 LIMIT 1) THEN
         INSERT INTO "Notification" ("Id", "NotificationType", "NotificationStatus", "CreatedAt", "UpdatedAt", "CreatedBy", "CreatedByTimezoneId")
-        VALUES (1, 'OrderCreated', 'Created', NOW(), NOW(), 'System', 'UTC');
+        VALUES (1, 1, 'Created', NOW(), NOW(), 'System', 'UTC');
         
         -- Reset the sequence to the maximum ID + 1
         PERFORM setval(pg_get_serial_sequence('"Notification"', 'Id'), COALESCE(MAX("Id"), 1), true) FROM "Notification";
