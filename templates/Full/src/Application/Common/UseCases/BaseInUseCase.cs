@@ -7,7 +7,7 @@ using Application.Common.Helpers;
 
 namespace Application.Common.UseCases;
 
-public interface IBaseInUseCase<TRequest> where TRequest : BaseRequest
+public interface IBaseInUseCase<in TRequest> where TRequest : BaseRequest
 {
     Task HandleAsync(TRequest request, CancellationToken cancellationToken);
 }
