@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace Domain.Common;
 
@@ -28,15 +29,35 @@ public abstract class DomainEntity
     public string? UpdatedBy { get; private set; }
     public string? UpdatedByTimezoneId { get; private set; }
 
-    public virtual void Update(string? user = null, string? timezoneId = null)
+    protected static Result<TEntity> Handle<TEntity>(
+        Func<Activity?, Result<TEntity>> factory,
+        [CallerMemberName] string callerName = null!
+    ) where TEntity : DomainEntity
     {
-        using var activity = ActivitySource.StartActivity($"{EntityName}.{nameof(Update)}");
+        using var activity = ActivitySource.StartActivity($"{typeof(TEntity).Name}.{callerName}");
 
+        return factory(activity);
+    }
+
+    protected static Result Handle(
+        Func<Activity?, Result> factory,
+        [CallerMemberName] string callerName = null!
+    )
+    {
+        using var activity = ActivitySource.StartActivity($"{typeof(DomainEntity).Name}.{callerName}");
+
+        return factory(activity);
+    }
+
+    public Result Update(string? user = null, string? timezoneId = null) => Handle(activity =>
+    {
         UpdatedAt = DateTime.UtcNow;
         UpdatedBy = user ?? "System";
         UpdatedByTimezoneId = TimeZoneInfo.FindSystemTimeZoneById(string.IsNullOrWhiteSpace(timezoneId) ? TimeZoneInfo.Utc.Id : timezoneId).Id;
 
         activity?.SetTag(nameof(UpdatedBy), UpdatedBy);
         activity?.SetTag(nameof(UpdatedByTimezoneId), UpdatedByTimezoneId);
-    }
+
+        return Result.Ok();
+    });
 }

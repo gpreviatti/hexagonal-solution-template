@@ -1,4 +1,4 @@
-﻿using Domain.Common;
+using Domain.Common;
 
 namespace Domain.Orders;
 
@@ -26,33 +26,32 @@ public sealed class Order : DomainEntity
         ICollection<Item> items,
         string user = "System",
         string? timezoneId = null
-    )
+    ) => Handle(activity =>
     {
-        using var activity = ActivitySource.StartActivity($"{nameof(Order)}.{nameof(Create)}");
-
-        Order order = new (description, items, user, timezoneId);
+        Order order = new(description, items, user, timezoneId);
 
         var setTotalResult = order.SetTotal(user, timezoneId);
-        if(setTotalResult.IsFailure)
+        if (setTotalResult.IsFailure)
             return Result.Fail<Order>(setTotalResult.Message);
 
         activity?.SetTag(nameof(description), description);
 
         return Result.Ok(order);
-    }
+    });
 
-    public Result SetTotal(string user = "System", string? timezoneId = null)
+    public Result SetTotal(string user = "System", string? timezoneId = null) => Handle(activity =>
     {
-        using var activity = ActivitySource.StartActivity($"{EntityName}.{nameof(SetTotal)}");
-
         if (Items == null || Items.Count == 0)
             return Result.Fail("Order must have at least one item.");
 
         Total = Items.Sum(item => item.Value);
-        Update(user, timezoneId);
+
+        var result = Update(user, timezoneId);
+        if (result.IsFailure)
+            return Result.Fail(result.Message);
 
         activity?.SetTag(nameof(Total), Total);
 
         return Result.Ok();
-    }
+    });
 }
