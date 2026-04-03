@@ -10,7 +10,6 @@ jobs:
     with:
       build_path: "./templates/Full"
       sonar_project: "hexagonal-solution-template-full"
-      test_no_build: false
       unit_test_project_path: "./templates/Full/tests/UnitTests/"
       dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
       domain_stryker_config_path: "./templates/Full/tests/UnitTests/stryker-config-domain.json"
