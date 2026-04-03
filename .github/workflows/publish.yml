@@ -9,7 +9,8 @@ jobs:
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate.yml@v1
     with:
       build_path: "./templates/Full"
-      project: "hexagonal-solution-template-full"
+      sonar_project: "hexagonal-solution-template-full"
+      test_no_build: false
       unit_test_project_path: "./templates/Full/tests/UnitTests/"
       dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
       domain_stryker_config_path: "./templates/Full/tests/UnitTests/stryker-config-domain.json"
