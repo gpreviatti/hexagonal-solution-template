@@ -1,4 +1,4 @@
-namespace Application.Common.Enums;
+namespace Domain.Common.Enums;
 
 public enum NotificationType
 {

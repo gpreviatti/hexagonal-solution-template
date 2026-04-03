@@ -4,6 +4,7 @@ using System.Text.Json;
 using Application.Common.Messages;
 using Application.Common.Services;
 using Domain.Common;
+using Domain.Common.Enums;
 using Infrastructure.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,7 +32,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
         ILogger<BaseConsumer<TMessage, TConsumer>> logger,
         IServiceScopeFactory serviceScopeFactory,
         IConfiguration configuration,
-        string queueName,
+        NotificationType queueName,
         IDictionary<string, object?> arguments = null!
     ) : base(logger, serviceScopeFactory, configuration)
     {
@@ -42,7 +43,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
             throw new ArgumentException("Invalid RabbitMQ connection string.");
         }
 
-        _queueName = queueName;
+        _queueName = queueName.ToString();
         _arguments = arguments;
         _factory = new() { Uri = new(connectionString) };
 

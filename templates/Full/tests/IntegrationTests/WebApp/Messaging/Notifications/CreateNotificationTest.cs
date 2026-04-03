@@ -1,4 +1,3 @@
-using Application.Common.Constants;
 using Application.Common.Messages;
 using Domain.Notifications;
 using IntegrationTests.Common;
@@ -6,6 +5,7 @@ using IntegrationTests.WebApp.Messaging.Common;
 using Microsoft.Extensions.DependencyInjection;
 using WebApp;
 using Microsoft.EntityFrameworkCore;
+using Domain.Common.Enums;
 
 namespace IntegrationTests.WebApp.Messaging.Notifications;
 
@@ -38,7 +38,7 @@ public sealed class CreateNotificationTest : IClassFixture<CreateNotificationTes
         var message = _fixture.SetValidMessage();
 
         // Act
-        await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated);
+        await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated.ToString());
 
         var notification = await _fixture.Repository.GetQueryable<Notification>(Guid.NewGuid())
             .Where(n => n.NotificationType == message.NotificationType && n.NotificationStatus == message.NotificationStatus)
@@ -56,8 +56,8 @@ public sealed class CreateNotificationTest : IClassFixture<CreateNotificationTes
         var message = _fixture.SetValidMessage();
 
         // Act
-        await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated);
-        await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated);
+        await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated.ToString());
+        await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated.ToString());
 
         var notifications = await _fixture.Repository.GetQueryable<Notification>(Guid.NewGuid())
             .Where(n => n.NotificationType == message.NotificationType && n.NotificationStatus == message.NotificationStatus)

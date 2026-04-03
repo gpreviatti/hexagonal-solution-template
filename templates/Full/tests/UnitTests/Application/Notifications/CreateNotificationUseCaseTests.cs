@@ -1,4 +1,5 @@
 using Application.Notifications;
+using Domain.Common.Enums;
 using Domain.Notifications;
 using FluentValidation;
 using FluentValidation.TestHelper;
@@ -11,7 +12,7 @@ public sealed class CreateNotificationRequestValidationFixture
     public IValidator<CreateNotificationRequest> Validator { get; } = new CreateNotificationRequestValidator();
 
     public static CreateNotificationRequest GetValidRequest() =>
-        new(Guid.NewGuid(), "TestNotification", "Success", "System", new { Test = "Message" });
+        new(Guid.NewGuid(), NotificationType.OrderCreated, "Success", "System", new { Test = "Message" });
 }
 
 public sealed class CreateNotificationRequestValidationTests(CreateNotificationRequestValidationFixture fixture) : IClassFixture<CreateNotificationRequestValidationFixture>
@@ -38,7 +39,7 @@ public sealed class CreateNotificationRequestValidationTests(CreateNotificationR
         var request = CreateNotificationRequestValidationFixture.GetValidRequest() with
         {
             CorrelationId = Guid.Empty,
-            NotificationType = string.Empty
+            NotificationType = (NotificationType)(-1)
         };
 
         // Act
@@ -58,7 +59,7 @@ public sealed class CreateNotificationUseCaseFixture : BaseApplicationFixture<Cr
     }
 
     public static CreateNotificationRequest SetValidRequest() =>
-        new(Guid.NewGuid(), "TestNotification", "Success", "System", new { Test = "Message" });
+        new(Guid.NewGuid(), NotificationType.OrderCreated, "Success", "System", new { Test = "Message" });
 }
 
 public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotificationUseCaseFixture>

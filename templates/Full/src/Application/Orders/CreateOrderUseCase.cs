@@ -1,7 +1,7 @@
-﻿using Application.Common.Enums;
-using Application.Common.Helpers;
+﻿using Application.Common.Helpers;
 using Application.Common.Requests;
 using Application.Common.UseCases;
+using Domain.Common.Enums;
 using Domain.Orders;
 using FluentValidation;
 

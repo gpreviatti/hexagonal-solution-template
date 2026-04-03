@@ -3,12 +3,13 @@ using Application.Common.UseCases;
 using Application.Common.Helpers;
 using Domain.Notifications;
 using FluentValidation;
+using Domain.Common.Enums;
 
 namespace Application.Notifications;
 
 public sealed record CreateNotificationRequest(
     Guid CorrelationId,
-    string NotificationType,
+    NotificationType NotificationType,
     string NotificationStatus,
     string? CreatedBy = null,
     object? Message = null

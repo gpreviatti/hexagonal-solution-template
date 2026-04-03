@@ -1,7 +1,7 @@
-using Application.Common.Constants;
 using Application.Common.Messages;
 using Application.Common.UseCases;
 using Application.Notifications;
+using Domain.Common.Enums;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

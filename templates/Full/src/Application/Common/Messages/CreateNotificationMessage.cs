@@ -1,4 +1,4 @@
-using Application.Common.Enums;
+using Domain.Common.Enums;
 
 namespace Application.Common.Messages;
 

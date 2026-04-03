@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Domain.Common;
+using Domain.Common.Enums;
 
 namespace Domain.Notifications;
 
@@ -8,7 +9,7 @@ public sealed class Notification : DomainEntity
     public Notification() {}
 
     public Notification(
-        string notificationType,
+        NotificationType notificationType,
         string notificationStatus,
         object? message = null,
         string? createdBy = null,
@@ -24,7 +25,7 @@ public sealed class Notification : DomainEntity
         activity?.SetTag(nameof(NotificationType), NotificationType);
         activity?.SetTag(nameof(NotificationStatus), NotificationStatus);
     }
-    public string NotificationType { get; init; }
+    public NotificationType NotificationType { get; init; }
     public string NotificationStatus { get; init; }
     public string Message { get; init; }
 }

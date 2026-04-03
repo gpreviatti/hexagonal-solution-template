@@ -1,9 +1,9 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
-using Application.Common.Enums;
 using Application.Common.Messages;
 using Application.Common.Services;
 using Domain.Common;
+using Domain.Common.Enums;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

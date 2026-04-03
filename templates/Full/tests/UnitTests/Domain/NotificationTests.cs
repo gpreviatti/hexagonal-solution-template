@@ -1,3 +1,4 @@
+using Domain.Common.Enums;
 using Domain.Notifications;
 
 namespace UnitTests.Domain;
@@ -8,7 +9,7 @@ public sealed class NotificationTests
     public void GivenANewNotificationWhenPropertiesAreProvidedThenShouldCreateNotificationWithSuccess()
     {
         /// Arrange
-        var notificationType = "TestNotification";
+        var notificationType = NotificationType.OrderCreated;
         var notificationStatus = "Success";
         var createdBy = "System";
         var timezoneId = "America/New_York";
@@ -31,7 +32,7 @@ public sealed class NotificationTests
     public void GivenANewNotificationWhenMessageIsNullThenShouldCreateNotificationWithEmptyMessage()
     {
         /// Arrange
-        var notificationType = "TestNotification";
+        var notificationType = NotificationType.OrderCreated;
         var notificationStatus = "Success";
         var createdBy = "System";
         var timezoneId = "America/New_York";
