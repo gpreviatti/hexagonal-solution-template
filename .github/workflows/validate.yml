@@ -5,18 +5,27 @@ on:
   workflow_dispatch:
 
 jobs:
-  validate:
+  validate-template-full:
+    name: Validate Full Template
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate.yml@v1
     with:
-      project: "hexagonal-solution-template"
-      organization: "gpreviatti"
-      unit_test_project_path: "./templates/tests/UnitTests/"
-      unit_test_verbosity: 'd'
+      build_path: "./templates/Full"
+      sonar_project: "hexagonal-solution-template-full"
+      test_no_build: false
+      unit_test_project_path: "./templates/Full/tests/UnitTests/"
       dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
-      domain_stryker_config_path: "./templates/tests/UnitTests/stryker-config-domain.json"
-      application_stryker_config_path: "./templates/tests/UnitTests/stryker-config-application.json"
-      integration_test_project_path: "./templates/tests/IntegrationTests"
-      docker_compose_file_path: "./templates/docker-compose.yml"
+      domain_stryker_config_path: "./templates/Full/tests/UnitTests/stryker-config-domain.json"
+      application_stryker_config_path: "./templates/Full/tests/UnitTests/stryker-config-application.json"
+      integration_test_project_path: "./templates/Full/tests/IntegrationTests"
+      docker_compose_file_path: "./templates/Full/docker-compose.yml"
     secrets:
       sonar_token: ${{ secrets.SONAR_TOKEN }}
-    
+
+  validate-template-bff:
+    name: Validate BFF Template
+    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate.yml@v1
+    with:
+      build_path: "./templates/Bff"
+      dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
+      integration_test_project_path: "./templates/Bff/tests/IntegrationTests"
+      docker_compose_file_path: "./templates/Bff/docker-compose.yml"

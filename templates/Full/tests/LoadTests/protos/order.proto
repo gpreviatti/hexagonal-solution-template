@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package order;
+
+service OrderService {
+  rpc Get (GetOrderRequest) returns (OrderReply);
+}
+
+message GetOrderRequest {
+    int32 id = 1;
+    string correlationId = 2;
+}
+
+message OrderDto {
+    int32 id = 1;
+    string description = 2;
+    double total = 3;
+}
+
+message OrderReply {
+  bool success = 1;
+  string message = 2;
+  OrderDto data = 3;
+}

@@ -1,0 +1,20 @@
+﻿{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+    "profiles": {
+        "Development": {
+            "commandName": "Project",
+            "dotnetRunMessages": true,
+            "sqlDebugging": true,
+            "launchBrowser": false,
+            "applicationUrl": "https://*:7175;http://*:5010",
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "OTEL_SERVICE_NAME": "Hexagonal.Solution.Template.WebApp",
+                "OTEL_EXPORTER_OTLP_ENDPOINT": "http://localhost:4317",
+                "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
+                "OTEL_RESOURCE_ATTRIBUTES": "service.namespace=development",
+                "ENABLE_SENSITIVE_DATA_LOGGING": "true"
+            }
+        }
+    }
+}

@@ -1,0 +1,66 @@
+using Application.Common.Requests;
+using Application.Common.Services;
+using Application.Common.UseCases;
+using Application.Orders;
+using Microsoft.AspNetCore.Mvc;
+
+namespace WebApp.Endpoints;
+
+internal static class OrderEndpoints
+{
+    public static WebApplication MapOrderEndpoints(this WebApplication app)
+    {
+        var cache = app.Services.GetRequiredService<IHybridCacheService>();
+
+        var ordersGroup = app.MapGroup("/orders")
+            .WithTags("Orders");
+
+        ordersGroup.MapGet("/{id}", async (
+            [FromServices] IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>> useCase,
+            [FromHeader] Guid correlationId,
+            [FromRoute] int id,
+            CancellationToken cancellationToken,
+            [FromHeader] bool cacheEnabled = true
+        ) => {
+            var response = cacheEnabled switch
+            {
+                true => await cache.GetOrCreateAsync(
+                    correlationId,
+                    $"{nameof(OrderEndpoints)}-{id}",
+                    async (cancellationToken) => await useCase.HandleAsync(new(correlationId, id), cancellationToken),
+                    cancellationToken
+                ),
+                false or _ => await useCase.HandleAsync(new(correlationId, id), cancellationToken),
+            };
+
+            return response.Success ? Results.Ok(response) : Results.NotFound(response);
+        });
+
+        ordersGroup.MapPost("/", async (
+            [FromServices] IBaseInOutUseCase<CreateOrderRequest, BaseResponse<OrderDto>> useCase,
+            [FromBody] CreateOrderRequest request,
+            CancellationToken cancellationToken
+        ) =>
+        {
+            var response = await useCase.HandleAsync(request, cancellationToken);
+
+            if (!response.Success || response.Data == null)
+                return Results.BadRequest(response);
+
+            return Results.Created($"/orders/{response.Data.Id}", response);
+        });
+
+        ordersGroup.MapPost("/paginated", async (
+            [FromServices] IBaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<OrderDto>> useCase,
+            [FromBody] BasePaginatedRequest request,
+            CancellationToken cancellationToken
+        ) =>
+        {
+            var response = await useCase.HandleAsync(request, cancellationToken);
+
+            return response.Success ? Results.Ok(response) : Results.BadRequest(response);
+        });
+
+        return app;
+    }
+}

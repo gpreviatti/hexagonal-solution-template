@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Giovanni Brunno Previatti",
+  "identity": "Hexagonal.Solution.Template.Bff",
+  "name": "Hexagonal solution template Bff",
+  "description": "Solution template following hexagonal architecture structure best practices for backend for frontend (BFF) applications",
+  "shortName": "bff",
+  "sourceName": "Hexagonal.Solution.Template.Bff",
+  "classifications": [
+    "common",
+    "template",
+    "hexagonal-architecture"
+  ],
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "preferNameDirectory": true
+}

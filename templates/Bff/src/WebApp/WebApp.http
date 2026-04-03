@@ -1,0 +1,48 @@
+@WebApp_HostAddress = https://localhost:7176
+
+###
+GET {{WebApp_HostAddress}}/health HTTP/2
+Accept: application/json
+
+###
+GET {{WebApp_HostAddress}}/live HTTP/2
+
+###
+GET {{WebApp_HostAddress}}/ready HTTP/2
+
+###
+GET {{WebApp_HostAddress}}/orders/1 HTTP/2
+CorrelationId: {{$guid}}
+CacheEnabled: false
+Accept-Encoding: gzip, deflate
+Accept: application/json
+
+###
+GET {{WebApp_HostAddress}}/orders/4 HTTP/2
+CorrelationId: {{$guid}}
+CacheEnabled: false
+Accept-Encoding: gzip, deflate
+Accept: application/json
+
+
+###
+POST {{WebApp_HostAddress}}/orders HTTP/2
+Content-Type: application/json
+
+{
+  "CorrelationId": "{{$guid}}",
+  "Description": "John's computer",
+  "Items": [
+    {
+      "Name": "Computer",
+      "Description": "Surface 2",
+      "Value": 1000
+    },
+    {
+      "Name": "Mouse",
+      "Description": "Microsoft mouse",
+      "Value": 99
+    }
+  ]
+}
+

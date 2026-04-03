@@ -1,0 +1,33 @@
+name: hexagonal-solution-template-bff
+
+services:
+  mock-api:
+    container_name: mock-api
+    build:
+      context: .
+      dockerfile: Dockerfile.MockApi
+    ports:
+      - "5012:5012"
+    healthcheck:
+      test: ["CMD", "curl", "--http2-prior-knowledge", "-v", "http://localhost:5012/health"]
+      interval: 3s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - OTEL_SERVICE_NAME=Hexagonal.Solution.Template.Bff.MockApi
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4317
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+
+  redis:
+    image: redis:8
+    container_name: redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
