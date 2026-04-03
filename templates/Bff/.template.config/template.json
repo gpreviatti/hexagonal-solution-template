@@ -7,9 +7,11 @@
   "shortName": "hexagonal-solution-bff",
   "sourceName": "Hexagonal.Solution.Template.Bff",
   "classifications": [
-    "common",
-    "template",
-    "hexagonal-architecture"
+    "Common",
+    "Template",
+    "Hexagonal-Architecture",
+    "Backend-For-Frontend",
+    "BFF"
   ],
   "tags": {
     "language": "C#",
