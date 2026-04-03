@@ -6,7 +6,7 @@ on:
 jobs:
   validate-template-full:
     name: Validate Full Template
-    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate.yml@v1
+    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate-full.yml@v1
     with:
       build_path: "./templates/Full"
       sonar_project: "hexagonal-solution-template-full"
@@ -21,24 +21,21 @@ jobs:
 
   validate-template-bff:
     name: Validate BFF Template
-    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate.yml@v1
+    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate-bff.yml@v1
     with:
       build_path: "./templates/Bff"
       dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
       integration_test_project_path: "./templates/Bff/tests/IntegrationTests"
       docker_compose_file_path: "./templates/Bff/docker-compose.yml"
-    secrets:
-      sonar_token: ${{ secrets.SONAR_TOKEN }}
-
+  
   validate-contracts-template:
     name: Validate Contracts Template
-    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate.yml@v1
+    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate-contracts.yml@v1
     with:
       build_path: "./templates/Contracts"
       dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
-      unit_test_project_path: "./templates/Contracts/tests/UnitTests/"
-      default_stryker_config_path: "./templates/Contracts/tests/UnitTests/stryker-config.json"
-      sonar_validation: false
+      test_project_path: "./templates/Contracts/tests/UnitTests/"
+      stryker_config_path: "./templates/Contracts/tests/UnitTests/stryker-config.json"
 
   pack-and-publish:
     name: Pack and Publish Template
@@ -46,6 +43,6 @@ jobs:
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-pack.yml@v1
     with:
       dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
-      package_version: "10.2.0"
+      package_version: "10.3.0"
     secrets:
       nuget_api_key: ${{ secrets.NUGET_API_KEY }}
