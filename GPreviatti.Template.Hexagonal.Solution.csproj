@@ -18,11 +18,7 @@
     <RepositoryUrl>git://github.com/gpreviatti/hexagonal-solution-template</RepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>
-      - Add new Contracts-only template (`hexagonal-solution-contracts`) with shared request/response contracts, DTOs and gRPC protobuf definitions
-      - Add unit tests in the Contracts template to validate contract instantiation and default values
-      - Add dedicated Contracts template solution file and template-level README
-      - Update root README with usage/help commands and guidance for the new Contracts template
-      - Optimize Contracts template package management by removing unused package versions
+      - Github Actions workflows improvements
     </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>

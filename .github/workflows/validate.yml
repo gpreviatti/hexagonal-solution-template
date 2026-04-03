@@ -22,7 +22,7 @@ jobs:
 
   validate-template-bff:
     name: Validate BFF Template
-    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate.yml@v1
+    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate-bff.yml@v1
     with:
       build_path: "./templates/Bff"
       dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
@@ -31,10 +31,9 @@ jobs:
   
   validate-contracts-template:
     name: Validate Contracts Template
-    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate.yml@v1
+    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate-contracts.yml@v1
     with:
       build_path: "./templates/Contracts"
       dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
-      unit_test_project_path: "./templates/Contracts/tests/UnitTests/"
-      default_stryker_config_path: "./templates/Contracts/tests/UnitTests/stryker-config.json"
-      sonar_validation: false
+      test_project_path: "./templates/Contracts/tests/UnitTests/"
+      stryker_config_path: "./templates/Contracts/tests/UnitTests/stryker-config.json"
