@@ -6,6 +6,12 @@
 
 This is a dotnet solution template from projects based on hexagonal architecture and best practices
 
+## Available templates
+
+- `hexagonal-solution-full`: Full hexagonal architecture template (Domain, Application, Infrastructure, WebApp, tests and load tests).
+- `hexagonal-solution-bff`: Backend-for-Frontend focused template with HTTP/gRPC integration patterns and integration/load tests.
+- `hexagonal-solution-contracts`: Contracts-only template for shared request/response models, DTOs, gRPC protobuf definitions and unit tests.
+
 ## Used Technologies
 
 - FluentValidation
@@ -15,6 +21,7 @@ This is a dotnet solution template from projects based on hexagonal architecture
 - Xunit
 - Moq
 - AutoFixture
+- gRPC / Protobuf
 - Docker and Docker Compose
 - K6
 - Stryker
@@ -46,6 +53,14 @@ To create only the BFF template you can use the following command
 dotnet new hexagonal-solution-bff -n HexagonalSolution
 ```
 
+To create only the Contracts template you can use the following command
+
+```bash
+dotnet new hexagonal-solution-contracts -n HexagonalSolution
+```
+
+The Contracts template is recommended when you want a lightweight shared library for API and messaging contracts that can be reused across services.
+
 If you had any doubts about the existing parameters you can also use -h to get more information
 
 ```bash
@@ -56,6 +71,12 @@ or
 
 ```bash
 dotnet new hexagonal-solution-bff -h
+```
+
+or
+
+```bash
+dotnet new hexagonal-solution-contracts -h
 ```
 
 If you want to update the template to the latest version just execute the following command

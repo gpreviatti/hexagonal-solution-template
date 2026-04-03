@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Giovanni Brunno Previatti",
+  "identity": "Hexagonal.Solution.Template.Contracts",
+  "name": "Hexagonal solution template Contracts",
+  "description": "Solution template focused on shared contracts for hexagonal architecture",
+  "shortName": "hexagonal-solution-contracts",
+  "sourceName": "Hexagonal.Solution.Template.Contracts",
+  "classifications": [
+    "Common",
+    "Template",
+    "Hexagonal-Architecture",
+    "Contracts"
+  ],
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "preferNameDirectory": true
+}

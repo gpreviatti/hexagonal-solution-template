@@ -29,3 +29,13 @@ jobs:
       dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
       integration_test_project_path: "./templates/Bff/tests/IntegrationTests"
       docker_compose_file_path: "./templates/Bff/docker-compose.yml"
+  
+  validate-contracts-template:
+    name: Validate Contracts Template
+    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate.yml@v1
+    with:
+      build_path: "./templates/Contracts"
+      dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
+      unit_test_project_path: "./templates/Contracts/tests/UnitTests/"
+      default_stryker_config_path: "./templates/Contracts/tests/UnitTests/stryker-config.json"
+      sonar_validation: false
