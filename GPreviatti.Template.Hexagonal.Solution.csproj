@@ -18,14 +18,11 @@
     <RepositoryUrl>git://github.com/gpreviatti/hexagonal-solution-template</RepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>
-      - Add new new template with BFF architecture
-      - Remove Repository pattern since it's not needed with modern EF Core and adds unnecessary complexity
-      - Update dependencies to latest versions
-      - Update GitHub Actions workflows to test and analyze both templates
-      - Improve OpenTelemetry configuration and add more metrics and traces
-      - Remove Aspire Dashboard
-      - Add Grafana, Prometheus, Tempo and Loki configuration with Docker Compose for easier local development and testing of observability features
-      - Change DB to PostgreSQL since it's more widely used in production than SQL Server and works better with Docker
+      - Add new Contracts-only template (`hexagonal-solution-contracts`) with shared request/response contracts, DTOs and gRPC protobuf definitions
+      - Add unit tests in the Contracts template to validate contract instantiation and default values
+      - Add dedicated Contracts template solution file and template-level README
+      - Update root README with usage/help commands and guidance for the new Contracts template
+      - Optimize Contracts template package management by removing unused package versions
     </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>

@@ -7,9 +7,10 @@
   "shortName": "hexagonal-solution-full",
   "sourceName": "Hexagonal.Solution.Template.Full",
   "classifications": [
-    "common",
-    "template",
-    "hexagonal-architecture"
+    "Common",
+    "Template",
+    "Hexagonal-Architecture",
+    "Full"
   ],
   "tags": {
     "language": "C#",

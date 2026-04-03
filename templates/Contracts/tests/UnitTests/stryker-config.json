@@ -1,0 +1,15 @@
+{
+  "stryker-config": {
+    "reporters": [
+      "progress",
+      "html"
+    ],
+    "project": "Contracts.csproj",
+    "report-file-name": "mutation-tests-contracts-result",
+    "thresholds": {
+      "high": 90,
+      "low": 80,
+      "break": 50
+    }
+  }
+}
