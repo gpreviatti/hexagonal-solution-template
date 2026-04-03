@@ -25,7 +25,6 @@ jobs:
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate.yml@v1
     with:
       build_path: "./templates/Bff"
-      project: "hexagonal-solution-template-bff"
       dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
       integration_test_project_path: "./templates/Bff/tests/IntegrationTests"
       docker_compose_file_path: "./templates/Bff/docker-compose.yml"
