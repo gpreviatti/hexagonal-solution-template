@@ -5,6 +5,7 @@ on:
 
 jobs:
   validate-template-full:
+    name: Validate Full Template
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate.yml@v1
     with:
       build_path: "./templates/Full"
@@ -20,6 +21,7 @@ jobs:
       sonar_token: ${{ secrets.SONAR_TOKEN }}
 
   validate-template-bff:
+    name: Validate BFF Template
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate.yml@v1
     with:
       build_path: "./templates/Bff"
@@ -31,6 +33,7 @@ jobs:
       sonar_token: ${{ secrets.SONAR_TOKEN }}
 
   pack-and-publish:
+    name: Pack and Publish Template
     needs: [validate-template-full, validate-template-bff]
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-pack.yml@v1
     with:
