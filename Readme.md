@@ -31,25 +31,43 @@ This is a dotnet solution template from projects based on hexagonal architecture
 To install the project template you have to use the following command
 
 ```bash
-dotnet new install Hexagonal.Solution.Template
+dotnet new install GPreviatti.Template.Hexagonal.Solution
 ```
 
-After that you can use it to create your project where -n is the name of your solution
+After that you can use it to create your project where -n is the name of your solution to create the full solution template you can use the following command
 
 ```bash
-dotnet new hexagonal-solution -n HexagonalSolution
+dotnet new hexagonal-solution-full -n HexagonalSolution
+```
+
+To create only the BFF template you can use the following command
+
+```bash
+dotnet new hexagonal-solution-bff -n HexagonalSolution
 ```
 
 If you had any doubts about the existing parameters you can also use -h to get more information
 
 ```bash
-dotnet new hexagonal-solution -h
+dotnet new hexagonal-solution-full -h
+```
+
+or 
+
+```bash
+dotnet new hexagonal-solution-bff -h
+```
+
+If you want to update the template to the latest version just execute the following command
+
+```bash
+dotnet new update GPreviatti.Template.Hexagonal.Solution
 ```
 
 If you want to uninstall the template just execute the following command :(
 
 ```bash
-dotnet new uninstall Hexagonal.Solution.Template
+dotnet new uninstall GPreviatti.Template.Hexagonal.Solution
 ```
 
 ## Official solution template documentation

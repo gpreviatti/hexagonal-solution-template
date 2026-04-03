@@ -4,7 +4,7 @@
   "identity": "Hexagonal.Solution.Template.Bff",
   "name": "Hexagonal solution template Bff",
   "description": "Solution template following hexagonal architecture structure best practices for backend for frontend (BFF) applications",
-  "shortName": "bff",
+  "shortName": "hexagonal-solution-bff",
   "sourceName": "Hexagonal.Solution.Template.Bff",
   "classifications": [
     "common",
