@@ -44,7 +44,7 @@ public abstract class DomainEntity
         [CallerMemberName] string callerName = null!
     )
     {
-        using var activity = ActivitySource.StartActivity($"{typeof(DomainEntity).Name}.{callerName}");
+        using var activity = ActivitySource.StartActivity(callerName);
 
         return factory(activity);
     }

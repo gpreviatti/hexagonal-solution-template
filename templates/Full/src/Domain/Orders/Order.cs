@@ -39,7 +39,7 @@ public sealed class Order : DomainEntity
         return Result.Ok(order);
     });
 
-    public Result SetTotal(string user = "System", string? timezoneId = null) => Handle(activity =>
+    private Result SetTotal(string user = "System", string? timezoneId = null) => Handle(activity =>
     {
         if (Items == null || Items.Count == 0)
             return Result.Fail("Order must have at least one item.");
