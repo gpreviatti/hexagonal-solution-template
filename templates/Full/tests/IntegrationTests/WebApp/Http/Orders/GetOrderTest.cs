@@ -41,6 +41,8 @@ public class GetOrderTest : IClassFixture<BaseHttpFixture>
         Assert.True(response!.Success);
         Assert.NotNull(data);
         Assert.Equal(id, data.Id);
+        Assert.NotNull(data.Description);
+        Assert.NotNull(data.PeriodSinceWasCreated);
         Assert.NotNull(data.Items);
         Assert.NotEmpty(data.Items);
     }

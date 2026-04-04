@@ -88,6 +88,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
         {
             Id = newOrder.Id,
             Total = newOrder.Total,
+            PeriodSinceWasCreated = newOrder.GetPeriodSinceWasCreated().Value,
             Items = [.. newOrder.Items.Select(i => new ItemDto
             {
                 Id = i.Id,

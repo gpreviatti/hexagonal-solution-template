@@ -95,4 +95,44 @@ public sealed class OrderTests
         Assert.True(result.IsFailure);
         Assert.Equal("Order must have at least one item.", result.Message);
     }
+
+    [Fact(DisplayName = nameof(GivenANewOrderWhenCreatedAtWasNotSetThenShouldReturnFailurePeriod))]
+    public void GivenANewOrderWhenCreatedAtWasNotSetThenShouldReturnFailurePeriod()
+    {
+        // Arrange
+        var order = new Order();
+
+        // Act
+        var result = order.GetPeriodSinceWasCreated();
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.True(result.IsFailure);
+        Assert.Equal("CreatedAt was not set.", result.Message);
+    }
+
+    [Theory(DisplayName = nameof(GivenANewOrderWhenRequestingPeriodThenShouldReturnExpectedUnit))]
+    [InlineData(30, "seconds ago")]
+    [InlineData(5 * 60, "minutes ago")]
+    [InlineData(5 * 60 * 60, "hours ago")]
+    [InlineData(10 * 24 * 60 * 60, "days ago")]
+    [InlineData(120 * 24 * 60 * 60, "months ago")]
+    [InlineData(800 * 24 * 60 * 60, "years ago")]
+    public void GivenANewOrderWhenRequestingPeriodThenShouldReturnExpectedUnit(int secondsAgo, string expectedUnit)
+    {
+        // Arrange
+        var createdAt = DateTime.UtcNow.AddSeconds(-secondsAgo);
+        var order = new Order
+        {
+            CreatedAt = createdAt
+        };
+
+        // Act
+        var result = order.GetPeriodSinceWasCreated();
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.True(result.Success);
+        Assert.EndsWith(expectedUnit, result.Value);
+    }
 }
