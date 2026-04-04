@@ -55,28 +55,27 @@ public sealed class Order : DomainEntity
         return Result.Ok();
     });
 
-    public Result<string> GetPeriodSinceWasCreated()
+    public string GetPeriodSinceWasCreated()
     {
         using var activity = ActivitySource.StartActivity($"{EntityName}.{nameof(GetPeriodSinceWasCreated)}");
 
         if (CreatedAt == default)
-            return Result.Fail<string>("CreatedAt was not set.");
+            return "CreatedAt was not set.";
 
         var timeSinceCreation = DateTime.UtcNow - CreatedAt;
+        activity?.SetTag(nameof(timeSinceCreation), timeSinceCreation.ToString());
 
         if (timeSinceCreation.TotalSeconds < 60)
-            return Result.Ok($"{(int)timeSinceCreation.TotalSeconds} seconds ago");
+            return $"{(int)timeSinceCreation.TotalSeconds} seconds ago";
         if (timeSinceCreation.TotalMinutes < 60)
-            return Result.Ok($"{(int)timeSinceCreation.TotalMinutes} minutes ago");
+            return $"{(int)timeSinceCreation.TotalMinutes} minutes ago";
         if (timeSinceCreation.TotalHours < 24)
-            return Result.Ok($"{(int) timeSinceCreation.TotalHours} hours ago");
+            return $"{(int) timeSinceCreation.TotalHours} hours ago";
         if (timeSinceCreation.TotalDays < 30)
-            return Result.Ok($"{(int) timeSinceCreation.TotalDays} days ago");
+            return $"{(int) timeSinceCreation.TotalDays} days ago";
         if (timeSinceCreation.TotalDays < 365)
-            return Result.Ok($"{(int) (timeSinceCreation.TotalDays / 30)} months ago");
+            return $"{(int) (timeSinceCreation.TotalDays / 30)} months ago";
 
-        activity?.SetTag(nameof(timeSinceCreation), timeSinceCreation.ToString());
-            
-        return Result.Ok($"{(int)(timeSinceCreation.TotalDays / 365)} years ago");
+        return $"{(int)(timeSinceCreation.TotalDays / 365)} years ago";
     }
 }

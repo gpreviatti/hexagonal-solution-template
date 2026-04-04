@@ -107,8 +107,7 @@ public sealed class OrderTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.True(result.IsFailure);
-        Assert.Equal("CreatedAt was not set.", result.Message);
+        Assert.Equal("CreatedAt was not set.", result);
     }
 
     [Theory(DisplayName = nameof(GivenANewOrderWhenRequestingPeriodThenShouldReturnExpectedUnit))]
@@ -132,7 +131,6 @@ public sealed class OrderTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.True(result.Success);
-        Assert.EndsWith(expectedUnit, result.Value);
+        Assert.EndsWith(expectedUnit, result);
     }
 }

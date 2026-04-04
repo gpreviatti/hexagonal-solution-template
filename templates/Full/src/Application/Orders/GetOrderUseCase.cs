@@ -30,7 +30,7 @@ public sealed class GetOrderUseCase(IServiceProvider serviceProvider)  : BaseInO
             Id = o.Id,
             Description = o.Description,
             Total = o.Total,
-            PeriodSinceWasCreated = o.GetPeriodSinceWasCreated().Value,
+            PeriodSinceWasCreated = o.GetPeriodSinceWasCreated(),
             Items = o.Items.Select(i => new ItemDto
             {
                 Id = i.Id,
