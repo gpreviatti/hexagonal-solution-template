@@ -30,7 +30,7 @@ public sealed class Order : DomainEntity
     {
         Order order = new(description, items, user, timezoneId);
 
-        var setTotalResult = order.SetTotal(user, timezoneId);
+        var setTotalResult = order.SetTotal(user);
         if (setTotalResult.IsFailure)
             return Result.Fail<Order>(setTotalResult.Message);
 
@@ -39,16 +39,12 @@ public sealed class Order : DomainEntity
         return Result.Ok(order);
     });
 
-    private Result SetTotal(string user = "System", string? timezoneId = null) => Handle(activity =>
+    private Result SetTotal(string user = "System") => Handle(activity =>
     {
         if (Items == null || Items.Count == 0)
             return Result.Fail("Order must have at least one item.");
 
         Total = Items.Sum(item => item.Value);
-
-        var result = Update(user, timezoneId);
-        if (result.IsFailure)
-            return Result.Fail(result.Message);
 
         activity?.SetTag(nameof(Total), Total);
 
