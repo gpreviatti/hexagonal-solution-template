@@ -74,16 +74,3 @@ datasources:
   jsonData:
     httpMethod: GET
     serviceMapEnabled: true
-    derivedFields:
-      - datasourceUid: tempo
-        matcherRegex: service_name=(\w+)
-        name: ServiceName
-        url: $${__value.raw}
-      - datasourceUid: tempo
-        matcherRegex: tid=(\w+)
-        name: TraceId
-        url: $${__value.raw}
-      - datasourceUid: tempo
-        matcherRegex: span_id=(\w+)
-        name: SpanId
-        url: $${__value.raw}
