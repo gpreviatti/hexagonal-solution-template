@@ -27,6 +27,13 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
 
             builder.Services.AddOpenTelemetry()
                 .WithMetrics(metrics => metrics
+                    .AddMeter(
+                        DefaultConfigurations.Meter.Name,
+                        "System.Diagnostics.Metrics",
+                        "Microsoft.AspNetCore.Hosting",
+                        "Microsoft.AspNetCore.Server.Kestrel",
+                        "System.Net.Http"
+                    )
                     .SetResourceBuilder(resourceBuilder)
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
