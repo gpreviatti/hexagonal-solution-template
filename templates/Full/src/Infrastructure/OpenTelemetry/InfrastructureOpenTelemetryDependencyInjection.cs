@@ -23,7 +23,7 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
             var serviceVersion = DefaultConfigurations.Version;
             var resourceBuilder = ResourceBuilder
                 .CreateDefault()
-                .AddService(serviceName, serviceVersion: serviceVersion);
+                .AddService(serviceName, serviceVersion: serviceVersion, serviceNamespace: environment);
 
             builder.Services.AddOpenTelemetry()
                 .WithMetrics(metrics => metrics
