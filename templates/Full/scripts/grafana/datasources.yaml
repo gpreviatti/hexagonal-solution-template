@@ -26,6 +26,13 @@ datasources:
       filterBySpanID: true
       customQuery: false
       query: 'method="$${__span.tags.method}"'
+    tracesToProfiles:
+      datasourceUid: 'pyroscope'
+      tags:
+        - key: 'service.name'
+          value: 'service_name'
+      profileTypeId: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds'
+      customQuery: false
 - name: Prometheus
   type: prometheus
   uid: prometheus
@@ -52,4 +59,31 @@ datasources:
       - datasourceUid: tempo
         matcherRegex: tid=(\w+)
         name: TraceId
+        url: $${__value.raw}
+- name: Pyroscope
+  type: grafana-pyroscope-datasource
+  access: proxy
+  orgId: 1
+  url: http://pyroscope:4040
+  basicAuth: false
+  isDefault: false
+  version: 1
+  editable: false
+  apiVersion: 1
+  uid: pyroscope
+  jsonData:
+    httpMethod: GET
+    serviceMapEnabled: true
+    derivedFields:
+      - datasourceUid: tempo
+        matcherRegex: service_name=(\w+)
+        name: ServiceName
+        url: $${__value.raw}
+      - datasourceUid: tempo
+        matcherRegex: tid=(\w+)
+        name: TraceId
+        url: $${__value.raw}
+      - datasourceUid: tempo
+        matcherRegex: span_id=(\w+)
+        name: SpanId
         url: $${__value.raw}

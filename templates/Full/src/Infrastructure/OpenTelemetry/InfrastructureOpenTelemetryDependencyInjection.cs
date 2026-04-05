@@ -6,6 +6,7 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Pyroscope.OpenTelemetry;
 
 namespace Infrastructure.OpenTelemetry;
 
@@ -51,6 +52,7 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
                     .AddHttpClientInstrumentation()
                     .AddEntityFrameworkCoreInstrumentation()
                     .AddOtlpExporter()
+                    .AddProcessor(new PyroscopeSpanProcessor())
                 );
 
             builder.Logging.AddOpenTelemetry(options =>

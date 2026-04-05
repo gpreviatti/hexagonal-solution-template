@@ -164,6 +164,16 @@
           "StackExchange.Redis": "2.6.122"
         }
       },
+      "Pyroscope.OpenTelemetry": {
+        "type": "Direct",
+        "requested": "[0.4.0, )",
+        "resolved": "0.4.0",
+        "contentHash": "QrzMylh6s8rj2LGQc7pMRpCE84gMpNitk6ePNUcXadZHLhSxKwFmJ60KK6m+sekr9usg70iwKOWE3TCod+N93A==",
+        "dependencies": {
+          "OpenTelemetry": "1.8.0",
+          "Pyroscope": "0.13.0"
+        }
+      },
       "RabbitMQ.Client": {
         "type": "Direct",
         "requested": "[7.2.1, )",
@@ -451,6 +461,11 @@
         "type": "Transitive",
         "resolved": "2.2.8",
         "contentHash": "zG2FApP5zxSx6OcdJQLbZDk2AVlN2BNQD6MorwIfV6gVj0RRxWPEp2LXAxqDGZqeNV1Zp0BNPcNaey/GXmTdvQ=="
+      },
+      "Pyroscope": {
+        "type": "Transitive",
+        "resolved": "0.13.0",
+        "contentHash": "rdthieTs1xwkAl3z9eePA3kpQM+xRCqhiqupyXt15emyU5wVp+X5ur29W//fDmaJx4Rm2OH9xcLgJqacdtOMKg=="
       },
       "StackExchange.Redis": {
         "type": "Transitive",
