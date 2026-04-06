@@ -2,7 +2,6 @@
 using Application.Common.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Application.Common.Helpers;
-using Domain.Common;
 using Domain.Common.Extensions;
 using System.Diagnostics;
 
