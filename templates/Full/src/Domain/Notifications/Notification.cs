@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Domain.Common;
 using Domain.Common.Enums;
+using Domain.Common.Extensions;
 
 namespace Domain.Notifications;
 
@@ -17,6 +18,7 @@ public sealed class Notification : DomainEntity
     ) : base(createdBy ?? "System", timezoneId)
     {
         using var activity = ActivitySource.StartActivity($"{GetType().Name}.Constructor");
+        activity.SetDefaultTags();
 
         NotificationType = notificationType;
         NotificationStatus = notificationStatus;

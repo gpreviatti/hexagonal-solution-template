@@ -5,6 +5,7 @@ using Application.Common.Messages;
 using Application.Common.Services;
 using Domain.Common;
 using Domain.Common.Enums;
+using Domain.Common.Extensions;
 using Infrastructure.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -59,6 +60,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
         {
             var messageType = typeof(TMessage).Name;
             using var activity = _activities.StartActivity($"{_consumerName}", ActivityKind.Consumer);
+            activity.SetDefaultTags();
             activity?.SetTag("correlationId", message.CorrelationId);
             activity?.SetTag("queueName", _queueName);
                     

@@ -2,6 +2,8 @@
 using Application.Common.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Application.Common.Helpers;
+using Domain.Common;
+using Domain.Common.Extensions;
 
 namespace Application.Common.UseCases;
 
@@ -18,6 +20,7 @@ public abstract class BaseOutUseCase<TResponseData>(IServiceProvider serviceProv
     public async Task<TResponseData> HandleAsync(CancellationToken cancellationToken)
     {
         using var activity = ActivitySource.StartActivity($"{ClassName}");
+        activity.SetDefaultTags();
                 
         var correlationId = Guid.NewGuid();
         Logs.StartingOperation(Logger, correlationId);

@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Application.Common.Services;
 using Application.Common.Repositories;
 using Application.Common.Helpers;
+using Domain.Common;
+using Domain.Common.Extensions;
 
 namespace Application.Common.UseCases;
 
@@ -25,6 +27,7 @@ public abstract class BaseInUseCase<TRequest>(IServiceProvider serviceProvider) 
     )
     {
         using var activity = ActivitySource.StartActivity($"{ClassName}");
+        activity.SetDefaultTags();
 
         Logs.StartingOperation(Logger, request.CorrelationId);
 

@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using Application.Common.Helpers;
 using Application.Common.Repositories;
 using Domain.Common;
+using Domain.Common.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -28,6 +29,7 @@ public class BaseRepository(
     ) where TEntity : DomainEntity
     {
         using var activity = _activities.StartActivity($"{_className}.{methodName}.{typeof(TEntity).Name}");
+        activity.SetDefaultTags();
 
         Logs.DebugStartingOperation(logger, correlationId);
 
@@ -53,6 +55,7 @@ public class BaseRepository(
     ) where TEntity : DomainEntity
     {
         using var activity = _activities.StartActivity($"{_className}.{nameof(GetQueryable)}");
+        activity.SetDefaultTags();
 
         Logs.DebugStartingOperation(logger, correlationId);
 

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using Domain.Common.Extensions;
 
 namespace Domain.Common;
 
@@ -35,6 +36,7 @@ public abstract class DomainEntity
     ) where TEntity : DomainEntity
     {
         using var activity = ActivitySource.StartActivity($"{typeof(TEntity).Name}.{callerName}");
+        activity.SetDefaultTags();
 
         return factory(activity);
     }
@@ -45,6 +47,7 @@ public abstract class DomainEntity
     )
     {
         using var activity = ActivitySource.StartActivity(callerName);
+        activity.SetDefaultTags();
 
         return factory(activity);
     }
