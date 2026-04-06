@@ -4,7 +4,6 @@ using Application.Common.Requests;
 using Application.Common.Services;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using Domain.Common;
 using Domain.Common.Extensions;
 using System.Diagnostics;
 
