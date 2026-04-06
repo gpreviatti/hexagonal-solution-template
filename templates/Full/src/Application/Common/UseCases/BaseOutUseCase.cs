@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Application.Common.Helpers;
 using Domain.Common;
 using Domain.Common.Extensions;
+using System.Diagnostics;
 
 namespace Application.Common.UseCases;
 
@@ -30,6 +31,8 @@ public abstract class BaseOutUseCase<TResponseData>(IServiceProvider serviceProv
         Logs.FinishedOperation(Logger, correlationId);
 
         UseCaseExecutedMetric.Add(1);
+
+        activity?.SetStatus(response.Success ? ActivityStatusCode.Ok : ActivityStatusCode.Error, response.Message);
 
         return response;
     }

@@ -6,6 +6,7 @@ using Application.Common.Repositories;
 using Application.Common.Helpers;
 using Domain.Common;
 using Domain.Common.Extensions;
+using System.Diagnostics;
 
 namespace Application.Common.UseCases;
 
@@ -39,6 +40,7 @@ public abstract class BaseInUseCase<TRequest>(IServiceProvider serviceProvider) 
                 var errors = string.Join(", ", validationResult.Errors);
                 Logs.ValidationErrors(Logger, request.CorrelationId, errors);
                 UseCaseFailedMetric.Add(1);
+                activity?.SetStatus(ActivityStatusCode.Error, errors);
                 return;
             }
         }
@@ -48,6 +50,7 @@ public abstract class BaseInUseCase<TRequest>(IServiceProvider serviceProvider) 
         Logs.FinishedOperation(Logger, request.CorrelationId);
 
         UseCaseExecutedMetric.Add(1);
+        activity?.SetStatus(ActivityStatusCode.Ok);
     }
 
     public abstract Task HandleInternalAsync(TRequest request, CancellationToken cancellationToken);

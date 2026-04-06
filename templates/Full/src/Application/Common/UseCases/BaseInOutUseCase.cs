@@ -6,6 +6,7 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Domain.Common;
 using Domain.Common.Extensions;
+using System.Diagnostics;
 
 namespace Application.Common.UseCases;
 
@@ -54,6 +55,8 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData>(IServiceProvider
                 };
 
                 UseCaseFailedMetric.Add(1);
+
+                activity?.SetStatus(ActivityStatusCode.Error, errors);
                 
                 return response!;
             }
@@ -64,6 +67,8 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData>(IServiceProvider
         Logs.FinishedOperation(Logger, request.CorrelationId);
 
         UseCaseExecutedMetric.Add(1);
+
+        activity?.SetStatus(response.Success ? ActivityStatusCode.Ok : ActivityStatusCode.Error, response.Message);
 
         return response;
     }

@@ -48,7 +48,7 @@ public abstract class DomainEntity
     {
         using var activity = ActivitySource.StartActivity(callerName);
         activity.SetDefaultTags();
-
+        activity?.SetStatus(ActivityStatusCode.Ok);
         return factory(activity);
     }
 
@@ -60,7 +60,7 @@ public abstract class DomainEntity
 
         activity?.SetTag(nameof(UpdatedBy), UpdatedBy);
         activity?.SetTag(nameof(UpdatedByTimezoneId), UpdatedByTimezoneId);
-
+        activity?.SetStatus(ActivityStatusCode.Ok);
         return Result.Ok();
     });
 }
