@@ -1,4 +1,4 @@
-﻿using Domain.Common;
+﻿using Domain.Common.Exceptions;
 using Domain.Orders;
 
 namespace UnitTests.Domain;
