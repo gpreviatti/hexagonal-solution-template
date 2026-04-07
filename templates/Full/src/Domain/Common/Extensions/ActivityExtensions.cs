@@ -6,9 +6,10 @@ public static class ActivityExtensions
 {
     public static void SetDefaultTags(this Activity? activity)
     {
-        activity?.SetTag("SpanId", activity.SpanId);
-        activity?.SetTag("SpanId", activity.ParentSpanId);
-        activity?.SetTag("TraceId", activity.TraceId);
-        activity?.SetTag("ParentId", activity.ParentId);
+        activity?.SetTag(nameof(activity.SpanId), activity.SpanId);
+        activity?.SetTag(nameof(activity.ParentSpanId), activity.ParentSpanId);
+        activity?.SetTag(nameof(activity.TraceId), activity.TraceId);
+        activity?.SetTag(nameof(activity.ParentId), activity.ParentId);
+        activity?.SetTag(nameof(activity.TraceStateString), activity.TraceStateString);
     }
 }
