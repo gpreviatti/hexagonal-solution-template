@@ -1,4 +1,5 @@
 using Domain.Common;
+using Domain.Common.Extensions;
 
 namespace Domain.Orders;
 
@@ -30,7 +31,7 @@ public sealed class Order : DomainEntity
     {
         Order order = new(description, items, user, timezoneId);
 
-        var setTotalResult = order.SetTotal(user, timezoneId);
+        var setTotalResult = order.SetTotal();
         if (setTotalResult.IsFailure)
             return Result.Fail<Order>(setTotalResult.Message);
 
@@ -39,19 +40,40 @@ public sealed class Order : DomainEntity
         return Result.Ok(order);
     });
 
-    public Result SetTotal(string user = "System", string? timezoneId = null) => Handle(activity =>
+    private Result SetTotal() => Handle(activity =>
     {
         if (Items == null || Items.Count == 0)
             return Result.Fail("Order must have at least one item.");
 
         Total = Items.Sum(item => item.Value);
 
-        var result = Update(user, timezoneId);
-        if (result.IsFailure)
-            return Result.Fail(result.Message);
-
         activity?.SetTag(nameof(Total), Total);
 
         return Result.Ok();
     });
+
+    public string GetPeriodSinceWasCreated()
+    {
+        using var activity = ActivitySource.StartActivity($"{EntityName}.{nameof(GetPeriodSinceWasCreated)}");
+        activity.SetDefaultTags();
+
+        if (CreatedAt == default)
+            return "CreatedAt was not set.";
+
+        var timeSinceCreation = DateTime.UtcNow - CreatedAt;
+        activity?.SetTag(nameof(timeSinceCreation), timeSinceCreation.ToString());
+
+        if (timeSinceCreation.TotalSeconds < 60)
+            return $"{(int)timeSinceCreation.TotalSeconds} seconds ago";
+        if (timeSinceCreation.TotalMinutes < 60)
+            return $"{(int)timeSinceCreation.TotalMinutes} minutes ago";
+        if (timeSinceCreation.TotalHours < 24)
+            return $"{(int) timeSinceCreation.TotalHours} hours ago";
+        if (timeSinceCreation.TotalDays < 30)
+            return $"{(int) timeSinceCreation.TotalDays} days ago";
+        if (timeSinceCreation.TotalDays < 365)
+            return $"{(int) (timeSinceCreation.TotalDays / 30)} months ago";
+
+        return $"{(int)(timeSinceCreation.TotalDays / 365)} years ago";
+    }
 }

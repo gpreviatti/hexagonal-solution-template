@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using Domain.Common.Extensions;
 
 namespace Domain.Common;
 
@@ -35,6 +36,7 @@ public abstract class DomainEntity
     ) where TEntity : DomainEntity
     {
         using var activity = ActivitySource.StartActivity($"{typeof(TEntity).Name}.{callerName}");
+        activity.SetDefaultTags();
 
         return factory(activity);
     }
@@ -44,8 +46,9 @@ public abstract class DomainEntity
         [CallerMemberName] string callerName = null!
     )
     {
-        using var activity = ActivitySource.StartActivity($"{typeof(DomainEntity).Name}.{callerName}");
-
+        using var activity = ActivitySource.StartActivity(callerName);
+        activity.SetDefaultTags();
+        activity?.SetStatus(ActivityStatusCode.Ok);
         return factory(activity);
     }
 
@@ -57,7 +60,7 @@ public abstract class DomainEntity
 
         activity?.SetTag(nameof(UpdatedBy), UpdatedBy);
         activity?.SetTag(nameof(UpdatedByTimezoneId), UpdatedByTimezoneId);
-
+        activity?.SetStatus(ActivityStatusCode.Ok);
         return Result.Ok();
     });
 }

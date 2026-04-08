@@ -13,6 +13,7 @@ using Polly.Extensions.Http;
 using Infrastructure.Grpc;
 using Infrastructure.Common;
 using GrpcPayment;
+using Pyroscope.OpenTelemetry;
 
 namespace Infrastructure;
 
@@ -49,7 +50,7 @@ public static class InfrastructureDependencyInjection
             var serviceVersion = DefaultConfigurations.Version;
             var resourceBuilder = ResourceBuilder
                 .CreateDefault()
-                .AddService(serviceName, serviceVersion: serviceVersion);
+                .AddService(serviceName, serviceVersion: serviceVersion, serviceNamespace: environment);
 
             builder.Services.AddOpenTelemetry()
                 .WithMetrics(metrics => metrics
@@ -68,6 +69,7 @@ public static class InfrastructureDependencyInjection
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
                     .AddOtlpExporter()
+                    .AddProcessor(new PyroscopeSpanProcessor())
                 );
 
             builder.Logging.AddOpenTelemetry(options =>

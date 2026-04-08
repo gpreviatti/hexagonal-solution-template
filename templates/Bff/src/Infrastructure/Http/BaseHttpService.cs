@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net;
 using System.Text.Json;
 using Infrastructure.Common;
@@ -28,7 +29,11 @@ public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> log
         CancellationToken cancellationToken = default
     ) where TRequest : class where TResponse : class
     {
-        DefaultConfigurations.ActivitySource.StartActivity($"{nameof(BaseHttpService)}.{nameof(SendAsync)}");
+        using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{nameof(BaseHttpService)}.{nameof(SendAsync)}");
+        activity?.SetTag(nameof(httpMethod), httpMethod.ToString());
+        activity?.SetTag(nameof(requestUri), requestUri);
+        activity?.SetTag(nameof(HttpProtocolVersion), HttpProtocolVersion);
+        activity?.SetTag(nameof(contentType), contentType);
 
         Logs.StartingOperation(Logger);
 
@@ -54,6 +59,7 @@ public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> log
         if (!response.IsSuccessStatusCode)
         {
             Logs.FailedOperation(Logger, $"{httpMethod} {requestUri} failed: {response.StatusCode} - {response.ReasonPhrase}");
+            activity?.SetStatus(ActivityStatusCode.Error, $"{response.StatusCode} - {response.ReasonPhrase}");
             return null;
         }
 
@@ -62,6 +68,7 @@ public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> log
         var result = await JsonSerializer.DeserializeAsync<TResponse?>(content, JsonSerializerOptions, cancellationToken);
 
         Logs.FinishedOperation(Logger);
+        activity?.SetStatus(ActivityStatusCode.Ok);
 
         return result;
     }
@@ -73,7 +80,10 @@ public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> log
         Dictionary<string, string>? headers = null
     ) where TResponse : class
     {
-        DefaultConfigurations.ActivitySource.StartActivity($"{nameof(BaseHttpService)}.{nameof(SendAsync)}");
+        using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{nameof(BaseHttpService)}.{nameof(SendAsync)}");
+        activity?.SetTag(nameof(httpMethod), httpMethod.ToString());
+        activity?.SetTag(nameof(requestUri), requestUri);
+        activity?.SetTag(nameof(HttpProtocolVersion), HttpProtocolVersion);
 
         Logs.StartingOperation(Logger);
 
@@ -91,6 +101,7 @@ public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> log
         if (!response.IsSuccessStatusCode)
         {
             Logs.FailedOperation(Logger, $"{httpMethod} {requestUri} failed: {response.StatusCode} - {response.ReasonPhrase}");
+            activity?.SetStatus(ActivityStatusCode.Error, $"{response.StatusCode} - {response.ReasonPhrase}");
             return null;
         }
         
@@ -99,7 +110,7 @@ public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> log
         var result = await JsonSerializer.DeserializeAsync<TResponse?>(content, JsonSerializerOptions, cancellationToken);
 
         Logs.FinishedOperation(Logger);
-        
+        activity?.SetStatus(ActivityStatusCode.Ok);
         return result;
     }
 }

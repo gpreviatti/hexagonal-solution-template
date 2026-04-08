@@ -30,7 +30,7 @@ services:
       interval: 3s
       timeout: 10s
       retries: 5
-      start_period: 15s
+      start_period: 10s
 
   alloy:
     container_name: alloy
@@ -39,15 +39,17 @@ services:
       - 12345:12345
       - 4318:4318
       - 4317:4317
+      - 9999:9999
     volumes:
       - ./scripts/grafana/config.alloy:/etc/alloy/config.alloy
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/run/docker.sock:/var/run/docker.sock
-    command: run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
+    command: run --stability.level=public-preview --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
     depends_on:
       - loki
       - prometheus
       - tempo
+      - pyroscope
 
   prometheus:
     container_name: prometheus
@@ -100,3 +102,11 @@ services:
     depends_on:
       - tempo-init
       - redis
+
+  pyroscope:
+    container_name: pyroscope
+    image: grafana/pyroscope:1.18.1
+    command:
+      - -self-profiling.disable-push=true
+    ports:
+      - "4040:4040"

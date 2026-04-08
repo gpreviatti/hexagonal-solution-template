@@ -5,6 +5,7 @@ using Application.Common.Messages;
 using Application.Common.Services;
 using Domain.Common;
 using Domain.Common.Enums;
+using Domain.Common.Extensions;
 using Infrastructure.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -48,10 +49,10 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
         _factory = new() { Uri = new(connectionString) };
 
         ConsumerErrorMetric = DefaultConfigurations.Meter
-            .CreateCounter<int>($"{_consumerName}.Error", "total", "Number of times the consumer encountered an error");
+            .CreateCounter<int>($"{DefaultConfigurations.ApplicationName}.{_consumerName}.Error", "total", "Number of times the consumer encountered an error");
 
         ConsumerDuplicatedMessageMetric = DefaultConfigurations.Meter
-            .CreateCounter<int>($"{_consumerName}.DuplicatedMessage", "total", "Number of times the consumer received a duplicated message");
+            .CreateCounter<int>($"{DefaultConfigurations.ApplicationName}.{_consumerName}.DuplicatedMessage", "total", "Number of times the consumer received a duplicated message");
     }
 
     protected override async Task ExecuteInternalAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken) => await HandleRabbitMqAsync(
@@ -59,6 +60,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
         {
             var messageType = typeof(TMessage).Name;
             using var activity = _activities.StartActivity($"{_consumerName}", ActivityKind.Consumer);
+            activity.SetDefaultTags();
             activity?.SetTag("correlationId", message.CorrelationId);
             activity?.SetTag("queueName", _queueName);
                     

@@ -9,12 +9,13 @@ services:
         condition: service_healthy
     ports:
       - "6565:6565"
+      - "5665:5665"
     environment:
       - WEBAPP_URL=http://bff:5011
       - K6_SUMMARY_MODE=full
       - K6_WEB_DASHBOARD=true
       - K6_WEB_DASHBOARD_EXPORT=html-report.html
-      - VUS=50
+      - VUS=1000
       - DURATION=180s
       - GRACEFUL_STOP=10s
     command: ["run", "/LoadTests/scriptHttp.js", ]
@@ -38,48 +39,53 @@ services:
       retries: 5
       start_period: 15s
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - OTEL_SERVICE_NAME=Hexagonal.Solution.Template.Bff
+      - ASPNETCORE_ENVIRONMENT=LoadTesting
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4317
       - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
-      - OTEL_RESOURCE_ATTRIBUTES=service.namespace=load-tests
+      - PYROSCOPE_APPLICATION_NAME=Hexagonal.Solution.Template.Bff
+      - PYROSCOPE_SERVER_ADDRESS=http://alloy:9999
 
   mock-api:
     extends:
-      file: docker-compose.yml
+      file: docker-compose-local.yml
       service: mock-api
 
   redis:
     extends:
-      file: docker-compose.yml
+      file: docker-compose-local.yml
       service: redis
 
   alloy:
     extends:
-      file: docker-compose.yml
+      file: docker-compose-local.yml
       service: alloy
 
   prometheus:
     extends:
-      file: docker-compose.yml
+      file: docker-compose-local.yml
       service: prometheus
 
   loki:
     extends:
-      file: docker-compose.yml
+      file: docker-compose-local.yml
       service: loki
 
   grafana:
     extends:
-      file: docker-compose.yml
+      file: docker-compose-local.yml
       service: grafana
 
   tempo-init:
     extends:
-      file: docker-compose.yml
+      file: docker-compose-local.yml
       service: tempo-init
 
   tempo:
     extends:
-      file: docker-compose.yml
+      file: docker-compose-local.yml
       service: tempo
+
+  pyroscope:
+    extends:
+      file: docker-compose-local.yml
+      service: pyroscope

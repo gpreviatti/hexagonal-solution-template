@@ -6,6 +6,7 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Pyroscope.OpenTelemetry;
 
 namespace Infrastructure.OpenTelemetry;
 
@@ -23,10 +24,17 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
             var serviceVersion = DefaultConfigurations.Version;
             var resourceBuilder = ResourceBuilder
                 .CreateDefault()
-                .AddService(serviceName, serviceVersion: serviceVersion);
+                .AddService(serviceName, serviceVersion: serviceVersion, serviceNamespace: environment);
 
             builder.Services.AddOpenTelemetry()
                 .WithMetrics(metrics => metrics
+                    .AddMeter(
+                        DefaultConfigurations.Meter.Name,
+                        "System.Diagnostics.Metrics",
+                        "Microsoft.AspNetCore.Hosting",
+                        "Microsoft.AspNetCore.Server.Kestrel",
+                        "System.Net.Http"
+                    )
                     .SetResourceBuilder(resourceBuilder)
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
@@ -44,6 +52,7 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
                     .AddHttpClientInstrumentation()
                     .AddEntityFrameworkCoreInstrumentation()
                     .AddOtlpExporter()
+                    .AddProcessor(new PyroscopeSpanProcessor())
                 );
 
             builder.Logging.AddOpenTelemetry(options =>

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using System.Diagnostics;
 using Domain.Common;
+using Domain.Common.Extensions;
 
 namespace Infrastructure.Messaging.Producers;
 
@@ -40,6 +41,7 @@ public sealed class ProducerService : IProduceService
         await Task.Yield();
 
         using var activity = _activities.StartActivity($"{nameof(ProducerService)}.{nameof(HandleAsync)}.{typeof(TMessage).Name}");
+        activity.SetDefaultTags();
 
         using var connection = await _factory.CreateConnectionAsync(cancellationToken);
         using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
@@ -66,6 +68,7 @@ public sealed class ProducerService : IProduceService
         await Task.Yield();
 
         using var activity = _activities.StartActivity($"{nameof(ProducerService)}.{nameof(HandleAsync)}.{typeof(TMessage).Name}.Batch");
+        activity.SetDefaultTags();
 
         Logs.Debug(_logger, messages.FirstOrDefault()?.CorrelationId ?? Guid.Empty, typeof(TMessage).Name + " batch publishing started.");
 

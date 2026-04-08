@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Application.Common.Helpers;
 using Application.Common.Services;
 using Domain.Common;
+using Domain.Common.Extensions;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
@@ -21,6 +22,7 @@ internal sealed class HybridCacheService(HybridCache cache, ILogger<HybridCacheS
     )
     {
         using var activity = _activities.StartActivity($"{_className}.{nameof(GetOrCreateAsync)}");
+        activity.SetDefaultTags();
 
         Logs.DebugStartingOperation(_logger, correlationId, key);
         var result = await _cache.GetOrCreateAsync($"{DefaultConfigurations.ApplicationName}:{key}", factory, cancellationToken: cancellationToken);
@@ -35,6 +37,7 @@ internal sealed class HybridCacheService(HybridCache cache, ILogger<HybridCacheS
     public async ValueTask CreateAsync<TResult>(Guid correlationId, string key, TResult value, CancellationToken cancellationToken)
     {
         using var activity = _activities.StartActivity($"{_className}.{nameof(CreateAsync)}");
+        activity.SetDefaultTags();
 
         Logs.DebugStartingOperation(_logger, correlationId, key);
 
@@ -48,6 +51,7 @@ internal sealed class HybridCacheService(HybridCache cache, ILogger<HybridCacheS
     public async ValueTask DeleteAsync(Guid correlationId, string key, CancellationToken cancellationToken)
     {
         using var activity = _activities.StartActivity($"{_className}.{nameof(DeleteAsync)}");
+        activity.SetDefaultTags();
 
         Logs.DebugStartingOperation(_logger, correlationId, key);
 

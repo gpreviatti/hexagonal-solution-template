@@ -5,6 +5,7 @@ using Contracts.Orders;
 using Contracts.Common;
 using System.Globalization;
 using Infrastructure.Common;
+using System.Diagnostics;
 
 namespace WebApp.Endpoints;
 
@@ -26,6 +27,8 @@ internal static class OrderEndpoints
             [FromHeader] Guid? correlationId = null,
             [FromHeader] bool cacheEnabled = true
         ) => {
+            using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{nameof(OrderEndpoints)}.GetById");
+
             var response = cacheEnabled switch
             {
                 true => await cache.GetOrCreateAsync(
@@ -42,6 +45,10 @@ internal static class OrderEndpoints
                 }),
             };
 
+            activity?.SetTag(nameof(id), id);
+            activity?.SetTag(nameof(cacheEnabled), cacheEnabled);
+            activity?.SetStatus(response != null ? ActivityStatusCode.Ok : ActivityStatusCode.Error);
+
             return response != null ? Results.Ok(response) : Results.NotFound(response);
         })
         .Produces<BaseResponse<OrderDto>>(StatusCodes.Status200OK)
@@ -57,6 +64,8 @@ internal static class OrderEndpoints
             CancellationToken cancellationToken
         ) =>
         {
+            using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{nameof(OrderEndpoints)}.Create");
+
             var response = await httpService.SendAsync<CreateOrderRequest, BaseResponse<OrderDto>>(
                 "orders", HttpMethod.Post, request,
                 cancellationToken: cancellationToken
@@ -66,6 +75,9 @@ internal static class OrderEndpoints
                 return Results.BadRequest();
 
             var id = response.Data?.Id.ToString(CultureInfo.InvariantCulture) ?? "unknown";
+
+            activity?.SetTag(nameof(id), id);
+            activity?.SetStatus(ActivityStatusCode.Ok);
 
             return Results.Created($"/orders/{id}", response);
         })

@@ -4,6 +4,7 @@ public sealed record OrderDto
     public int Id { get; set; }
     public string Description { get; set; }
     public decimal Total { get; set; }
+    public string PeriodSinceWasCreated { get; set; }
     public IReadOnlyCollection<ItemDto>? Items { get; set; }
 };
 

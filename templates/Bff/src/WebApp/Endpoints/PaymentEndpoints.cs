@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Contracts.Common;
 using GrpcPayment;
 using Infrastructure.Common;
@@ -21,7 +22,13 @@ public static partial class PaymentEndpoints
             [FromBody] CreatePaymentRequest request
         ) =>
         {
+            using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{nameof(PaymentEndpoints)}.CreatePayment");
+
             var result = await paymentsService.CreatePaymentAsync(request);
+
+            activity?.SetTag(nameof(request.Amount), request.Amount);
+            activity?.SetTag(nameof(request.Currency), request.Currency);
+            activity?.SetStatus(result.Success ? ActivityStatusCode.Ok : ActivityStatusCode.Error, result.Message);
 
             return result.Success ? Results.Ok(result) : Results.BadRequest(result);
         })

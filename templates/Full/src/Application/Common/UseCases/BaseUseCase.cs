@@ -31,10 +31,10 @@ public abstract class BaseUseCase
         ProduceService = serviceProvider.GetRequiredService<IProduceService>();
 
         UseCaseExecutedMetric = DefaultConfigurations.Meter
-            .CreateCounter<int>($"{ClassName}.Executed", "total", "Number of times the use case was executed");
+            .CreateCounter<int>($"{DefaultConfigurations.ApplicationName}.{ClassName}.Executed", "total", "Number of times the use case was executed");
 
         UseCaseFailedMetric = DefaultConfigurations.Meter
-            .CreateCounter<int>($"{ClassName}.Failed", "total", "Number of times the use case execution failed");
+            .CreateCounter<int>($"{DefaultConfigurations.ApplicationName}.{ClassName}.Failed", "total", "Number of times the use case execution failed");
     }
 
     protected void CreateNotification(
