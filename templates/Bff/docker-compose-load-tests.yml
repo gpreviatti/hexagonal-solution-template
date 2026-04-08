@@ -9,6 +9,7 @@ services:
         condition: service_healthy
     ports:
       - "6565:6565"
+      - "5665:5665"
     environment:
       - WEBAPP_URL=http://bff:5011
       - K6_SUMMARY_MODE=full
@@ -38,10 +39,10 @@ services:
       retries: 5
       start_period: 15s
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=LoadTesting
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4317
       - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
-      - PYROSCOPE_APPLICATION_NAME=Hexagonal.Solution.Template
+      - PYROSCOPE_APPLICATION_NAME=Hexagonal.Solution.Template.Bff
       - PYROSCOPE_SERVER_ADDRESS=http://alloy:9999
 
   mock-api:

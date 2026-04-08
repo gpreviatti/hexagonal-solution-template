@@ -31,6 +31,12 @@ datasources:
       tags:
         - key: 'service.name'
           value: 'service_name'
+        - key: 'operation.name'
+          value: 'operation_name'
+        - key: 'trace_id'
+          value: 'trace_id'
+        - key: 'span_id'
+          value: 'span_id'
       profileTypeId: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds'
       customQuery: false
 - name: Prometheus
