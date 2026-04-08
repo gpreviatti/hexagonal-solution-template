@@ -45,8 +45,8 @@ internal static class OrderEndpoints
                 }),
             };
 
-            activity?.SetTag("order.id", id);
-            activity?.SetTag("cache.enabled", cacheEnabled);
+            activity?.SetTag(nameof(id), id);
+            activity?.SetTag(nameof(cacheEnabled), cacheEnabled);
             activity?.SetStatus(response != null ? ActivityStatusCode.Ok : ActivityStatusCode.Error);
 
             return response != null ? Results.Ok(response) : Results.NotFound(response);
@@ -76,7 +76,7 @@ internal static class OrderEndpoints
 
             var id = response.Data?.Id.ToString(CultureInfo.InvariantCulture) ?? "unknown";
 
-            activity?.SetTag("order.id", id);
+            activity?.SetTag(nameof(id), id);
             activity?.SetStatus(ActivityStatusCode.Ok);
 
             return Results.Created($"/orders/{id}", response);

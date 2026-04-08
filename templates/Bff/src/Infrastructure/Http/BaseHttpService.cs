@@ -30,10 +30,10 @@ public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> log
     ) where TRequest : class where TResponse : class
     {
         using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{nameof(BaseHttpService)}.{nameof(SendAsync)}");
-        activity?.SetTag("http.method", httpMethod.ToString());
-        activity?.SetTag("http.url", requestUri);
-        activity?.SetTag("http.protocol_version", HttpProtocolVersion);
-        activity?.SetTag("operation.name", $"{httpMethod} {requestUri}");
+        activity?.SetTag(nameof(httpMethod), httpMethod.ToString());
+        activity?.SetTag(nameof(requestUri), requestUri);
+        activity?.SetTag(nameof(HttpProtocolVersion), HttpProtocolVersion);
+        activity?.SetTag(nameof(contentType), contentType);
 
         Logs.StartingOperation(Logger);
 
@@ -81,10 +81,9 @@ public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> log
     ) where TResponse : class
     {
         using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{nameof(BaseHttpService)}.{nameof(SendAsync)}");
-        activity?.SetTag("http.method", httpMethod.ToString());
-        activity?.SetTag("http.url", requestUri);
-        activity?.SetTag("http.protocol_version", HttpProtocolVersion);
-        activity?.SetTag("operation.name", $"{httpMethod} {requestUri}");
+        activity?.SetTag(nameof(httpMethod), httpMethod.ToString());
+        activity?.SetTag(nameof(requestUri), requestUri);
+        activity?.SetTag(nameof(HttpProtocolVersion), HttpProtocolVersion);
 
         Logs.StartingOperation(Logger);
 

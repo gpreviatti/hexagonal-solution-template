@@ -26,8 +26,8 @@ public static partial class PaymentEndpoints
 
             var result = await paymentsService.CreatePaymentAsync(request);
 
-            activity?.SetTag("payment.amount", request.Amount);
-            activity?.SetTag("payment.currency", request.Currency);
+            activity?.SetTag(nameof(request.Amount), request.Amount);
+            activity?.SetTag(nameof(request.Currency), request.Currency);
             activity?.SetStatus(result.Success ? ActivityStatusCode.Ok : ActivityStatusCode.Error, result.Message);
 
             return result.Success ? Results.Ok(result) : Results.BadRequest(result);
