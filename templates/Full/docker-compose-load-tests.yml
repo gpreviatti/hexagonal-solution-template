@@ -15,7 +15,7 @@ services:
       - K6_SUMMARY_MODE=full
       - K6_WEB_DASHBOARD=true
       - K6_WEB_DASHBOARD_EXPORT=html-report.html
-      - VUS=50
+      - VUS=1000
       - DURATION=180s
       - GRACEFUL_STOP=10s
     command: ["run", "/LoadTests/scriptHttp.js", ]
@@ -36,6 +36,7 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+        
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health" ]
       interval: 30s
@@ -54,17 +55,6 @@ services:
       - ConnectionStrings__RabbitMQ=amqp://guest:guest@rabbitmq:5672/
       - PYROSCOPE_APPLICATION_NAME=Hexagonal.Solution.Template
       - PYROSCOPE_SERVER_ADDRESS=http://alloy:9999
-      - PYROSCOPE_PROFILING_ENABLED=1
-      - PYROSCOPE_PROFILING_CPU_ENABLED=1
-      - PYROSCOPE_PROFILING_WALLTIME_ENABLED=1
-      - PYROSCOPE_PROFILING_ALLOCATION_ENABLED=1
-      - PYROSCOPE_PROFILING_LOCK_ENABLED=1
-      - PYROSCOPE_PROFILING_EXCEPTION_ENABLED=1
-      - PYROSCOPE_PROFILING_HEAP_ENABLED=1
-      - DOTNET_EnableDiagnostics=1
-      - DOTNET_EnableDiagnostics_IPC=0
-      - DOTNET_EnableDiagnostics_Debugger=0
-      - DOTNET_EnableDiagnostics_Profiler=1
 
   postgres:
     extends:
