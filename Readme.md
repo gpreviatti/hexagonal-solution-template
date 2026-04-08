@@ -94,3 +94,11 @@ dotnet new uninstall GPreviatti.Template.Hexagonal.Solution
 ## Official solution template documentation
 
 <https://github.com/dotnet/templating/wiki>
+
+
+## Contribute
+
+Have a feature request or found a bug? We'd love to hear from you!
+
+- [Report a Bug](https://github.com/gpreviatti/hexagonal-solution-template/issues/new?template=bug_report.md)
+- [Request a Feature](https://github.com/gpreviatti/hexagonal-solution-template/issues/new?template=feature_request.md)
