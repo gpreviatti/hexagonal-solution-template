@@ -38,6 +38,10 @@ csharp_indent_labels = one_less_than_current
 # Modifier preferences
 csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:suggestion
 
+# Cyclomatic complexity
+dotnet_diagnostic.CA1502.severity = error
+dotnet_code_quality.ca1502.maximum_cyclomatic_complexity = 30
+
 # avoid this. unless absolutely necessary
 dotnet_style_qualification_for_field = false:suggestion
 dotnet_style_qualification_for_property = false:suggestion

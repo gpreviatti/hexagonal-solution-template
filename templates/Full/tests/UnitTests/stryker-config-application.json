@@ -15,8 +15,15 @@
       "linq.First",
       "linq.Sum"
     ],
+    "ignore-methods": [
+      "StartActivity",
+      "SetTag",
+      "SetDefaultTags",
+      "UseCaseFailedMetric.Add"
+    ],
     "mutate": [
-      "!**/*ApplicationDependencyInjection.cs"
+      "!**/*ApplicationDependencyInjection.cs",
+      "!**/*Common/**"
     ]
   }
 }
