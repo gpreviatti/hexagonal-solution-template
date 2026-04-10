@@ -9,14 +9,11 @@ jobs:
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate-full.yml@v1
     with:
       build_path: "./templates/Full"
-      sonar_project: "hexagonal-solution-template-full"
       unit_test_project_path: "./templates/Full/tests/UnitTests/"
       dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
       stryker_domain_config_path: "./templates/Full/tests/UnitTests/stryker-config-domain.json"
       stryker_application_config_path: "./templates/Full/tests/UnitTests/stryker-config-application.json"
       stryker_publish_dashboard_report: true
-      stryker_dashboard_project: "github.com/${{ github.repository }}"
-      stryker_dashboard_version: "${{ github.ref_name }}"
       stryker_dashboard_module_domain: "full-domain"
       stryker_dashboard_module_application: "full-application"
       integration_test_project_path: "./templates/Full/tests/IntegrationTests"
@@ -43,8 +40,6 @@ jobs:
       test_project_path: "./templates/Contracts/tests/UnitTests/"
       stryker_config_path: "./templates/Contracts/tests/UnitTests/stryker-config.json"
       stryker_publish_dashboard_report: true
-      stryker_dashboard_project: "github.com/${{ github.repository }}"
-      stryker_dashboard_version: "${{ github.ref_name }}"
       stryker_dashboard_module: "contracts"
     secrets:
       stryker_dashboard_api_key: ${{ secrets.STRYKER_DASHBOARD }}
