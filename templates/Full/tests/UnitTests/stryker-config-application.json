@@ -15,6 +15,11 @@
       "linq.First",
       "linq.Sum"
     ],
+    "ignore-methods": [
+      "StartActivity",
+      "SetTag",
+      "SetDefaultTags"
+    ],
     "mutate": [
       "!**/*ApplicationDependencyInjection.cs"
     ]
