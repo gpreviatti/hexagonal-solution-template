@@ -19,34 +19,16 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>
       ## New Features
-      - Added continuous support for Grafana and Pyroscope integration for continuous profiling
-      - Added Pyroscope profiling configuration in Docker Compose and launch settings
-      - Added OpenTelemetry metrics collection with meter configuration
-      - Added DomainException class for improved exception handling
-      - Enhanced activity tracing with default tags support
-      - Added service namespace configuration to OpenTelemetry
-      - Added period tracking for order creation with new Order Details entity field
-      - Added Contracts template providing a contracts-only solution structure
+      - N/A
       
       ## Improvements
-      - Enhanced GitHub Actions workflows for improved validation and package publishing
-      - Updated web app host address configuration and enhanced logging settings
-      - Improved activity status handling for better distributed tracing support
-      - Refactored to use nameof() for activity tags instead of string literals
-      - Simplified GetPeriodSinceWasCreated return type and improved data access patterns
-      - Added launch and tasks configuration for streamlined development experience
-      - Removed unused environment variables from launch settings
+      - Improve mutation tests to not consider Activity class from Diagnostics as a mutation
       
       ## Code Quality
-      - Applied consistent styling and removed emojis from template headers
-      - Cleaned up unused namespace imports across the solution
-      - Improved tracing activity name consistency in request handlers
-      - Enhanced metrics collection with application name prefixes
+      - N/A
       
       ## Technical Details
-      - OpenTelemetry: Full meter configuration with metrics collection across use cases and consumers
-      - Pyroscope: Continuous profiling with Grafana datasource configuration
-      - Tracing: Enhanced activity handling with default tags and status tracking
+      - N/A
     </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>

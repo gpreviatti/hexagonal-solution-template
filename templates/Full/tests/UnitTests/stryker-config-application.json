@@ -18,10 +18,12 @@
     "ignore-methods": [
       "StartActivity",
       "SetTag",
-      "SetDefaultTags"
+      "SetDefaultTags",
+      "Counter.Add"
     ],
     "mutate": [
-      "!**/*ApplicationDependencyInjection.cs"
+      "!**/*ApplicationDependencyInjection.cs",
+      "!**/*Common/**"
     ]
   }
 }
