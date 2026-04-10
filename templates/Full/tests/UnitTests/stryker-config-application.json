@@ -19,7 +19,7 @@
       "StartActivity",
       "SetTag",
       "SetDefaultTags",
-      "Counter.Add"
+      "UseCaseFailedMetric.Add"
     ],
     "mutate": [
       "!**/*ApplicationDependencyInjection.cs",
