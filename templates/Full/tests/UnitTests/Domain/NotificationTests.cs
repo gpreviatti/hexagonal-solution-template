@@ -8,14 +8,14 @@ public sealed class NotificationTests
     [Fact(DisplayName = nameof(GivenANewNotificationWhenPropertiesAreProvidedThenShouldCreateNotificationWithSuccess))]
     public void GivenANewNotificationWhenPropertiesAreProvidedThenShouldCreateNotificationWithSuccess()
     {
-        /// Arrange
+        // Arrange
         var notificationType = NotificationType.OrderCreated;
         var notificationStatus = "Success";
         var createdBy = "System";
         var timezoneId = "America/New_York";
         var message = new { Test = "Message" };
 
-        /// Act
+        // Act
         Notification notification = new(notificationType, notificationStatus, message, createdBy, timezoneId);
 
         // Assert
@@ -31,14 +31,14 @@ public sealed class NotificationTests
     [Fact(DisplayName = nameof(GivenANewNotificationWhenMessageIsNullThenShouldCreateNotificationWithEmptyMessage))]
     public void GivenANewNotificationWhenMessageIsNullThenShouldCreateNotificationWithEmptyMessage()
     {
-        /// Arrange
+        // Arrange
         var notificationType = NotificationType.OrderCreated;
         var notificationStatus = "Success";
         var createdBy = "System";
         var timezoneId = "America/New_York";
         object? message = null;
 
-        /// Act
+        // Act
         Notification notification = new(notificationType, notificationStatus, message, createdBy, timezoneId);
 
         // Assert

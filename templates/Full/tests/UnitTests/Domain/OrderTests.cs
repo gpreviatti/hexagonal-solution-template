@@ -8,7 +8,7 @@ public sealed class OrderTests
     [Fact(DisplayName = nameof(GivenANewOrderWhenItemsAreProvidedThenShouldCreatedWithSuccess))]
     public void GivenANewOrderWhenItemsAreProvidedThenShouldCreatedWithSuccess()
     {
-        /// Arrange
+        // Arrange
         var items = new List<Item>()
         {
             new("Computer", "Desktop", 900),
@@ -16,7 +16,7 @@ public sealed class OrderTests
             new("Headphone", "Logitech", 100),
         };
 
-        /// Act
+        // Act
         var result = Order.Create("Amazing Computer", items, "John Doe", "America/New_York");
         var order = result.Value;
         var initialUpdatedAt = order.UpdatedAt;
@@ -40,7 +40,7 @@ public sealed class OrderTests
     [Fact(DisplayName = nameof(GivenANewOrderWithoutUserAndTimezoneWhenItemsAreProvidedThenShouldCreateWithSuccess))]
     public void GivenANewOrderWithoutUserAndTimezoneWhenItemsAreProvidedThenShouldCreateWithSuccess()
     {
-        /// Arrange
+        // Arrange
         var items = new List<Item>()
         {
             new("Computer", "Desktop", 900),
@@ -48,7 +48,7 @@ public sealed class OrderTests
             new("Headphone", "Logitech", 100),
         };
 
-        /// Act
+        // Act
         var result = Order.Create("Amazing Computer", items);
         var order = result.Value;
         var initialUpdatedAt = order.UpdatedAt;
@@ -87,7 +87,7 @@ public sealed class OrderTests
     [Fact(DisplayName = nameof(GivenANewOrderWhenItemsIsEmptyThenShouldReturnFailure))]
     public void GivenANewOrderWhenItemsIsEmptyThenShouldReturnFailure()
     {
-        /// Arrange, Act
+        // Arrange, Act
         var result = Order.Create("Amazing Computer", Array.Empty<Item>());
 
         // Assert

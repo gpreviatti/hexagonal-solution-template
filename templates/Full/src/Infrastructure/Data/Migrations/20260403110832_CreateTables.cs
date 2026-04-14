@@ -1,11 +1,10 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Infrastructure.Data.Migrations
-{
+namespace Infrastructure.Data.Migrations;
+
     /// <inheritdoc />
     public partial class CreateTables : Migration
     {
@@ -99,4 +98,3 @@ namespace Infrastructure.Data.Migrations
                 name: "Order");
         }
     }
-}
