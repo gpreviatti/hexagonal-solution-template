@@ -247,11 +247,11 @@ public sealed class OrderTests
     public void GivenANewOrderWhenRequestingPeriodBoundaryThenShouldReturnExpectedUnit(int secondsOrDaysAgo, string expectedUnit)
     {
         // Arrange
-        var order = new Order 
-        { 
-            CreatedAt = secondsOrDaysAgo < -1000 
-                ? DateTime.UtcNow.AddDays(secondsOrDaysAgo) 
-                : DateTime.UtcNow.AddSeconds(secondsOrDaysAgo) 
+        var order = new Order
+        {
+            CreatedAt = secondsOrDaysAgo < -1000
+                ? DateTime.UtcNow.AddDays(secondsOrDaysAgo)
+                : DateTime.UtcNow.AddSeconds(secondsOrDaysAgo)
         };
 
         // Act

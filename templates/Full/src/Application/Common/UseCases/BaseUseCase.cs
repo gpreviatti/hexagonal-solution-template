@@ -39,7 +39,7 @@ public abstract class BaseUseCase
 
     protected void CreateNotification(
         Guid correlationId,
-        string notificationStatus,
+        NotificationStatus notificationStatus,
         string createdBy,
         NotificationType notificationType,
         object message
