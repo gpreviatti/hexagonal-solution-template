@@ -364,7 +364,7 @@ public sealed class OrderUpdateTests
         var newItems = new List<Item> { new("New Item", "New Desc", 250m) };
 
         // Act
-        var result = order.UpdateOrder("Updated Description", newItems, "Editor", "America/New_York");
+        var result = order.Update("Updated Description", newItems, "Editor", "America/New_York");
 
         // Assert
         Assert.True(result.Success);
@@ -386,7 +386,7 @@ public sealed class OrderUpdateTests
         };
 
         // Act
-        var result = order.UpdateOrder("Multi-item Order", newItems);
+        var result = order.Update("Multi-item Order", newItems);
 
         // Assert
         Assert.True(result.Success);
@@ -401,7 +401,7 @@ public sealed class OrderUpdateTests
         var order = CreateOrder();
 
         // Act
-        var result = order.UpdateOrder("Updated", []);
+        var result = order.Update("Updated", []);
 
         // Assert
         Assert.True(result.IsFailure);
@@ -416,7 +416,7 @@ public sealed class OrderUpdateTests
         order.Delete("System");
 
         // Act
-        var result = order.UpdateOrder("Updated", [new("Item", "Desc", 50m)]);
+        var result = order.Update("Updated", [new("Item", "Desc", 50m)]);
 
         // Assert
         Assert.True(result.IsFailure);

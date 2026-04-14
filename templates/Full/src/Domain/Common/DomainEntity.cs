@@ -55,7 +55,7 @@ public abstract class DomainEntity
         return factory(activity);
     }
 
-    public Result Update(string? user = null, string? timezoneId = null) => Handle(activity =>
+    public virtual Result Update(string? user = null, string? timezoneId = null) => Handle(activity =>
     {
         UpdatedAt = DateTime.UtcNow;
         UpdatedBy = user ?? "System";
@@ -67,7 +67,7 @@ public abstract class DomainEntity
         return Result.Ok();
     });
 
-    public Result Delete(string? user = null, string? timezoneId = null) => Handle(activity =>
+    public virtual Result Delete(string? user = null, string? timezoneId = null) => Handle(activity =>
     {
         if (IsDeleted)
             return Result.Fail("Entity is already deleted.");
