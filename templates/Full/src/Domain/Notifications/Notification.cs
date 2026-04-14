@@ -11,7 +11,7 @@ public sealed class Notification : DomainEntity
 
     public Notification(
         NotificationType notificationType,
-        string notificationStatus,
+        NotificationStatus notificationStatus,
         object? message = null,
         string? createdBy = null,
         string? timezoneId = null
@@ -28,6 +28,6 @@ public sealed class Notification : DomainEntity
         activity?.SetTag(nameof(NotificationStatus), NotificationStatus);
     }
     public NotificationType NotificationType { get; init; }
-    public string NotificationStatus { get; init; }
+    public NotificationStatus NotificationStatus { get; init; }
     public string Message { get; init; }
 }

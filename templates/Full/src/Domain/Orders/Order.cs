@@ -52,6 +52,32 @@ public sealed class Order : DomainEntity
         return Result.Ok();
     });
 
+    public Result UpdateOrder(
+        string description,
+        ICollection<Item> items,
+        string user = "System",
+        string? timezoneId = null
+    ) => Handle(activity =>
+    {
+        if (IsDeleted)
+            return Result.Fail("Cannot update a deleted order.");
+
+        Description = description;
+        Items = items;
+
+        var setTotalResult = SetTotal();
+        if (setTotalResult.IsFailure)
+            return setTotalResult;
+
+        var updateResult = Update(user, timezoneId);
+        if (updateResult.IsFailure)
+            return updateResult;
+
+        activity?.SetTag(nameof(description), description);
+
+        return Result.Ok();
+    });
+
     public string GetPeriodSinceWasCreated()
     {
         using var activity = ActivitySource.StartActivity($"{EntityName}.{nameof(GetPeriodSinceWasCreated)}");

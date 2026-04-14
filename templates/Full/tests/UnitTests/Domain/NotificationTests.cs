@@ -10,8 +10,8 @@ public sealed class NotificationTests
     {
         // Arrange
         var notificationType = NotificationType.OrderCreated;
-        var notificationStatus = "Success";
-        var createdBy = "System";
+        var notificationStatus = NotificationStatus.Pending;
+        var createdBy = "John Doe";
         var timezoneId = "America/New_York";
         var message = new { Test = "Message" };
 
@@ -33,7 +33,7 @@ public sealed class NotificationTests
     {
         // Arrange
         var notificationType = NotificationType.OrderCreated;
-        var notificationStatus = "Success";
+        var notificationStatus = NotificationStatus.Pending;
         var createdBy = "System";
         var timezoneId = "America/New_York";
         object? message = null;
@@ -48,5 +48,28 @@ public sealed class NotificationTests
         Assert.Equal(createdBy, notification.CreatedBy);
         Assert.NotNull(notification.Message);
         Assert.Empty(notification.Message);
+    }
+
+    [Fact(DisplayName = nameof(GivenANewNotificationWhenCreatedByIsNullThenShouldUseSystemDefault))]
+    public void GivenANewNotificationWhenCreatedByIsNullThenShouldUseSystemDefault()
+    {
+        // Arrange
+        var notificationType = NotificationType.OrderCreated;
+        var notificationStatus = NotificationStatus.Pending;
+        string? createdBy = null;
+        var timezoneId = "America/New_York";
+        var message = new { Test = "Message" };
+
+        // Act
+        Notification notification = new(notificationType, notificationStatus, message, createdBy, timezoneId);
+
+        // Assert
+        Assert.NotNull(notification);
+        Assert.Equal(notificationType, notification.NotificationType);
+        Assert.Equal(notificationStatus, notification.NotificationStatus);
+        Assert.Equal("System", notification.CreatedBy);
+        Assert.Equal(timezoneId, notification.CreatedByTimezoneId);
+        Assert.NotNull(notification.Message);
+        Assert.Contains("\"Test\":\"Message\"", notification.Message);
     }
 }
