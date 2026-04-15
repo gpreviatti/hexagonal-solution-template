@@ -362,8 +362,7 @@ Each skill contains:
 | Skill | Purpose |
 |---|---|
 | `entity-generator` | Generate domain entities with DDD patterns, tests, and persistence guidance |
-| `use-case-generator` | Generate Application use cases (`BaseInOutUseCase`, `BaseInUseCase`, `BaseOutUseCase`) with validators and notification patterns |
-| `use-case-tests-generator` | Generate xUnit use case tests with fixtures, mocks, and logging/repository verification patterns |
+| `use-case-generator` | Generate Application use cases (`BaseInOutUseCase`, `BaseInUseCase`, `BaseOutUseCase`) with validators, notification patterns, and xUnit unit tests with fixtures, mocks, and logging/repository verification |
 | `endpoints-generator` | Generate ASP.NET Minimal API endpoints with cache, correlation ID, status code conventions, and mandatory `src/WebApp/WebApp.http` samples for local endpoint testing |
 | `consumers-generator` | Generate RabbitMQ consumers and message contracts using `BaseConsumer<TMessage, TConsumer>` patterns |
 | `ef-mapper` | Generate/update EF Core mapping classes with precision, enum conversion, relationships, and migration guidance |
@@ -494,7 +493,7 @@ docker compose up -d
 
 ### `docker-compose-load-tests.yml` — Load test environment
 
-Spins up a stable environment optimised for k6 load tests.
+Spins up a stable environment optimized for k6 load tests.
 
 ```bash
 docker compose -f docker-compose-load-tests.yml up -d
