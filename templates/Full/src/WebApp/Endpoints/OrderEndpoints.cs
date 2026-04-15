@@ -61,6 +61,30 @@ internal static class OrderEndpoints
             return response.Success ? Results.Ok(response) : Results.BadRequest(response);
         });
 
+        ordersGroup.MapPut("/{id}", async (
+            [FromServices] IBaseInOutUseCase<UpdateOrderRequest, BaseResponse<OrderDto>> useCase,
+            [FromBody] UpdateOrderRequest request,
+            [FromRoute] int id,
+            CancellationToken cancellationToken
+        ) =>
+        {
+            var response = await useCase.HandleAsync(request with { OrderId = id }, cancellationToken);
+
+            return response.Success ? Results.Ok(response) : Results.BadRequest(response);
+        });
+
+        ordersGroup.MapDelete("/{id}", async (
+            [FromServices] IBaseInOutUseCase<DeleteOrderRequest, BaseResponse> useCase,
+            [FromHeader] Guid correlationId,
+            [FromRoute] int id,
+            CancellationToken cancellationToken
+        ) =>
+        {
+            var response = await useCase.HandleAsync(new(correlationId, id), cancellationToken);
+
+            return response.Success ? Results.Ok(response) : Results.BadRequest(response);
+        });
+
         return app;
     }
 }
