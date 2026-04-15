@@ -12,7 +12,7 @@ public sealed class CreateNotificationRequestValidationFixture
     public IValidator<CreateNotificationRequest> Validator { get; } = new CreateNotificationRequestValidator();
 
     public static CreateNotificationRequest GetValidRequest() =>
-        new(Guid.NewGuid(), NotificationType.OrderCreated, "Success", "System", new { Test = "Message" });
+        new(Guid.NewGuid(), NotificationType.OrderCreated, NotificationStatus.Pending, "System", new { Test = "Message" });
 }
 
 public sealed class CreateNotificationRequestValidationTests(CreateNotificationRequestValidationFixture fixture) : IClassFixture<CreateNotificationRequestValidationFixture>
@@ -39,7 +39,8 @@ public sealed class CreateNotificationRequestValidationTests(CreateNotificationR
         var request = CreateNotificationRequestValidationFixture.GetValidRequest() with
         {
             CorrelationId = Guid.Empty,
-            NotificationType = (NotificationType)(-1)
+            NotificationType = (NotificationType)(-1),
+            NotificationStatus = (NotificationStatus)(-1)
         };
 
         // Act
@@ -48,6 +49,7 @@ public sealed class CreateNotificationRequestValidationTests(CreateNotificationR
         // Assert
         result.ShouldHaveValidationErrorFor("CorrelationId");
         result.ShouldHaveValidationErrorFor("NotificationType");
+        result.ShouldHaveValidationErrorFor("NotificationStatus");
     }
 }
 
@@ -59,7 +61,7 @@ public sealed class CreateNotificationUseCaseFixture : BaseApplicationFixture<Cr
     }
 
     public static CreateNotificationRequest SetValidRequest() =>
-        new(Guid.NewGuid(), NotificationType.OrderCreated, "Success", "System", new { Test = "Message" });
+        new(Guid.NewGuid(), NotificationType.OrderCreated, NotificationStatus.Pending, "System", new { Test = "Message" });
 }
 
 public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotificationUseCaseFixture>
@@ -121,6 +123,120 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
         // Assert
         _fixture.MockLogger.VerifyStartOperation();
         _fixture.MockLogger.VerifyOperationFailed();
+        _fixture.MockLogger.VerifyFinishOperation();
+        _fixture.MockRepository.VerifyAddAsync<Notification>(1);
+    }
+
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenRepositoryFailsThenShouldLogExactFailureMessage))]
+    public async Task GivenAValidRequestWhenRepositoryFailsThenShouldLogExactFailureMessage()
+    {
+        // Arrange
+        var request = CreateNotificationUseCaseFixture.SetValidRequest();
+        _fixture.SetSuccessfulValidator(request);
+        _fixture.MockRepository.SetFailedAddAsync<Notification>();
+
+        // Act
+        await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
+
+        // Assert
+        _fixture.MockLogger.VerifyWarning("Failed to create notification. No rows affected.");
+    }
+
+    [Fact(DisplayName = nameof(GivenAValidRequestWithSuccessStatusThenShouldCreateNotification))]
+    public async Task GivenAValidRequestWithSuccessStatusThenShouldCreateNotification()
+    {
+        // Arrange
+        var request = new CreateNotificationRequest(
+            Guid.NewGuid(),
+            NotificationType.OrderCreated,
+            NotificationStatus.Success,
+            "TestUser",
+            new { OrderId = 123, Amount = 500 }
+        );
+        _fixture.SetSuccessfulValidator(request);
+        _fixture.MockRepository.SetSuccessfulAddAsync<Notification>();
+
+        // Act
+        await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
+
+        // Assert
+        _fixture.MockLogger.VerifyStartOperation();
+        _fixture.MockLogger.VerifyFinishOperation();
+        _fixture.MockRepository.VerifyAddAsync<Notification>(1);
+    }
+
+    [Fact(DisplayName = nameof(GivenAValidRequestWithDifferentStatusesThenShouldHandleAllStatuses))]
+    public async Task GivenAValidRequestWithDifferentStatusesThenShouldHandleAllStatuses()
+    {
+        // Test that different statuses are handled correctly
+        var statuses = new[] { NotificationStatus.Pending, NotificationStatus.Success, NotificationStatus.Failed };
+
+        foreach (var status in statuses)
+        {
+            _fixture.ClearInvocations();
+
+            var request = new CreateNotificationRequest(
+                Guid.NewGuid(),
+                NotificationType.OrderCreated,
+                status,
+                "System"
+            );
+            _fixture.SetSuccessfulValidator(request);
+            _fixture.MockRepository.SetSuccessfulAddAsync<Notification>();
+
+            // Act
+            await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
+
+            // Assert
+            _fixture.MockLogger.VerifyStartOperation();
+            _fixture.MockLogger.VerifyFinishOperation();
+            _fixture.MockRepository.VerifyAddAsync<Notification>(1);
+        }
+    }
+
+    [Fact(DisplayName = nameof(GivenAValidRequestWithNullMessageThenShouldStoreEmptyString))]
+    public async Task GivenAValidRequestWithNullMessageThenShouldStoreEmptyString()
+    {
+        // Arrange
+        var request = new CreateNotificationRequest(
+            Guid.NewGuid(),
+            NotificationType.OrderCreated,
+            NotificationStatus.Pending,
+            "System",
+            null
+        );
+        _fixture.SetSuccessfulValidator(request);
+        _fixture.MockRepository.SetSuccessfulAddAsync<Notification>();
+
+        // Act
+        await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
+
+        // Assert
+        _fixture.MockLogger.VerifyStartOperation();
+        _fixture.MockLogger.VerifyFinishOperation();
+        _fixture.MockRepository.VerifyAddAsync<Notification>(1);
+    }
+
+    [Fact(DisplayName = nameof(GivenAValidRequestWithObjectMessageThenShouldSerializeToJson))]
+    public async Task GivenAValidRequestWithObjectMessageThenShouldSerializeToJson()
+    {
+        // Arrange
+        var messageObject = new { OrderId = 456, Status = "Completed", Amount = 1500.50 };
+        var request = new CreateNotificationRequest(
+            Guid.NewGuid(),
+            NotificationType.OrderCreated,
+            NotificationStatus.Success,
+            "System",
+            messageObject
+        );
+        _fixture.SetSuccessfulValidator(request);
+        _fixture.MockRepository.SetSuccessfulAddAsync<Notification>();
+
+        // Act
+        await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
+
+        // Assert
+        _fixture.MockLogger.VerifyStartOperation();
         _fixture.MockLogger.VerifyFinishOperation();
         _fixture.MockRepository.VerifyAddAsync<Notification>(1);
     }
