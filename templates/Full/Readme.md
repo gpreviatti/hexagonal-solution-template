@@ -26,21 +26,33 @@ A production-ready .NET template for building applications following [Hexagonal 
 
 Hexagonal Architecture isolates the core business logic from external concerns (databases, HTTP, messaging, caches) by defining explicit **ports** (interfaces) and **adapters** (implementations).
 
-```
-            ┌─────────────────────────────────────┐
-            │          External World              │
-            │  HTTP  │  gRPC  │  Message Bus  │  DB│
-            └────────┬───────────────┬─────────────┘
-                     │   Adapters    │
-            ┌────────▼───────────────▼─────────────┐
-            │         Application Layer            │
-            │  (Use Cases / Ports / Orchestration) │
-            └────────────────┬─────────────────────┘
-                             │
-            ┌────────────────▼─────────────────────┐
-            │            Domain Layer              │
-            │  (Entities, Rules, Domain Events)    │
-            └──────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph ExternalWorld["External World"]
+        HTTP["HTTP"]
+        gRPC["gRPC"]
+        MessageBus["Message Bus"]
+        DB["Database"]
+    end
+
+    subgraph AppLayer["Application Layer"]
+        UseCases["Use Cases / Ports / Orchestration"]
+    end
+
+    subgraph DomainLayer["Domain Layer"]
+        Entities["Entities / Rules / Domain Events"]
+    end
+
+    Adapters["Adapters"]
+
+    ExternalWorld --> Adapters
+    Adapters --> AppLayer
+    AppLayer --> DomainLayer
+
+    style ExternalWorld fill:#e1f5ff
+    style AppLayer fill:#f3e5f5
+    style DomainLayer fill:#fff3e0
+    style Adapters fill:#f0f4c3
 ```
 
 ### Key Design Decisions
@@ -515,13 +527,29 @@ The template uses **OpenTelemetry** with OTLP exporters, collected and routed by
 
 ### Stack
 
-```
-WebApp (OTLP)
-    └─► Grafana Alloy (collector)
-            ├─► Loki       (logs)
-            ├─► Tempo      (traces)
-            └─► Prometheus (metrics)
-                    └─► Grafana (dashboards)
+```mermaid
+graph TB
+    WebApp["WebApp<br/>(OTLP)"]
+    Alloy["Grafana Alloy<br/>(Collector)"]
+    Loki["Loki<br/>(Logs)"]
+    Tempo["Tempo<br/>(Traces)"]
+    Prometheus["Prometheus<br/>(Metrics)"]
+    Grafana["Grafana<br/>(Dashboards)"]
+
+    WebApp -->|OTLP| Alloy
+    Alloy -->|logs| Loki
+    Alloy -->|traces| Tempo
+    Alloy -->|metrics| Prometheus
+    Prometheus --> Grafana
+    Loki --> Grafana
+    Tempo --> Grafana
+
+    style WebApp fill:#bbdefb
+    style Alloy fill:#c8e6c9
+    style Loki fill:#fff9c4
+    style Tempo fill:#ffe0b2
+    style Prometheus fill:#f8bbd0
+    style Grafana fill:#d1c4e9
 ```
 
 ### Accessing the dashboards
@@ -554,12 +582,6 @@ dotnet run --project src/WebApp
 
 ---
 
-## 🤝 Contributing
-
-Have a feature request or found a bug? We'd love to hear from you!
-
-- [Report a Bug](https://github.com/gpreviatti/hexagonal-solution-template/issues/new?template=bug_report.md)
-- [Request a Feature](https://github.com/gpreviatti/hexagonal-solution-template/issues/new?template=feature_request.md)
 
 ### Guidelines
 
@@ -567,3 +589,10 @@ Have a feature request or found a bug? We'd love to hear from you!
 2. Every new use case must have unit tests following the `GivenContext_WhenCondition_ThenExpectedResult` naming convention.
 3. Run `dotnet test` and both Stryker configs before opening a pull request.
 4. Keep domain entities free from infrastructure concerns — no EF Core attributes inside `Domain/`.
+
+## 🤝 Contributing
+
+Have a feature request or found a bug? We'd love to hear from you!
+
+- [Report a Bug](https://github.com/gpreviatti/hexagonal-solution-template/issues/new?template=bug_report.md)
+- [Request a Feature](https://github.com/gpreviatti/hexagonal-solution-template/issues/new?template=feature_request.md)
