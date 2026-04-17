@@ -29,6 +29,7 @@ services:
       dockerfile: ./Dockerfile
     ports:
       - "5011:5011"
+    restart: always
     depends_on:
       redis:
         condition: service_healthy
