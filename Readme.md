@@ -3,99 +3,109 @@
 [![Publish template in Nuget.org](https://github.com/gpreviatti/hexagonal-solution-template/actions/workflows/publish.yml/badge.svg?branch=main)](https://github.com/gpreviatti/hexagonal-solution-template/actions/workflows/publish.yml)
 [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fgpreviatti%2Fhexagonal-solution-template%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/gpreviatti/hexagonal-solution-template/main)
 
-This is a dotnet solution template from projects based on hexagonal architecture and best practices
+This repository provides a reusable .NET template package to bootstrap projects using **Hexagonal Architecture** (Ports and Adapters) and modern engineering practices.
+
+It includes three templates for different scopes: a full application, a BFF-focused application, and a contracts-only package.
+
+## Table of contents
+
+- [What this project provides](#what-this-project-provides)
+- [Available templates](#available-templates)
+- [Template documentation](#template-documentation)
+- [Technologies included](#technologies-included)
+- [Quick start](#quick-start)
+- [Template options and help](#template-options-and-help)
+- [Update or uninstall](#update-or-uninstall)
+- [Recommendation](#recommendation)
+- [Official template docs](#official-template-docs)
+- [Contributing](#contributing)
+
+## What this project provides
+
+The package `GPreviatti.Template.Hexagonal.Solution` lets you quickly create solutions with:
+
+- clear layering and separation of concerns;
+- HTTP and gRPC integration patterns;
+- observability and test-first tooling support;
+- examples that help accelerate initial development.
 
 ## Available templates
 
-- `hexagonal-solution-full`: Full hexagonal architecture template (Domain, Application, Infrastructure, WebApp, tests and load tests).
-- `hexagonal-solution-bff`: Backend-for-Frontend focused template with HTTP/gRPC integration patterns and integration/load tests.
-- `hexagonal-solution-contracts`: Contracts-only template for shared request/response models, DTOs, gRPC protobuf definitions and unit tests.
+- `hexagonal-solution-full`: complete hexagonal solution with `Domain`, `Application`, `Infrastructure`, `WebApp`, and test/load test projects.
+- `hexagonal-solution-bff`: Backend-for-Frontend oriented solution with HTTP/gRPC adapters, integration tests, and load tests.
+- `hexagonal-solution-contracts`: lightweight contracts package for shared DTOs, request/response models, and protobuf definitions.
 
-## Used Technologies
+## Template documentation
+
+Each template has its own README with architecture details, structure, and helper commands:
+
+- Full template: [`templates/Full/Readme.md`](templates/Full/Readme.md)
+- BFF template: [`templates/Bff/Readme.md`](templates/Bff/Readme.md)
+- Contracts template: [`templates/Contracts/Readme.md`](templates/Contracts/Readme.md)
+
+## Technologies included
 
 - FluentValidation
 - OpenTelemetry
-- EntityFrameworkCore
-- EntityFrameworkCore.SqlServer
-- Xunit
-- Moq
-- AutoFixture
+- Entity Framework Core
 - gRPC / Protobuf
+- xUnit, Moq, AutoFixture
 - Docker and Docker Compose
-- K6
-- Stryker
+- k6 (load testing)
+- Stryker (mutation testing)
 - GitHub Actions
 - Hybrid cache
-- Rabbit Mq
+- RabbitMQ
 
-## Advisors and recommendations
+## Quick start
 
-- When use the template i recommend you dot not remove Order example scenario until you have you own implementations
-
-## How to use the template
-
-To install the project template you have to use the following command
+Install the template package:
 
 ```bash
 dotnet new install GPreviatti.Template.Hexagonal.Solution
 ```
 
-After that you can use it to create your project where -n is the name of your solution to create the full solution template you can use the following command
+Create a new solution from each template:
 
 ```bash
 dotnet new hexagonal-solution-full -n HexagonalSolution
-```
-
-To create only the BFF template you can use the following command
-
-```bash
 dotnet new hexagonal-solution-bff -n HexagonalSolution
-```
-
-To create only the Contracts template you can use the following command
-
-```bash
 dotnet new hexagonal-solution-contracts -n HexagonalSolution
 ```
 
-The Contracts template is recommended when you want a lightweight shared library for API and messaging contracts that can be reused across services.
+## Template options and help
 
-If you had any doubts about the existing parameters you can also use -h to get more information
+Use `-h` to list available options for each template:
 
 ```bash
 dotnet new hexagonal-solution-full -h
-```
-
-or 
-
-```bash
 dotnet new hexagonal-solution-bff -h
-```
-
-or
-
-```bash
 dotnet new hexagonal-solution-contracts -h
 ```
 
-If you want to update the template to the latest version just execute the following command
+## Update or uninstall
+
+Update to the latest published template version:
 
 ```bash
 dotnet new update GPreviatti.Template.Hexagonal.Solution
 ```
 
-If you want to uninstall the template just execute the following command :(
+Uninstall the template package:
 
 ```bash
 dotnet new uninstall GPreviatti.Template.Hexagonal.Solution
 ```
 
-## Official solution template documentation
+## Recommendation
+
+Keep the provided `Order` sample scenario in place until your own domain scenario is implemented. It serves as a reference for architecture, project organization, and tests.
+
+## Official template docs
 
 <https://github.com/dotnet/templating/wiki>
 
-
-## Contribute
+## Contributing
 
 Have a feature request or found a bug? We'd love to hear from you!
 

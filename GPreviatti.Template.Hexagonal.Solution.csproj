@@ -18,23 +18,23 @@
     <RepositoryUrl>git://github.com/gpreviatti/hexagonal-solution-template</RepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>
-      ## New Features
-        - Add new generator skills and reference templates for contracts, endpoints, entities, use cases, integration tests, load tests, EF mappings, and RabbitMQ consumers/messages across the template variants.
-        - Add update and delete order flows to the Full template, including application use cases, HTTP endpoints, validation, and automated tests.
-        - Add notification status/type enum support and update schema generation for notification, order, and order item persistence.
+      New Features
+      - Add new generator skills and reference templates for contracts, endpoints, entities, use cases, integration tests, load tests, EF mappings, and RabbitMQ consumers/messages across the template variants.
+      - Add update and delete order flows to the Full template, including application use cases, HTTP endpoints, validation, and automated tests.
+      - Add notification status/type enum support and update schema generation for notification, order, and order item persistence.
       
-      ## Improvements
-        - Improve notification handling, database mappings, and delete-order behavior to include related order items consistently.
-        - Update template documentation with a more detailed project structure and usage guidance.
-        - Improve docker-compose defaults with service restart policies and refresh package versions, including SDK and Coverlet dependencies.
+      Improvements
+      - Improve notification handling, database mappings, and delete-order behavior to include related order items consistently.
+      - Update template documentation with a more detailed project structure and usage guidance.
+      - Improve docker-compose defaults with service restart policies and refresh package versions, including SDK and Coverlet dependencies.
       
-      ## Code Quality
-        - Expand unit and integration test coverage with reusable patterns for Get, GetAll, Update, Delete, and entity-focused scenarios.
-        - Refactor domain update/delete logic and clean up build properties, warnings, and test comments across the templates.
+      Code Quality
+      - Expand unit and integration test coverage with reusable patterns for Get, GetAll, Update, Delete, and entity-focused scenarios.
+      - Refactor domain update/delete logic and clean up build properties, warnings, and test comments across the templates.
       
-      ## Technical Details
-        - Regenerate Entity Framework migrations, designer files, and model snapshots for notification, order, and item table changes.
-        - Update lock files and package management metadata across Bff, Contracts, and Full templates to keep dependency graphs aligned.
+      Technical Details
+      - Regenerate Entity Framework migrations, designer files, and model snapshots for notification, order, and item table changes.
+      - Update lock files and package management metadata across Bff, Contracts, and Full templates to keep dependency graphs aligned.
     </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
