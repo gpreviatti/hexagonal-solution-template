@@ -29,6 +29,9 @@ public abstract class DomainEntity
     public DateTime UpdatedAt { get; private set; }
     public string? UpdatedBy { get; private set; }
     public string? UpdatedByTimezoneId { get; private set; }
+    public bool IsDeleted { get; private set; }
+    public DateTime? DeletedAt { get; private set; }
+    public string? DeletedBy { get; private set; }
 
     protected static Result<TEntity> Handle<TEntity>(
         Func<Activity?, Result<TEntity>> factory,
@@ -52,7 +55,7 @@ public abstract class DomainEntity
         return factory(activity);
     }
 
-    public Result Update(string? user = null, string? timezoneId = null) => Handle(activity =>
+    public virtual Result Update(string? user = null, string? timezoneId = null) => Handle(activity =>
     {
         UpdatedAt = DateTime.UtcNow;
         UpdatedBy = user ?? "System";
@@ -60,6 +63,25 @@ public abstract class DomainEntity
 
         activity?.SetTag(nameof(UpdatedBy), UpdatedBy);
         activity?.SetTag(nameof(UpdatedByTimezoneId), UpdatedByTimezoneId);
+        activity?.SetStatus(ActivityStatusCode.Ok);
+        return Result.Ok();
+    });
+
+    public virtual Result Delete(string? user = null, string? timezoneId = null) => Handle(activity =>
+    {
+        if (IsDeleted)
+            return Result.Fail("Entity is already deleted.");
+
+        IsDeleted = true;
+        DeletedAt = DateTime.UtcNow;
+        DeletedBy = user ?? "System";
+
+        var updateResult = Update(user, timezoneId);
+        if (updateResult.IsFailure)
+            return updateResult;
+
+        activity?.SetTag(nameof(IsDeleted), IsDeleted);
+        activity?.SetTag(nameof(DeletedBy), DeletedBy);
         activity?.SetStatus(ActivityStatusCode.Ok);
         return Result.Ok();
     });

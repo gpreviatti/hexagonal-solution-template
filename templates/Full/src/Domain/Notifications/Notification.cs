@@ -11,7 +11,7 @@ public sealed class Notification : DomainEntity
 
     public Notification(
         NotificationType notificationType,
-        string notificationStatus,
+        NotificationStatus notificationStatus,
         object? message = null,
         string? createdBy = null,
         string? timezoneId = null
@@ -22,12 +22,14 @@ public sealed class Notification : DomainEntity
 
         NotificationType = notificationType;
         NotificationStatus = notificationStatus;
-        Message = message != null ? JsonSerializer.Serialize(message) : string.Empty;
+
+        if (message is not null)
+            Message = JsonSerializer.Serialize(message);
 
         activity?.SetTag(nameof(NotificationType), NotificationType);
         activity?.SetTag(nameof(NotificationStatus), NotificationStatus);
     }
     public NotificationType NotificationType { get; init; }
-    public string NotificationStatus { get; init; }
-    public string Message { get; init; }
+    public NotificationStatus NotificationStatus { get; init; }
+    public string? Message { get; init; }
 }

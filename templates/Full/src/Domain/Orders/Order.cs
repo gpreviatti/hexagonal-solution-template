@@ -31,9 +31,9 @@ public sealed class Order : DomainEntity
     {
         Order order = new(description, items, user, timezoneId);
 
-        var setTotalResult = order.SetTotal();
-        if (setTotalResult.IsFailure)
-            return Result.Fail<Order>(setTotalResult.Message);
+        var result = order.SetTotal();
+        if (result.IsFailure)
+            return Result.Fail<Order>(result.Message);
 
         activity?.SetTag(nameof(description), description);
 
@@ -48,6 +48,48 @@ public sealed class Order : DomainEntity
         Total = Items.Sum(item => item.Value);
 
         activity?.SetTag(nameof(Total), Total);
+
+        return Result.Ok();
+    });
+
+    public Result Update(
+        string description,
+        ICollection<Item> items,
+        string user = "System",
+        string? timezoneId = null
+    ) => Handle(activity =>
+    {
+        if (IsDeleted)
+            return Result.Fail("Cannot update a deleted order.");
+
+        Description = description;
+        Items = items;
+
+        var result = SetTotal();
+        if (result.IsFailure)
+            return result;
+
+        result = Update(user, timezoneId);
+        if (result.IsFailure)
+            return result;
+
+        activity?.SetTag(nameof(description), description);
+
+        return Result.Ok();
+    });
+
+    public override Result Delete(string? user = null, string? timezoneId = null) => Handle(activity =>
+    {
+        var result = base.Delete(user, timezoneId);
+        if (result.IsFailure)
+            return result;
+
+        foreach (var item in Items)
+        {
+            result = item.Delete(user, timezoneId);
+            if (result.IsFailure)
+                return Result.Fail($"Failed to delete item '{item.Name}': {result.Message}");
+        }
 
         return Result.Ok();
     });

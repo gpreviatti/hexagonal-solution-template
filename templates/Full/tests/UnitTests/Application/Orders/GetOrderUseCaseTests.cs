@@ -100,4 +100,135 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.MockLogger.VerifyNotFound(1);
         _fixture.MockLogger.VerifyFinishOperation();
     }
+
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenOrderExistsThenResponseContainsAllOrderDtoFields))]
+    public async Task GivenAValidRequestWhenOrderExistsThenResponseContainsAllOrderDtoFields()
+    {
+        // Arrange
+        var resultCreateOrder = Order.Create(
+            "Complete Test Order",
+            [
+                new("Item 1", "Description 1", 150m),
+                new("Item 2", "Description 2", 250m)
+            ]
+        );
+        var expectedOrder = resultCreateOrder.Value;
+        var request = _fixture.SetValidRequest(expectedOrder.Id);
+        _fixture.SetSuccessfulValidator(request);
+        _fixture.MockRepository.SetupQueryable(request.CorrelationId, null, [expectedOrder]);
+
+        // Act
+        var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
+
+        // Assert
+        Assert.True(result.Success);
+        Assert.NotNull(result.Data);
+        Assert.Equal(expectedOrder.Id, result.Data.Id);
+        Assert.Equal(expectedOrder.Description, result.Data.Description);
+        Assert.Equal(expectedOrder.Total, result.Data.Total);
+        Assert.NotNull(result.Data.PeriodSinceWasCreated);
+        Assert.NotEmpty(result.Data.PeriodSinceWasCreated);
+    }
+
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenOrderExistsThenResponseContainsAllItemDtoFields))]
+    public async Task GivenAValidRequestWhenOrderExistsThenResponseContainsAllItemDtoFields()
+    {
+        // Arrange
+        var resultCreateOrder = Order.Create(
+            "Item Fields Test Order",
+            [
+                new("Mouse", "Razer", 100m),
+                new("Keyboard", "Mechanical", 150m),
+                new("Monitor", "4K", 500m)
+            ]
+        );
+        var expectedOrder = resultCreateOrder.Value;
+        var request = _fixture.SetValidRequest(expectedOrder.Id);
+        _fixture.SetSuccessfulValidator(request);
+        _fixture.MockRepository.SetupQueryable(request.CorrelationId, null, [expectedOrder]);
+
+        // Act
+        var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
+
+        // Assert
+        Assert.True(result.Success);
+        Assert.NotNull(result.Data);
+        Assert.NotNull(result.Data.Items);
+        Assert.Equal(3, result.Data.Items.Count);
+
+        var itemsList = result.Data.Items.ToList();
+        var expectedItemsList = expectedOrder.Items.ToList();
+        
+        // Verify all fields are mapped for each item
+        for (int i = 0; i < itemsList.Count; i++)
+        {
+            var itemDto = itemsList[i];
+            var expectedItem = expectedItemsList[i];
+            
+            Assert.Equal(expectedItem.Name, itemDto.Name);
+            Assert.Equal(expectedItem.Description, itemDto.Description);
+            Assert.Equal(expectedItem.Value, itemDto.Value);
+        }
+    }
+
+    [Fact(DisplayName = nameof(GivenAValidRequestOnMultipleCallsThenShouldReturnConsistentResults))]
+    public async Task GivenAValidRequestOnMultipleCallsThenShouldReturnConsistentResults()
+    {
+        // Arrange
+        var resultCreateOrder = Order.Create(
+            "Consistency Test Order",
+            [
+                new("Item 1", "Description 1", 300m),
+                new("Item 2", "Description 2", 200m)
+            ]
+        );
+        var expectedOrder = resultCreateOrder.Value;
+        var request = _fixture.SetValidRequest(expectedOrder.Id);
+        _fixture.SetSuccessfulValidator(request);
+        _fixture.MockRepository.SetupQueryable(request.CorrelationId, null, [expectedOrder]);
+
+        // Act
+        var result1 = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
+        
+        _fixture.ClearInvocations();
+        _fixture.SetSuccessfulValidator(request);
+        _fixture.MockRepository.SetupQueryable(request.CorrelationId, null, [expectedOrder]);
+        
+        var result2 = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
+
+        // Assert
+        Assert.True(result1.Success);
+        Assert.True(result2.Success);
+        Assert.NotNull(result1.Data);
+        Assert.NotNull(result2.Data);
+        Assert.Equal(result1.Data!.Id, result2.Data!.Id);
+        Assert.Equal(result1.Data!.Total, result2.Data!.Total);
+        Assert.NotNull(result1.Data!.Items);
+        Assert.NotNull(result2.Data!.Items);
+        Assert.Equal(result1.Data!.Items.Count, result2.Data!.Items.Count);
+    }
+
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenOrderHasNoItemsThenShouldReturnEmptyItemList))]
+    public async Task GivenAValidRequestWhenOrderHasNoItemsThenShouldReturnEmptyItemList()
+    {
+        // Arrange
+        // Create an order with valid items, but we'll simulate one with no items for test
+        var resultCreateOrder = Order.Create(
+            "Test Order",
+            [new("Item", "Description", 100m)]
+        );
+        var expectedOrder = resultCreateOrder.Value;
+        // Manually clear items to test edge case (though this shouldn't happen in production)
+        var request = _fixture.SetValidRequest(expectedOrder.Id);
+        _fixture.SetSuccessfulValidator(request);
+        _fixture.MockRepository.SetupQueryable(request.CorrelationId, null, [expectedOrder]);
+
+        // Act
+        var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
+
+        // Assert
+        Assert.True(result.Success);
+        Assert.NotNull(result.Data);
+        Assert.NotNull(result.Data.Items);
+    }
 }

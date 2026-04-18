@@ -17,6 +17,16 @@ internal abstract class BaseDbMapping<TEntity> : IEntityTypeConfiguration<TEntit
 
         builder.Property(p => p.UpdatedAt)
             .IsRequired(true);
+
+        builder.Property(p => p.DeletedAt)
+            .IsRequired(false);
+
+        builder.Property(p => p.IsDeleted)
+            .IsRequired(true)
+            .HasDefaultValue(false);
+
+        builder
+            .HasQueryFilter(p => !p.IsDeleted);
     }
 
     public abstract void ConfigureDomainEntity(EntityTypeBuilder<TEntity> builder);

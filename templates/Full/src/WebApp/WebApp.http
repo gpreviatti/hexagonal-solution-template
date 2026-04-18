@@ -62,3 +62,30 @@ Content-Type: application/json
   }
 }
 
+###
+PUT {{WebApp_HostAddress}}/orders/1 HTTP/2
+Content-Type: application/json
+
+{
+  "CorrelationId": "{{$guid}}",
+  "Description": "Updated order from WebApp.http",
+  "Items": [
+    {
+      "Name": "Updated computer",
+      "Description": "Surface 3",
+      "Value": 1200
+    },
+    {
+      "Name": "Updated mouse",
+      "Description": "Microsoft updated mouse",
+      "Value": 120
+    }
+  ],
+  "ModifiedBy": "LocalTester",
+  "TimezoneId": "UTC"
+}
+
+###
+DELETE {{WebApp_HostAddress}}/orders/1 HTTP/2
+CorrelationId: {{$guid}}
+

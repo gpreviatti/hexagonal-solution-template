@@ -34,22 +34,34 @@ namespace Infrastructure.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
-                        .HasMaxLength(100)
+                        .HasMaxLength(50)
                         .HasColumnType("text");
 
                     b.Property<string>("CreatedByTimezoneId")
                         .IsRequired()
-                        .HasMaxLength(100)
+                        .HasMaxLength(50)
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Message")
                         .HasMaxLength(4000)
-                        .HasColumnType("text");
+                        .HasColumnType("jsonb");
 
                     b.Property<string>("NotificationStatus")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<int>("NotificationType")
                         .HasColumnType("integer");
@@ -58,11 +70,11 @@ namespace Infrastructure.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UpdatedBy")
-                        .HasMaxLength(100)
+                        .HasMaxLength(50)
                         .HasColumnType("text");
 
                     b.Property<string>("UpdatedByTimezoneId")
-                        .HasMaxLength(100)
+                        .HasMaxLength(50)
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -82,18 +94,30 @@ namespace Infrastructure.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
-                        .HasMaxLength(100)
+                        .HasMaxLength(50)
                         .HasColumnType("text");
 
                     b.Property<string>("CreatedByTimezoneId")
                         .IsRequired()
-                        .HasMaxLength(100)
+                        .HasMaxLength(50)
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(50)
                         .HasColumnType("text");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -107,11 +131,11 @@ namespace Infrastructure.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UpdatedBy")
-                        .HasMaxLength(100)
+                        .HasMaxLength(50)
                         .HasColumnType("text");
 
                     b.Property<string>("UpdatedByTimezoneId")
-                        .HasMaxLength(100)
+                        .HasMaxLength(50)
                         .HasColumnType("text");
 
                     b.Property<decimal>("Value")
@@ -137,18 +161,30 @@ namespace Infrastructure.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
-                        .HasMaxLength(100)
+                        .HasMaxLength(50)
                         .HasColumnType("text");
 
                     b.Property<string>("CreatedByTimezoneId")
                         .IsRequired()
-                        .HasMaxLength(100)
+                        .HasMaxLength(50)
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(50)
                         .HasColumnType("text");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
 
                     b.Property<decimal>("Total")
                         .HasPrecision(18, 2)
@@ -158,11 +194,11 @@ namespace Infrastructure.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UpdatedBy")
-                        .HasMaxLength(100)
+                        .HasMaxLength(50)
                         .HasColumnType("text");
 
                     b.Property<string>("UpdatedByTimezoneId")
-                        .HasMaxLength(100)
+                        .HasMaxLength(50)
                         .HasColumnType("text");
 
                     b.HasKey("Id");

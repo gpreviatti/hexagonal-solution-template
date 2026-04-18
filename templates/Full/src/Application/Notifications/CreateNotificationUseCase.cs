@@ -10,7 +10,7 @@ namespace Application.Notifications;
 public sealed record CreateNotificationRequest(
     Guid CorrelationId,
     NotificationType NotificationType,
-    string NotificationStatus,
+    NotificationStatus NotificationStatus,
     string? CreatedBy = null,
     object? Message = null
 ) : BaseRequest(CorrelationId);
@@ -21,6 +21,7 @@ public sealed class CreateNotificationRequestValidator : AbstractValidator<Creat
     {
         RuleFor(r => r.CorrelationId).NotEmpty();
         RuleFor(r => r.NotificationType).IsInEnum();
+        RuleFor(r => r.NotificationStatus).IsInEnum();
     }
 }
 

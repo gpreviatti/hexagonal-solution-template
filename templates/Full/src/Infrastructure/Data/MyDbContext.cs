@@ -15,7 +15,7 @@ public sealed class MyDbContext(
         configurationBuilder
             .Properties<string>()
             .HaveColumnType("text")
-            .HaveMaxLength(100);
+            .HaveMaxLength(50);
 
         configurationBuilder
             .Properties<decimal>()

@@ -63,7 +63,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
 
             response = new(false, null, createResult.Message);
 
-            CreateNotification(correlationId, "Failed", request.CreatedBy, _notificationType, response);
+            CreateNotification(correlationId, NotificationStatus.Failed, request.CreatedBy, _notificationType, response);
 
             UseCaseFailedMetric.Add(1);
 
@@ -77,7 +77,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
 
             response = new(false, null, "Failed to create order.");
 
-            CreateNotification(correlationId, "Failed", request.CreatedBy, _notificationType, response);
+            CreateNotification(correlationId, NotificationStatus.Failed, request.CreatedBy, _notificationType, response);
 
             UseCaseFailedMetric.Add(1);
 
@@ -98,7 +98,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
             })]
         });
 
-        CreateNotification(correlationId, "Success", request.CreatedBy, _notificationType, response);
+        CreateNotification(correlationId, NotificationStatus.Success, request.CreatedBy, _notificationType, response);
 
         return response;
     }
