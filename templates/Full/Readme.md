@@ -414,10 +414,7 @@ dotnet ef migrations add <MigrationName> \
   --output-dir Data/Migrations
 
 # Generate idempotent SQL script (for CI/CD deployments)
-dotnet ef migrations script --idempotent \
-  --project src/Infrastructure \
-  --startup-project src/Infrastructure \
-  --output scripts/sql/migrations.sql
+dotnet ef migrations script --idempotent --project src/Infrastructure --startup-project src/Infrastructure --output scripts/sql/migrations.sql
 ```
 
 ### Running the App

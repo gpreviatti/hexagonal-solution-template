@@ -22,12 +22,14 @@ public sealed class Notification : DomainEntity
 
         NotificationType = notificationType;
         NotificationStatus = notificationStatus;
-        Message = message != null ? JsonSerializer.Serialize(message) : string.Empty;
+
+        if (message is not null)
+            Message = JsonSerializer.Serialize(message);
 
         activity?.SetTag(nameof(NotificationType), NotificationType);
         activity?.SetTag(nameof(NotificationStatus), NotificationStatus);
     }
     public NotificationType NotificationType { get; init; }
     public NotificationStatus NotificationStatus { get; init; }
-    public string Message { get; init; }
+    public string? Message { get; init; }
 }

@@ -28,8 +28,8 @@ public sealed class NotificationTests
         Assert.Contains("\"Test\":\"Message\"", notification.Message);
     }
 
-    [Fact(DisplayName = nameof(GivenANewNotificationWhenMessageIsNullThenShouldCreateNotificationWithEmptyMessage))]
-    public void GivenANewNotificationWhenMessageIsNullThenShouldCreateNotificationWithEmptyMessage()
+    [Fact(DisplayName = nameof(GivenANewNotificationWhenMessageIsNullThenShouldCreateNotificationWithNullMessage))]
+    public void GivenANewNotificationWhenMessageIsNullThenShouldCreateNotificationWithNullMessage()
     {
         // Arrange
         var notificationType = NotificationType.OrderCreated;
@@ -46,8 +46,7 @@ public sealed class NotificationTests
         Assert.Equal(notificationType, notification.NotificationType);
         Assert.Equal(notificationStatus, notification.NotificationStatus);
         Assert.Equal(createdBy, notification.CreatedBy);
-        Assert.NotNull(notification.Message);
-        Assert.Empty(notification.Message);
+        Assert.Null(notification.Message);
     }
 
     [Fact(DisplayName = nameof(GivenANewNotificationWhenCreatedByIsNullThenShouldUseSystemDefault))]

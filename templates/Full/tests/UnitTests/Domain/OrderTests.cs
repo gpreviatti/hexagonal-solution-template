@@ -229,29 +229,27 @@ public sealed class OrderTests
     // Boundary tests for PeriodSinceWasCreated to kill boundary mutation operators
 
     [Theory(DisplayName = nameof(GivenANewOrderWhenRequestingPeriodBoundaryThenShouldReturnExpectedUnit))]
-    [InlineData(-59, "seconds ago")]
-    [InlineData(-60, "minutes ago")]
-    [InlineData(-61, "minutes ago")]
-    [InlineData(-(59 * 60), "minutes ago")]
-    [InlineData(-(60 * 60), "hours ago")]
-    [InlineData(-(61 * 60), "hours ago")]
-    [InlineData(-(23 * 60 * 60), "hours ago")]
-    [InlineData(-(24 * 60 * 60), "days ago")]
-    [InlineData(-(25 * 60 * 60), "days ago")]
-    [InlineData(-29, "days ago")] // 29 days as reference
-    [InlineData(-30, "months ago")]
-    [InlineData(-31, "months ago")]
-    [InlineData(-364, "months ago")]
-    [InlineData(-365, "years ago")]
-    [InlineData(-366, "years ago")]
-    public void GivenANewOrderWhenRequestingPeriodBoundaryThenShouldReturnExpectedUnit(int secondsOrDaysAgo, string expectedUnit)
+    [InlineData(59, "seconds ago")]
+    [InlineData(60, "minutes ago")]
+    [InlineData(61, "minutes ago")]
+    [InlineData(59 * 60, "minutes ago")]
+    [InlineData(60 * 60, "hours ago")]
+    [InlineData(61 * 60, "hours ago")]
+    [InlineData(23 * 60 * 60, "hours ago")]
+    [InlineData(24 * 60 * 60, "days ago")]
+    [InlineData(25 * 60 * 60, "days ago")]
+    [InlineData(29 * 24 * 60 * 60, "days ago")]
+    [InlineData(30 * 24 * 60 * 60, "months ago")]
+    [InlineData(31 * 24 * 60 * 60, "months ago")]
+    [InlineData(364 * 24 * 60 * 60, "months ago")]
+    [InlineData(365 * 24 * 60 * 60, "years ago")]
+    [InlineData(366 * 24 * 60 * 60, "years ago")]
+    public void GivenANewOrderWhenRequestingPeriodBoundaryThenShouldReturnExpectedUnit(int secondsAgo, string expectedUnit)
     {
         // Arrange
         var order = new Order
         {
-            CreatedAt = secondsOrDaysAgo < -1000
-                ? DateTime.UtcNow.AddDays(secondsOrDaysAgo)
-                : DateTime.UtcNow.AddSeconds(secondsOrDaysAgo)
+            CreatedAt = DateTime.UtcNow.AddSeconds(-secondsAgo)
         };
 
         // Act
