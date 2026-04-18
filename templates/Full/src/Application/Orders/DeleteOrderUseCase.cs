@@ -38,6 +38,7 @@ public sealed class DeleteOrderUseCase(IServiceProvider serviceProvider)
         BaseResponse response;
 
         var order = await Repository.GetQueryable<Order>(correlationId)
+            .Include(x => x.Items)
             .FirstOrDefaultAsync(x => x.Id == request.OrderId, cancellationToken);
 
         if (order is null)

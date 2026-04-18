@@ -19,6 +19,7 @@ public class CreateNotificationTestFixture : BaseMessagingFixture
 
     public CreateNotificationMessage SetValidMessage() => AutoFixture.Build<CreateNotificationMessage>()
         .With(m => m.NotificationType, NotificationType.OrderCreated)
+        .With(m => m.CreatedBy, $"CreatedBy-{Guid.NewGuid()}")
         .Create();
 }
 
@@ -43,7 +44,9 @@ public sealed class CreateNotificationTest : IClassFixture<CreateNotificationTes
         await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated.ToString());
 
         var notification = await _fixture.Repository.GetQueryable<Notification>(Guid.NewGuid())
-            .Where(n => n.NotificationType == message.NotificationType && n.NotificationStatus == message.NotificationStatus)
+            .Where(n => n.NotificationType == message.NotificationType
+                && n.NotificationStatus == message.NotificationStatus
+                && n.CreatedBy == message.CreatedBy)
             .FirstOrDefaultAsync(_fixture.CancellationToken);
 
         // Assert
@@ -62,7 +65,9 @@ public sealed class CreateNotificationTest : IClassFixture<CreateNotificationTes
         await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated.ToString());
 
         var notifications = await _fixture.Repository.GetQueryable<Notification>(Guid.NewGuid())
-            .Where(n => n.NotificationType == message.NotificationType && n.NotificationStatus == message.NotificationStatus)
+            .Where(n => n.NotificationType == message.NotificationType
+                && n.NotificationStatus == message.NotificationStatus
+                && n.CreatedBy == message.CreatedBy)
             .ToListAsync(_fixture.CancellationToken);
 
         // Assert
