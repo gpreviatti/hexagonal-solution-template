@@ -1,61 +1,47 @@
-﻿using System.Reflection;
-using Application;
+﻿using Application;
 using Application.Common.Requests;
 using Microsoft.Extensions.DependencyInjection;
-using NetArchTest.Rules;
 
 namespace UnitTests.Architecture;
+
 public sealed class ApplicationTests
 {
-    private static readonly Assembly _applicationAssembly = typeof(BaseResponse).Assembly;
+    private static readonly System.Reflection.Assembly _applicationAssembly = typeof(BaseResponse).Assembly;
 
-    [Theory(DisplayName = nameof(ApplicationDoNotHaveClassesWithNotAllowedNames))]
+    [Theory(DisplayName = nameof(GivenTheApplicationAssemblyWhenCheckingForbiddenClassSuffixesThenItShouldRespectTheLayerNaming))]
     [InlineData("Entity")]
     [InlineData("ValueObject")]
     [InlineData("Vo")]
     [InlineData("Service")]
     [InlineData("Controller")]
-    public void ApplicationDoNotHaveClassesWithNotAllowedNames(string notAllowedClassName)
+    [InlineData("Endpoint")]
+    [InlineData("DbContext")]
+    [InlineData("Mapping")]
+    [InlineData("Consumer")]
+    [InlineData("Producer")]
+    public void GivenTheApplicationAssemblyWhenCheckingForbiddenClassSuffixesThenItShouldRespectTheLayerNaming(string forbiddenSuffix) => ArchitectureTestHelper.AssertClassNamesDoNotEndWith(_applicationAssembly, forbiddenSuffix);
+
+    [Fact(DisplayName = nameof(GivenTheApplicationAssemblyWhenCheckingForbiddenDependenciesThenItShouldNotReferenceOuterLayers))]
+    public void GivenTheApplicationAssemblyWhenCheckingForbiddenDependenciesThenItShouldNotReferenceOuterLayers() => ArchitectureTestHelper.AssertAssemblyDoesNotReference(_applicationAssembly, "Infrastructure", "WebApp");
+
+    [Fact(DisplayName = nameof(GivenTheApplicationAssemblyWhenCheckingNamespacesThenAllTypesShouldRemainInsideTheApplicationRoot))]
+    public void GivenTheApplicationAssemblyWhenCheckingNamespacesThenAllTypesShouldRemainInsideTheApplicationRoot() => ArchitectureTestHelper.AssertNamespacesStartWith(_applicationAssembly, nameof(Application));
+
+    [Fact(DisplayName = nameof(GivenTheApplicationProjectWhenCheckingProjectReferencesThenItShouldOnlyReferenceTheDomainProject))]
+    public void GivenTheApplicationProjectWhenCheckingProjectReferencesThenItShouldOnlyReferenceTheDomainProject() => ArchitectureTestHelper.AssertProjectReferences(
+            Path.Combine("src", "Application", "Application.csproj"),
+            Path.Combine("src", "Domain", "Domain.csproj")
+        );
+
+    [Fact(DisplayName = nameof(GivenTheApplicationDependencyInjectionWhenBuildingTheProviderThenScopesShouldBeValid))]
+    public void GivenTheApplicationDependencyInjectionWhenBuildingTheProviderThenScopesShouldBeValid()
     {
-        // Arrange, Act
-        var result = Types
-            .InAssembly(_applicationAssembly)
-            .That()
-            .AreClasses()
-            .Should()
-            .NotHaveNameEndingWith(notAllowedClassName)
-            .GetResult();
-
-        // Assert
-        Assert.True(result.IsSuccessful);
-    }
-
-    [Fact(DisplayName = nameof(ApplicationDoNotHaveInfrastructureDependency))]
-    public void ApplicationDoNotHaveInfrastructureDependency()
-    {
-        // Arrange, Act
-        var result = Types
-            .InAssembly(_applicationAssembly)
-            .Should()
-            .NotHaveDependencyOn("Infrastructure")
-            .GetResult();
-
-        // Assert
-        Assert.True(result.IsSuccessful);
-    }
-
-    [Fact(DisplayName = nameof(ApplicationShouldHasValidScopes))]
-    public void ApplicationShouldHasValidScopes()
-    {
-        // Arrange
         ServiceCollection serviceCollection = new();
 
         serviceCollection.AddApplication();
 
-        // Act
         var serviceProvider = serviceCollection.BuildServiceProvider(validateScopes: true);
 
-        // Assert
         Assert.NotNull(serviceProvider);
     }
 }

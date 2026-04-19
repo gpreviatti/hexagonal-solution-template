@@ -9,7 +9,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="ILogger.Moq" />
-    <PackageReference Include="MockQueryable.Moq" />
     <PackageReference Include="Moq" />
     <PackageReference Include="NetArchTest.Rules" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
@@ -22,6 +21,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Domain\Domain.csproj" />
     <ProjectReference Include="..\..\src\Application\Application.csproj" />
+    <ProjectReference Include="..\..\src\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\WebApp\WebApp.csproj" />
     <ProjectReference Include="..\CommonTests\CommonTests.csproj" />
   </ItemGroup>
   <ItemGroup>
