@@ -26,11 +26,9 @@ internal static class ArchitectureTestHelper
     public static void AssertNamespacesStartWith(
         Assembly assembly,
         string expectedRootNamespace,
-        params string[] additionalAllowedRootNamespaces)
+        params string[] additionalAllowedRootNamespaces
+    )
     {
-        if (!IsAssemblyInsideRepository(assembly))
-            return;
-
         var allowedRootNamespaces = new[] { expectedRootNamespace }
             .Concat(additionalAllowedRootNamespaces)
             .ToArray();
@@ -38,6 +36,7 @@ internal static class ArchitectureTestHelper
         var invalidTypes = assembly
             .GetTypes()
             .Where(static type => !string.IsNullOrWhiteSpace(type.Namespace))
+            .Where(type => type.Namespace is not null && !IsIgnoredRuntimeInstrumentationNamespace(type.Namespace))
             .Where(type => type.Namespace is not null
                 && !allowedRootNamespaces.Any(allowedRootNamespace =>
                     type.Namespace.Equals(allowedRootNamespace, StringComparison.Ordinal)
@@ -54,9 +53,6 @@ internal static class ArchitectureTestHelper
 
     public static void AssertAssemblyDoesNotReference(Assembly assembly, params string[] forbiddenAssemblyNames)
     {
-        if (!IsAssemblyInsideRepository(assembly))
-            return;
-
         var references = assembly
             .GetReferencedAssemblies()
             .Select(static referencedAssembly => referencedAssembly.Name)
@@ -120,18 +116,8 @@ internal static class ArchitectureTestHelper
 
     private static string NormalizePath(string path) => path.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
-    private static bool IsAssemblyInsideRepository(Assembly assembly)
-    {
-        var assemblyLocation = assembly.Location ?? string.Empty;
+    private static bool IsIgnoredRuntimeInstrumentationNamespace(string namespaceName) =>
+        namespaceName.Equals("Coverlet.Core.Instrumentation.Tracker", StringComparison.Ordinal)
+        || namespaceName.StartsWith("Coverlet.Core.Instrumentation.Tracker.", StringComparison.Ordinal);
 
-        if (string.IsNullOrWhiteSpace(assemblyLocation))
-            return false;
-
-        var normalizedAssemblyLocation = NormalizePath(Path.GetFullPath(assemblyLocation));
-        var normalizedRepositoryRoot = NormalizePath(Path.GetFullPath(_repositoryRoot));
-
-        return normalizedAssemblyLocation.Equals(normalizedRepositoryRoot, StringComparison.OrdinalIgnoreCase)
-            || normalizedAssemblyLocation.StartsWith($"{normalizedRepositoryRoot}{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase)
-            || normalizedAssemblyLocation.StartsWith($"{normalizedRepositoryRoot}{Path.AltDirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase);
-    }
 }
