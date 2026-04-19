@@ -158,13 +158,13 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
 
         var itemsList = result.Data.Items.ToList();
         var expectedItemsList = expectedOrder.Items.ToList();
-        
+
         // Verify all fields are mapped for each item
         for (int i = 0; i < itemsList.Count; i++)
         {
             var itemDto = itemsList[i];
             var expectedItem = expectedItemsList[i];
-            
+
             Assert.Equal(expectedItem.Name, itemDto.Name);
             Assert.Equal(expectedItem.Description, itemDto.Description);
             Assert.Equal(expectedItem.Value, itemDto.Value);
@@ -189,11 +189,11 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
 
         // Act
         var result1 = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
-        
+
         _fixture.ClearInvocations();
         _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetupQueryable(request.CorrelationId, null, [expectedOrder]);
-        
+
         var result2 = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
 
         // Assert
@@ -212,13 +212,11 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
     public async Task GivenAValidRequestWhenOrderHasNoItemsThenShouldReturnEmptyItemList()
     {
         // Arrange
-        // Create an order with valid items, but we'll simulate one with no items for test
         var resultCreateOrder = Order.Create(
             "Test Order",
             [new("Item", "Description", 100m)]
         );
         var expectedOrder = resultCreateOrder.Value;
-        // Manually clear items to test edge case (though this shouldn't happen in production)
         var request = _fixture.SetValidRequest(expectedOrder.Id);
         _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetupQueryable(request.CorrelationId, null, [expectedOrder]);
