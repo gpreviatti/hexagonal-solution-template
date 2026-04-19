@@ -19,22 +19,21 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>
       New Features
-      - Add new generator skills and reference templates for contracts, endpoints, entities, use cases, integration tests, load tests, EF mappings, and RabbitMQ consumers/messages across the template variants.
-      - Add update and delete order flows to the Full template, including application use cases, HTTP endpoints, validation, and automated tests.
-      - Add notification status/type enum support and update schema generation for notification, order, and order item persistence.
-      
+      - Add architecture test coverage for Infrastructure and WebApp layers in the Full template.
+      - Add a reusable ArchitectureTestHelper to centralize assembly naming, namespace, dependency, and project-reference assertions.
+
       Improvements
-      - Improve notification handling, database mappings, and delete-order behavior to include related order items consistently.
-      - Update template documentation with a more detailed project structure and usage guidance.
-      - Improve docker-compose defaults with service restart policies and refresh package versions, including SDK and Coverlet dependencies.
-      
+      - Improve architecture tests for Application and Domain with stricter layer-boundary validation and clearer, behavior-oriented test names.
+      - Improve unit test project wiring to validate cross-layer constraints by referencing Infrastructure and WebApp test targets.
+
       Code Quality
-      - Expand unit and integration test coverage with reusable patterns for Get, GetAll, Update, Delete, and entity-focused scenarios.
-      - Refactor domain update/delete logic and clean up build properties, warnings, and test comments across the templates.
-      
+      - Remove MockQueryable.Moq dependency from the Full UnitTests template and replace it with an internal EF Core-compatible async queryable test implementation.
+      - Refactor repository mock extensions to support async query execution and ExecuteUpdate/ExecuteDelete scenarios in memory.
+      - Clean up test comments and formatting for better readability and maintainability.
+
       Technical Details
-      - Regenerate Entity Framework migrations, designer files, and model snapshots for notification, order, and item table changes.
-      - Update lock files and package management metadata across Bff, Contracts, and Full templates to keep dependency graphs aligned.
+      - Update Full template package metadata and lock file entries to align dependency graphs after test infrastructure changes.
+      - Keep package versioning aligned with release 10.7.0 publishing workflow.
     </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
