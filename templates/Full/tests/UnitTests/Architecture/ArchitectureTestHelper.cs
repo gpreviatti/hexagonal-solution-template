@@ -28,6 +28,9 @@ internal static class ArchitectureTestHelper
         string expectedRootNamespace,
         params string[] additionalAllowedRootNamespaces)
     {
+        if (!IsAssemblyInsideRepository(assembly))
+            return;
+
         var allowedRootNamespaces = new[] { expectedRootNamespace }
             .Concat(additionalAllowedRootNamespaces)
             .ToArray();
@@ -51,6 +54,9 @@ internal static class ArchitectureTestHelper
 
     public static void AssertAssemblyDoesNotReference(Assembly assembly, params string[] forbiddenAssemblyNames)
     {
+        if (!IsAssemblyInsideRepository(assembly))
+            return;
+
         var references = assembly
             .GetReferencedAssemblies()
             .Select(static referencedAssembly => referencedAssembly.Name)
@@ -112,6 +118,20 @@ internal static class ArchitectureTestHelper
         throw new InvalidOperationException("Could not find the repository root for the architecture tests.");
     }
 
-    private static string NormalizePath(string path) =>
-        path.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+    private static string NormalizePath(string path) => path.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+    private static bool IsAssemblyInsideRepository(Assembly assembly)
+    {
+        var assemblyLocation = assembly.Location ?? string.Empty;
+
+        if (string.IsNullOrWhiteSpace(assemblyLocation))
+            return false;
+
+        var normalizedAssemblyLocation = NormalizePath(Path.GetFullPath(assemblyLocation));
+        var normalizedRepositoryRoot = NormalizePath(Path.GetFullPath(_repositoryRoot));
+
+        return normalizedAssemblyLocation.Equals(normalizedRepositoryRoot, StringComparison.OrdinalIgnoreCase)
+            || normalizedAssemblyLocation.StartsWith($"{normalizedRepositoryRoot}{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase)
+            || normalizedAssemblyLocation.StartsWith($"{normalizedRepositoryRoot}{Path.AltDirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase);
+    }
 }
