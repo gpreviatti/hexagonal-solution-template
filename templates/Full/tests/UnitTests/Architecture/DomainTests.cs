@@ -1,15 +1,14 @@
-﻿using System.Reflection;
-using Domain;
+﻿using Domain;
 using Domain.Common;
 using Microsoft.Extensions.DependencyInjection;
-using NetArchTest.Rules;
 
 namespace UnitTests.Architecture;
+
 public sealed class DomainTests
 {
-    private static readonly Assembly _domainAssembly = typeof(Result).Assembly;
+    private static readonly System.Reflection.Assembly _domainAssembly = typeof(Result).Assembly;
 
-    [Theory(DisplayName = nameof(DomainDoNotHaveClassesWithNotAllowedNames))]
+    [Theory(DisplayName = nameof(GivenTheDomainAssemblyWhenCheckingForbiddenClassSuffixesThenItShouldRespectTheLayerNaming))]
     [InlineData("Dto")]
     [InlineData("Dtos")]
     [InlineData("UseCase")]
@@ -21,61 +20,31 @@ public sealed class DomainTests
     [InlineData("Controller")]
     [InlineData("Repository")]
     [InlineData("Query")]
-    public void DomainDoNotHaveClassesWithNotAllowedNames(string notAllowedClassName)
+    [InlineData("Endpoint")]
+    [InlineData("Consumer")]
+    [InlineData("Producer")]
+    [InlineData("DbContext")]
+    [InlineData("Mapping")]
+    public void GivenTheDomainAssemblyWhenCheckingForbiddenClassSuffixesThenItShouldRespectTheLayerNaming(string forbiddenSuffix) => ArchitectureTestHelper.AssertClassNamesDoNotEndWith(_domainAssembly, forbiddenSuffix);
+
+    [Fact(DisplayName = nameof(GivenTheDomainAssemblyWhenCheckingForbiddenDependenciesThenItShouldNotReferenceOuterLayers))]
+    public void GivenTheDomainAssemblyWhenCheckingForbiddenDependenciesThenItShouldNotReferenceOuterLayers() => ArchitectureTestHelper.AssertAssemblyDoesNotReference(_domainAssembly, "Application", "Infrastructure", "WebApp");
+
+    [Fact(DisplayName = nameof(GivenTheDomainAssemblyWhenCheckingNamespacesThenAllTypesShouldRemainInsideTheDomainRoot))]
+    public void GivenTheDomainAssemblyWhenCheckingNamespacesThenAllTypesShouldRemainInsideTheDomainRoot() => ArchitectureTestHelper.AssertNamespacesStartWith(_domainAssembly, nameof(Domain));
+
+    [Fact(DisplayName = nameof(GivenTheDomainProjectWhenCheckingProjectReferencesThenItShouldNotReferenceAnyOtherProject))]
+    public void GivenTheDomainProjectWhenCheckingProjectReferencesThenItShouldNotReferenceAnyOtherProject() => ArchitectureTestHelper.AssertProjectReferences(Path.Combine("src", "Domain", "Domain.csproj"));
+
+    [Fact(DisplayName = nameof(GivenTheDomainDependencyInjectionWhenBuildingTheProviderThenScopesShouldBeValid))]
+    public void GivenTheDomainDependencyInjectionWhenBuildingTheProviderThenScopesShouldBeValid()
     {
-        // Arrange, Act
-        var result = Types
-            .InAssembly(_domainAssembly)
-            .That()
-            .AreClasses()
-            .Should()
-            .NotHaveNameEndingWith(notAllowedClassName)
-            .GetResult();
-
-        // Assert
-        Assert.True(result.IsSuccessful);
-    }
-
-    [Fact(DisplayName = nameof(DomainDoNotHaveApplicationDependency))]
-    public void DomainDoNotHaveApplicationDependency()
-    {
-        // Arrange, Act
-        var result = Types
-            .InAssembly(_domainAssembly)
-            .Should()
-            .NotHaveDependencyOn("Application")
-            .GetResult();
-
-        // Assert
-        Assert.True(result.IsSuccessful);
-    }
-
-    [Fact(DisplayName = nameof(DomainDoNotHaveInfrastructureDependency))]
-    public void DomainDoNotHaveInfrastructureDependency()
-    {
-        // Arrange, Act
-        var result = Types
-            .InAssembly(_domainAssembly)
-            .Should()
-            .NotHaveDependencyOn("Infrastructure")
-            .GetResult();
-
-        // Assert
-        Assert.True(result.IsSuccessful);
-    }
-
-    [Fact(DisplayName = nameof(DomainShouldHasValidScopes))]
-    public void DomainShouldHasValidScopes()
-    {
-        // Arrange
         ServiceCollection serviceCollection = new();
 
         serviceCollection.AddDomain();
 
-        // Act
         var serviceProvider = serviceCollection.BuildServiceProvider(validateScopes: true);
 
-        // Assert
         Assert.NotNull(serviceProvider);
     }
 }
