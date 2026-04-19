@@ -15,23 +15,14 @@ public sealed class WebAppTests
     [InlineData("Mapping")]
     [InlineData("Consumer")]
     [InlineData("Producer")]
-    public void GivenTheWebAppAssemblyWhenCheckingForbiddenClassSuffixesThenItShouldRespectTheEntryPointNaming(string forbiddenSuffix)
-    {
-        ArchitectureTestHelper.AssertClassNamesDoNotEndWith(_webAppAssembly, forbiddenSuffix);
-    }
+    public void GivenTheWebAppAssemblyWhenCheckingForbiddenClassSuffixesThenItShouldRespectTheEntryPointNaming(string forbiddenSuffix) => ArchitectureTestHelper.AssertClassNamesDoNotEndWith(_webAppAssembly, forbiddenSuffix);
 
     [Fact(DisplayName = nameof(GivenTheWebAppAssemblyWhenCheckingNamespacesThenAllTypesShouldRemainInsideTheWebAppRoot))]
-    public void GivenTheWebAppAssemblyWhenCheckingNamespacesThenAllTypesShouldRemainInsideTheWebAppRoot()
-    {
-        ArchitectureTestHelper.AssertNamespacesStartWith(_webAppAssembly, nameof(WebApp), "GrpcOrder");
-    }
+    public void GivenTheWebAppAssemblyWhenCheckingNamespacesThenAllTypesShouldRemainInsideTheWebAppRoot() => ArchitectureTestHelper.AssertNamespacesStartWith(_webAppAssembly, nameof(WebApp), "GrpcOrder");
 
     [Fact(DisplayName = nameof(GivenTheWebAppProjectWhenCheckingProjectReferencesThenItShouldOnlyReferenceTheInfrastructureProject))]
-    public void GivenTheWebAppProjectWhenCheckingProjectReferencesThenItShouldOnlyReferenceTheInfrastructureProject()
-    {
-        ArchitectureTestHelper.AssertProjectReferences(
+    public void GivenTheWebAppProjectWhenCheckingProjectReferencesThenItShouldOnlyReferenceTheInfrastructureProject() => ArchitectureTestHelper.AssertProjectReferences(
             Path.Combine("src", "WebApp", "WebApp.csproj"),
             Path.Combine("src", "Infrastructure", "Infrastructure.csproj")
         );
-    }
 }
