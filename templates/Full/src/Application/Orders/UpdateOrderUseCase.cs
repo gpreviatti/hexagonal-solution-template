@@ -56,7 +56,10 @@ public sealed class UpdateOrderUseCase(IServiceProvider serviceProvider)
             .FirstOrDefaultAsync(x => x.Id == request.OrderId, cancellationToken);
 
         if (order is null)
-            return HandleFailedResponse<UpdateOrderRequest, BaseResponse<OrderDto>>(request, correlationId, _notificationType, request.ModifiedBy, "Order not found.");
+            return HandleFailedResponse<UpdateOrderRequest, BaseResponse<OrderDto>>(
+                request, correlationId, _notificationType,
+                request.ModifiedBy, "Order not found."
+            );
 
         var items = request.Items
             .Select(i => new Item(i.Name, i.Description, i.Value))
@@ -64,10 +67,16 @@ public sealed class UpdateOrderUseCase(IServiceProvider serviceProvider)
 
         var updateResult = order.Update(request.Description, items, request.ModifiedBy, request.TimezoneId);
         if (updateResult.IsFailure)
-            return HandleFailedResponse<UpdateOrderRequest, BaseResponse<OrderDto>>(request, correlationId, _notificationType, request.ModifiedBy, updateResult.Message);
+            return HandleFailedResponse<UpdateOrderRequest, BaseResponse<OrderDto>>(
+                request, correlationId, _notificationType,
+                request.ModifiedBy, updateResult.Message
+            );
 
         if (await Repository.UpdateAsync(order, correlationId, cancellationToken) == 0)
-            return HandleFailedResponse<UpdateOrderRequest, BaseResponse<OrderDto>>(request, correlationId, _notificationType, request.ModifiedBy, "Failed to update order.");
+            return HandleFailedResponse<UpdateOrderRequest, BaseResponse<OrderDto>>(
+                request, correlationId, _notificationType,
+                request.ModifiedBy, "Failed to update order."
+            );
 
         response = new(true, new()
         {

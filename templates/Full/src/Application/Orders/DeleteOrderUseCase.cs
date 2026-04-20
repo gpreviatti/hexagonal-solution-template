@@ -41,14 +41,23 @@ public sealed class DeleteOrderUseCase(IServiceProvider serviceProvider)
             .FirstOrDefaultAsync(x => x.Id == request.OrderId, cancellationToken);
 
         if (order is null)
-            return HandleFailedResponse<DeleteOrderRequest, BaseResponse>(request, correlationId, _notificationType, request.DeletedBy, "Order not found.");
+            return HandleFailedResponse<DeleteOrderRequest, BaseResponse>(
+                request, correlationId, _notificationType,
+                request.DeletedBy, "Order not found."
+            );
 
         var deleteResult = order.Delete(request.DeletedBy, request.TimezoneId);
         if (deleteResult.IsFailure)
-            return HandleFailedResponse<DeleteOrderRequest, BaseResponse>(request, correlationId, _notificationType, request.DeletedBy, deleteResult.Message);
+            return HandleFailedResponse<DeleteOrderRequest, BaseResponse>(
+                request, correlationId, _notificationType,
+                request.DeletedBy, deleteResult.Message
+            );
 
         if (await Repository.UpdateAsync(order, correlationId, cancellationToken) == 0)
-            return HandleFailedResponse<DeleteOrderRequest, BaseResponse>(request, correlationId, _notificationType, request.DeletedBy, "Failed to delete order.");
+            return HandleFailedResponse<DeleteOrderRequest, BaseResponse>(
+                request, correlationId, _notificationType,
+                request.DeletedBy, "Failed to delete order."
+            );
 
         response = new(true);
 
