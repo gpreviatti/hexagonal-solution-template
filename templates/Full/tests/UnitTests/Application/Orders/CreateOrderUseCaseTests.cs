@@ -35,14 +35,16 @@ public sealed class CreateOrderRequestValidationTests(CreateOrderRequestValidati
         result.ShouldNotHaveAnyValidationErrors();
     }
 
-    [Fact(DisplayName = nameof(GivenAnInvalidRequestThenFails))]
-    public async Task GivenAnInvalidRequestThenFails()
+    [Theory(DisplayName = nameof(GivenAnInvalidRequestThenFails))]
+    [InlineData(null)]
+    [InlineData("")]
+    public async Task GivenAnInvalidRequestThenFails(string? invalidDescription)
     {
         // Arrange
         var request = CreateOrderRequestValidationFixture.GetValidRequest() with
         {
             CorrelationId = Guid.Empty,
-            Description = string.Empty,
+            Description = invalidDescription!,
             Items = []
         };
         // Act
