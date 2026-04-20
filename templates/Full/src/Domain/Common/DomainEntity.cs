@@ -1,6 +1,4 @@
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using Domain.Common.Extensions;
 
 namespace Domain.Common;
 
@@ -33,41 +31,16 @@ public abstract class DomainEntity
     public DateTime? DeletedAt { get; private set; }
     public string? DeletedBy { get; private set; }
 
-    protected static Result<TEntity> Handle<TEntity>(
-        Func<Activity?, Result<TEntity>> factory,
-        [CallerMemberName] string callerName = null!
-    ) where TEntity : DomainEntity
-    {
-        using var activity = ActivitySource.StartActivity($"{typeof(TEntity).Name}.{callerName}");
-        activity.SetDefaultTags();
-
-        return factory(activity);
-    }
-
-    protected static Result Handle(
-        Func<Activity?, Result> factory,
-        [CallerMemberName] string callerName = null!
-    )
-    {
-        using var activity = ActivitySource.StartActivity(callerName);
-        activity.SetDefaultTags();
-        activity?.SetStatus(ActivityStatusCode.Ok);
-        return factory(activity);
-    }
-
-    public virtual Result Update(string? user = null, string? timezoneId = null) => Handle(activity =>
+    public virtual Result Update(string? user = null, string? timezoneId = null)
     {
         UpdatedAt = DateTime.UtcNow;
         UpdatedBy = user ?? "System";
         UpdatedByTimezoneId = TimeZoneInfo.FindSystemTimeZoneById(string.IsNullOrWhiteSpace(timezoneId) ? TimeZoneInfo.Utc.Id : timezoneId).Id;
 
-        activity?.SetTag(nameof(UpdatedBy), UpdatedBy);
-        activity?.SetTag(nameof(UpdatedByTimezoneId), UpdatedByTimezoneId);
-        activity?.SetStatus(ActivityStatusCode.Ok);
         return Result.Ok();
-    });
+    }
 
-    public virtual Result Delete(string? user = null, string? timezoneId = null) => Handle(activity =>
+    public virtual Result Delete(string? user = null, string? timezoneId = null)
     {
         if (IsDeleted)
             return Result.Fail("Entity is already deleted.");
@@ -80,9 +53,6 @@ public abstract class DomainEntity
         if (updateResult.IsFailure)
             return updateResult;
 
-        activity?.SetTag(nameof(IsDeleted), IsDeleted);
-        activity?.SetTag(nameof(DeletedBy), DeletedBy);
-        activity?.SetStatus(ActivityStatusCode.Ok);
         return Result.Ok();
-    });
+    }
 }
