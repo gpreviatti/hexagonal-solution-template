@@ -1,4 +1,3 @@
-using Application.Common.Helpers;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Common.Enums;
@@ -42,48 +41,18 @@ public sealed class DeleteOrderUseCase(IServiceProvider serviceProvider)
             .FirstOrDefaultAsync(x => x.Id == request.OrderId, cancellationToken);
 
         if (order is null)
-        {
-            Logs.NotFound(Logger, correlationId, nameof(order));
-
-            response = new(false, "Order not found.");
-
-            CreateNotification(correlationId, NotificationStatus.Failed, request.DeletedBy, _notificationType, response);
-
-            UseCaseFailedMetric.Add(1);
-
-            return response;
-        }
+            return HandleFailedResponse<DeleteOrderRequest, BaseResponse>(request, correlationId, _notificationType, request.DeletedBy, "Order not found.");
 
         var deleteResult = order.Delete(request.DeletedBy, request.TimezoneId);
         if (deleteResult.IsFailure)
-        {
-            Logs.FailedOperation(Logger, correlationId, deleteResult.Message);
-
-            response = new(false, deleteResult.Message);
-
-            CreateNotification(correlationId, NotificationStatus.Failed, request.DeletedBy, _notificationType, response);
-
-            UseCaseFailedMetric.Add(1);
-
-            return response;
-        }
+            return HandleFailedResponse<DeleteOrderRequest, BaseResponse>(request, correlationId, _notificationType, request.DeletedBy, deleteResult.Message);
 
         if (await Repository.UpdateAsync(order, correlationId, cancellationToken) == 0)
-        {
-            Logs.FailedOperation(Logger, correlationId, "Failed to delete order. No rows affected.");
-
-            response = new(false, "Failed to delete order.");
-
-            CreateNotification(correlationId, NotificationStatus.Failed, request.DeletedBy, _notificationType, response);
-
-            UseCaseFailedMetric.Add(1);
-
-            return response;
-        }
+            return HandleFailedResponse<DeleteOrderRequest, BaseResponse>(request, correlationId, _notificationType, request.DeletedBy, "Failed to delete order.");
 
         response = new(true);
 
-        CreateNotification(correlationId, NotificationStatus.Success, request.DeletedBy, _notificationType, response);
+        HandleNotification(correlationId, NotificationStatus.Success, request.DeletedBy, _notificationType, response);
 
         return response;
     }

@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using Application.Common.Helpers;
 using Application.Common.Messages;
+using Application.Common.Requests;
 using Application.Common.Services;
 using Domain.Common;
 using Domain.Common.Enums;
@@ -37,7 +39,7 @@ public abstract class BaseUseCase
             .CreateCounter<int>($"{DefaultConfigurations.ApplicationName}.{ClassName}.Failed", "total", "Number of times the use case execution failed");
     }
 
-    protected void CreateNotification(
+    protected void HandleNotification(
         Guid correlationId,
         NotificationStatus notificationStatus,
         string createdBy,
@@ -54,4 +56,27 @@ public abstract class BaseUseCase
         CancellationToken.None,
         queue: notificationType.ToString()
     );
+
+    protected TResponse HandleFailedResponse<TRequest, TResponse>(
+        TRequest request,
+        Guid correlationId,
+        NotificationType notificationType,
+        string user = "System",
+        string message = "Failed."
+    )
+    where TRequest : BaseRequest
+    where TResponse : BaseResponse, new()
+    {
+        Logs.FailedOperation(Logger, correlationId, message);
+
+        var response = Activator.CreateInstance<TResponse>();
+        response.Success = false;
+        response.Message = message;
+
+        HandleNotification(correlationId, NotificationStatus.Failed, user, notificationType, response);
+
+        UseCaseFailedMetric.Add(1);
+
+        return response;
+    }
 }
