@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using Domain.Common;
 
 namespace Application.Common.Repositories;
+
 public interface IBaseRepository
 {
     Task<int> AddAsync<TEntity>(TEntity entity, Guid correlationId, CancellationToken cancellationToken, bool? newContext = null) where TEntity : DomainEntity;

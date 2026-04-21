@@ -27,7 +27,7 @@ internal static class HealthCheckExtensions
             var baseAddress = configuration.GetSection("Http")
                 .GetChildren()
                 .FirstOrDefault(x => x["Name"] == serviceKey.ToString())?["BaseAddress"];
-            
+
             if (!string.IsNullOrEmpty(baseAddress))
             {
                 healthChecksBuilder.AddUrlGroup(

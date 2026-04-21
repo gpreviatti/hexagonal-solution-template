@@ -25,7 +25,7 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
     public BaseApplicationFixture()
     {
         MockLogger.Setup(l => l.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
-        
+
         MockServiceProviderServices();
     }
 

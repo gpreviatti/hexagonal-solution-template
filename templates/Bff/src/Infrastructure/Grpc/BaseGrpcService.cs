@@ -50,7 +50,7 @@ public partial class BaseGrpcService<TGrpcService> where TGrpcService : ClientBa
 
         try
         {
-           Logs.Information(Logger, "Sending request");
+            Logs.Information(Logger, "Sending request");
 
             var response = handler.Invoke();
 

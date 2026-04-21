@@ -2,6 +2,7 @@
 using System.Text.Json;
 
 namespace IntegrationTests.WebApp.Http.Common;
+
 public sealed class ApiHelper(HttpClient httpClient)
 {
     public HttpClient HttpClient { get; } = httpClient;

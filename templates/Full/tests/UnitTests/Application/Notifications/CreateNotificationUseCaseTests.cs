@@ -39,8 +39,8 @@ public sealed class CreateNotificationRequestValidationTests(CreateNotificationR
         var request = CreateNotificationRequestValidationFixture.GetValidRequest() with
         {
             CorrelationId = Guid.Empty,
-            NotificationType = (NotificationType)(-1),
-            NotificationStatus = (NotificationStatus)(-1)
+            NotificationType = (NotificationType) (-1),
+            NotificationStatus = (NotificationStatus) (-1)
         };
 
         // Act

@@ -2,6 +2,7 @@
 using Domain.Common.Exceptions;
 
 namespace Domain.Orders;
+
 public sealed class Item : DomainEntity
 {
     public Item() { }

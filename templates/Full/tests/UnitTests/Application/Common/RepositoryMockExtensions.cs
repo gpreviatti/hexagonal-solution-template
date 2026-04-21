@@ -1,10 +1,10 @@
+using System.Collections;
 using System.Linq.Expressions;
+using System.Reflection;
 using Application.Common.Repositories;
 using Domain.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
-using System.Collections;
-using System.Reflection;
 
 namespace UnitTests.Application.Common;
 
@@ -149,7 +149,7 @@ internal abstract class TestQueryProvider<T, TExpressionVisitor> : IOrderedQuery
         {
             var resultType = methodCallExpression.Method.ReturnType;
             var elementType = resultType.GetGenericArguments().First();
-            return (IQueryable)CreateInstance(elementType, expression);
+            return (IQueryable) CreateInstance(elementType, expression);
         }
 
         return CreateQuery<T>(expression);
@@ -181,7 +181,7 @@ internal abstract class TestQueryProvider<T, TExpressionVisitor> : IOrderedQuery
         var visitedExpression = visitor.Visit(expression)
             ?? throw new InvalidOperationException("The visited expression cannot be null.");
 
-        var lambda = Expression.Lambda<Func<TResult>>(visitedExpression, (IEnumerable<ParameterExpression>?)null);
+        var lambda = Expression.Lambda<Func<TResult>>(visitedExpression, (IEnumerable<ParameterExpression>?) null);
         return lambda.Compile().Invoke();
     }
 }
@@ -223,7 +223,7 @@ internal sealed class TestAsyncEnumerableEfCore<T, TExpressionVisitor> : TestQue
             .MakeGenericMethod(expectedResultType)
             .Invoke(this, [expression]);
 
-        return (TResult)typeof(Task)
+        return (TResult) typeof(Task)
             .GetMethod(nameof(Task.FromResult))!
             .MakeGenericMethod(expectedResultType)
             .Invoke(null, [executionResult])!;
@@ -252,7 +252,7 @@ internal sealed class TestAsyncEnumerableEfCore<T, TExpressionVisitor> : TestQue
                 }
             }
 
-            return (TResult)(object)affectedItems.Count;
+            return (TResult) (object) affectedItems.Count;
         }
 
         return base.Execute<TResult>(expression);

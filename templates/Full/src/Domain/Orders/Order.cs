@@ -100,9 +100,9 @@ public sealed class Order : DomainEntity
         activity?.SetTag(nameof(timeSinceCreation), timeSinceCreation.ToString());
 
         if (timeSinceCreation.TotalSeconds < 60)
-            return $"{(int)timeSinceCreation.TotalSeconds} seconds ago";
+            return $"{(int) timeSinceCreation.TotalSeconds} seconds ago";
         if (timeSinceCreation.TotalMinutes < 60)
-            return $"{(int)timeSinceCreation.TotalMinutes} minutes ago";
+            return $"{(int) timeSinceCreation.TotalMinutes} minutes ago";
         if (timeSinceCreation.TotalHours < 24)
             return $"{(int) timeSinceCreation.TotalHours} hours ago";
         if (timeSinceCreation.TotalDays < 30)
@@ -110,6 +110,6 @@ public sealed class Order : DomainEntity
         if (timeSinceCreation.TotalDays < 365)
             return $"{(int) (timeSinceCreation.TotalDays / 30)} months ago";
 
-        return $"{(int)(timeSinceCreation.TotalDays / 365)} years ago";
+        return $"{(int) (timeSinceCreation.TotalDays / 365)} years ago";
     }
 }

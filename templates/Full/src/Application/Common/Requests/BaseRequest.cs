@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 
 namespace Application.Common.Requests;
+
 public record BaseRequest(Guid CorrelationId, string User = "", string TimezoneId = "");
 
 public record BasePaginatedRequest(

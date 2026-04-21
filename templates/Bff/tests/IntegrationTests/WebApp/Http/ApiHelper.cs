@@ -3,6 +3,7 @@ using System.Text.Json;
 using Grpc.Net.Client;
 
 namespace IntegrationTests.WebApp.Http;
+
 public sealed class ApiHelper(HttpClient httpClient)
 {
     readonly HttpClient _httpClient = httpClient;

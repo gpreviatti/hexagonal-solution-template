@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure.Data;
+
 internal static class InfrastructureDataDependencyInjection
 {
     extension(IServiceCollection services)

@@ -30,6 +30,7 @@
       - Streamline notification handling across order-related use cases.
       - Remove unused activity tracking from domain entities.
       - Reorganize domain test files for clearer structure and maintainability.
+      - Run dotnet format to ensure consistent code style across the solutions.
 
       Technical Details
       - Update `stryker-config-domain.json` in Full UnitTests to align mutation-testing configuration with the revised test structure.

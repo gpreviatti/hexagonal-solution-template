@@ -1,6 +1,6 @@
+using Application.Common.Helpers;
 using Application.Common.Requests;
 using Application.Common.UseCases;
-using Application.Common.Helpers;
 using Domain.Notifications;
 
 namespace Application.Notifications;
@@ -36,7 +36,7 @@ public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
             return new(false, 0, 0, [], "No notifications found.");
         }
 
-        var totalPages = (int)Math.Ceiling(totalRecords / (double)request.PageSize);
+        var totalPages = (int) Math.Ceiling(totalRecords / (double) request.PageSize);
 
         var notificationDtos = notifications.Select(notification => notification);
 
