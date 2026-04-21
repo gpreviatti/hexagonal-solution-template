@@ -1,5 +1,4 @@
-﻿using Application.Common.Helpers;
-using Application.Common.Requests;
+﻿using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Common.Enums;
 using Domain.Orders;
@@ -58,31 +57,17 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
             request.CreatedBy, request.TimezoneId
         );
         if (createResult.IsFailure)
-        {
-            Logs.FailedOperation(Logger, correlationId, createResult.Message);
-
-            response = new(false, null, createResult.Message);
-
-            CreateNotification(correlationId, NotificationStatus.Failed, request.CreatedBy, _notificationType, response);
-
-            UseCaseFailedMetric.Add(1);
-
-            return response;
-        }
+            return HandleFailedResponse<CreateOrderRequest, BaseResponse<OrderDto>>(
+                request, correlationId, _notificationType,
+                request.CreatedBy, createResult.Message
+            );
 
         var newOrder = createResult.Value;
         if (await Repository.AddAsync(newOrder, correlationId, cancellationToken) == 0)
-        {
-            Logs.FailedOperation(Logger, correlationId, "Failed to create order. No rows affected.");
-
-            response = new(false, null, "Failed to create order.");
-
-            CreateNotification(correlationId, NotificationStatus.Failed, request.CreatedBy, _notificationType, response);
-
-            UseCaseFailedMetric.Add(1);
-
-            return response;
-        }
+            return HandleFailedResponse<CreateOrderRequest, BaseResponse<OrderDto>>(
+                request, correlationId, _notificationType,
+                request.CreatedBy, "Failed to create order."
+            );
 
         response = new(true, new()
         {
@@ -98,7 +83,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
             })]
         });
 
-        CreateNotification(correlationId, NotificationStatus.Success, request.CreatedBy, _notificationType, response);
+        HandleNotification(correlationId, NotificationStatus.Success, request.CreatedBy, _notificationType, response);
 
         return response;
     }

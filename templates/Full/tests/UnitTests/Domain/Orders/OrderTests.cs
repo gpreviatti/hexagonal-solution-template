@@ -1,102 +1,22 @@
 ﻿using Domain.Common.Exceptions;
 using Domain.Orders;
 
-namespace UnitTests.Domain;
-
-public sealed class ItemTests
-{
-    [Fact(DisplayName = nameof(GivenANewItemWhenValidPropertiesThenShouldCreateWithSuccess))]
-    public void GivenANewItemWhenValidPropertiesThenShouldCreateWithSuccess()
-    {
-        // Arrange, Act
-        var item = new Item("Mouse", "Razer", 100m);
-
-        // Assert
-        Assert.NotNull(item);
-        Assert.Equal("Mouse", item.Name);
-        Assert.Equal("Razer", item.Description);
-        Assert.Equal(100m, item.Value);
-        Assert.Equal("System", item.CreatedBy);
-    }
-
-    [Fact(DisplayName = nameof(GivenANewItemWithNullCreatedByThenShouldUseSystemDefault))]
-    public void GivenANewItemWithNullCreatedByThenShouldUseSystemDefault()
-    {
-        // Arrange, Act
-        var item = new Item("Mouse", "Razer", 100m, null, null);
-
-        // Assert
-        Assert.NotNull(item);
-        Assert.Equal("Mouse", item.Name);
-        Assert.Equal("Razer", item.Description);
-        Assert.Equal(100m, item.Value);
-        Assert.Equal("System", item.CreatedBy);
-    }
-
-    [Fact(DisplayName = nameof(GivenANewItemWithProvidedCreatedByThenShouldUseProvidedValue))]
-    public void GivenANewItemWithProvidedCreatedByThenShouldUseProvidedValue()
-    {
-        // Arrange, Act
-        var item = new Item("Mouse", "Razer", 100m, "John Doe", "America/New_York");
-
-        // Assert
-        Assert.NotNull(item);
-        Assert.Equal("Mouse", item.Name);
-        Assert.Equal("Razer", item.Description);
-        Assert.Equal(100m, item.Value);
-        Assert.Equal("John Doe", item.CreatedBy);
-        Assert.Equal("America/New_York", item.CreatedByTimezoneId);
-    }
-
-    [Fact(DisplayName = nameof(GivenANewItemWithEmptyDescriptionThenShouldCreateWithSuccess))]
-    public void GivenANewItemWithEmptyDescriptionThenShouldCreateWithSuccess()
-    {
-        // Arrange, Act
-        var item = new Item("Mouse", "", 100m);
-
-        // Assert
-        Assert.NotNull(item);
-        Assert.Equal("Mouse", item.Name);
-        Assert.Equal("", item.Description);
-        Assert.Equal(100m, item.Value);
-    }
-
-    [Fact(DisplayName = nameof(GivenANewItemWithNegativeValueThenShouldThrowDomainException))]
-    public void GivenANewItemWithNegativeValueThenShouldThrowDomainException()
-    {
-        // Arrange, Act
-        var exception = Assert.Throws<DomainException>(() => new Item("Mouse", "Razer", -100m));
-
-        // Assert
-        Assert.NotNull(exception);
-        Assert.Equal("Item value cannot be zero or negative.", exception.Message);
-    }
-
-    [Fact(DisplayName = nameof(GivenANewItemWithVerySmallPositiveValueThenShouldCreateWithSuccess))]
-    public void GivenANewItemWithVerySmallPositiveValueThenShouldCreateWithSuccess()
-    {
-        // Arrange, Act
-        var item = new Item("Mouse", "Razer", 0.01m);
-
-        // Assert
-        Assert.NotNull(item);
-        Assert.Equal(0.01m, item.Value);
-    }
-
-    [Fact(DisplayName = nameof(GivenANewItemWithLargeValueThenShouldCreateWithSuccess))]
-    public void GivenANewItemWithLargeValueThenShouldCreateWithSuccess()
-    {
-        // Arrange, Act
-        var item = new Item("Computer", "Desktop", 9999.99m);
-
-        // Assert
-        Assert.NotNull(item);
-        Assert.Equal(9999.99m, item.Value);
-    }
-}
+namespace UnitTests.Domain.Orders;
 
 public sealed class OrderTests
 {
+    #region Helpers
+
+    private static Order CreateOrder() => Order.Create(
+        "Original Order",
+        [new("Item 1", "Desc 1", 100m)],
+        "System"
+    ).Value;
+
+    #endregion
+
+    #region Create
+
     [Fact(DisplayName = nameof(GivenANewOrderWhenItemsAreProvidedThenShouldCreatedWithSuccess))]
     public void GivenANewOrderWhenItemsAreProvidedThenShouldCreatedWithSuccess()
     {
@@ -174,8 +94,6 @@ public sealed class OrderTests
         Assert.Equal("Item value cannot be zero or negative.", exception.Message);
     }
 
-
-
     [Fact(DisplayName = nameof(GivenANewOrderWhenItemsIsEmptyThenShouldReturnFailure))]
     public void GivenANewOrderWhenItemsIsEmptyThenShouldReturnFailure()
     {
@@ -187,6 +105,10 @@ public sealed class OrderTests
         Assert.True(result.IsFailure);
         Assert.Equal("Order must have at least one item.", result.Message);
     }
+
+    #endregion
+
+    #region GetPeriodSinceWasCreated
 
     [Fact(DisplayName = nameof(GivenANewOrderWhenCreatedAtWasNotSetThenShouldReturnFailurePeriod))]
     public void GivenANewOrderWhenCreatedAtWasNotSetThenShouldReturnFailurePeriod()
@@ -225,8 +147,6 @@ public sealed class OrderTests
         Assert.NotNull(result);
         Assert.EndsWith(expectedUnit, result);
     }
-
-    // Boundary tests for PeriodSinceWasCreated to kill boundary mutation operators
 
     [Theory(DisplayName = nameof(GivenANewOrderWhenRequestingPeriodBoundaryThenShouldReturnExpectedUnit))]
     [InlineData(59, "seconds ago")]
@@ -344,15 +264,10 @@ public sealed class OrderTests
         // Assert
         Assert.Equal(expectedResult, result);
     }
-}
 
-public sealed class OrderUpdateTests
-{
-    private static Order CreateOrder() => Order.Create(
-        "Original Order",
-        [new("Item 1", "Desc 1", 100m)],
-        "System"
-    ).Value;
+    #endregion
+
+    #region Update
 
     [Fact(DisplayName = nameof(GivenAnOrderWhenUpdatedWithValidDataThenShouldSucceed))]
     public void GivenAnOrderWhenUpdatedWithValidDataThenShouldSucceed()
@@ -420,15 +335,10 @@ public sealed class OrderUpdateTests
         Assert.True(result.IsFailure);
         Assert.Equal("Cannot update a deleted order.", result.Message);
     }
-}
 
-public sealed class OrderDeleteTests
-{
-    private static Order CreateOrder() => Order.Create(
-        "Order to Delete",
-        [new("Item 1", "Desc 1", 100m)],
-        "System"
-    ).Value;
+    #endregion
+
+    #region Delete
 
     [Fact(DisplayName = nameof(GivenAnOrderWhenDeletedThenShouldMarkAsDeleted))]
     public void GivenAnOrderWhenDeletedThenShouldMarkAsDeleted()
@@ -495,4 +405,6 @@ public sealed class OrderDeleteTests
         Assert.True(order.DeletedAt >= before);
         Assert.True(order.DeletedAt <= after);
     }
+
+    #endregion
 }

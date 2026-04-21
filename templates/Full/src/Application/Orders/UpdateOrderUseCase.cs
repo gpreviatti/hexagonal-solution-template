@@ -1,4 +1,3 @@
-using Application.Common.Helpers;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Common.Enums;
@@ -57,17 +56,10 @@ public sealed class UpdateOrderUseCase(IServiceProvider serviceProvider)
             .FirstOrDefaultAsync(x => x.Id == request.OrderId, cancellationToken);
 
         if (order is null)
-        {
-            Logs.NotFound(Logger, correlationId, nameof(order));
-
-            response = new(false, null, "Order not found.");
-
-            CreateNotification(correlationId, NotificationStatus.Failed, request.ModifiedBy, _notificationType, response);
-
-            UseCaseFailedMetric.Add(1);
-
-            return response;
-        }
+            return HandleFailedResponse<UpdateOrderRequest, BaseResponse<OrderDto>>(
+                request, correlationId, _notificationType,
+                request.ModifiedBy, "Order not found."
+            );
 
         var items = request.Items
             .Select(i => new Item(i.Name, i.Description, i.Value))
@@ -75,30 +67,16 @@ public sealed class UpdateOrderUseCase(IServiceProvider serviceProvider)
 
         var updateResult = order.Update(request.Description, items, request.ModifiedBy, request.TimezoneId);
         if (updateResult.IsFailure)
-        {
-            Logs.FailedOperation(Logger, correlationId, updateResult.Message);
-
-            response = new(false, null, updateResult.Message);
-
-            CreateNotification(correlationId, NotificationStatus.Failed, request.ModifiedBy, _notificationType, response);
-
-            UseCaseFailedMetric.Add(1);
-
-            return response;
-        }
+            return HandleFailedResponse<UpdateOrderRequest, BaseResponse<OrderDto>>(
+                request, correlationId, _notificationType,
+                request.ModifiedBy, updateResult.Message
+            );
 
         if (await Repository.UpdateAsync(order, correlationId, cancellationToken) == 0)
-        {
-            Logs.FailedOperation(Logger, correlationId, "Failed to update order. No rows affected.");
-
-            response = new(false, null, "Failed to update order.");
-
-            CreateNotification(correlationId, NotificationStatus.Failed, request.ModifiedBy, _notificationType, response);
-
-            UseCaseFailedMetric.Add(1);
-
-            return response;
-        }
+            return HandleFailedResponse<UpdateOrderRequest, BaseResponse<OrderDto>>(
+                request, correlationId, _notificationType,
+                request.ModifiedBy, "Failed to update order."
+            );
 
         response = new(true, new()
         {
@@ -115,7 +93,7 @@ public sealed class UpdateOrderUseCase(IServiceProvider serviceProvider)
             })]
         });
 
-        CreateNotification(correlationId, NotificationStatus.Success, request.ModifiedBy, _notificationType, response);
+        HandleNotification(correlationId, NotificationStatus.Success, request.ModifiedBy, _notificationType, response);
 
         return response;
     }

@@ -11,11 +11,6 @@
       "low": 80,
       "break": 50
     },
-    "ignore-methods": [
-      "StartActivity",
-      "SetTag",
-      "SetDefaultTags"
-    ],
     "mutate": [
       "!**/*DomainDependencyInjection.cs",
       "!**/*Common/**"

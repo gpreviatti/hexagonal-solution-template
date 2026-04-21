@@ -27,7 +27,7 @@ public sealed class Order : DomainEntity
         ICollection<Item> items,
         string user = "System",
         string? timezoneId = null
-    ) => Handle(activity =>
+    )
     {
         Order order = new(description, items, user, timezoneId);
 
@@ -35,29 +35,25 @@ public sealed class Order : DomainEntity
         if (result.IsFailure)
             return Result.Fail<Order>(result.Message);
 
-        activity?.SetTag(nameof(description), description);
-
         return Result.Ok(order);
-    });
+    }
 
-    private Result SetTotal() => Handle(activity =>
+    private Result SetTotal()
     {
         if (Items == null || Items.Count == 0)
             return Result.Fail("Order must have at least one item.");
 
         Total = Items.Sum(item => item.Value);
 
-        activity?.SetTag(nameof(Total), Total);
-
         return Result.Ok();
-    });
+    }
 
     public Result Update(
         string description,
         ICollection<Item> items,
         string user = "System",
         string? timezoneId = null
-    ) => Handle(activity =>
+    )
     {
         if (IsDeleted)
             return Result.Fail("Cannot update a deleted order.");
@@ -73,12 +69,10 @@ public sealed class Order : DomainEntity
         if (result.IsFailure)
             return result;
 
-        activity?.SetTag(nameof(description), description);
-
         return Result.Ok();
-    });
+    }
 
-    public override Result Delete(string? user = null, string? timezoneId = null) => Handle(activity =>
+    public override Result Delete(string? user = null, string? timezoneId = null)
     {
         var result = base.Delete(user, timezoneId);
         if (result.IsFailure)
@@ -92,7 +86,7 @@ public sealed class Order : DomainEntity
         }
 
         return Result.Ok();
-    });
+    }
 
     public string GetPeriodSinceWasCreated()
     {
