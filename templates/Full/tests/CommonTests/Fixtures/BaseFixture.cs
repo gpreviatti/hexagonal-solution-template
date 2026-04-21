@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 
 namespace CommonTests.Fixtures;
+
 public class BaseFixture
 {
     public Fixture AutoFixture { get; }

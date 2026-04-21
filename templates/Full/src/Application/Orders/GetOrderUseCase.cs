@@ -1,6 +1,6 @@
-﻿using Application.Common.Requests;
+﻿using Application.Common.Helpers;
+using Application.Common.Requests;
 using Application.Common.UseCases;
-using Application.Common.Helpers;
 using Domain.Orders;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +17,7 @@ public sealed class GetOrderRequestValidator : AbstractValidator<GetOrderRequest
     }
 }
 
-public sealed class GetOrderUseCase(IServiceProvider serviceProvider)  : BaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>>(serviceProvider)
+public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>>(serviceProvider)
 {
     public override async Task<BaseResponse<OrderDto>> HandleInternalAsync(
         GetOrderRequest request,

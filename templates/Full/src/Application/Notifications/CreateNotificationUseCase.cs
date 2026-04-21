@@ -1,9 +1,9 @@
+using Application.Common.Helpers;
 using Application.Common.Requests;
 using Application.Common.UseCases;
-using Application.Common.Helpers;
+using Domain.Common.Enums;
 using Domain.Notifications;
 using FluentValidation;
-using Domain.Common.Enums;
 
 namespace Application.Notifications;
 

@@ -1,6 +1,6 @@
+using Application.Common.Helpers;
 using Application.Common.Requests;
 using Application.Common.UseCases;
-using Application.Common.Helpers;
 using Domain.Notifications;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;

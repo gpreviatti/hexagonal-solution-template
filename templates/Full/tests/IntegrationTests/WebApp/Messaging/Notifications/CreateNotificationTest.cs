@@ -1,11 +1,11 @@
 using Application.Common.Messages;
+using Domain.Common.Enums;
 using Domain.Notifications;
 using IntegrationTests.Common;
 using IntegrationTests.WebApp.Messaging.Common;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using WebApp;
-using Microsoft.EntityFrameworkCore;
-using Domain.Common.Enums;
 
 namespace IntegrationTests.WebApp.Messaging.Notifications;
 

@@ -73,7 +73,7 @@ public partial class Logs
         Message = "[{MethodName}] | [{CorrelationId}] | Error: {Message}"
     )]
     public static partial void Error(ILogger logger, Guid correlationId, string message, [CallerMemberName] string methodName = null!);
-    
+
     /// <summary>
     /// Logs the start of the execution of an operation, including the method name and correlation ID.
     /// </summary>

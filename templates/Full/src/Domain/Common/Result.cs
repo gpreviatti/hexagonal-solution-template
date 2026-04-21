@@ -1,4 +1,5 @@
 ﻿namespace Domain.Common;
+
 public class Result
 {
     protected Result(bool success, string message)

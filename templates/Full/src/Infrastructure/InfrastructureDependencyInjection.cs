@@ -1,8 +1,8 @@
-﻿using Infrastructure.Data;
-using Microsoft.AspNetCore.Builder;
-using Infrastructure.OpenTelemetry;
-using Infrastructure.Cache;
+﻿using Infrastructure.Cache;
+using Infrastructure.Data;
 using Infrastructure.Messaging;
+using Infrastructure.OpenTelemetry;
+using Microsoft.AspNetCore.Builder;
 
 namespace Infrastructure;
 

@@ -63,7 +63,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
             activity.SetDefaultTags();
             activity?.SetTag("correlationId", message.CorrelationId);
             activity?.SetTag("queueName", _queueName);
-                    
+
             producerService = serviceProvider.GetRequiredService<IProduceService>();
 
             try

@@ -1,11 +1,11 @@
-﻿using Application.Common.Requests;
+﻿using System.Diagnostics;
+using Application.Common.Helpers;
+using Application.Common.Repositories;
+using Application.Common.Requests;
+using Application.Common.Services;
+using Domain.Common.Extensions;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using Application.Common.Services;
-using Application.Common.Repositories;
-using Application.Common.Helpers;
-using Domain.Common.Extensions;
-using System.Diagnostics;
 
 namespace Application.Common.UseCases;
 

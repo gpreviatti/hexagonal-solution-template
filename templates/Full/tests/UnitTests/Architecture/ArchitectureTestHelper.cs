@@ -82,7 +82,7 @@ internal static class ArchitectureTestHelper
         var actualReferences = XDocument
             .Load(projectFilePath)
             .Descendants("ProjectReference")
-            .Select(static node => (string?)node.Attribute("Include"))
+            .Select(static node => (string?) node.Attribute("Include"))
             .OfType<string>()
             .Select(reference => NormalizePath(Path.GetFullPath(Path.Combine(projectDirectory, reference))))
             .OrderBy(static path => path, StringComparer.OrdinalIgnoreCase)

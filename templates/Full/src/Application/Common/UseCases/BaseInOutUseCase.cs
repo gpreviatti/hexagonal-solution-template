@@ -1,11 +1,11 @@
-﻿using Application.Common.Helpers;
+﻿using System.Diagnostics;
+using Application.Common.Helpers;
 using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Common.Services;
+using Domain.Common.Extensions;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using Domain.Common.Extensions;
-using System.Diagnostics;
 
 namespace Application.Common.UseCases;
 
@@ -33,7 +33,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData>(IServiceProvider
         using var activity = ActivitySource.StartActivity($"{ClassName}");
         activity.SetDefaultTags();
         activity?.SetTag("correlationId", request.CorrelationId);
-        
+
         Logs.StartingOperation(Logger, request.CorrelationId);
         TResponseData response;
 
@@ -56,7 +56,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData>(IServiceProvider
                 UseCaseFailedMetric.Add(1);
 
                 activity?.SetStatus(ActivityStatusCode.Error, errors);
-                
+
                 return response!;
             }
         }

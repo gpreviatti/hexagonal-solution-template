@@ -1,10 +1,10 @@
-﻿using Application.Common.Requests;
-using Application.Common.Services;
-using Microsoft.Extensions.DependencyInjection;
-using Application.Common.Helpers;
-using Domain.Common.Extensions;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using Application.Common.Helpers;
+using Application.Common.Requests;
+using Application.Common.Services;
+using Domain.Common.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Application.Common.UseCases;
 

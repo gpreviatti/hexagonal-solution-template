@@ -1,13 +1,13 @@
+using System.Diagnostics;
 using System.Text.Json;
+using Application.Common.Helpers;
 using Application.Common.Messages;
 using Application.Common.Services;
-using Application.Common.Helpers;
+using Domain.Common;
+using Domain.Common.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
-using System.Diagnostics;
-using Domain.Common;
-using Domain.Common.Extensions;
 
 namespace Infrastructure.Messaging.Producers;
 

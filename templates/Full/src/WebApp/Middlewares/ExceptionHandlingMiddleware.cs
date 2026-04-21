@@ -1,6 +1,6 @@
 ﻿using System.Net;
-using Application.Common.Requests;
 using Application.Common.Helpers;
+using Application.Common.Requests;
 
 namespace WebApp.Middlewares;
 
@@ -28,7 +28,7 @@ internal sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<
         BaseResponse response = new(false, exception.Message);
 
         context.Response.ContentType = "application/json";
-        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+        context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
         await context.Response.WriteAsJsonAsync(response);
     }
 }

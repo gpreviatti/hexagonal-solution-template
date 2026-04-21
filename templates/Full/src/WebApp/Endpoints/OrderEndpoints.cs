@@ -21,7 +21,8 @@ internal static class OrderEndpoints
             [FromRoute] int id,
             CancellationToken cancellationToken,
             [FromHeader] bool cacheEnabled = true
-        ) => {
+        ) =>
+        {
             var response = cacheEnabled switch
             {
                 true => await cache.GetOrCreateAsync(

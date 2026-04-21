@@ -124,7 +124,8 @@ public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
             Guid.NewGuid(),
             pageNumber,
             pageSize,
-            selector: o => new OrderDto() {
+            selector: o => new OrderDto()
+            {
                 Id = o.Id,
                 Total = o.Total,
                 Items = o.Items.Select(i => new ItemDto

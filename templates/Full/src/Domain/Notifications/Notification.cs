@@ -6,7 +6,7 @@ namespace Domain.Notifications;
 
 public sealed class Notification : DomainEntity
 {
-    public Notification() {}
+    public Notification() { }
 
     public Notification(
         NotificationType notificationType,

@@ -1,4 +1,5 @@
 ﻿namespace Application.Orders;
+
 public sealed record OrderDto
 {
     public int Id { get; set; }
