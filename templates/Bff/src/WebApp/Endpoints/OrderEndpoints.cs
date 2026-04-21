@@ -1,11 +1,11 @@
+using System.Diagnostics;
+using System.Globalization;
+using Contracts.Common;
+using Contracts.Orders;
+using Infrastructure.Cache;
+using Infrastructure.Common;
 using Infrastructure.Http;
 using Microsoft.AspNetCore.Mvc;
-using Infrastructure.Cache;
-using Contracts.Orders;
-using Contracts.Common;
-using System.Globalization;
-using Infrastructure.Common;
-using System.Diagnostics;
 
 namespace WebApp.Endpoints;
 
@@ -26,7 +26,8 @@ internal static class OrderEndpoints
             CancellationToken cancellationToken,
             [FromHeader] Guid? correlationId = null,
             [FromHeader] bool cacheEnabled = true
-        ) => {
+        ) =>
+        {
             using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{nameof(OrderEndpoints)}.GetById");
 
             var response = cacheEnabled switch

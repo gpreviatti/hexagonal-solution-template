@@ -1,18 +1,18 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using GrpcPayment;
+using Infrastructure.Cache;
+using Infrastructure.Common;
+using Infrastructure.Grpc;
+using Infrastructure.Http;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using OpenTelemetry.Logs;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
-using Infrastructure.Cache;
-using Infrastructure.Http;
 using Polly;
 using Polly.Extensions.Http;
-using Infrastructure.Grpc;
-using Infrastructure.Common;
-using GrpcPayment;
 using Pyroscope.OpenTelemetry;
 
 namespace Infrastructure;
@@ -94,7 +94,7 @@ public static class InfrastructureDependencyInjection
             services
             .AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = configuration.GetConnectionString("Redis") ?? throw new ArgumentNullException(configuration.GetConnectionString("Redis"),"Redis connection string is not configured.");
+                options.Configuration = configuration.GetConnectionString("Redis") ?? throw new ArgumentNullException(configuration.GetConnectionString("Redis"), "Redis connection string is not configured.");
                 options.Configuration += ",abortConnect=false,connectTimeout=5000,syncTimeout=5000";
             })
             .AddHybridCache(options =>

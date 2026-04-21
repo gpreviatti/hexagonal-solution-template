@@ -1,4 +1,5 @@
 ﻿namespace IntegrationTests.Fixtures;
+
 public class BaseFixture
 {
 

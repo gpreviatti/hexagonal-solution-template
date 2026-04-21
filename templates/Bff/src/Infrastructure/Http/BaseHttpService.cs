@@ -72,7 +72,7 @@ public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> log
 
         return result;
     }
-    
+
     public async Task<TResponse?> SendAsync<TResponse>(
         string requestUri,
         HttpMethod httpMethod,
@@ -104,7 +104,7 @@ public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> log
             activity?.SetStatus(ActivityStatusCode.Error, $"{response.StatusCode} - {response.ReasonPhrase}");
             return null;
         }
-        
+
         var content = await response.Content.ReadAsStreamAsync(cancellationToken);
 
         var result = await JsonSerializer.DeserializeAsync<TResponse?>(content, JsonSerializerOptions, cancellationToken);
