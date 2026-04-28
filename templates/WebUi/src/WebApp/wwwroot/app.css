@@ -1,0 +1,19 @@
+html,
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.page {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 100vh;
+}
+
+.sidebar {
+    background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+    color: #f9fafb;
+}
+
+.content {
+    padding-top: 1.5rem;
+}
