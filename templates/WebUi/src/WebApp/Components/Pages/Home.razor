@@ -1,0 +1,20 @@
+@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hexagonal Web UI Dashboard</h1>
+
+<p>This page demonstrates a Blazor component consuming a service abstraction through dependency injection.</p>
+
+@if (_summary is null)
+{
+    <p>Loading summary...</p>
+}
+else
+{
+    <ul>
+        <li data-testid="total-orders">Total orders: @_summary.TotalOrders</li>
+        <li data-testid="total-revenue">Total revenue: @_summary.TotalRevenue @_summary.Currency</li>
+    </ul>
+}
+
