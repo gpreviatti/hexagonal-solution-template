@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Logging;
-    
+
 namespace UnitTests.Common;
 
 internal static class LogMockExtensions
