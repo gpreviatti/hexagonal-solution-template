@@ -1,3 +1,4 @@
+using System.Globalization;
 using Contracts.Orders;
 using Infrastructure.Common;
 using Infrastructure.Http;
@@ -9,7 +10,7 @@ public partial class Home(IServiceProvider serviceProvider)
     private readonly IBaseHttpService _httpService = serviceProvider.GetRequiredService<IBaseHttpService>();
     private readonly ILogger<Home> _logger = serviceProvider.GetRequiredService<ILogger<Home>>();
     private OrderSummaryDto? _summary;
-    private readonly string RESOURCE_URL = "orders/summary";
+    private readonly string _resourceUrl = nameof(ServicesKey.Orders);
 
     protected override async Task OnInitializedAsync()
     {
@@ -19,7 +20,7 @@ public partial class Home(IServiceProvider serviceProvider)
     private async Task GetOrderSummary()
     {
         var response = await _httpService.SendAsync<GetOrderSummaryResponse>(
-            RESOURCE_URL,
+            _resourceUrl + "/summary",
             HttpMethod.Get,
             CancellationToken.None
         );
