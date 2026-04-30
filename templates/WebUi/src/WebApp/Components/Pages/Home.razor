@@ -8,11 +8,11 @@
 
 @if (_summary is null)
 {
-    <p>Loading summary...</p>
+    <p data-testid="loading-summary">Loading summary...</p>
 }
 else
 {
-    <ul>
+    <ul data-testid="order-summary">
         <li data-testid="total-orders">Total orders: @_summary.TotalOrders</li>
         <li data-testid="total-revenue">Total revenue: @_summary.TotalRevenue @_summary.Currency</li>
     </ul>
