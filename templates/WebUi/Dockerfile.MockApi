@@ -1,14 +1,19 @@
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build-env
 WORKDIR /app
-EXPOSE 5012
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-WORKDIR /src
 COPY . .
-RUN dotnet restore "src/MockApi/MockApi.csproj"
-RUN dotnet publish "src/MockApi/MockApi.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-FROM base AS final
+WORKDIR /app/src/MockApi
+RUN dotnet restore \
+    && dotnet publish -c Release -o /app/out
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
-COPY --from=build /app/publish .
-ENTRYPOINT ["dotnet", "MockApi.dll"]
+COPY --from=build-env /app/out .
+
+RUN apt-get update \
+    && apt-get install -y curl
+
+EXPOSE 5014
+
+ENTRYPOINT ["dotnet", "MockApi.dll", "--urls", "http://+:5014"]
