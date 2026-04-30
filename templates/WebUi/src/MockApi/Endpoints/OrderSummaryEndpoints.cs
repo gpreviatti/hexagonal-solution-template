@@ -8,12 +8,11 @@ internal static class OrderSummaryEndpoints
     {
         var ordersGroup = app.MapGroup("orders").WithTags("orders");
 
-        ordersGroup.MapGet("/summary", () =>
-            Results.Ok(new GetOrderSummaryResponse(
-                success: true,
-                data: new OrderSummaryDto(42, 12345.67m, "USD"),
-                message: "Order summary retrieved."))
-        );
+        ordersGroup.MapGet("/summary", () => Results.Ok(new GetOrderSummaryResponse(
+            success: true,
+            data: new OrderSummaryDto(42, 12345.67m, "USD"),
+            message: "Order summary retrieved.")
+        ));
 
         return app;
     }
