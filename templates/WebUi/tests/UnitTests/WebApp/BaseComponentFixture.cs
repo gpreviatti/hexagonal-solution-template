@@ -16,7 +16,6 @@ public class BaseComponentFixture : BunitContext
 
     public BaseComponentFixture()
     {
-
         AutoFixture = new Fixture();
         AutoFixture.Behaviors.Add(new OmitOnRecursionBehavior());
 
