@@ -50,7 +50,7 @@ builder.Logging.AddOpenTelemetry(options =>
 var app = builder.Build();
 
 app.UseHttpsRedirection();
-app.MapEndpoints();
+app.MapOrderEndpoints();
 
 app.UseHealthChecks("/health", new HealthCheckOptions
 {
