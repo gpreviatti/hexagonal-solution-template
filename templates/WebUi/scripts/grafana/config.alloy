@@ -1,0 +1,60 @@
+otelcol.receiver.otlp "default" {
+  http {
+    endpoint = "0.0.0.0:4318"
+    
+  }
+  grpc {
+    endpoint = "0.0.0.0:4317"
+  }
+
+  output {
+    metrics = [otelcol.exporter.otlphttp.metrics.input]
+    logs    = [otelcol.exporter.otlphttp.logs.input]
+    traces = [otelcol.exporter.otlphttp.traces.input,otelcol.connector.servicegraph.default.input]
+  }
+}
+
+pyroscope.receive_http "default" {
+  http {
+    listen_address = "0.0.0.0"
+    listen_port    = 9999
+  }
+
+  forward_to = [pyroscope.write.default.receiver]
+}
+
+pyroscope.write "default" {
+  endpoint {
+    url = "http://pyroscope:4040"
+  }
+}
+
+otelcol.connector.servicegraph "default" {
+  dimensions = ["http.method"]
+
+  output {
+    metrics = [otelcol.exporter.otlphttp.metrics.input]
+  }
+}
+
+otelcol.exporter.otlphttp "logs" {
+  client {
+    endpoint = "http://loki:3100/otlp"
+  }
+}
+
+otelcol.exporter.otlphttp "metrics" {
+  client {
+    endpoint = "http://prometheus:9090/api/v1/otlp"
+  }
+}
+
+otelcol.exporter.otlphttp "traces" {
+  client {
+    endpoint = "http://tempo:4318"
+  }
+}
+
+livedebugging {
+  enabled = true
+}
