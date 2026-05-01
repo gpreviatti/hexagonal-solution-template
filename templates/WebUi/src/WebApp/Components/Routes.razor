@@ -1,6 +1,6 @@
-@using WebApp.Components.Pages
-@using WebApp.Components.Layout
-
-<MainLayout>
-    <Home />
-</MainLayout>
+<Router AppAssembly="typeof(Program).Assembly" NotFoundPage="typeof(Pages.NotFound)">
+    <Found Context="routeData">
+        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+</Router>
