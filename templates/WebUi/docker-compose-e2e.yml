@@ -8,8 +8,10 @@ services:
     ports:
       - "5012:5012"
     environment:
-      ASPNETCORE_URLS: http://+:5012
-
+      - ASPNETCORE_ENVIRONMENT=Development
+      - OTEL_SERVICE_NAME=Hexagonal.Solution.Template.Bff.MockApi
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4317
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
   webui:
     build:
       context: .
@@ -19,7 +21,11 @@ services:
     depends_on:
       - mock-api
     environment:
-      ASPNETCORE_URLS: http://+:8080
+      - ASPNETCORE_ENVIRONMENT=LoadTesting
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4317
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      - PYROSCOPE_APPLICATION_NAME=Hexagonal.Solution.Template.WebUi
+      - PYROSCOPE_SERVER_ADDRESS=http://alloy:9999
 
   alloy:
       container_name: alloy
