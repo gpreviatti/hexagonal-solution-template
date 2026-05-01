@@ -96,7 +96,7 @@ public static class InfrastructureDependencyInjection
         .SetHandlerLifetime(TimeSpan.FromMinutes(5))
         .AddPolicyHandler(GetRetryPolicy());
 
-        services.AddScoped(serviceProvider =>
+        services.AddKeyedScoped<IBaseHttpService, BaseHttpService>(ServicesKey.Orders.ToString(), (serviceProvider, _) =>
         {
             var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
             var logger = serviceProvider.GetRequiredService<ILogger<BaseHttpService>>();

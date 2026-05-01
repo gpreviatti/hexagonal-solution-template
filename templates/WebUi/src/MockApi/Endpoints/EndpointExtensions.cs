@@ -4,7 +4,7 @@ internal static class EndpointExtensions
 {
     public static WebApplication MapEndpoints(this WebApplication app)
     {
-        app.MapOrderSummaryEndpoints();
+        app.MapOrderEndpoints();
         return app;
     }
 }
