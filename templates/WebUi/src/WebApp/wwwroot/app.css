@@ -2,7 +2,7 @@ html,
 body {
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     background: #000;
-    color: #f9fafb;
+    color: #fff;
 }
 
 .page {
@@ -12,10 +12,15 @@ body {
 }
 
 .sidebar {
-    background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
-    color: #f9fafb;
+    background: #0f0f0f;
+    color: #fff;
 }
 
 .content {
-    padding-top: 1.5rem;
+    padding: 2rem;
+}
+
+a {
+    color: #fff;
+    text-decoration: none;
 }

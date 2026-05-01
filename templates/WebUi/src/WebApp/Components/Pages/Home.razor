@@ -16,5 +16,33 @@ else
         <li data-testid="total-orders">Total orders: @_summary.TotalOrders</li>
         <li data-testid="total-revenue">Total revenue: @_summary.TotalRevenue @_summary.Currency</li>
     </ul>
+
+    @if (_orders is null)
+    {
+        <p data-testid="loading-orders">Loading orders...</p>
+    }
+    else
+    {
+        <h2>Orders</h2>
+        <table data-testid="orders-table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Description</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in _orders)
+                {
+                    <tr data-testid="order-row">
+                        <td data-testid="order-id-@order.Id">@order.Id</td>
+                        <td data-testid="order-customer-@order.Id">@order.Description</td>
+                        <td data-testid="order-amount-@order.Id">@order.Total</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 }
 
