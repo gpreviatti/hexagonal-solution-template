@@ -25,7 +25,6 @@ public class BaseComponentFixture : BunitContext
 
     private void MockServices()
     {
-        Services.AddSingleton(HttpServiceMock.Object);
         Services.AddSingleton(MockLoggerFactory.Object);
         MockLogger.Setup(l => l.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
         MockLoggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(MockLogger.Object);
@@ -37,11 +36,11 @@ public class BaseComponentFixture : BunitContext
         MockLogger.Invocations.Clear();
     }
 
-    public void SetupHttpServiceMock<TResponse>(TResponse response = null!) where TResponse : class => HttpServiceMock
-        .Setup(x => x.SendAsync<TResponse>(It.IsAny<string>(), It.IsAny<HttpMethod>(), CancellationToken, It.IsAny<Dictionary<string, string>>()))
+    public void SetupHttpServiceMock<TResponse>(string route, HttpMethod httpMethod, TResponse response) where TResponse : class => HttpServiceMock
+        .Setup(x => x.SendAsync<TResponse>(route, httpMethod, CancellationToken, It.IsAny<Dictionary<string, string>>()))
         .ReturnsAsync(response);
 
-    public void SetupHttpServiceMock<TResponse>(string route, HttpMethod httpMethod, Dictionary<string, string> headers, TResponse response) where TResponse : class => HttpServiceMock
-        .Setup(x => x.SendAsync<TResponse>(route, httpMethod, CancellationToken, headers))
+    public void SetupHttpServiceMock<TResponse>(TResponse response = null!) where TResponse : class => HttpServiceMock
+        .Setup(x => x.SendAsync<TResponse>(It.IsAny<string>(), It.IsAny<HttpMethod>(), CancellationToken, It.IsAny<Dictionary<string, string>>()))
         .ReturnsAsync(response);
 }

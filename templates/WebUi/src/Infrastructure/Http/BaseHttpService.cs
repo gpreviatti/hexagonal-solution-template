@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Net;
 using System.Text.Json;
 using Infrastructure.Common;
@@ -18,12 +17,6 @@ public interface IBaseHttpService
 
 public sealed class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> logger, int httpProtocolVersion = 2) : IBaseHttpService
 {
-    private static readonly Action<ILogger, HttpMethod, string, HttpStatusCode, string?, Exception?> HttpCallFailedLog =
-        LoggerMessage.Define<HttpMethod, string, HttpStatusCode, string?>(
-            LogLevel.Warning,
-            new EventId(2001, nameof(HttpCallFailedLog)),
-            "HTTP call failed: {Method} {Uri} - {StatusCode} {ReasonPhrase}");
-
     public HttpClient HttpClient { get; } = httpClient;
 
     public ILogger<BaseHttpService> Logger { get; } = logger;
@@ -46,8 +39,6 @@ public sealed class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpServi
         Dictionary<string, string>? headers = null
     ) where TResponse : class
     {
-        using var activity = DefaultConfigurations.ActivitySource.StartActivity(requestUri, ActivityKind.Client);
-
         var requestMessage = new HttpRequestMessage(httpMethod, requestUri)
         {
             Version = GetHttpVersion(HttpProtocolVersion),
@@ -63,15 +54,10 @@ public sealed class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpServi
         }
 
         using var response = await HttpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-        activity?.SetTag("http.status_code", (int) response.StatusCode);
-        activity?.SetTag("http.response_content_length", response.Content.Headers.ContentLength ?? 0);
-        activity?.SetTag("http.response_content_type", response.Content.Headers.ContentType?.ToString() ?? "unknown");
-        activity?.SetTag("http.response_headers", string.Join(", ", response.Headers.Select(h => $"{h.Key}: {string.Join(";", h.Value)}")));
 
         if (!response.IsSuccessStatusCode)
         {
-            HttpCallFailedLog(Logger, httpMethod, requestUri, response.StatusCode, response.ReasonPhrase, null);
-
+            Logs.FailedOperation(Logger, $"HTTP call failed: {httpMethod} {requestUri} - {response.StatusCode} {response.ReasonPhrase}");
             return null;
         }
 

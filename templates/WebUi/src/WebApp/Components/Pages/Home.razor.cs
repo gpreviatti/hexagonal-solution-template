@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Contracts.Common;
 using Contracts.Orders;
 using Infrastructure.Common;
@@ -8,7 +7,7 @@ namespace WebApp.Components.Pages;
 
 public partial class Home(IServiceProvider serviceProvider)
 {
-    private readonly IBaseHttpService _httpService = serviceProvider
+    private readonly IBaseHttpService _ordersHttpService = serviceProvider
         .GetRequiredKeyedService<IBaseHttpService>(ServicesKey.Orders.ToString());
     private readonly ILogger<Home> _logger = serviceProvider.GetRequiredService<ILogger<Home>>();
     private OrderSummaryDto? _summary;
@@ -25,9 +24,9 @@ public partial class Home(IServiceProvider serviceProvider)
 
     private async Task GetOrders()
     {
-        using var activity = DefaultConfigurations.ActivitySource.StartActivity(nameof(GetOrders), ActivityKind.Client);
+        using var activity = DefaultConfigurations.ActivitySource.StartActivity(nameof(GetOrders));
 
-        var response = await _httpService.SendAsync<BaseResponse<IEnumerable<OrderDto>>>(
+        var response = await _ordersHttpService.SendAsync<BaseResponse<IEnumerable<OrderDto>>>(
             _resourceUrl,
             HttpMethod.Get,
             CancellationToken.None
@@ -44,9 +43,9 @@ public partial class Home(IServiceProvider serviceProvider)
 
     private async Task GetOrderSummary()
     {
-        using var activity = DefaultConfigurations.ActivitySource.StartActivity(nameof(GetOrderSummary), ActivityKind.Client);
+        using var activity = DefaultConfigurations.ActivitySource.StartActivity(nameof(GetOrderSummary));
 
-        var response = await _httpService.SendAsync<GetOrderSummaryResponse>(
+        var response = await _ordersHttpService.SendAsync<GetOrderSummaryResponse>(
             _resourceUrl + "/summary",
             HttpMethod.Get,
             CancellationToken.None
