@@ -6,9 +6,9 @@ services:
       context: .
       dockerfile: Dockerfile.MockApi
     ports:
-      - "5012:5012"
+      - "5014:5014"
     environment:
-      ASPNETCORE_URLS: http://+:5012
+      ASPNETCORE_URLS: http://+:5014
 
   alloy:
     container_name: alloy
@@ -68,6 +68,18 @@ services:
       - "chown"
       - "10001:10001"
       - "/var/tempo"
+
+  redis:
+    image: redis:8
+    container_name: redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
 
   tempo:
     container_name: tempo
