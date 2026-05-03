@@ -30,6 +30,7 @@ else
                     <th>Id</th>
                     <th>Description</th>
                     <th>Total</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -39,10 +40,51 @@ else
                         <td data-testid="order-id-@order.Id">@order.Id</td>
                         <td data-testid="order-customer-@order.Id">@order.Description</td>
                         <td data-testid="order-amount-@order.Id">@order.Total</td>
+                        <td>
+                            <button class="btn button-primary" data-testid="view-items-@order.Id" @onclick="() => ToggleOrderItems(order)">
+                                @(IsOrderSelected(order) ? "Hide items" : "View items")
+                            </button>
+                        </td>
                     </tr>
                 }
             </tbody>
         </table>
+
+        @if (_showOrderItems && _selectedOrder is not null)
+        {
+            <section data-testid="order-items-section">
+                <h2>Items for order @_selectedOrder.Id</h2>
+
+                @if (!HasSelectedOrderItems)
+                {
+                    <p data-testid="order-items-empty">No items available for this order.</p>
+                }
+                else
+                {
+                    <table data-testid="order-items-table">
+                        <thead>
+                            <tr>
+                                <th>Item Id</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in _selectedOrderItems!)
+                            {
+                                <tr data-testid="order-item-row">
+                                    <td>@item.Id</td>
+                                    <td>@item.Name</td>
+                                    <td>@item.Description</td>
+                                    <td>@item.Value</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </section>
+        }
     }
 }
 

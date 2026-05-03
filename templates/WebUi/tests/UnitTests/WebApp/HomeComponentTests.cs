@@ -30,8 +30,20 @@ public class HomeComponentTestFixture : BaseComponentFixture
     public static BaseResponse<IEnumerable<OrderDto>> GetValidOrdersResponse() => new(
         success: true,
         data: [
-            new OrderDto { Id = 1, Description = "Order 1", Total = 100.00m },
-            new OrderDto { Id = 2, Description = "Order 2", Total = 200.00m }
+            new OrderDto
+            {
+                Id = 1,
+                Description = "Order 1",
+                Total = 100.00m,
+                Items = [new ItemDto { Id = 1, Name = "Item 1", Description = "Product A", Value = 50.00m }]
+            },
+            new OrderDto
+            {
+                Id = 2,
+                Description = "Order 2",
+                Total = 200.00m,
+                Items = [new ItemDto { Id = 2, Name = "Item 2", Description = "Product B", Value = 25.00m }]
+            }
         ],
         message: "Orders retrieved."
     );
@@ -77,6 +89,25 @@ public sealed class HomeComponentTests : IClassFixture<HomeComponentTestFixture>
         _fixture.MockLogger.VerifyError("Failed to retrieve order summary.", 0);
         _fixture.HttpServiceMock.Verify(x => x.SendAsync<BaseResponse<IEnumerable<OrderDto>>>("Orders", HttpMethod.Get, CancellationToken.None, null), Times.Once);
         _fixture.HttpServiceMock.Verify(x => x.SendAsync<GetOrderSummaryResponse>("Orders/summary", HttpMethod.Get, CancellationToken.None, null), Times.Once);
+    }
+
+    [Fact]
+    public void GivenHomeComponentWhenViewItemsButtonClickedThenShouldDisplayOrderItems()
+    {
+        // Arrange
+        _fixture.SetupHttpServiceMock("Orders", HttpMethod.Get, HomeComponentTestFixture.GetValidOrdersResponse());
+        _fixture.SetupHttpServiceMock("Orders/summary", HttpMethod.Get, HomeComponentTestFixture.GetValidOrderSummaryResponse());
+
+        // Act
+        var component = _fixture.Render<Home>();
+        component.Find("[data-testid='view-items-1']").Click();
+
+        // Assert
+        Assert.Single(component.FindAll("[data-testid='order-item-row']"));
+        component.Find("[data-testid='order-items-section']");
+        Assert.Contains("Item 1", component.Markup);
+        Assert.Contains("Product A", component.Markup);
+        Assert.Contains("50.00", component.Markup);
     }
 
     [Fact]

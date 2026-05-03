@@ -7,13 +7,14 @@ body {
 
 .page {
     display: grid;
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: min-content 1fr;
     min-height: 100vh;
 }
 
 .sidebar {
     background: #0f0f0f;
     color: #fff;
+    min-width: 150px;
 }
 
 .content {
@@ -23,4 +24,18 @@ body {
 a {
     color: #fff;
     text-decoration: none;
+}
+
+.floating-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #000;
+    padding: 1rem;
+    text-align: center;
+}
+
+.page-nosidebar {
+    min-height: 100vh;
 }

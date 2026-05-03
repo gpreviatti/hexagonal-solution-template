@@ -12,7 +12,12 @@ public partial class Home(IServiceProvider serviceProvider)
     private readonly ILogger<Home> _logger = serviceProvider.GetRequiredService<ILogger<Home>>();
     private OrderSummaryDto? _summary;
     private IEnumerable<OrderDto>? _orders;
+    private OrderDto? _selectedOrder;
+    private IReadOnlyCollection<ItemDto>? _selectedOrderItems;
+    private bool _showOrderItems;
     private readonly string _resourceUrl = nameof(ServicesKey.Orders);
+
+    private bool HasSelectedOrderItems => _selectedOrderItems is { Count: > 0 };
 
     protected override async Task OnInitializedAsync()
     {
@@ -59,4 +64,21 @@ public partial class Home(IServiceProvider serviceProvider)
 
         _summary = response?.Data;
     }
+
+    private void ToggleOrderItems(OrderDto order)
+    {
+        if (_selectedOrder?.Id == order.Id && _showOrderItems)
+        {
+            _showOrderItems = false;
+            _selectedOrder = null;
+            _selectedOrderItems = null;
+            return;
+        }
+
+        _selectedOrder = order;
+        _selectedOrderItems = order.Items ?? [];
+        _showOrderItems = true;
+    }
+
+    private bool IsOrderSelected(OrderDto order) => _showOrderItems && _selectedOrder?.Id == order.Id;
 }

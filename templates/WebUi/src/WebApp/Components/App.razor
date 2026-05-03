@@ -1,3 +1,4 @@
+@using Infrastructure.Common
 <!DOCTYPE html>
 <html lang="en">
 
@@ -22,5 +23,11 @@
 
     <script src="@Assets["_framework/blazor.web.js"]"></script>
 </body>
+
+<footer class="floating-footer">
+    <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
+        @DefaultConfigurations.ApplicationName - @DateTime.Now.Year
+    </NavLink>
+</footer>
 
 </html>
