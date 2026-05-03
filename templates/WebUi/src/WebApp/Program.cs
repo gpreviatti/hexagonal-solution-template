@@ -26,7 +26,6 @@ public sealed class Program
 
         app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
         app.UseHttpsRedirection();
-        app.UseStaticFiles();
         app.UseAntiforgery();
         app.MapStaticAssets();
         app.MapRazorComponents<App>()

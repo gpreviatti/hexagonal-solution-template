@@ -2,9 +2,9 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hexagonal Web UI Dashboard</h1>
+<h1>Orders</h1>
 
-<p>This page demonstrates a Blazor component consuming a service abstraction through dependency injection.</p>
+<hr>
 
 @if (_summary is null)
 {
@@ -41,7 +41,7 @@ else
                         <td data-testid="order-customer-@order.Id">@order.Description</td>
                         <td data-testid="order-amount-@order.Id">@order.Total</td>
                         <td>
-                            <button class="btn button-primary" data-testid="view-items-@order.Id" @onclick="() => ToggleOrderItems(order)">
+                            <button class="btn" data-testid="view-items-@order.Id" @onclick="() => ToggleOrderItems(order)">
                                 @(IsOrderSelected(order) ? "Hide items" : "View items")
                             </button>
                         </td>
@@ -88,3 +88,4 @@ else
     }
 }
 
+<hr>
