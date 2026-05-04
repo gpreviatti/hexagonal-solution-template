@@ -5,7 +5,7 @@
             "name": "MockApi [Development]",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build",
+            "preLaunchTask": "build [MockApi]",
             "program": "${workspaceFolder}/src/MockApi/bin/Debug/net10.0/MockApi.dll",
             "args": [
                 "--urls",
@@ -21,9 +21,12 @@
             "name": "WebApp [Development]",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build",
+            "preLaunchTask": "build [WebApp]",
             "program": "${workspaceFolder}/src/WebApp/bin/Debug/net10.0/WebApp.dll",
-            "args": [],
+            "args": [
+                "--urls",
+                "http://localhost:5013"
+            ],
             "cwd": "${workspaceFolder}/src/WebApp",
             "stopAtEntry": false,
             "env": {

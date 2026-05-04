@@ -2,7 +2,23 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build",
+            "label": "build [Solution]",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "build [WebApp]",
             "command": "dotnet",
             "type": "process",
             "args": [
@@ -11,10 +27,30 @@
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "publish",
+            "label": "build [MockApi]",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/src/MockApi/MockApi.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "publish [WebApp]",
             "command": "dotnet",
             "type": "process",
             "args": [
@@ -26,7 +62,7 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "watch",
+            "label": "watch [WebApp]",
             "command": "dotnet",
             "type": "process",
             "args": [
@@ -36,6 +72,34 @@
                 "${workspaceFolder}/src/WebApp/WebApp.csproj"
             ],
             "problemMatcher": "$msCompile"
-        }
+        },
+        {
+            "label": "watch [MockApi]",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "run",
+                "--project",
+                "${workspaceFolder}/src/MockApi/MockApi.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+            {
+                "label": "test [Solution]",
+                "command": "dotnet",
+                "type": "process",
+                "args": [
+                    "test",
+                    "${workspaceFolder}",
+                    "/property:GenerateFullPaths=true",
+                    "/consoleloggerparameters:NoSummary;ForceNoAlign"
+                ],
+                "problemMatcher": "$msCompile",
+                "group": {
+                    "kind": "test",
+                    "isDefault": true
+                }
+            }
     ]
 }
