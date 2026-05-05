@@ -2,10 +2,11 @@ using Contracts.Common;
 using Contracts.Orders;
 using Infrastructure.Common;
 using Infrastructure.Http;
+using Microsoft.AspNetCore.Components;
 
 namespace WebApp.Components.Pages;
 
-public partial class Home(IServiceProvider serviceProvider)
+public partial class Home(IServiceProvider serviceProvider) : ComponentBase
 {
     private readonly IBaseHttpService _ordersHttpService = serviceProvider
         .GetRequiredKeyedService<IBaseHttpService>(ServicesKey.Orders.ToString());
