@@ -46,7 +46,7 @@ jobs:
 
   validate-template-webui:
     name: Validate WebUi Template
-    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate-webui.yml@v1
+    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate-contracts.yml@v1
     with:
       build_path: "./templates/WebUi"
       dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
