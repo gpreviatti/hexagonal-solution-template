@@ -4,7 +4,7 @@
       "progress",
       "html"
     ],
-    "project": "WebUi.csproj",
+    "project": "WebApp.csproj",
     "report-file-name": "mutation-tests-webui-result",
     "thresholds": {
       "high": 90,
