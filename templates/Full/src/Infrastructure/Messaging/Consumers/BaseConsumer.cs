@@ -121,16 +121,16 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
 
         await channel.QueueDeclareAsync(
             queue: _queueName,
-            exclusive: false,
-            autoDelete: false,
+            exclusive: true,
+            autoDelete: true,
             arguments: _arguments,
             cancellationToken: cancellationToken
         );
 
         await channel.QueueDeclareAsync(
             queue: _queueName + "_deadLetter",
-            exclusive: false,
-            autoDelete: false,
+            exclusive: true,
+            autoDelete: true,
             arguments: _arguments,
             cancellationToken: cancellationToken
         );
