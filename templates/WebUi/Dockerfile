@@ -8,7 +8,6 @@ RUN dotnet restore \
     && dotnet publish -c Release -o /app/out
 
 FROM pyroscope/pyroscope-dotnet:0.14.2-glibc AS pyroscope
-
 FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
 COPY --from=build-env /app/out .
