@@ -100,6 +100,18 @@ services:
       - tempo-init
       - redis
 
+  redis:
+    image: redis:8
+    container_name: redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
   pyroscope:
     container_name: pyroscope
     image: grafana/pyroscope:1.18.1

@@ -52,8 +52,5 @@ jobs:
       build_path: "./templates/WebUi"
       dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
       test_project_path: "./templates/WebUi/tests/UnitTests/"
-      stryker_config_path: "./templates/WebUi/tests/UnitTests/stryker-config.json"
-      stryker_publish_dashboard_report: true
-      stryker_dashboard_module: "webui"
     secrets:
       stryker_dashboard_api_key: ${{ secrets.STRYKER_DASHBOARD }}

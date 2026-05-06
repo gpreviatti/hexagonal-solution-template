@@ -11,6 +11,9 @@
                 "--urls",
                 "http://localhost:5014"
             ],
+            "launchBrowser": {
+                "enabled": false
+            },
             "cwd": "${workspaceFolder}/src/MockApi",
             "stopAtEntry": false,
             "env": {
@@ -27,6 +30,9 @@
                 "--urls",
                 "http://localhost:5013"
             ],
+            "launchBrowser": {
+                "enabled": false
+            },
             "cwd": "${workspaceFolder}/src/WebApp",
             "stopAtEntry": false,
             "env": {
