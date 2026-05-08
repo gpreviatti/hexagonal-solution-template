@@ -54,6 +54,5 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
     {
         MyDbContext!.Dispose();
         GC.SuppressFinalize(this);
-        // base.Dispose();
     }
 }

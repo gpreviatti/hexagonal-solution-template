@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Giovanni Brunno Previatti",
+  "identity": "Hexagonal.Solution.Template.WebUi",
+  "name": "Hexagonal solution template WebUi",
+  "description": "Solution template following hexagonal architecture structure best practices for Blazor Web UI applications",
+  "shortName": "hexagonal-solution-webui",
+  "sourceName": "Hexagonal.Solution.Template.WebUi",
+  "classifications": [
+    "Common",
+    "Template",
+    "Hexagonal-Architecture",
+    "Blazor",
+    "WebUI"
+  ],
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "preferNameDirectory": true
+}

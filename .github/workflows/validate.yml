@@ -3,10 +3,32 @@ name: Validate
 on: 
   pull_request:
   workflow_dispatch:
+    inputs:
+      run_full:
+        description: 'Run Full Template validation'
+        required: true
+        default: true
+        type: boolean
+      run_bff:
+        description: 'Run BFF Template validation'
+        required: true
+        default: true
+        type: boolean
+      run_contracts:
+        description: 'Run Contracts Template validation'
+        required: true
+        default: true
+        type: boolean
+      run_webui:
+        description: 'Run WebUi Template validation'
+        required: true
+        default: true
+        type: boolean
 
 jobs:
   validate-template-full:
     name: Validate Full Template
+    if: github.event_name == 'pull_request' || inputs.run_full
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate-full.yml@v1
     with:
       build_path: "./templates/Full"
@@ -25,6 +47,7 @@ jobs:
 
   validate-template-bff:
     name: Validate BFF Template
+    if: github.event_name == 'pull_request' || inputs.run_bff
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate-bff.yml@v1
     with:
       build_path: "./templates/Bff"
@@ -34,6 +57,7 @@ jobs:
   
   validate-contracts-template:
     name: Validate Contracts Template
+    if: github.event_name == 'pull_request' || inputs.run_contracts
     uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate-contracts.yml@v1
     with:
       build_path: "./templates/Contracts"
@@ -42,5 +66,16 @@ jobs:
       stryker_config_path: "./templates/Contracts/tests/UnitTests/stryker-config.json"
       stryker_publish_dashboard_report: true
       stryker_dashboard_module: "contracts"
+    secrets:
+      stryker_dashboard_api_key: ${{ secrets.STRYKER_DASHBOARD }}
+
+  validate-template-webui:
+    name: Validate WebUi Template
+    if: github.event_name == 'pull_request' || inputs.run_webui
+    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate-contracts.yml@v1
+    with:
+      build_path: "./templates/WebUi"
+      dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
+      test_project_path: "./templates/WebUi/tests/UnitTests/"
     secrets:
       stryker_dashboard_api_key: ${{ secrets.STRYKER_DASHBOARD }}

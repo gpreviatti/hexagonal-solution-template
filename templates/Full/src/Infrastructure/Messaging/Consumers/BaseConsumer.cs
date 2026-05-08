@@ -24,6 +24,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
     private readonly string _queueName;
     private readonly IDictionary<string, object?> _arguments;
     private readonly ConnectionFactory _factory;
+    private IChannel _channel = null!;
     protected IProduceService producerService = null!;
     private readonly ActivitySource _activities = DefaultConfigurations.ActivitySource;
     protected Counter<int> ConsumerErrorMetric { get; }
@@ -53,6 +54,14 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
 
         ConsumerDuplicatedMessageMetric = DefaultConfigurations.Meter
             .CreateCounter<int>($"{DefaultConfigurations.ApplicationName}.{_consumerName}.DuplicatedMessage", "total", "Number of times the consumer received a duplicated message");
+
+        var connection = _factory.CreateConnectionAsync().GetAwaiter().GetResult();
+        _channel = connection.CreateChannelAsync().GetAwaiter().GetResult();
+
+        Logs.Debug(logger, Guid.NewGuid(), "Connected to RabbitMQ. Declaring queues.");
+
+        _channel.QueueDeclareAsync(queue: _queueName, durable: true, exclusive: false, autoDelete: false, arguments: _arguments);
+        _channel.QueueDeclareAsync(queue: _queueName + "_deadLetter", durable: true, exclusive: false, autoDelete: false, arguments: _arguments);
     }
 
     protected override async Task ExecuteInternalAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken) => await HandleRabbitMqAsync(
@@ -114,30 +123,9 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
         CancellationToken cancellationToken
     )
     {
-        var connection = await _factory.CreateConnectionAsync(cancellationToken);
-        var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
+        Logs.Debug(logger, Guid.NewGuid(), "Starting to consume messages.");
 
-        Logs.Debug(logger, Guid.NewGuid(), "Connected to RabbitMQ. Declaring queues.");
-
-        await channel.QueueDeclareAsync(
-            queue: _queueName,
-            exclusive: false,
-            autoDelete: false,
-            arguments: _arguments,
-            cancellationToken: cancellationToken
-        );
-
-        await channel.QueueDeclareAsync(
-            queue: _queueName + "_deadLetter",
-            exclusive: false,
-            autoDelete: false,
-            arguments: _arguments,
-            cancellationToken: cancellationToken
-        );
-
-        AsyncEventingBasicConsumer consumer = new(channel);
-
-        Logs.Debug(logger, Guid.NewGuid(), "Queues declared. Starting to consume messages.");
+        AsyncEventingBasicConsumer consumer = new(_channel);
 
         consumer.ReceivedAsync += async (model, eventArguments) =>
         {
@@ -179,7 +167,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
             Logs.Debug(logger, message.CorrelationId, "Use case handled.");
         };
 
-        await channel.BasicConsumeAsync(
+        await _channel.BasicConsumeAsync(
             queue: _queueName,
             autoAck: true,
             consumer: consumer,

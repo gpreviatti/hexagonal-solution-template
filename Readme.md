@@ -5,7 +5,7 @@
 
 This repository provides a reusable .NET template package to bootstrap projects using **Hexagonal Architecture** (Ports and Adapters) and modern engineering practices.
 
-It includes three templates for different scopes: a full application, a BFF-focused application, and a contracts-only package.
+It includes four templates for different scopes: a full application, a BFF-focused application, a Blazor Web UI application, and a contracts-only package.
 
 ## Table of contents
 
@@ -33,6 +33,7 @@ The package `GPreviatti.Template.Hexagonal.Solution` lets you quickly create sol
 
 - `hexagonal-solution-full`: complete hexagonal solution with `Domain`, `Application`, `Infrastructure`, `WebApp`, and test/load test projects.
 - `hexagonal-solution-bff`: Backend-for-Frontend oriented solution with HTTP/gRPC adapters, integration tests, and load tests.
+- `hexagonal-solution-webui`: Blazor Web App oriented solution with contracts/infrastructure separation and bUnit component unit tests.
 - `hexagonal-solution-contracts`: lightweight contracts package for shared DTOs, request/response models, and protobuf definitions.
 
 ## Template documentation
@@ -41,6 +42,7 @@ Each template has its own README with architecture details, structure, and helpe
 
 - Full template: [`templates/Full/Readme.md`](templates/Full/Readme.md)
 - BFF template: [`templates/Bff/Readme.md`](templates/Bff/Readme.md)
+- Web UI template: [`templates/WebUi/Readme.md`](templates/WebUi/Readme.md)
 - Contracts template: [`templates/Contracts/Readme.md`](templates/Contracts/Readme.md)
 
 ## Technologies included
@@ -70,6 +72,7 @@ Create a new solution from each template:
 ```bash
 dotnet new hexagonal-solution-full -n HexagonalSolution
 dotnet new hexagonal-solution-bff -n HexagonalSolution
+dotnet new hexagonal-solution-webui -n HexagonalSolution
 dotnet new hexagonal-solution-contracts -n HexagonalSolution
 ```
 
@@ -80,6 +83,7 @@ Use `-h` to list available options for each template:
 ```bash
 dotnet new hexagonal-solution-full -h
 dotnet new hexagonal-solution-bff -h
+dotnet new hexagonal-solution-webui -h
 dotnet new hexagonal-solution-contracts -h
 ```
 

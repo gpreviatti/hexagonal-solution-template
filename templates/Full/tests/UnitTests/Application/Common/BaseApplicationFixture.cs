@@ -22,19 +22,15 @@ public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
     public Mock<IHybridCacheService> MockCache { get; } = new();
     public TUseCase UseCase { get; set; } = default!;
 
-    public BaseApplicationFixture()
-    {
-        MockLogger.Setup(l => l.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+    public BaseApplicationFixture() => MockServiceProviderServices();
 
-        MockServiceProviderServices();
-    }
-
-    public void MockServiceProviderServices()
+    private void MockServiceProviderServices()
     {
         MockServiceProvider
             .Setup(r => r.GetService(typeof(ILoggerFactory)))
             .Returns(MockLoggerFactory.Object);
 
+        MockLogger.Setup(l => l.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
         MockLoggerFactory
             .Setup(l => l.CreateLogger(It.IsAny<string>()))
             .Returns(MockLogger.Object);

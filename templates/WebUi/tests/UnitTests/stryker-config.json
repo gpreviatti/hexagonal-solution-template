@@ -1,0 +1,15 @@
+{
+  "stryker-config": {
+    "reporters": [
+      "progress",
+      "html"
+    ],
+    "project": "WebApp.csproj",
+    "report-file-name": "mutation-tests-webui-result",
+    "thresholds": {
+      "high": 90,
+      "low": 80,
+      "break": 50
+    }
+  }
+}

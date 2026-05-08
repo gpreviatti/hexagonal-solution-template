@@ -5,7 +5,7 @@
     <Title>Hexagonal architecture solution template</Title>
     <Authors>Giovanni Brunno Previatti</Authors>
     <Description>Solution following Hexagonal architecture and best practices.</Description>
-    <PackageTags>template;hexagonal-architecture;clean-architecture;ddd;net8</PackageTags>
+    <PackageTags>template;hexagonal-architecture;clean-architecture;ddd;blazor;webui;net10</PackageTags>
     <TargetFramework>net10.0</TargetFramework>
     <IncludeContentInPack>true</IncludeContentInPack>
     <IncludeBuildOutput>false</IncludeBuildOutput>
@@ -18,23 +18,24 @@
     <RepositoryUrl>git://github.com/gpreviatti/hexagonal-solution-template</RepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>
-      New Features
-      - Add code-review skill templates to BFF, Contracts, and Full templates to support consistent review workflows.
-      - Add comprehensive unit tests for domain order and item creation/validation scenarios.
+      Highlights
+      - Introduce a new Web UI template based on Blazor Web App, following hexagonal layering (Contracts, Infrastructure, WebApp).
+      - Establish Web UI testing baseline with bUnit + xUnit component/unit tests.
 
-      Improvements
-      - Enhance invalid-request test coverage for order creation use cases.
-      - Improve use case response handling readability in the Application layer.
+      Template Catalog
+      - Template set now includes four options: Full, BFF, WebUi, and Contracts.
 
-      Code Quality
-      - Streamline notification handling across order-related use cases.
-      - Remove unused activity tracking from domain entities.
-      - Reorganize domain test files for clearer structure and maintainability.
-      - Run dotnet format to ensure consistent code style across the solutions.
+      Branch Scope
+      - Add complete WebUi template scaffolding: solution file, template metadata, build settings, VS Code launch/tasks, and Docker assets.
+      - Implement Mock API order endpoints and supporting contracts (`OrderDto`, `ItemDto`) for local development.
+      - Build Blazor app structure and UX updates: routing in `App.razor`, `NotFound` layout flow, improved `Home` page order rendering/loading state, and reconnect modal (`.razor`, `.css`, `.js`).
+      - Configure observability assets for local environments (Grafana Alloy/Loki/Prometheus/Tempo and profiling support in docker files).
+      - Add and refine unit/component test infrastructure for Web UI components (including base fixtures and logging helpers).
 
-      Technical Details
-      - Update `stryker-config-domain.json` in Full UnitTests to align mutation-testing configuration with the revised test structure.
-      - Include branch changes across 14 files with focused updates in template skills, domain/application code, and unit tests.
+      Cross-Template and Maintenance Updates
+      - Refresh package lock files and dependency metadata across templates.
+      - Improve template and repository documentation (root and WebUi README updates).
+      - Include coding-agent guidance (`AGENTS.md`) and remove obsolete endpoint wiring/components.
     </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
