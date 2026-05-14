@@ -1,29 +1,22 @@
-using E2eTests.Common;
-
 namespace E2eTests.WebApp;
 
-public class HomePage(IPage page)
+public sealed class HomePageFixture : WebAppBaseFixture
 {
-    private readonly IPage _page = page ?? throw new ArgumentNullException(nameof(page));
-    private readonly Configurations _config = new();
-
-    // Selectors (using data-testid attributes from Home.razor)
     private const string LoadingSummarySelector = "[data-testid='loading-summary']";
     private const string SummaryTotalOrdersSelector = "[data-testid='total-orders']";
     private const string SummaryRevenueSelector = "[data-testid='total-revenue']";
     private const string OrdersTableSelector = "[data-testid='orders-table']";
     private const string OrdersTableRowsSelector = "[data-testid='orders-table'] tbody tr";
-    private const string ViewItemsButtonSelector = "[data-testid^='view-items-']";
     private const string OrderItemsTableSelector = "[data-testid='order-items-table']";
     private const string OrderItemsTableRowsSelector = "[data-testid='order-items-table'] tbody tr";
 
     /// <summary>
     /// Navigate to the home page
     /// </summary>
-    public async Task NavigateAsync() => await _page.GotoAsync(_config.WebAppUrl, new PageGotoOptions
+    public async Task NavigateAsync() => await Page.GotoAsync(Configurations.WebAppUrl, new PageGotoOptions
     {
         WaitUntil = WaitUntilState.NetworkIdle,
-        Timeout = _config.NavigationTimeoutMs
+        Timeout = Configurations.NavigationTimeoutMs
     });
 
     /// <summary>
@@ -31,9 +24,9 @@ public class HomePage(IPage page)
     /// </summary>
     public async Task WaitForSummaryAsync() =>
         // Wait for loading state to disappear and data to appear
-        await _page.WaitForSelectorAsync(SummaryTotalOrdersSelector, new PageWaitForSelectorOptions
+        await Page.WaitForSelectorAsync(SummaryTotalOrdersSelector, new PageWaitForSelectorOptions
         {
-            Timeout = _config.APICallTimeoutMs
+            Timeout = Configurations.APICallTimeoutMs
         });
 
     /// <summary>
@@ -43,7 +36,7 @@ public class HomePage(IPage page)
     {
         try
         {
-            await _page.WaitForSelectorAsync(LoadingSummarySelector, new PageWaitForSelectorOptions
+            await Page.WaitForSelectorAsync(LoadingSummarySelector, new PageWaitForSelectorOptions
             {
                 Timeout = 1000 // Quick check
             });
@@ -60,7 +53,7 @@ public class HomePage(IPage page)
     /// </summary>
     public async Task<string> GetSummaryTotalOrdersAsync()
     {
-        var element = await _page.QuerySelectorAsync(SummaryTotalOrdersSelector);
+        var element = await Page.QuerySelectorAsync(SummaryTotalOrdersSelector);
         Assert.NotNull(element);
         var textContent = await element.TextContentAsync();
         return textContent?.Trim() ?? string.Empty;
@@ -71,7 +64,7 @@ public class HomePage(IPage page)
     /// </summary>
     public async Task<string> GetSummaryRevenueAsync()
     {
-        var element = await _page.QuerySelectorAsync(SummaryRevenueSelector);
+        var element = await Page.QuerySelectorAsync(SummaryRevenueSelector);
         Assert.NotNull(element);
         var textContent = await element.TextContentAsync();
         return textContent?.Trim() ?? string.Empty;
@@ -80,7 +73,7 @@ public class HomePage(IPage page)
     /// <summary>
     /// Get all order table rows
     /// </summary>
-    public async Task<IReadOnlyList<IElementHandle>> GetOrderTableRowsAsync() => await _page.QuerySelectorAllAsync(OrdersTableRowsSelector);
+    public async Task<IReadOnlyList<IElementHandle>> GetOrderTableRowsAsync() => await Page.QuerySelectorAllAsync(OrdersTableRowsSelector);
 
     /// <summary>
     /// Verify orders table is visible and populated
@@ -89,9 +82,9 @@ public class HomePage(IPage page)
     {
         try
         {
-            await _page.WaitForSelectorAsync(OrdersTableSelector, new PageWaitForSelectorOptions
+            await Page.WaitForSelectorAsync(OrdersTableSelector, new PageWaitForSelectorOptions
             {
-                Timeout = _config.WaitForSelectorTimeoutMs
+                Timeout = Configurations.WaitForSelectorTimeoutMs
             });
             return true;
         }
@@ -119,16 +112,16 @@ public class HomePage(IPage page)
         await buttons[0].ClickAsync();
 
         // Wait for items table to appear
-        await _page.WaitForSelectorAsync(OrderItemsTableSelector, new PageWaitForSelectorOptions
+        await Page.WaitForSelectorAsync(OrderItemsTableSelector, new PageWaitForSelectorOptions
         {
-            Timeout = _config.WaitForSelectorTimeoutMs
+            Timeout = Configurations.WaitForSelectorTimeoutMs
         });
     }
 
     /// <summary>
     /// Get all order items table rows
     /// </summary>
-    public async Task<IReadOnlyList<IElementHandle>> GetOrderItemsTableRowsAsync() => await _page.QuerySelectorAllAsync(OrderItemsTableRowsSelector);
+    public async Task<IReadOnlyList<IElementHandle>> GetOrderItemsTableRowsAsync() => await Page.QuerySelectorAllAsync(OrderItemsTableRowsSelector);
 
     /// <summary>
     /// Verify order items table is visible
@@ -137,9 +130,9 @@ public class HomePage(IPage page)
     {
         try
         {
-            await _page.WaitForSelectorAsync(OrderItemsTableSelector, new PageWaitForSelectorOptions
+            await Page.WaitForSelectorAsync(OrderItemsTableSelector, new PageWaitForSelectorOptions
             {
-                Timeout = _config.WaitForSelectorTimeoutMs
+                Timeout = Configurations.WaitForSelectorTimeoutMs
             });
             return true;
         }

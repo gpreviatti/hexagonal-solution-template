@@ -1,19 +1,16 @@
-using E2eTests.Common;
-
 namespace E2eTests.WebApp;
 
-public sealed class HomePageTests(BrowserFixture browserFixture) : IClassFixture<BrowserFixture>, IAsyncLifetime
+[Collection(nameof(WebAppBaseFixture))]
+public sealed class HomePageTests(HomePageFixture homePageFixture) : IClassFixture<HomePageFixture>, IAsyncLifetime
 {
-    private readonly BrowserFixture _browserFixture = browserFixture;
-    private HomePage? _homePage;
+    private readonly HomePageFixture _homePageFixture = homePageFixture;
 
     public async Task InitializeAsync()
     {
-        await _browserFixture.InitializeAsync();
-        _homePage = new HomePage(_browserFixture.Page);
+        await _homePageFixture.InitializeAsync();
     }
 
-    public async Task DisposeAsync() => await _browserFixture.DisposeAsync();
+    public async Task DisposeAsync() => await _homePageFixture.DisposeAsync();
 
     /// <summary>
     /// Test 1: Page Load - Verify loading states and data appears
@@ -23,25 +20,25 @@ public sealed class HomePageTests(BrowserFixture browserFixture) : IClassFixture
     public async Task GivenHomePageWhenNavigatingThenShouldLoadSummaryAndOrdersTable()
     {
         // Arrange
-        Assert.NotNull(_homePage);
+        Assert.NotNull(_homePageFixture);
 
         // Act
-        await _homePage.NavigateAsync();
+        await _homePageFixture.NavigateAsync();
 
         // Assert - Loading state should appear initially
-        var isLoading = await _homePage.IsLoadingDisplayedAsync();
+        var isLoading = await _homePageFixture.IsLoadingDisplayedAsync();
         // Note: Loading state may appear/disappear quickly, so we don't assert it always shows
 
         // Wait for summary to load
-        await _homePage.WaitForSummaryAsync();
-        var totalOrdersText = await _homePage.GetSummaryTotalOrdersAsync();
+        await _homePageFixture.WaitForSummaryAsync();
+        var totalOrdersText = await _homePageFixture.GetSummaryTotalOrdersAsync();
         Assert.False(string.IsNullOrEmpty(totalOrdersText));
 
         // Verify orders table is visible
-        var isTableVisible = await _homePage.IsOrdersTableVisibleAsync();
+        var isTableVisible = await _homePageFixture.IsOrdersTableVisibleAsync();
         Assert.True(isTableVisible);
 
-        var rows = await _homePage.GetOrderTableRowsAsync();
+        var rows = await _homePageFixture.GetOrderTableRowsAsync();
         Assert.NotEmpty(rows);
     }
 
@@ -52,17 +49,17 @@ public sealed class HomePageTests(BrowserFixture browserFixture) : IClassFixture
     public async Task GivenHomePageWhenLoadedThenShouldDisplayOrderSummary()
     {
         // Arrange
-        Assert.NotNull(_homePage);
+        Assert.NotNull(_homePageFixture);
 
         // Act
-        await _homePage.NavigateAsync();
-        await _homePage.WaitForSummaryAsync();
+        await _homePageFixture.NavigateAsync();
+        await _homePageFixture.WaitForSummaryAsync();
 
         // Assert
-        var totalOrdersText = await _homePage.GetSummaryTotalOrdersAsync();
+        var totalOrdersText = await _homePageFixture.GetSummaryTotalOrdersAsync();
         Assert.NotEmpty(totalOrdersText);
 
-        var revenueText = await _homePage.GetSummaryRevenueAsync();
+        var revenueText = await _homePageFixture.GetSummaryRevenueAsync();
         Assert.NotEmpty(revenueText);
 
         // Verify both values are not just whitespace
@@ -77,17 +74,17 @@ public sealed class HomePageTests(BrowserFixture browserFixture) : IClassFixture
     public async Task GivenHomePageWhenLoadedThenShouldDisplayOrdersTableWithData()
     {
         // Arrange
-        Assert.NotNull(_homePage);
+        Assert.NotNull(_homePageFixture);
 
         // Act
-        await _homePage.NavigateAsync();
-        await _homePage.WaitForSummaryAsync();
+        await _homePageFixture.NavigateAsync();
+        await _homePageFixture.WaitForSummaryAsync();
 
         // Assert
-        var isTableVisible = await _homePage.IsOrdersTableVisibleAsync();
+        var isTableVisible = await _homePageFixture.IsOrdersTableVisibleAsync();
         Assert.True(isTableVisible, "Orders table should be visible");
 
-        var rows = await _homePage.GetOrderTableRowsAsync();
+        var rows = await _homePageFixture.GetOrderTableRowsAsync();
         Assert.NotEmpty(rows);
         Assert.True(rows.Count >= 1, "Should have at least one order row");
 
@@ -97,8 +94,8 @@ public sealed class HomePageTests(BrowserFixture browserFixture) : IClassFixture
         Assert.True(cells.Count >= 3, "Each row should have at least 3 columns (Id, Description, Total)");
 
         // Get cell texts to verify data exists
-        var firstCellText = await HomePage.GetTableCellTextAsync(firstRow, 0);
-        var secondCellText = await HomePage.GetTableCellTextAsync(firstRow, 1);
+        var firstCellText = await HomePageFixture.GetTableCellTextAsync(firstRow, 0);
+        var secondCellText = await HomePageFixture.GetTableCellTextAsync(firstRow, 1);
 
         Assert.False(string.IsNullOrWhiteSpace(firstCellText), "First cell (Id) should have content");
         Assert.False(string.IsNullOrWhiteSpace(secondCellText), "Second cell (Description) should have content");
@@ -111,23 +108,23 @@ public sealed class HomePageTests(BrowserFixture browserFixture) : IClassFixture
     public async Task GivenOrderRowWhenExpandingItemsThenShouldDisplayOrderItemsTable()
     {
         // Arrange
-        Assert.NotNull(_homePage);
+        Assert.NotNull(_homePageFixture);
 
         // Act
-        await _homePage.NavigateAsync();
-        await _homePage.WaitForSummaryAsync();
+        await _homePageFixture.NavigateAsync();
+        await _homePageFixture.WaitForSummaryAsync();
 
-        var orderRows = await _homePage.GetOrderTableRowsAsync();
+        var orderRows = await _homePageFixture.GetOrderTableRowsAsync();
         Assert.NotEmpty(orderRows);
 
         // Expand first order's items
-        await _homePage.ExpandOrderItemsAsync(rowIndex: 0);
+        await _homePageFixture.ExpandOrderItemsAsync(rowIndex: 0);
 
         // Assert - Items table should be visible
-        var isItemsTableVisible = await _homePage.IsOrderItemsTableVisibleAsync();
+        var isItemsTableVisible = await _homePageFixture.IsOrderItemsTableVisibleAsync();
         Assert.True(isItemsTableVisible, "Order items table should be visible after expansion");
 
-        var itemRows = await _homePage.GetOrderItemsTableRowsAsync();
+        var itemRows = await _homePageFixture.GetOrderItemsTableRowsAsync();
         Assert.NotEmpty(itemRows);
         Assert.True(itemRows.Count >= 1, "Should have at least one item row");
 
@@ -137,8 +134,8 @@ public sealed class HomePageTests(BrowserFixture browserFixture) : IClassFixture
         Assert.True(itemCells.Count >= 4, "Each item row should have at least 4 columns (Id, Name, Description, Value)");
 
         // Verify cells have content
-        var itemIdText = await HomePage.GetTableCellTextAsync(firstItemRow, 0);
-        var itemNameText = await HomePage.GetTableCellTextAsync(firstItemRow, 1);
+        var itemIdText = await HomePageFixture.GetTableCellTextAsync(firstItemRow, 0);
+        var itemNameText = await HomePageFixture.GetTableCellTextAsync(firstItemRow, 1);
 
         Assert.False(string.IsNullOrWhiteSpace(itemIdText), "Item Id should have content");
         Assert.False(string.IsNullOrWhiteSpace(itemNameText), "Item Name should have content");
