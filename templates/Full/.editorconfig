@@ -170,6 +170,7 @@ dotnet_diagnostic.CA1873.severity = none
 
 # IDE0005: Using directive is unnecessary
 dotnet_diagnostic.IDE0005.severity = error
+dotnet_diagnostic.IDE0059.severity = error
 
 # Xml project files
 [*.{csproj,vbproj,vcxproj,vcxproj.filters,proj,nativeproj,locproj}]
