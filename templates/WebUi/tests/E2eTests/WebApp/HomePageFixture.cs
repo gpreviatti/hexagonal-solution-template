@@ -10,24 +10,14 @@ public sealed class HomePageFixture : WebAppBaseFixture
     private const string OrderItemsTableSelector = "[data-testid='order-items-table']";
     private const string OrderItemsTableRowsSelector = "[data-testid='order-items-table'] tbody tr";
 
-    /// <summary>
-    /// Navigate to the home page
-    /// </summary>
-    public async Task NavigateAsync() => await Page.GotoAsync(Configurations.WebAppUrl, new PageGotoOptions
-    {
-        WaitUntil = WaitUntilState.NetworkIdle,
-        Timeout = Configurations.NavigationTimeoutMs
-    });
 
     /// <summary>
     /// Wait for the summary section to fully load
     /// </summary>
-    public async Task WaitForSummaryAsync() =>
-        // Wait for loading state to disappear and data to appear
-        await Page.WaitForSelectorAsync(SummaryTotalOrdersSelector, new PageWaitForSelectorOptions
-        {
-            Timeout = Configurations.APICallTimeoutMs
-        });
+    public async Task WaitForSummaryAsync() => await Page.WaitForSelectorAsync(SummaryTotalOrdersSelector, new PageWaitForSelectorOptions
+    {
+        Timeout = Configurations.APICallTimeoutMs
+    });
 
     /// <summary>
     /// Check if loading indicator is displayed
@@ -142,15 +132,5 @@ public sealed class HomePageFixture : WebAppBaseFixture
         }
     }
 
-    /// <summary>
-    /// Get text content from a table cell
-    /// </summary>
-    public static async Task<string> GetTableCellTextAsync(IElementHandle row, int cellIndex)
-    {
-        var cells = await row.QuerySelectorAllAsync("td");
-        Assert.True(cellIndex < cells.Count, $"Cell index {cellIndex} out of range. Total cells: {cells.Count}");
 
-        var textContent = await cells[cellIndex].TextContentAsync();
-        return textContent?.Trim() ?? string.Empty;
-    }
 }

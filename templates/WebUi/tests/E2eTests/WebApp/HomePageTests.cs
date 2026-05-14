@@ -5,10 +5,7 @@ public sealed class HomePageTests(HomePageFixture homePageFixture) : IClassFixtu
 {
     private readonly HomePageFixture _homePageFixture = homePageFixture;
 
-    public async Task InitializeAsync()
-    {
-        await _homePageFixture.InitializeAsync();
-    }
+    public async Task InitializeAsync() => await _homePageFixture.InitializeAsync();
 
     public async Task DisposeAsync() => await _homePageFixture.DisposeAsync();
 
@@ -94,8 +91,8 @@ public sealed class HomePageTests(HomePageFixture homePageFixture) : IClassFixtu
         Assert.True(cells.Count >= 3, "Each row should have at least 3 columns (Id, Description, Total)");
 
         // Get cell texts to verify data exists
-        var firstCellText = await HomePageFixture.GetTableCellTextAsync(firstRow, 0);
-        var secondCellText = await HomePageFixture.GetTableCellTextAsync(firstRow, 1);
+        var firstCellText = await WebAppBaseFixture.GetTableCellTextAsync(firstRow, 0);
+        var secondCellText = await WebAppBaseFixture.GetTableCellTextAsync(firstRow, 1);
 
         Assert.False(string.IsNullOrWhiteSpace(firstCellText), "First cell (Id) should have content");
         Assert.False(string.IsNullOrWhiteSpace(secondCellText), "Second cell (Description) should have content");
@@ -134,8 +131,8 @@ public sealed class HomePageTests(HomePageFixture homePageFixture) : IClassFixtu
         Assert.True(itemCells.Count >= 4, "Each item row should have at least 4 columns (Id, Name, Description, Value)");
 
         // Verify cells have content
-        var itemIdText = await HomePageFixture.GetTableCellTextAsync(firstItemRow, 0);
-        var itemNameText = await HomePageFixture.GetTableCellTextAsync(firstItemRow, 1);
+        var itemIdText = await WebAppBaseFixture.GetTableCellTextAsync(firstItemRow, 0);
+        var itemNameText = await WebAppBaseFixture.GetTableCellTextAsync(firstItemRow, 1);
 
         Assert.False(string.IsNullOrWhiteSpace(itemIdText), "Item Id should have content");
         Assert.False(string.IsNullOrWhiteSpace(itemNameText), "Item Name should have content");
