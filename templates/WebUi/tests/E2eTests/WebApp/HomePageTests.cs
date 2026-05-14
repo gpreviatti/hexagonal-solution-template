@@ -27,7 +27,7 @@ public sealed class HomePageTests(HomePageFixture homePageFixture) : IClassFixtu
 
         // Assert - Loading state should appear initially
         var isLoading = await _homePageFixture.IsLoadingDisplayedAsync();
-        // Note: Loading state may appear/disappear quickly, so we don't assert it always shows
+        Assert.False(isLoading, "Loading state should not be displayed after navigation");
 
         // Wait for summary to load
         await _homePageFixture.WaitForSummaryAsync();

@@ -21,7 +21,7 @@ public class WebAppBaseFixture : IAsyncLifetime
             Args = ["--no-sandbox"]
         });
         Page = await Browser.NewPageAsync();
-        Configurations.WebAppUrl = Environment.GetEnvironmentVariable("BASE_WEBAPP_URL") ?? "http://localhost:5014";
+        Configurations.WebAppUrl = Environment.GetEnvironmentVariable("BASE_WEBAPP_URL") ?? "http://localhost:5013";
     }
 
     public async Task DisposeAsync()
