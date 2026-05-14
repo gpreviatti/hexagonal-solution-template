@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile.MockApi
     ports:
-      - "5012:5012"
+      - "5014:5014"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - OTEL_SERVICE_NAME=Hexagonal.Solution.Template.Bff.MockApi
@@ -19,7 +19,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "5013:5013"
     depends_on:
       - mock-api
     environment:
