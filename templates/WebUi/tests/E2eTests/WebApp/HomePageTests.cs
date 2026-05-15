@@ -1,37 +1,117 @@
+using E2eTests.Common;
+
 namespace E2eTests.WebApp;
 
-[Collection(nameof(WebAppBaseFixture))]
-public sealed class HomePageTests(HomePageFixture homePageFixture) : IClassFixture<HomePageFixture>, IAsyncLifetime
+public sealed class HomePageFixture : BrowserFixture
+{
+    private const string LoadingSummarySelector = "[data-testid='loading-summary']";
+    private const string SummaryTotalOrdersSelector = "[data-testid='total-orders']";
+    private const string SummaryRevenueSelector = "[data-testid='total-revenue']";
+    private const string OrdersTableSelector = "[data-testid='orders-table']";
+    private const string OrdersTableRowsSelector = "[data-testid='orders-table'] tbody tr";
+    private const string OrderItemsTableSelector = "[data-testid='order-items-table']";
+    private const string OrderItemsTableRowsSelector = "[data-testid='order-items-table'] tbody tr";
+
+    public async Task WaitForSummaryAsync() => await Page.WaitForSelectorAsync(
+        SummaryTotalOrdersSelector,
+        new() { Timeout = WaitForSelectorTimeoutMs }
+    );
+
+    public async Task<bool> IsLoadingDisplayedAsync()
+    {
+        try
+        {
+            await Page.WaitForSelectorAsync(LoadingSummarySelector, new() { Timeout = 1000 });
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public async Task<string> GetSummaryTotalOrdersAsync()
+    {
+        var element = await Page.QuerySelectorAsync(SummaryTotalOrdersSelector);
+        Assert.NotNull(element);
+
+        var textContent = await element.TextContentAsync();
+        return textContent?.Trim() ?? string.Empty;
+    }
+
+    public async Task<string> GetSummaryRevenueAsync()
+    {
+        var element = await Page.QuerySelectorAsync(SummaryRevenueSelector);
+        Assert.NotNull(element);
+
+        var textContent = await element.TextContentAsync();
+        return textContent?.Trim() ?? string.Empty;
+    }
+
+    public async Task<IReadOnlyList<IElementHandle>> GetOrderTableRowsAsync() => await Page.QuerySelectorAllAsync(OrdersTableRowsSelector);
+
+    public async Task<bool> IsOrdersTableVisibleAsync()
+    {
+        try
+        {
+            await Page.WaitForSelectorAsync(OrdersTableSelector, new() { Timeout = WaitForSelectorTimeoutMs });
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public async Task ExpandOrderItemsAsync(int rowIndex = 0)
+    {
+        var rows = await GetOrderTableRowsAsync();
+        Assert.NotEmpty(rows);
+        Assert.True(rowIndex < rows.Count, $"Row index {rowIndex} out of range. Total rows: {rows.Count}");
+
+        var row = rows[rowIndex];
+
+        var buttons = await row.QuerySelectorAllAsync("button[data-testid^='view-items-']");
+        Assert.NotEmpty(buttons);
+
+        await buttons[0].ClickAsync();
+
+        await Page.WaitForSelectorAsync(OrderItemsTableSelector, new() { Timeout = WaitForSelectorTimeoutMs });
+    }
+
+    public async Task<IReadOnlyList<IElementHandle>> GetOrderItemsTableRowsAsync() => await Page.QuerySelectorAllAsync(OrderItemsTableRowsSelector);
+
+    public async Task<bool> IsOrderItemsTableVisibleAsync()
+    {
+        try
+        {
+            await Page.WaitForSelectorAsync(OrderItemsTableSelector, new() { Timeout = WaitForSelectorTimeoutMs });
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+}
+
+[Collection(nameof(BrowserFixture))]
+public sealed class HomePageTests(HomePageFixture homePageFixture) : IClassFixture<HomePageFixture>
 {
     private readonly HomePageFixture _homePageFixture = homePageFixture;
 
-    public async Task InitializeAsync() => await _homePageFixture.InitializeAsync();
-
-    public async Task DisposeAsync() => await _homePageFixture.DisposeAsync();
-
-    /// <summary>
-    /// Test 1: Page Load - Verify loading states and data appears
-    /// Navigate to home → verify loading states shown → verify summary appears → verify orders table populated
-    /// </summary>
     [Fact(DisplayName = "Home Page - Page Load displays loading states and data")]
     public async Task GivenHomePageWhenNavigatingThenShouldLoadSummaryAndOrdersTable()
     {
-        // Arrange
-        Assert.NotNull(_homePageFixture);
-
-        // Act
-        await _homePageFixture.NavigateAsync();
-
-        // Assert - Loading state should appear initially
+        // Arrange, Act
         var isLoading = await _homePageFixture.IsLoadingDisplayedAsync();
         Assert.False(isLoading, "Loading state should not be displayed after navigation");
 
-        // Wait for summary to load
+        // Assert
         await _homePageFixture.WaitForSummaryAsync();
         var totalOrdersText = await _homePageFixture.GetSummaryTotalOrdersAsync();
         Assert.False(string.IsNullOrEmpty(totalOrdersText));
 
-        // Verify orders table is visible
         var isTableVisible = await _homePageFixture.IsOrdersTableVisibleAsync();
         Assert.True(isTableVisible);
 
@@ -39,9 +119,6 @@ public sealed class HomePageTests(HomePageFixture homePageFixture) : IClassFixtu
         Assert.NotEmpty(rows);
     }
 
-    /// <summary>
-    /// Test 2: Order Summary - Verify summary displays correct total orders count and revenue
-    /// </summary>
     [Fact(DisplayName = "Home Page - Order Summary displays total orders and revenue")]
     public async Task GivenHomePageWhenLoadedThenShouldDisplayOrderSummary()
     {
@@ -49,7 +126,7 @@ public sealed class HomePageTests(HomePageFixture homePageFixture) : IClassFixtu
         Assert.NotNull(_homePageFixture);
 
         // Act
-        await _homePageFixture.NavigateAsync();
+        await _homePageFixture.Page.NavigateAsync(_homePageFixture.WebAppUrl);
         await _homePageFixture.WaitForSummaryAsync();
 
         // Assert
@@ -59,14 +136,10 @@ public sealed class HomePageTests(HomePageFixture homePageFixture) : IClassFixtu
         var revenueText = await _homePageFixture.GetSummaryRevenueAsync();
         Assert.NotEmpty(revenueText);
 
-        // Verify both values are not just whitespace
         Assert.False(string.IsNullOrWhiteSpace(totalOrdersText));
         Assert.False(string.IsNullOrWhiteSpace(revenueText));
     }
 
-    /// <summary>
-    /// Test 3: Orders Table - Verify table has expected columns and at least 1 row
-    /// </summary>
     [Fact(DisplayName = "Home Page - Orders Table displays expected columns and rows")]
     public async Task GivenHomePageWhenLoadedThenShouldDisplayOrdersTableWithData()
     {
@@ -74,7 +147,7 @@ public sealed class HomePageTests(HomePageFixture homePageFixture) : IClassFixtu
         Assert.NotNull(_homePageFixture);
 
         // Act
-        await _homePageFixture.NavigateAsync();
+        await _homePageFixture.Page.NavigateAsync(_homePageFixture.WebAppUrl);
         await _homePageFixture.WaitForSummaryAsync();
 
         // Assert
@@ -85,22 +158,17 @@ public sealed class HomePageTests(HomePageFixture homePageFixture) : IClassFixtu
         Assert.NotEmpty(rows);
         Assert.True(rows.Count >= 1, "Should have at least one order row");
 
-        // Verify first row has content (Id, Description, Total columns at minimum)
         var firstRow = rows[0];
         var cells = await firstRow.QuerySelectorAllAsync("td");
         Assert.True(cells.Count >= 3, "Each row should have at least 3 columns (Id, Description, Total)");
 
-        // Get cell texts to verify data exists
-        var firstCellText = await WebAppBaseFixture.GetTableCellTextAsync(firstRow, 0);
-        var secondCellText = await WebAppBaseFixture.GetTableCellTextAsync(firstRow, 1);
+        var firstCellText = await PlaywrightExtensions.GetTableCellTextAsync(firstRow, 0);
+        var secondCellText = await PlaywrightExtensions.GetTableCellTextAsync(firstRow, 1);
 
         Assert.False(string.IsNullOrWhiteSpace(firstCellText), "First cell (Id) should have content");
         Assert.False(string.IsNullOrWhiteSpace(secondCellText), "Second cell (Description) should have content");
     }
 
-    /// <summary>
-    /// Test 4: Expand Items - Click "View items" on first order → verify items table appears
-    /// </summary>
     [Fact(DisplayName = "Home Page - Expand Items displays order items table")]
     public async Task GivenOrderRowWhenExpandingItemsThenShouldDisplayOrderItemsTable()
     {
@@ -108,16 +176,15 @@ public sealed class HomePageTests(HomePageFixture homePageFixture) : IClassFixtu
         Assert.NotNull(_homePageFixture);
 
         // Act
-        await _homePageFixture.NavigateAsync();
+        await _homePageFixture.Page.NavigateAsync(_homePageFixture.WebAppUrl);
         await _homePageFixture.WaitForSummaryAsync();
 
         var orderRows = await _homePageFixture.GetOrderTableRowsAsync();
         Assert.NotEmpty(orderRows);
 
-        // Expand first order's items
         await _homePageFixture.ExpandOrderItemsAsync(rowIndex: 0);
 
-        // Assert - Items table should be visible
+        // Assert
         var isItemsTableVisible = await _homePageFixture.IsOrderItemsTableVisibleAsync();
         Assert.True(isItemsTableVisible, "Order items table should be visible after expansion");
 
@@ -125,14 +192,12 @@ public sealed class HomePageTests(HomePageFixture homePageFixture) : IClassFixtu
         Assert.NotEmpty(itemRows);
         Assert.True(itemRows.Count >= 1, "Should have at least one item row");
 
-        // Verify item row has content (Id, Name, Description, Value columns)
         var firstItemRow = itemRows[0];
         var itemCells = await firstItemRow.QuerySelectorAllAsync("td");
         Assert.True(itemCells.Count >= 4, "Each item row should have at least 4 columns (Id, Name, Description, Value)");
 
-        // Verify cells have content
-        var itemIdText = await WebAppBaseFixture.GetTableCellTextAsync(firstItemRow, 0);
-        var itemNameText = await WebAppBaseFixture.GetTableCellTextAsync(firstItemRow, 1);
+        var itemIdText = await PlaywrightExtensions.GetTableCellTextAsync(firstItemRow, 0);
+        var itemNameText = await PlaywrightExtensions.GetTableCellTextAsync(firstItemRow, 1);
 
         Assert.False(string.IsNullOrWhiteSpace(itemIdText), "Item Id should have content");
         Assert.False(string.IsNullOrWhiteSpace(itemNameText), "Item Name should have content");

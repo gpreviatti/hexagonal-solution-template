@@ -112,4 +112,25 @@ public static class PlaywrightExtensions
 
         return tableData;
     }
+
+    /// <summary>
+    /// Navigate to the home page
+    /// </summary>
+    public static async Task NavigateAsync(this IPage page, string url, int timeoutMs = 30000) => await page.GotoAsync(url, new()
+    {
+        WaitUntil = WaitUntilState.NetworkIdle,
+        Timeout = timeoutMs
+    });
+
+    /// <summary>
+    /// Get text content from a table cell
+    /// </summary>
+    public static async Task<string> GetTableCellTextAsync(IElementHandle row, int cellIndex)
+    {
+        var cells = await row.QuerySelectorAllAsync("td");
+        Assert.True(cellIndex < cells.Count, $"Cell index {cellIndex} out of range. Total cells: {cells.Count}");
+
+        var textContent = await cells[cellIndex].TextContentAsync();
+        return textContent?.Trim() ?? string.Empty;
+    }
 }

@@ -1,52 +1,27 @@
+using Microsoft.Playwright.Xunit;
+
 namespace E2eTests.Common;
 
-public class BrowserFixture : IAsyncLifetime
+[CollectionDefinition(nameof(BrowserFixture))]
+public sealed class BrowserFixtureCollectionDefinition : ICollectionFixture<BrowserFixture>;
+
+public class BrowserFixture : PageTest
 {
-    private IBrowser? _browser;
-    private IBrowserContext? _browserContext;
-    private IPage? _page;
-    private readonly Configurations _config;
+    public int NavigationTimeoutMs { get; set; } = int.TryParse(Environment.GetEnvironmentVariable("NAVIGATION_TIMEOUT_MS"), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out var navTimeout) ? navTimeout : 30000;
+    public int WaitForSelectorTimeoutMs { get; set; } = int.TryParse(Environment.GetEnvironmentVariable("WAIT_FOR_SELECTOR_TIMEOUT_MS"), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out var waitTimeout) ? waitTimeout : 10000;
+    public string WebAppUrl { get; set; } = Environment.GetEnvironmentVariable("WEB_APP_URL") ?? "http://localhost:5013";
 
-    public IPage Page => _page ?? throw new InvalidOperationException("Page not initialized. Ensure InitializeAsync has been called.");
-
-    public BrowserFixture()
+    public override async Task InitializeAsync()
     {
-        _config = new Configurations();
+        await base.InitializeAsync();
+        Page.SetDefaultNavigationTimeout(NavigationTimeoutMs);
+        Page.SetDefaultTimeout(WaitForSelectorTimeoutMs);
+        await Page.GotoAsync(WebAppUrl, new() { WaitUntil = WaitUntilState.NetworkIdle });
     }
 
-    public async Task InitializeAsync()
+    public override async Task DisposeAsync()
     {
-        using var playwright = await Playwright.CreateAsync();
-
-        _browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
-        {
-            Headless = true,
-            SlowMo = 100
-        });
-
-        _browserContext = await _browser.NewContextAsync();
-
-        _page = await _browserContext.NewPageAsync();
-
-        _page.SetDefaultNavigationTimeout(_config.NavigationTimeoutMs);
-        _page.SetDefaultTimeout(_config.WaitForSelectorTimeoutMs);
-    }
-
-    public async Task DisposeAsync()
-    {
-        if (_page is not null)
-        {
-            await _page.CloseAsync();
-        }
-
-        if (_browserContext is not null)
-        {
-            await _browserContext.CloseAsync();
-        }
-
-        if (_browser is not null)
-        {
-            await _browser.CloseAsync();
-        }
+        Console.WriteLine("After each test cleanup");
+        await base.DisposeAsync();
     }
 }
