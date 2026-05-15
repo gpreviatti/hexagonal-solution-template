@@ -122,11 +122,7 @@ public sealed class HomePageTests(HomePageFixture homePageFixture) : IClassFixtu
     [Fact(DisplayName = "Home Page - Order Summary displays total orders and revenue")]
     public async Task GivenHomePageWhenLoadedThenShouldDisplayOrderSummary()
     {
-        // Arrange
-        Assert.NotNull(_homePageFixture);
-
-        // Act
-        await _homePageFixture.Page.NavigateAsync(_homePageFixture.WebAppUrl);
+        // Arrange, Act
         await _homePageFixture.WaitForSummaryAsync();
 
         // Assert
@@ -143,11 +139,7 @@ public sealed class HomePageTests(HomePageFixture homePageFixture) : IClassFixtu
     [Fact(DisplayName = "Home Page - Orders Table displays expected columns and rows")]
     public async Task GivenHomePageWhenLoadedThenShouldDisplayOrdersTableWithData()
     {
-        // Arrange
-        Assert.NotNull(_homePageFixture);
-
-        // Act
-        await _homePageFixture.Page.NavigateAsync(_homePageFixture.WebAppUrl);
+        // Arrange, Act
         await _homePageFixture.WaitForSummaryAsync();
 
         // Assert
@@ -172,11 +164,7 @@ public sealed class HomePageTests(HomePageFixture homePageFixture) : IClassFixtu
     [Fact(DisplayName = "Home Page - Expand Items displays order items table")]
     public async Task GivenOrderRowWhenExpandingItemsThenShouldDisplayOrderItemsTable()
     {
-        // Arrange
-        Assert.NotNull(_homePageFixture);
-
-        // Act
-        await _homePageFixture.Page.NavigateAsync(_homePageFixture.WebAppUrl);
+        // Arrange, Act
         await _homePageFixture.WaitForSummaryAsync();
 
         var orderRows = await _homePageFixture.GetOrderTableRowsAsync();
