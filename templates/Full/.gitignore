@@ -480,3 +480,4 @@ $RECYCLE.BIN/
 *.swp
 
 !Logs
+*.lscache
