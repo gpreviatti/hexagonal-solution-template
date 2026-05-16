@@ -101,6 +101,7 @@ else
 - Frameworks: xUnit + bUnit + Moq.
 - Prefer `data-testid` selectors for component assertions.
 - Follow fixture-based component tests (shared mocks, explicit setup per scenario).
+- For browser E2E tests, see constraints below and keep selectors/routes/texts aligned with Playwright tests.
 - Example assertion style:
   - Assert text in key metrics: `component.Find("[data-testid='total-orders']")`
   - Assert table row counts: `component.FindAll("[data-testid='orders-table'] tbody tr")`
@@ -124,6 +125,19 @@ public void GivenHomeComponentWhenRenderedThenShouldDisplayOrderSummary()
         Times.Once);
 }
 ```
+
+## E2E test constraints (Playwright)
+
+- E2E suite lives in `tests/E2eTests` and uses `Microsoft.Playwright.Xunit` with `BrowserFixture` (`tests/E2eTests/Common/BrowserFixture.cs`).
+- `BrowserFixture` auto-navigates to the app on test startup (`Page.GotoAsync(...)` with `WaitUntil = NetworkIdle`). Keep startup path and initial page behavior compatible with this.
+- Current base URL env var for E2E is `WEB_APP_URL` (default `http://localhost:5013`). Timeouts are controlled by `NAVIGATION_TIMEOUT_MS` and `WAIT_FOR_SELECTOR_TIMEOUT_MS`.
+- Do not hardcode waits/sleeps in E2E tests. Prefer selector-based waits (`WaitForSelectorAsync`) and resilient assertions.
+- Preserve `data-testid` contract used by E2E tests in `OrderPageTests` (for example: `loading-summary`, `total-orders`, `total-revenue`, `orders-table`, `order-row`, `view-items-*`, `order-items-table`, `order-item-row`). If these change, update E2E tests in the same change.
+- Keep Not Found page contract stable or update tests together:
+  - Heading `h3` text: `Not Found`
+  - Message includes wording equivalent to `content you are looking for does not exist`.
+- E2E data comes from real MockApi responses (non-deterministic values). Assert presence/shape/visibility rather than exact random totals.
+- For local E2E runs, ensure WebApp and MockApi are running before test execution.
 
 ## HTTP and observability patterns
 
