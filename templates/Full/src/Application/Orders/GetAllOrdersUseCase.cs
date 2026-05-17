@@ -5,8 +5,7 @@ using Domain.Orders;
 
 namespace Application.Orders;
 
-public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider)
-    : BaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<OrderDto>>(serviceProvider)
+public sealed class GetAllOrdersUseCase(IServiceProvider serviceProvider): BaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<OrderDto>>(serviceProvider)
 {
     public override async Task<BasePaginatedResponse<OrderDto>> HandleInternalAsync(
         BasePaginatedRequest request,

@@ -1,40 +1,20 @@
-﻿using Application.Common.Requests;
+﻿using System.ComponentModel.DataAnnotations;
+using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Common.Enums;
 using Domain.Orders;
-using FluentValidation;
 
 namespace Application.Orders;
 
 public sealed record CreateOrderRequest(
-    Guid CorrelationId,
+    [Required] Guid CorrelationId,
     string Description,
-    CreateOrderItemRequest[] Items,
+    [Required] CreateOrderItemRequest[] Items,
     string CreatedBy = "",
     string TimezoneId = ""
 ) : BaseRequest(CorrelationId, CreatedBy, TimezoneId);
 
-public sealed record CreateOrderItemRequest(string Name, string Description, decimal Value);
-
-public sealed class CreateOrderItemRequestValidator : AbstractValidator<CreateOrderItemRequest>
-{
-    public CreateOrderItemRequestValidator()
-    {
-        RuleFor(r => r.Name).NotEmpty();
-        RuleFor(r => r.Value).NotEmpty();
-    }
-}
-
-public sealed class CreateOrderRequestValidator : AbstractValidator<CreateOrderRequest>
-{
-    public CreateOrderRequestValidator()
-    {
-        RuleFor(r => r.CorrelationId).NotEmpty();
-        RuleFor(r => r.Description).NotEmpty();
-        RuleFor(r => r.Items).NotEmpty();
-        RuleForEach(r => r.Items).SetValidator(new CreateOrderItemRequestValidator());
-    }
-}
+public sealed record CreateOrderItemRequest([Required] string Name, string Description, [Required] decimal Value);
 
 public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
     : BaseInOutUseCase<CreateOrderRequest, BaseResponse<OrderDto>>(serviceProvider)

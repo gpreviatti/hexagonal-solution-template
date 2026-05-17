@@ -30,7 +30,6 @@ public sealed class GetNotificationUseCaseTests : IClassFixture<GetNotificationU
     {
         // Arrange
         var request = _fixture.SetValidRequest();
-        _fixture.SetSuccessfulValidator(request);
         var expectedNotification = _fixture.AutoFixture.Build<Notification>()
             .With(n => n.Id, request.Id)
             .Create();
@@ -59,7 +58,6 @@ public sealed class GetNotificationUseCaseTests : IClassFixture<GetNotificationU
     {
         // Arrange
         var request = _fixture.SetValidRequest();
-        _fixture.SetFailedValidator(request);
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
@@ -80,7 +78,6 @@ public sealed class GetNotificationUseCaseTests : IClassFixture<GetNotificationU
     {
         // Arrange
         var request = _fixture.SetValidRequest();
-        _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetupQueryable<Notification>([]);
 
         // Act

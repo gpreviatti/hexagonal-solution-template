@@ -1,27 +1,18 @@
+using System.ComponentModel.DataAnnotations;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Common.Enums;
 using Domain.Orders;
-using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Orders;
 
 public sealed record DeleteOrderRequest(
-    Guid CorrelationId,
-    int OrderId,
+    [Required] Guid CorrelationId,
+    [Required] int OrderId,
     string DeletedBy = "",
     string TimezoneId = ""
 ) : BaseRequest(CorrelationId, DeletedBy, TimezoneId);
-
-public sealed class DeleteOrderRequestValidator : AbstractValidator<DeleteOrderRequest>
-{
-    public DeleteOrderRequestValidator()
-    {
-        RuleFor(r => r.CorrelationId).NotEmpty();
-        RuleFor(r => r.OrderId).NotEmpty();
-    }
-}
 
 public sealed class DeleteOrderUseCase(IServiceProvider serviceProvider)
     : BaseInOutUseCase<DeleteOrderRequest, BaseResponse>(serviceProvider)

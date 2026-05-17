@@ -1,29 +1,19 @@
+using System.ComponentModel.DataAnnotations;
 using Application.Common.Helpers;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Common.Enums;
 using Domain.Notifications;
-using FluentValidation;
 
 namespace Application.Notifications;
 
 public sealed record CreateNotificationRequest(
-    Guid CorrelationId,
-    NotificationType NotificationType,
-    NotificationStatus NotificationStatus,
+    [Required] Guid CorrelationId,
+    [Required, EnumDataType(typeof(NotificationType))] NotificationType NotificationType,
+    [Required, EnumDataType(typeof(NotificationStatus))] NotificationStatus NotificationStatus,
     string? CreatedBy = null,
     object? Message = null
 ) : BaseRequest(CorrelationId);
-
-public sealed class CreateNotificationRequestValidator : AbstractValidator<CreateNotificationRequest>
-{
-    public CreateNotificationRequestValidator()
-    {
-        RuleFor(r => r.CorrelationId).NotEmpty();
-        RuleFor(r => r.NotificationType).IsInEnum();
-        RuleFor(r => r.NotificationStatus).IsInEnum();
-    }
-}
 
 public sealed class CreateNotificationUseCase(IServiceProvider serviceProvider) : BaseInUseCase<CreateNotificationRequest>(serviceProvider)
 {

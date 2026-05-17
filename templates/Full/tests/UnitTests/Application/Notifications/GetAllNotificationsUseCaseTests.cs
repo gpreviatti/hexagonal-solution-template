@@ -32,7 +32,6 @@ public sealed class GetAllNotificationsUseCaseTests : IClassFixture<GetAllNotifi
         // Arrange
         var totalRecords = 5;
         var request = GetAllNotificationsUseCaseFixture.SetValidBasePaginatedRequest();
-        _fixture.SetSuccessfulValidator(request);
         var expectedNotifications = _fixture.AutoFixture.CreateMany<NotificationDto>(totalRecords);
 
         _fixture.MockRepository.SetValidGetAllPaginatedAsyncNoIncludes<Notification, NotificationDto>(expectedNotifications, totalRecords);
@@ -59,7 +58,6 @@ public sealed class GetAllNotificationsUseCaseTests : IClassFixture<GetAllNotifi
     {
         // Arrange
         var request = GetAllNotificationsUseCaseFixture.SetValidBasePaginatedRequest();
-        _fixture.SetFailedValidator(request);
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
@@ -79,7 +77,6 @@ public sealed class GetAllNotificationsUseCaseTests : IClassFixture<GetAllNotifi
     {
         // Arrange
         var request = GetAllNotificationsUseCaseFixture.SetValidBasePaginatedRequest();
-        _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetInvalidGetAllPaginatedAsync<Notification, NotificationDto>();
 
         // Act

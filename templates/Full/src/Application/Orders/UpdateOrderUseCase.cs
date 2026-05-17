@@ -1,43 +1,26 @@
+using System.ComponentModel.DataAnnotations;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Common.Enums;
 using Domain.Orders;
-using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Orders;
 
 public sealed record UpdateOrderRequest(
-    Guid CorrelationId,
-    int OrderId,
-    string Description,
-    UpdateOrderItemRequest[] Items,
+    [Required] Guid CorrelationId,
+    [Required] int OrderId,
+    [Required] string Description,
+    [Required] UpdateOrderItemRequest[] Items,
     string ModifiedBy = "",
     string TimezoneId = ""
 ) : BaseRequest(CorrelationId, ModifiedBy, TimezoneId);
 
-public sealed record UpdateOrderItemRequest(string Name, string Description, decimal Value);
-
-public sealed class UpdateOrderItemRequestValidator : AbstractValidator<UpdateOrderItemRequest>
-{
-    public UpdateOrderItemRequestValidator()
-    {
-        RuleFor(r => r.Name).NotEmpty();
-        RuleFor(r => r.Value).NotEmpty();
-    }
-}
-
-public sealed class UpdateOrderRequestValidator : AbstractValidator<UpdateOrderRequest>
-{
-    public UpdateOrderRequestValidator()
-    {
-        RuleFor(r => r.CorrelationId).NotEmpty();
-        RuleFor(r => r.OrderId).NotEmpty();
-        RuleFor(r => r.Description).NotEmpty();
-        RuleFor(r => r.Items).NotEmpty();
-        RuleForEach(r => r.Items).SetValidator(new UpdateOrderItemRequestValidator());
-    }
-}
+public sealed record UpdateOrderItemRequest(
+    [Required] string Name,
+    string Description,
+    [Required] decimal Value
+);
 
 public sealed class UpdateOrderUseCase(IServiceProvider serviceProvider)
     : BaseInOutUseCase<UpdateOrderRequest, BaseResponse<OrderDto>>(serviceProvider)

@@ -5,8 +5,7 @@ using Domain.Notifications;
 
 namespace Application.Notifications;
 
-public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider)
-    : BaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<NotificationDto>>(serviceProvider)
+public sealed class GetAllNotificationsUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<NotificationDto>>(serviceProvider)
 {
     public override async Task<BasePaginatedResponse<NotificationDto>> HandleInternalAsync(
         BasePaginatedRequest request,

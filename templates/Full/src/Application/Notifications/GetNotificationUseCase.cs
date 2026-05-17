@@ -1,22 +1,16 @@
+using System.ComponentModel.DataAnnotations;
 using Application.Common.Helpers;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Notifications;
-using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Notifications;
 
-public sealed record GetNotificationRequest(Guid CorrelationId, int Id) : BaseRequest(CorrelationId);
-
-public sealed class GetNotificationRequestValidator : AbstractValidator<GetNotificationRequest>
-{
-    public GetNotificationRequestValidator()
-    {
-        RuleFor(r => r.CorrelationId).NotEmpty();
-        RuleFor(r => r.Id).GreaterThan(0);
-    }
-}
+public sealed record GetNotificationRequest(
+    [Required] Guid CorrelationId,
+    [Required] int Id
+) : BaseRequest(CorrelationId);
 
 public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)
     : BaseInOutUseCase<GetNotificationRequest, BaseResponse<NotificationDto>>(serviceProvider)

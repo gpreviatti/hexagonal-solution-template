@@ -36,7 +36,6 @@ public sealed class Program
         builder.Services
             .AddDomain()
             .AddApplication();
-
         builder.AddInfrastructure();
 
         builder.WebHost.ConfigureKestrel(options =>

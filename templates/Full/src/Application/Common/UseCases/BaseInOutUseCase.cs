@@ -1,10 +1,10 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using Application.Common.Helpers;
 using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Common.Services;
 using Domain.Common.Extensions;
-using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application.Common.UseCases;
@@ -22,7 +22,6 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData>(IServiceProvider
 {
     protected IHybridCacheService Cache { get; } = serviceProvider.GetRequiredService<IHybridCacheService>();
     protected IBaseRepository Repository { get; } = serviceProvider.GetRequiredService<IBaseRepository>();
-    private readonly IValidator<TRequest> _validator = serviceProvider.GetRequiredService<IValidator<TRequest>>();
     protected const string HandleMethodName = nameof(HandleAsync);
 
     public async Task<TResponseData> HandleAsync(
@@ -37,28 +36,25 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData>(IServiceProvider
         Logs.StartingOperation(Logger, request.CorrelationId);
         TResponseData response;
 
-        if (_validator != null)
+        var validationContext = new ValidationContext(request);
+        if (!Validator.TryValidateObject(request, validationContext, null, true))
         {
-            var validationResult = await _validator.ValidateAsync(request, cancellationToken);
-            if (!validationResult.IsValid)
+            string errors = string.Join(", ", validationContext.Items.Values.SelectMany(v => v as IEnumerable<ValidationResult> ?? []).Select(e => e.ErrorMessage));
+
+            Logs.ValidationErrors(Logger, request.CorrelationId, errors);
+
+            response = Activator.CreateInstance<TResponseData>();
+            response = response with
             {
-                string errors = string.Join(", ", validationResult.Errors);
+                Success = false,
+                Message = errors
+            };
 
-                Logs.ValidationErrors(Logger, request.CorrelationId, errors);
+            UseCaseFailedMetric.Add(1);
 
-                response = Activator.CreateInstance<TResponseData>();
-                response = response with
-                {
-                    Success = false,
-                    Message = errors
-                };
+            activity?.SetStatus(ActivityStatusCode.Error, errors);
 
-                UseCaseFailedMetric.Add(1);
-
-                activity?.SetStatus(ActivityStatusCode.Error, errors);
-
-                return response!;
-            }
+            return response!;
         }
 
         response = await HandleInternalAsync(request, cancellationToken);

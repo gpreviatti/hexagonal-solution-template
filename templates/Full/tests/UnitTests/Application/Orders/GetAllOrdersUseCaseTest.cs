@@ -26,7 +26,6 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         // Arrange
         var totalRecords = 5;
         var request = _fixture.SetValidBasePaginatedRequest();
-        _fixture.SetSuccessfulValidator(request);
         var expectedOrders = _fixture.AutoFixture.CreateMany<OrderDto>(totalRecords);
 
         _fixture.MockRepository.SetValidGetAllPaginatedAsyncNoIncludes<Order, OrderDto>(expectedOrders, totalRecords);
@@ -54,7 +53,6 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
     {
         // Arrange
         var request = _fixture.SetValidBasePaginatedRequest();
-        _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetInvalidGetAllPaginatedAsync<Order, OrderDto>();
 
         // Act
@@ -77,7 +75,6 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
     {
         // Arrange
         var request = _fixture.SetValidBasePaginatedRequest();
-        _fixture.SetFailedValidator(request);
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);

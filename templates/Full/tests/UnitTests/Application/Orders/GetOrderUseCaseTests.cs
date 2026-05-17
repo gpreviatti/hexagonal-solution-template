@@ -34,7 +34,6 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         var expectedOrder = resultCreateOrder.Value;
         var request = _fixture.SetValidRequest(resultCreateOrder.Value.Id);
         request = request with { Id = expectedOrder.Id };
-        _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetupQueryable(request.CorrelationId, null, [expectedOrder]);
 
         // Act
@@ -62,7 +61,6 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
     {
         // Arrange
         var request = _fixture.SetValidRequest();
-        _fixture.SetFailedValidator(request);
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
@@ -83,7 +81,6 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
     {
         // Arrange
         var request = _fixture.SetValidRequest();
-        _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetupQueryable<Order>(request.CorrelationId, null, []);
 
         // Act
@@ -114,7 +111,6 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         );
         var expectedOrder = resultCreateOrder.Value;
         var request = _fixture.SetValidRequest(expectedOrder.Id);
-        _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetupQueryable(request.CorrelationId, null, [expectedOrder]);
 
         // Act
@@ -144,7 +140,6 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         );
         var expectedOrder = resultCreateOrder.Value;
         var request = _fixture.SetValidRequest(expectedOrder.Id);
-        _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetupQueryable(request.CorrelationId, null, [expectedOrder]);
 
         // Act
@@ -184,14 +179,12 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         );
         var expectedOrder = resultCreateOrder.Value;
         var request = _fixture.SetValidRequest(expectedOrder.Id);
-        _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetupQueryable(request.CorrelationId, null, [expectedOrder]);
 
         // Act
         var result1 = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
 
         _fixture.ClearInvocations();
-        _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetupQueryable(request.CorrelationId, null, [expectedOrder]);
 
         var result2 = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
@@ -218,7 +211,6 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         );
         var expectedOrder = resultCreateOrder.Value;
         var request = _fixture.SetValidRequest(expectedOrder.Id);
-        _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetupQueryable(request.CorrelationId, null, [expectedOrder]);
 
         // Act
