@@ -156,6 +156,9 @@ csharp_space_between_method_declaration_parameter_list_parentheses = false
 csharp_space_between_parentheses = false
 csharp_space_between_square_brackets = false
 
+# Analyzer diagnostics
+dotnet_diagnostic.severity = error
+
 # S3216: "ConfigureAwait(false)" should be used
 dotnet_diagnostic.S3216.severity = none
 
@@ -164,16 +167,6 @@ dotnet_diagnostic.S2360.severity = none
 
 # CS8618: Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 dotnet_diagnostic.CS8618.severity = none
-
-# CA1873: Avoid potentially expensive logging
-dotnet_diagnostic.CA1873.severity = none
-
-# Name can be simplified
-dotnet_diagnostic.IDE0002.severity = error
-
-# Using directive is unnecessary
-dotnet_diagnostic.IDE0005.severity = error
-dotnet_diagnostic.IDE0059.severity = error
 
 # Xml project files
 [*.{csproj,vbproj,vcxproj,vcxproj.filters,proj,nativeproj,locproj}]
