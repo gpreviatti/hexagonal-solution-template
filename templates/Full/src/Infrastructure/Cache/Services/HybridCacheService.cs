@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using Application.Common.Helpers;
 using Application.Common.Services;
 using Domain.Common;
@@ -14,6 +15,8 @@ internal sealed class HybridCacheService(HybridCache cache, ILogger<HybridCacheS
     private readonly ILogger<HybridCacheService> _logger = logger;
     private readonly string _className = nameof(HybridCacheService);
     private readonly ActivitySource _activities = DefaultConfigurations.ActivitySource;
+    private readonly string _cacheHitMessage = "Cache hit: {0} for key: {1}";
+    private readonly string _cacheRemovedMessage = "Cache entry removed for key: {0}";
     public async ValueTask<TResult> GetOrCreateAsync<TResult>(
         Guid correlationId,
         string key,
@@ -27,7 +30,7 @@ internal sealed class HybridCacheService(HybridCache cache, ILogger<HybridCacheS
         Logs.DebugStartingOperation(_logger, correlationId, key);
         var result = await _cache.GetOrCreateAsync($"{DefaultConfigurations.ApplicationName}:{key}", factory, cancellationToken: cancellationToken);
 
-        Logs.DebugFinishedOperation(_logger, correlationId, $"Cache hit: {result != null} for key: {key}");
+        Logs.DebugFinishedOperation(_logger, correlationId, string.Format(CultureInfo.InvariantCulture, _cacheHitMessage, result, key));
 
         activity?.SetTag("key", key);
 
@@ -43,7 +46,7 @@ internal sealed class HybridCacheService(HybridCache cache, ILogger<HybridCacheS
 
         await _cache.SetAsync($"{DefaultConfigurations.ApplicationName}:{key}", value, cancellationToken: cancellationToken);
 
-        Logs.DebugFinishedOperation(_logger, correlationId, $"Cached hit: {value != null} for key: {key}");
+        Logs.DebugFinishedOperation(_logger, correlationId, $"Cached hit: {value} for key: {key}");
 
         activity?.SetTag("key", key);
     }
