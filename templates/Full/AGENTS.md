@@ -169,26 +169,6 @@ public sealed record CreateOrderRequest(
 
 public sealed record CreateOrderItemRequest(string Name, string Description, decimal Value);
 
-public sealed class CreateOrderItemRequestValidator : AbstractValidator<CreateOrderItemRequest>
-{
-    public CreateOrderItemRequestValidator()
-    {
-        RuleFor(r => r.Name).NotEmpty();
-        RuleFor(r => r.Value).NotEmpty();
-    }
-}
-
-public sealed class CreateOrderRequestValidator : AbstractValidator<CreateOrderRequest>
-{
-    public CreateOrderRequestValidator()
-    {
-        RuleFor(r => r.CorrelationId).NotEmpty();
-        RuleFor(r => r.Description).NotEmpty();
-        RuleFor(r => r.Items).NotEmpty();
-        RuleForEach(r => r.Items).SetValidator(new CreateOrderItemRequestValidator());
-    }
-}
-
 public sealed class CreateOrderUseCase : BaseInOutUseCase<CreateOrderRequest, OrderDto>
 {
     private readonly IBaseRepository<Order> _repository;
@@ -198,9 +178,8 @@ public sealed class CreateOrderUseCase : BaseInOutUseCase<CreateOrderRequest, Or
     public CreateOrderUseCase(
         IBaseRepository<Order> repository,
         IProduceService producer,
-        IValidator<CreateOrderRequest> validator,
-        ILogger<CreateOrderUseCase> logger)
-        : base(validator)
+        ILogger<CreateOrderUseCase> logger
+    ) : base(validator)
     {
         _repository = repository;
         _producer = producer;
@@ -331,7 +310,8 @@ public sealed class OrderEndpoints
         [FromBody] CreateOrderRequest request,
         [FromHeader] Guid correlationId,
         CreateOrderUseCase useCase,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         var result = await useCase.Execute(request, cancellationToken);
         return result.IsFailure
@@ -438,7 +418,6 @@ tests/CommonTests/            # Shared fixtures (BaseApplicationFixture<T>)
 - Auto-mocked `IBaseRepository<T>` for all entities
 - Auto-mocked `IProduceService` for message publishing
 - Auto-mocked `IHybridCacheService` for caching
-- Auto-validated request via injected `IValidator<TRequest>`
 - Logger injection
 
 **Example unit test:**
