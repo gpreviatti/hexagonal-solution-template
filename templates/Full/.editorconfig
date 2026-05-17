@@ -177,6 +177,7 @@ dotnet_diagnostic.IDE0002.severity = error
 
 # Using directive is unnecessary
 dotnet_diagnostic.IDE0005.severity = error
+dotnet_diagnostic.IDE0051.severity = error
 dotnet_diagnostic.IDE0059.severity = error
 
 # Xml project files
