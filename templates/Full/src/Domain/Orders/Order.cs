@@ -1,5 +1,4 @@
 using Domain.Common;
-using Domain.Common.Extensions;
 
 namespace Domain.Orders;
 
@@ -90,14 +89,10 @@ public sealed class Order : DomainEntity
 
     public string GetPeriodSinceWasCreated()
     {
-        using var activity = ActivitySource.StartActivity($"{EntityName}.{nameof(GetPeriodSinceWasCreated)}");
-        activity.SetDefaultTags();
-
         if (CreatedAt == default)
             return "CreatedAt was not set.";
 
         var timeSinceCreation = DateTime.UtcNow - CreatedAt;
-        activity?.SetTag(nameof(timeSinceCreation), timeSinceCreation.ToString());
 
         if (timeSinceCreation.TotalSeconds < 60)
             return $"{(int) timeSinceCreation.TotalSeconds} seconds ago";

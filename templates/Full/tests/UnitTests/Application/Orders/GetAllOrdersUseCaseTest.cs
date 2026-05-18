@@ -8,6 +8,8 @@ namespace UnitTests.Application.Orders;
 public sealed class GetAllOrdersUseCaseFixture : BaseApplicationFixture<BasePaginatedRequest, GetAllOrdersUseCase>
 {
     public GetAllOrdersUseCaseFixture() => UseCase = new(MockServiceProvider.Object);
+
+    public static BasePaginatedRequest SetInvalidBasePaginatedRequest() => new(Guid.NewGuid(), 0, 10);
 }
 
 public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseFixture>
@@ -26,7 +28,6 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         // Arrange
         var totalRecords = 5;
         var request = _fixture.SetValidBasePaginatedRequest();
-        _fixture.SetSuccessfulValidator(request);
         var expectedOrders = _fixture.AutoFixture.CreateMany<OrderDto>(totalRecords);
 
         _fixture.MockRepository.SetValidGetAllPaginatedAsyncNoIncludes<Order, OrderDto>(expectedOrders, totalRecords);
@@ -54,7 +55,6 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
     {
         // Arrange
         var request = _fixture.SetValidBasePaginatedRequest();
-        _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetInvalidGetAllPaginatedAsync<Order, OrderDto>();
 
         // Act
@@ -76,8 +76,7 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
     public async Task GivenAnInvalidRequestThenFails()
     {
         // Arrange
-        var request = _fixture.SetValidBasePaginatedRequest();
-        _fixture.SetFailedValidator(request);
+        var request = GetAllOrdersUseCaseFixture.SetInvalidBasePaginatedRequest();
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);

@@ -1,10 +1,10 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using Application.Common.Helpers;
 using Application.Common.Repositories;
 using Application.Common.Requests;
 using Application.Common.Services;
 using Domain.Common.Extensions;
-using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application.Common.UseCases;
@@ -18,30 +18,23 @@ public abstract class BaseInUseCase<TRequest>(IServiceProvider serviceProvider) 
 {
     protected IHybridCacheService Cache { get; } = serviceProvider.GetRequiredService<IHybridCacheService>();
     protected IBaseRepository Repository { get; } = serviceProvider.GetRequiredService<IBaseRepository>();
-    private readonly IValidator<TRequest> _validator = serviceProvider.GetRequiredService<IValidator<TRequest>>();
     protected const string HandleMethodName = nameof(HandleAsync);
 
-    public async Task HandleAsync(
-        TRequest request,
-        CancellationToken cancellationToken
-    )
+    public async Task HandleAsync(TRequest request, CancellationToken cancellationToken)
     {
         using var activity = ActivitySource.StartActivity($"{ClassName}");
         activity.SetDefaultTags();
 
         Logs.StartingOperation(Logger, request.CorrelationId);
 
-        if (_validator != null)
+        var validationContext = new ValidationContext(request);
+        if (!Validator.TryValidateObject(request, validationContext, null, true))
         {
-            var validationResult = await _validator.ValidateAsync(request, cancellationToken);
-            if (!validationResult.IsValid)
-            {
-                var errors = string.Join(", ", validationResult.Errors);
-                Logs.ValidationErrors(Logger, request.CorrelationId, errors);
-                UseCaseFailedMetric.Add(1);
-                activity?.SetStatus(ActivityStatusCode.Error, errors);
-                return;
-            }
+            string errors = string.Join(", ", validationContext.Items.Values.SelectMany(v => v as IEnumerable<ValidationResult> ?? []).Select(e => e.ErrorMessage));
+            Logs.ValidationErrors(Logger, request.CorrelationId, errors);
+            UseCaseFailedMetric.Add(1);
+            activity?.SetStatus(ActivityStatusCode.Error, errors);
+            return;
         }
 
         await HandleInternalAsync(request, cancellationToken);

@@ -1,81 +1,9 @@
 using Application.Common.Messages;
 using Application.Orders;
 using Domain.Orders;
-using FluentValidation;
-using FluentValidation.TestHelper;
 using UnitTests.Application.Common;
 
 namespace UnitTests.Application.Orders;
-
-public sealed class UpdateOrderRequestValidationFixture
-{
-    public IValidator<UpdateOrderRequest> Validator { get; } = new UpdateOrderRequestValidator();
-
-    public static UpdateOrderRequest GetValidRequest() => new(Guid.NewGuid(), 1, "updated order", [
-        new("item1", "description1", 10.0m),
-        new("item2", "description2", 20.0m)
-    ]);
-}
-
-public sealed class UpdateOrderRequestValidationTests(UpdateOrderRequestValidationFixture fixture) : IClassFixture<UpdateOrderRequestValidationFixture>
-{
-    private readonly UpdateOrderRequestValidationFixture _fixture = fixture;
-
-    [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
-    public async Task GivenAValidRequestThenPass()
-    {
-        // Arrange
-        var request = UpdateOrderRequestValidationFixture.GetValidRequest();
-
-        // Act
-        var result = await _fixture.Validator.TestValidateAsync(request);
-
-        // Assert
-        result.ShouldNotHaveAnyValidationErrors();
-    }
-
-    [Fact(DisplayName = nameof(GivenAnInvalidRequestThenFails))]
-    public async Task GivenAnInvalidRequestThenFails()
-    {
-        // Arrange
-        var request = UpdateOrderRequestValidationFixture.GetValidRequest() with
-        {
-            CorrelationId = Guid.Empty,
-            OrderId = 0,
-            Description = string.Empty,
-            Items = []
-        };
-
-        // Act
-        var result = await _fixture.Validator.TestValidateAsync(request);
-
-        // Assert
-        result.ShouldHaveValidationErrorFor("CorrelationId");
-        result.ShouldHaveValidationErrorFor("OrderId");
-        result.ShouldHaveValidationErrorFor("Description");
-        result.ShouldHaveValidationErrorFor("Items");
-    }
-
-    [Fact(DisplayName = nameof(GivenAnInvalidItemThenFails))]
-    public async Task GivenAnInvalidItemThenFails()
-    {
-        // Arrange
-        var request = UpdateOrderRequestValidationFixture.GetValidRequest() with
-        {
-            Items =
-            [
-                new("", "invalid item", 0m)
-            ]
-        };
-
-        // Act
-        var result = await _fixture.Validator.TestValidateAsync(request);
-
-        // Assert
-        result.ShouldHaveValidationErrorFor("Items[0].Name");
-        result.ShouldHaveValidationErrorFor("Items[0].Value");
-    }
-}
 
 public sealed class UpdateOrderUseCaseFixture : BaseApplicationFixture<UpdateOrderRequest, UpdateOrderUseCase>
 {
@@ -86,6 +14,9 @@ public sealed class UpdateOrderUseCaseFixture : BaseApplicationFixture<UpdateOrd
         var items = AutoFixture.CreateMany<UpdateOrderItemRequest>(1);
         return new(Guid.NewGuid(), orderId, "Updated Order", [.. items]);
     }
+
+    public static UpdateOrderRequest SetInvalidRequest() =>
+        new(Guid.Empty, 0, "Updated Order", [new("Item1", "Desc1", 1m)]);
 
     public static Order CreateOrder() => Order.Create(
         "Original Order",
@@ -110,7 +41,6 @@ public sealed class UpdateOrderUseCaseTest : IClassFixture<UpdateOrderUseCaseFix
         // Arrange
         var order = UpdateOrderUseCaseFixture.CreateOrder();
         var request = _fixture.SetValidRequest(order.Id);
-        _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetupQueryable(request.CorrelationId, null, [order]);
         _fixture.MockRepository.SetSuccessfulUpdate<Order>();
 
@@ -136,8 +66,7 @@ public sealed class UpdateOrderUseCaseTest : IClassFixture<UpdateOrderUseCaseFix
     public async Task GivenAnInvalidRequestThenFails()
     {
         // Arrange
-        var request = _fixture.SetValidRequest();
-        _fixture.SetFailedValidator(request);
+        var request = UpdateOrderUseCaseFixture.SetInvalidRequest();
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
@@ -159,7 +88,6 @@ public sealed class UpdateOrderUseCaseTest : IClassFixture<UpdateOrderUseCaseFix
     {
         // Arrange
         var request = _fixture.SetValidRequest();
-        _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetupQueryable<Order>(request.CorrelationId, null, []);
 
         // Act
@@ -185,7 +113,6 @@ public sealed class UpdateOrderUseCaseTest : IClassFixture<UpdateOrderUseCaseFix
         order.Delete("System");
 
         var request = _fixture.SetValidRequest(order.Id);
-        _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetupQueryable(request.CorrelationId, null, [order]);
 
         // Act
@@ -208,7 +135,6 @@ public sealed class UpdateOrderUseCaseTest : IClassFixture<UpdateOrderUseCaseFix
         // Arrange
         var order = UpdateOrderUseCaseFixture.CreateOrder();
         var request = _fixture.SetValidRequest(order.Id);
-        _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetupQueryable(request.CorrelationId, null, [order]);
         _fixture.MockRepository.SetFailedUpdate<Order>();
 
@@ -236,7 +162,6 @@ public sealed class UpdateOrderUseCaseTest : IClassFixture<UpdateOrderUseCaseFix
         var item2 = new UpdateOrderItemRequest("NewItem2", "NewDesc2", 250m);
         var request = new UpdateOrderRequest(Guid.NewGuid(), order.Id, "Updated Description", [item1, item2]);
 
-        _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetupQueryable(request.CorrelationId, null, [order]);
         _fixture.MockRepository.SetSuccessfulUpdate<Order>();
 
@@ -258,7 +183,6 @@ public sealed class UpdateOrderUseCaseTest : IClassFixture<UpdateOrderUseCaseFix
         var order = UpdateOrderUseCaseFixture.CreateOrder();
         var request = new UpdateOrderRequest(Guid.NewGuid(), order.Id, "Updated Order", []);
 
-        _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetupQueryable(request.CorrelationId, null, [order]);
 
         // Act

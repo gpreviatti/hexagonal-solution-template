@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 namespace Domain.Common;
 
 public abstract class DomainEntity
@@ -19,7 +17,6 @@ public abstract class DomainEntity
         UpdatedBy = CreatedBy;
         UpdatedByTimezoneId = CreatedByTimezoneId;
     }
-    protected static ActivitySource ActivitySource { get; } = DefaultConfigurations.ActivitySource;
     public int Id { get; init; }
     public DateTime CreatedAt { get; init; }
     public string? CreatedBy { get; init; }

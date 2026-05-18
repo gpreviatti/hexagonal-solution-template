@@ -9,14 +9,9 @@ namespace IntegrationTests.WebApp.Http.Orders;
 
 public class GetAllOrdersTestFixture : BaseHttpFixture
 {
-    public static BasePaginatedRequest SetValidRequest() =>
-        new(Guid.NewGuid(), 1, 10);
-
-    public static BasePaginatedRequest SetInvalidPageRequest() =>
-        new(Guid.NewGuid(), 0, 10);
-
-    public static BasePaginatedRequest SetInvalidPageSizeRequest() =>
-        new(Guid.NewGuid(), 1, 0);
+    public static BasePaginatedRequest SetValidRequest() => new(Guid.NewGuid(), 1, 10);
+    public static BasePaginatedRequest SetInvalidPageRequest() => new(Guid.NewGuid(), 0, 10);
+    public static BasePaginatedRequest SetInvalidPageSizeRequest() => new(Guid.NewGuid(), 1, 0);
 }
 
 [Collection("WebApplicationFactoryCollectionDefinition")]
@@ -80,7 +75,7 @@ public class GetAllOrdersTest : IClassFixture<GetAllOrdersTestFixture>
         Assert.NotNull(result);
         Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
         Assert.False(response!.Success);
-        Assert.Contains("PageSize must be greater than 0", response.Message);
+        Assert.Contains("PageSize must be between 1 and 100", response.Message);
     }
 
     [Fact(DisplayName = nameof(GivenAnValidRequestWhenPassSearchByValuesFilterThenPass))]

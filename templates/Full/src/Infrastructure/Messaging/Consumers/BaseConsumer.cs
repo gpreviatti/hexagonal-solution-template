@@ -57,8 +57,8 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
 
         var connection = _factory.CreateConnectionAsync().GetAwaiter().GetResult();
         _channel = connection.CreateChannelAsync().GetAwaiter().GetResult();
-
-        Logs.Debug(logger, Guid.NewGuid(), "Connected to RabbitMQ. Declaring queues.");
+        var randomGuid = Guid.NewGuid();
+        Logs.Debug(logger, randomGuid, "Connected to RabbitMQ. Declaring queues.");
 
         _channel.QueueDeclareAsync(queue: _queueName, durable: true, exclusive: false, autoDelete: false, arguments: _arguments);
         _channel.QueueDeclareAsync(queue: _queueName + "_deadLetter", durable: true, exclusive: false, autoDelete: false, arguments: _arguments);
@@ -123,7 +123,8 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
         CancellationToken cancellationToken
     )
     {
-        Logs.Debug(logger, Guid.NewGuid(), "Starting to consume messages.");
+        var randomGuid = Guid.NewGuid();
+        Logs.Debug(logger, randomGuid, "Starting to consume messages.");
 
         AsyncEventingBasicConsumer consumer = new(_channel);
 
@@ -135,7 +136,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
             TMessage message = null!;
             try
             {
-                Logs.Debug(logger, Guid.NewGuid(), "Message received. Deserializing.");
+                Logs.Debug(logger, randomGuid, "Message received. Deserializing.");
 
                 message = JsonSerializer.Deserialize<TMessage>(body)!;
 
@@ -143,19 +144,19 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
 
                 if (message == null || message.GetType() != typeof(TMessage))
                 {
-                    Logs.Warning(logger, Guid.NewGuid(), typeof(TMessage).Name + " is null or of incorrect type.");
+                    Logs.Warning(logger, randomGuid, typeof(TMessage).Name + " is null or of incorrect type.");
                     return;
                 }
             }
             catch (JsonException ex)
             {
-                Logs.Error(logger, Guid.NewGuid(), ex.Message);
+                Logs.Error(logger, randomGuid, ex.Message);
 
                 throw;
             }
             catch (Exception ex)
             {
-                Logs.Error(logger, Guid.NewGuid(), ex.Message);
+                Logs.Error(logger, randomGuid, ex.Message);
 
                 throw;
             }

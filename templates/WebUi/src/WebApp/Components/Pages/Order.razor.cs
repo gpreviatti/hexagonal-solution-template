@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Components;
 
 namespace WebApp.Components.Pages;
 
-public partial class Home(IServiceProvider serviceProvider) : ComponentBase
+public partial class Order(IServiceProvider serviceProvider) : ComponentBase
 {
     private readonly IBaseHttpService _ordersHttpService = serviceProvider
         .GetRequiredKeyedService<IBaseHttpService>(ServicesKey.Orders.ToString());
-    private readonly ILogger<Home> _logger = serviceProvider.GetRequiredService<ILogger<Home>>();
+    private readonly ILogger<Order> _logger = serviceProvider.GetRequiredService<ILogger<Order>>();
     private OrderSummaryDto? _summary;
     private IEnumerable<OrderDto>? _orders;
     private OrderDto? _selectedOrder;

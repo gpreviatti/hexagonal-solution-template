@@ -1,57 +1,9 @@
 using Application.Notifications;
 using Domain.Common.Enums;
 using Domain.Notifications;
-using FluentValidation;
-using FluentValidation.TestHelper;
 using UnitTests.Application.Common;
 
 namespace UnitTests.Application.Notifications;
-
-public sealed class CreateNotificationRequestValidationFixture
-{
-    public IValidator<CreateNotificationRequest> Validator { get; } = new CreateNotificationRequestValidator();
-
-    public static CreateNotificationRequest GetValidRequest() =>
-        new(Guid.NewGuid(), NotificationType.OrderCreated, NotificationStatus.Pending, "System", new { Test = "Message" });
-}
-
-public sealed class CreateNotificationRequestValidationTests(CreateNotificationRequestValidationFixture fixture) : IClassFixture<CreateNotificationRequestValidationFixture>
-{
-    private readonly CreateNotificationRequestValidationFixture _fixture = fixture;
-
-    [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
-    public async Task GivenAValidRequestThenPass()
-    {
-        // Arrange
-        var request = CreateNotificationRequestValidationFixture.GetValidRequest();
-
-        // Act
-        var result = await _fixture.Validator.TestValidateAsync(request);
-
-        // Assert
-        result.ShouldNotHaveAnyValidationErrors();
-    }
-
-    [Fact(DisplayName = nameof(GivenAnInvalidRequestThenFails))]
-    public async Task GivenAnInvalidRequestThenFails()
-    {
-        // Arrange
-        var request = CreateNotificationRequestValidationFixture.GetValidRequest() with
-        {
-            CorrelationId = Guid.Empty,
-            NotificationType = (NotificationType) (-1),
-            NotificationStatus = (NotificationStatus) (-1)
-        };
-
-        // Act
-        var result = await _fixture.Validator.TestValidateAsync(request);
-
-        // Assert
-        result.ShouldHaveValidationErrorFor("CorrelationId");
-        result.ShouldHaveValidationErrorFor("NotificationType");
-        result.ShouldHaveValidationErrorFor("NotificationStatus");
-    }
-}
 
 public sealed class CreateNotificationUseCaseFixture : BaseApplicationFixture<CreateNotificationRequest, CreateNotificationUseCase>
 {
@@ -62,6 +14,9 @@ public sealed class CreateNotificationUseCaseFixture : BaseApplicationFixture<Cr
 
     public static CreateNotificationRequest SetValidRequest() =>
         new(Guid.NewGuid(), NotificationType.OrderCreated, NotificationStatus.Pending, "System", new { Test = "Message" });
+
+    public static CreateNotificationRequest SetInvalidRequest() =>
+        new(Guid.Empty, NotificationType.OrderCreated, NotificationStatus.Pending);
 }
 
 public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotificationUseCaseFixture>
@@ -79,7 +34,6 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
     {
         // Arrange
         var request = CreateNotificationUseCaseFixture.SetValidRequest();
-        _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetSuccessfulAddAsync<Notification>();
 
         // Act
@@ -96,8 +50,7 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
     public async Task GivenAnInvalidRequestThenFails()
     {
         // Arrange
-        var request = CreateNotificationUseCaseFixture.SetValidRequest();
-        _fixture.SetFailedValidator(request);
+        var request = CreateNotificationUseCaseFixture.SetInvalidRequest();
 
         // Act
         await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
@@ -114,7 +67,6 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
     {
         // Arrange
         var request = CreateNotificationUseCaseFixture.SetValidRequest();
-        _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetFailedAddAsync<Notification>();
 
         // Act
@@ -132,7 +84,6 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
     {
         // Arrange
         var request = CreateNotificationUseCaseFixture.SetValidRequest();
-        _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetFailedAddAsync<Notification>();
 
         // Act
@@ -153,7 +104,6 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
             "TestUser",
             new { OrderId = 123, Amount = 500 }
         );
-        _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetSuccessfulAddAsync<Notification>();
 
         // Act
@@ -181,7 +131,6 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
                 status,
                 "System"
             );
-            _fixture.SetSuccessfulValidator(request);
             _fixture.MockRepository.SetSuccessfulAddAsync<Notification>();
 
             // Act
@@ -205,7 +154,6 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
             "System",
             null
         );
-        _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetSuccessfulAddAsync<Notification>();
 
         // Act
@@ -229,7 +177,6 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
             "System",
             messageObject
         );
-        _fixture.SetSuccessfulValidator(request);
         _fixture.MockRepository.SetSuccessfulAddAsync<Notification>();
 
         // Act

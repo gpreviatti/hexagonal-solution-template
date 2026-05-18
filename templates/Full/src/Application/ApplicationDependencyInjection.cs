@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Application.Common.UseCases;
-using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application;
@@ -12,7 +11,6 @@ public static class ApplicationDependencyInjection
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         var applicationAssembly = typeof(ApplicationDependencyInjection).Assembly;
-        services.AddValidatorsFromAssembly(applicationAssembly);
 
         RegisterUseCases(services, applicationAssembly);
 
