@@ -33,10 +33,10 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData>(IServiceProvider
         Logs.StartingOperation(Logger, request.CorrelationId);
         TResponseData response;
 
-        var validationContext = new ValidationContext(request);
-        if (!Validator.TryValidateObject(request, validationContext, null, true))
+        var validationResults = new List<ValidationResult>();
+        if (!Validator.TryValidateObject(request, new(request), validationResults, true))
         {
-            string errors = string.Join(", ", validationContext.Items.Values.SelectMany(v => v as IEnumerable<ValidationResult> ?? []).Select(e => e.ErrorMessage));
+            string errors = string.Join(", ", validationResults.Select(e => e.ErrorMessage));
 
             Logs.ValidationErrors(Logger, request.CorrelationId, errors);
 

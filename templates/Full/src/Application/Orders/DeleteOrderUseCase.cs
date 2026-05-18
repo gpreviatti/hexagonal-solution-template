@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+using Application.Common.Attributes;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Common.Enums;
@@ -8,14 +8,13 @@ using Microsoft.EntityFrameworkCore;
 namespace Application.Orders;
 
 public sealed record DeleteOrderRequest(
-    [Required] Guid CorrelationId,
-    [Required] int OrderId,
+    Guid CorrelationId,
+    [property: NotDefault] int OrderId,
     string DeletedBy = "",
     string TimezoneId = ""
 ) : BaseRequest(CorrelationId, DeletedBy, TimezoneId);
 
-public sealed class DeleteOrderUseCase(IServiceProvider serviceProvider)
-    : BaseInOutUseCase<DeleteOrderRequest, BaseResponse>(serviceProvider)
+public sealed class DeleteOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<DeleteOrderRequest, BaseResponse>(serviceProvider)
 {
     private readonly NotificationType _notificationType = NotificationType.OrderDeleted;
 

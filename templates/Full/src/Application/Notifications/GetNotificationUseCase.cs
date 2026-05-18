@@ -8,8 +8,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Application.Notifications;
 
 public sealed record GetNotificationRequest(
-    [Required] Guid CorrelationId,
-    [Required] int Id
+    Guid CorrelationId,
+    [property: Required] int Id
 ) : BaseRequest(CorrelationId);
 
 public sealed class GetNotificationUseCase(IServiceProvider serviceProvider)

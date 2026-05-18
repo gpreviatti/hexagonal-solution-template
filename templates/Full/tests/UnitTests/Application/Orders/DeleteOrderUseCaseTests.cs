@@ -9,9 +9,8 @@ public sealed class DeleteOrderUseCaseFixture : BaseApplicationFixture<DeleteOrd
 {
     public DeleteOrderUseCaseFixture() => UseCase = new(MockServiceProvider.Object);
 
-    public static DeleteOrderRequest SetValidRequest(int orderId = 1) =>
-        new(Guid.NewGuid(), orderId, "admin");
-
+    public static DeleteOrderRequest SetValidRequest(int orderId = 1) => new(Guid.NewGuid(), orderId, "admin");
+    public static DeleteOrderRequest SetInvalidRequest() => new(Guid.Empty, 0);
     public static Order CreateOrder() => Order.Create(
         "Order to Delete",
         [new("Item 1", "Desc 1", 100m)],
@@ -59,7 +58,7 @@ public sealed class DeleteOrderUseCaseTest : IClassFixture<DeleteOrderUseCaseFix
     public async Task GivenAnInvalidRequestThenFails()
     {
         // Arrange
-        var request = DeleteOrderUseCaseFixture.SetValidRequest();
+        var request = DeleteOrderUseCaseFixture.SetInvalidRequest();
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
