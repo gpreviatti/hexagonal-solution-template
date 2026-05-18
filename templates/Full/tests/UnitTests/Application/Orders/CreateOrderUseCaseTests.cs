@@ -12,14 +12,20 @@ public sealed class CreateOrderUseCaseFixture : BaseApplicationFixture<CreateOrd
 
     public CreateOrderRequest SetValidRequest()
     {
-        var items = AutoFixture
-            .CreateMany<CreateOrderItemRequest>(1);
+        var items = AutoFixture.Build<CreateOrderItemRequest>()
+            .With(i => i.Name, "Test Item")
+            .With(i => i.Description, "Test Description")
+            .With(i => i.Value, 100m)
+            .CreateMany(1);
 
         return new(Guid.NewGuid(), "AwesomeComputer", [.. items]);
     }
 
     public static CreateOrderRequest SetInvalidRequestWithNoItems() =>
         new(Guid.NewGuid(), "AwesomeComputer", []);
+
+    public static CreateOrderRequest SetInvalidRequest() =>
+        new(Guid.Empty, "AwesomeComputer", [new("Item1", "Desc1", 1m)]);
 }
 
 public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFixture>
@@ -60,8 +66,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
     public async Task GivenAnInvalidRequestThenFails()
     {
         // Arrange
-        var request = _fixture.SetValidRequest();
-
+        var request = CreateOrderUseCaseFixture.SetInvalidRequest();
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(

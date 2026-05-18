@@ -14,6 +14,9 @@ public sealed class CreateNotificationUseCaseFixture : BaseApplicationFixture<Cr
 
     public static CreateNotificationRequest SetValidRequest() =>
         new(Guid.NewGuid(), NotificationType.OrderCreated, NotificationStatus.Pending, "System", new { Test = "Message" });
+
+    public static CreateNotificationRequest SetInvalidRequest() =>
+        new(Guid.Empty, NotificationType.OrderCreated, NotificationStatus.Pending);
 }
 
 public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotificationUseCaseFixture>
@@ -47,7 +50,7 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
     public async Task GivenAnInvalidRequestThenFails()
     {
         // Arrange
-        var request = CreateNotificationUseCaseFixture.SetValidRequest();
+        var request = CreateNotificationUseCaseFixture.SetInvalidRequest();
 
         // Act
         await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);

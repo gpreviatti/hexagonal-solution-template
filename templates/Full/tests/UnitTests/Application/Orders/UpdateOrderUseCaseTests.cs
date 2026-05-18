@@ -15,6 +15,9 @@ public sealed class UpdateOrderUseCaseFixture : BaseApplicationFixture<UpdateOrd
         return new(Guid.NewGuid(), orderId, "Updated Order", [.. items]);
     }
 
+    public static UpdateOrderRequest SetInvalidRequest() =>
+        new(Guid.Empty, 0, "Updated Order", [new("Item1", "Desc1", 1m)]);
+
     public static Order CreateOrder() => Order.Create(
         "Original Order",
         [new("Item 1", "Desc 1", 100m)],
@@ -63,7 +66,7 @@ public sealed class UpdateOrderUseCaseTest : IClassFixture<UpdateOrderUseCaseFix
     public async Task GivenAnInvalidRequestThenFails()
     {
         // Arrange
-        var request = _fixture.SetValidRequest();
+        var request = UpdateOrderUseCaseFixture.SetInvalidRequest();
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);

@@ -8,6 +8,8 @@ namespace UnitTests.Application.Orders;
 public sealed class GetAllOrdersUseCaseFixture : BaseApplicationFixture<BasePaginatedRequest, GetAllOrdersUseCase>
 {
     public GetAllOrdersUseCaseFixture() => UseCase = new(MockServiceProvider.Object);
+
+    public static BasePaginatedRequest SetInvalidBasePaginatedRequest() => new(Guid.NewGuid(), 0, 10);
 }
 
 public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseFixture>
@@ -74,7 +76,7 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
     public async Task GivenAnInvalidRequestThenFails()
     {
         // Arrange
-        var request = _fixture.SetValidBasePaginatedRequest();
+        var request = GetAllOrdersUseCaseFixture.SetInvalidBasePaginatedRequest();
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);

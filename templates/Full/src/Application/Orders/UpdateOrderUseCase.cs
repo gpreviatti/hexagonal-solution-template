@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Application.Common.Attributes;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Common.Enums;
@@ -10,9 +9,9 @@ namespace Application.Orders;
 
 public sealed record UpdateOrderRequest(
     Guid CorrelationId,
-    [property: NotDefault] int OrderId,
+    int OrderId,
     [property: Required] string Description,
-    [property: MinLength(1, ErrorMessage = "At least one item is required")] UpdateOrderItemRequest[] Items,
+    UpdateOrderItemRequest[] Items,
     string ModifiedBy = "",
     string TimezoneId = ""
 ) : BaseRequest(CorrelationId, ModifiedBy, TimezoneId);
@@ -20,7 +19,7 @@ public sealed record UpdateOrderRequest(
 public sealed record UpdateOrderItemRequest(
     [property: Required] string Name,
     string Description,
-    [property: Range(0.01, double.MaxValue, ErrorMessage = "Value must be greater than 0")] decimal Value
+    [property: Range(typeof(decimal), "0.01", "79228162514264337593543950335", ErrorMessage = "Value must be greater than 0")] decimal Value
 );
 
 public sealed class UpdateOrderUseCase(IServiceProvider serviceProvider)

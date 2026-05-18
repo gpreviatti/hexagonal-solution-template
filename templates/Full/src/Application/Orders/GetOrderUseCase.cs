@@ -1,5 +1,4 @@
-﻿using Application.Common.Attributes;
-using Application.Common.Helpers;
+﻿using Application.Common.Helpers;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Orders;
@@ -7,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Orders;
 
-public sealed record GetOrderRequest(Guid CorrelationId, [property: NotDefault] int Id) : BaseRequest(CorrelationId);
+public sealed record GetOrderRequest(Guid CorrelationId, int Id) : BaseRequest(CorrelationId);
 
 public sealed class GetOrderUseCase(IServiceProvider serviceProvider) : BaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>>(serviceProvider)
 {

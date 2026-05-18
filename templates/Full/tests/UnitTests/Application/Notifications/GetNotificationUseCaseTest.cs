@@ -13,6 +13,9 @@ public sealed class GetNotificationUseCaseFixture : BaseApplicationFixture<GetNo
 
     public GetNotificationRequest SetValidRequest() =>
         new(Guid.NewGuid(), Math.Abs(AutoFixture.Create<int>()) + 1);
+
+    public static GetNotificationRequest SetInvalidRequest() =>
+        new(Guid.Empty, 0);
 }
 
 public sealed class GetNotificationUseCaseTests : IClassFixture<GetNotificationUseCaseFixture>
@@ -57,7 +60,7 @@ public sealed class GetNotificationUseCaseTests : IClassFixture<GetNotificationU
     public async Task GivenAnInvalidRequestThenFails()
     {
         // Arrange
-        var request = _fixture.SetValidRequest();
+        var request = GetNotificationUseCaseFixture.SetInvalidRequest();
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);

@@ -8,13 +8,13 @@ namespace Application.Orders;
 
 public sealed record CreateOrderRequest(
     Guid CorrelationId,
-    string Description,
-    [property: MinLength(1, ErrorMessage = "At least one item is required")] CreateOrderItemRequest[] Items,
+    [property: MinLength(1, ErrorMessage = "Description is required")] string Description,
+    CreateOrderItemRequest[] Items,
     string CreatedBy = "",
     string TimezoneId = ""
 ) : BaseRequest(CorrelationId, CreatedBy, TimezoneId);
 
-public sealed record CreateOrderItemRequest([property: Required] string Name, string Description, [property: Range(0.01, double.MaxValue, ErrorMessage = "Value must be greater than 0")] decimal Value);
+public sealed record CreateOrderItemRequest([property: Required] string Name, string Description, [property: Range(double.MinValue, double.MaxValue, ErrorMessage = "Value must be greater than 0")] decimal Value);
 
 public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
     : BaseInOutUseCase<CreateOrderRequest, BaseResponse<OrderDto>>(serviceProvider)

@@ -1,4 +1,3 @@
-using Application.Common.Attributes;
 using Application.Common.Requests;
 using Application.Common.UseCases;
 using Domain.Common.Enums;
@@ -9,7 +8,7 @@ namespace Application.Orders;
 
 public sealed record DeleteOrderRequest(
     Guid CorrelationId,
-    [property: NotDefault] int OrderId,
+    int OrderId,
     string DeletedBy = "",
     string TimezoneId = ""
 ) : BaseRequest(CorrelationId, DeletedBy, TimezoneId);

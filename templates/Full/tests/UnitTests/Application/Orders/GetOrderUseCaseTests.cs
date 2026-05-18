@@ -8,6 +8,7 @@ public sealed class GetOrderUseCaseFixture : BaseApplicationFixture<GetOrderRequ
 {
     public GetOrderUseCaseFixture() => UseCase = new(MockServiceProvider.Object);
     public GetOrderRequest SetValidRequest(int? id = null) => new(Guid.NewGuid(), id ?? AutoFixture.Create<int>());
+    public static GetOrderRequest SetInvalidRequest() => new(Guid.Empty, 0);
 }
 
 public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
@@ -60,7 +61,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
     public async Task GivenAInvalidRequestThenFails()
     {
         // Arrange
-        var request = _fixture.SetValidRequest();
+        var request = GetOrderUseCaseFixture.SetInvalidRequest();
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);

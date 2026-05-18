@@ -14,6 +14,9 @@ public sealed class GetAllNotificationsUseCaseFixture : BaseApplicationFixture<B
 
     public static new BasePaginatedRequest SetValidBasePaginatedRequest() =>
         new(Guid.NewGuid(), 1, 10);
+
+    public static BasePaginatedRequest SetInvalidBasePaginatedRequest() =>
+        new(Guid.NewGuid(), 0, 10);
 }
 
 public sealed class GetAllNotificationsUseCaseTests : IClassFixture<GetAllNotificationsUseCaseFixture>
@@ -57,7 +60,7 @@ public sealed class GetAllNotificationsUseCaseTests : IClassFixture<GetAllNotifi
     public async Task GivenAnInvalidRequestThenFails()
     {
         // Arrange
-        var request = GetAllNotificationsUseCaseFixture.SetValidBasePaginatedRequest();
+        var request = GetAllNotificationsUseCaseFixture.SetInvalidBasePaginatedRequest();
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
