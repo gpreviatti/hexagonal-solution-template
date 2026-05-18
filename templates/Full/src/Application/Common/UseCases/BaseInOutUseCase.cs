@@ -24,10 +24,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData>(IServiceProvider
     protected IBaseRepository Repository { get; } = serviceProvider.GetRequiredService<IBaseRepository>();
     protected const string HandleMethodName = nameof(HandleAsync);
 
-    public async Task<TResponseData> HandleAsync(
-        TRequest request,
-        CancellationToken cancellationToken
-    )
+    public async Task<TResponseData> HandleAsync(TRequest request, CancellationToken cancellationToken)
     {
         using var activity = ActivitySource.StartActivity($"{ClassName}");
         activity.SetDefaultTags();
