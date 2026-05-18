@@ -9,14 +9,9 @@ namespace IntegrationTests.WebApp.Http.Orders;
 
 public class GetAllOrdersTestFixture : BaseHttpFixture
 {
-    public static BasePaginatedRequest SetValidRequest() =>
-        new(Guid.NewGuid(), 1, 10);
-
-    public static BasePaginatedRequest SetInvalidPageRequest() =>
-        new(Guid.NewGuid(), 0, 10);
-
-    public static BasePaginatedRequest SetInvalidPageSizeRequest() =>
-        new(Guid.NewGuid(), 1, 0);
+    public static BasePaginatedRequest SetValidRequest() => new(Guid.NewGuid(), 1, 10);
+    public static BasePaginatedRequest SetInvalidPageRequest() => new(Guid.NewGuid(), 0, 10);
+    public static BasePaginatedRequest SetInvalidPageSizeRequest() => new(Guid.NewGuid(), 1, 0);
 }
 
 [Collection("WebApplicationFactoryCollectionDefinition")]

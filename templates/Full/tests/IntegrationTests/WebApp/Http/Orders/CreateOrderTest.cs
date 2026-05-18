@@ -12,13 +12,13 @@ public class CreateOrderTestFixture : BaseHttpFixture
     public CreateOrderRequest SetValidRequest()
     {
         var items = AutoFixture.Build<CreateOrderItemRequest>()
-            .With(i => i.Value, AutoFixture.Create<decimal>() + 1) // Ensure non-zero value
+            .With(i => i.Value, AutoFixture.Create<decimal>() + 1)
             .CreateMany(2)
             .ToArray();
 
         return AutoFixture.Build<CreateOrderRequest>()
             .With(r => r.Items, items)
-            .With(r => r.TimezoneId, "UTC") // Use valid timezone ID
+            .With(r => r.TimezoneId, "UTC")
             .Create();
     }
 
