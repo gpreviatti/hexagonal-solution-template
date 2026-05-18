@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Application.Common.Attributes;
 
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
 public class NotDefaultAttribute : ValidationAttribute
 {
     public const string DefaultErrorMessage = "The {0} field must not have its default value.";
