@@ -22,11 +22,19 @@ public class CreateOrderTestFixture : BaseHttpFixture
             .Create();
     }
 
-    public CreateOrderRequest SetInvalidRequest() => AutoFixture
-            .Build<CreateOrderRequest>()
+    public CreateOrderRequest SetInvalidRequest()
+    {
+        var items = AutoFixture.Build<CreateOrderItemRequest>()
+            .With(i => i.Value, AutoFixture.Create<decimal>() + 1)
+            .CreateMany(2)
+            .ToArray();
+
+        return AutoFixture.Build<CreateOrderRequest>()
             .With(r => r.Description, string.Empty)
+            .With(r => r.Items, items)
             .With(r => r.TimezoneId, "UTC")
             .Create();
+    }
 }
 
 [Collection("WebApplicationFactoryCollectionDefinition")]

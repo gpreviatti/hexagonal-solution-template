@@ -75,7 +75,7 @@ public class GetAllOrdersTest : IClassFixture<GetAllOrdersTestFixture>
         Assert.NotNull(result);
         Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
         Assert.False(response!.Success);
-        Assert.Contains("PageSize must be greater than 0", response.Message);
+        Assert.Contains("PageSize must be between 1 and 100", response.Message);
     }
 
     [Fact(DisplayName = nameof(GivenAnValidRequestWhenPassSearchByValuesFilterThenPass))]
