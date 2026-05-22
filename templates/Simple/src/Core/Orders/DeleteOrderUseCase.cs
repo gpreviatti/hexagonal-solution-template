@@ -1,7 +1,6 @@
 using Core.Common.Requests;
 using Core.Common.UseCases;
 using Core.Common.Enums;
-using Core.Orders;
 using Microsoft.EntityFrameworkCore;
 
 namespace Core.Orders;
@@ -30,21 +29,21 @@ public sealed class DeleteOrderUseCase(IServiceProvider serviceProvider) : BaseI
             .FirstOrDefaultAsync(x => x.Id == request.OrderId, cancellationToken);
 
         if (order is null)
-            return HandleFailedResponse<DeleteOrderRequest, BaseResponse>(
-                request, correlationId, _notificationType,
+            return HandleFailedResponse<BaseResponse>(
+                correlationId, _notificationType,
                 request.DeletedBy, "Order not found."
             );
 
         var deleteResult = order.Delete(request.DeletedBy, request.TimezoneId);
         if (deleteResult.IsFailure)
-            return HandleFailedResponse<DeleteOrderRequest, BaseResponse>(
-                request, correlationId, _notificationType,
+            return HandleFailedResponse<BaseResponse>(
+                correlationId, _notificationType,
                 request.DeletedBy, deleteResult.Message
             );
 
         if (await Repository.UpdateAsync(order, correlationId, cancellationToken) == 0)
-            return HandleFailedResponse<DeleteOrderRequest, BaseResponse>(
-                request, correlationId, _notificationType,
+            return HandleFailedResponse<BaseResponse>(
+                correlationId, _notificationType,
                 request.DeletedBy, "Failed to delete order."
             );
 

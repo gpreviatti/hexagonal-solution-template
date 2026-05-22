@@ -16,8 +16,6 @@ using Logs = Application.Common.Helpers.Logs;
 
 namespace Infrastructure.Messaging.Consumers;
 
-sealed file record IsExecuted(bool Value);
-
 internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundService<BaseConsumer<TMessage, TConsumer>> where TMessage : BaseMessage
 {
     private readonly string _consumerName = typeof(TConsumer).Name;

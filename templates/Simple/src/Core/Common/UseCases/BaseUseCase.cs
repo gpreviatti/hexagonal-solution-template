@@ -1,11 +1,10 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using Core.Common.Enums;
 using Core.Common.Helpers;
 using Core.Common.Messages;
 using Core.Common.Requests;
 using Core.Common.Services;
-using Core.Common;
-using Core.Common.Enums;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -16,8 +15,8 @@ public abstract class BaseUseCase
     protected IServiceProvider ServiceProvider { get; }
     protected ILogger Logger { get; }
     protected string ClassName { get; }
+    protected IProduceService ProducerService { get; }
     protected ActivitySource ActivitySource { get; } = DefaultConfigurations.ActivitySource;
-    protected IProduceService ProduceService { get; }
     protected Counter<int> UseCaseExecutedMetric { get; }
     protected Counter<int> UseCaseFailedMetric { get; }
 
@@ -30,13 +29,13 @@ public abstract class BaseUseCase
 
         Logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(classType);
 
-        ProduceService = serviceProvider.GetRequiredService<IProduceService>();
+        ProducerService = serviceProvider.GetRequiredService<IProduceService>();
 
         UseCaseExecutedMetric = DefaultConfigurations.Meter
-            .CreateCounter<int>($"{DefaultConfigurations.CoreName}.{ClassName}.Executed", "total", "Number of times the use case was executed");
+            .CreateCounter<int>($"{DefaultConfigurations.ApplicationName}.{ClassName}.Executed", "total", "Number of times the use case was executed");
 
         UseCaseFailedMetric = DefaultConfigurations.Meter
-            .CreateCounter<int>($"{DefaultConfigurations.CoreName}.{ClassName}.Failed", "total", "Number of times the use case execution failed");
+            .CreateCounter<int>($"{DefaultConfigurations.ApplicationName}.{ClassName}.Failed", "total", "Number of times the use case execution failed");
     }
 
     protected void HandleNotification(
@@ -45,7 +44,7 @@ public abstract class BaseUseCase
         string createdBy,
         NotificationType notificationType,
         object message
-    ) => _ = ProduceService.HandleAsync(
+    ) => _ = ProducerService.HandleAsync(
         new CreateNotificationMessage(
             correlationId,
             notificationType,
@@ -53,18 +52,15 @@ public abstract class BaseUseCase
             createdBy,
             message
         ),
-        CancellationToken.None,
-        queue: notificationType.ToString()
+        CancellationToken.None
     );
 
-    protected TResponse HandleFailedResponse<TRequest, TResponse>(
-        TRequest request,
+    protected TResponse HandleFailedResponse<TResponse>(
         Guid correlationId,
         NotificationType notificationType,
         string user = "System",
         string message = "Failed."
     )
-    where TRequest : BaseRequest
     where TResponse : BaseResponse, new()
     {
         Logs.FailedOperation(Logger, correlationId, message);

@@ -1,7 +1,6 @@
 ﻿using Core.Common.Helpers;
 using Core.Common.Requests;
 using Core.Common.UseCases;
-using Core.Orders;
 using Microsoft.EntityFrameworkCore;
 
 namespace Core.Orders;

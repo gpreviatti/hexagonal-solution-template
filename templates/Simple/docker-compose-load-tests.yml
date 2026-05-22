@@ -76,11 +76,6 @@ services:
       file: docker-compose-local.yml
       service: redis
 
-  rabbitmq:
-    extends:
-      file: docker-compose-local.yml
-      service: rabbitmq
-
   alloy:
     extends:
       file: docker-compose-local.yml

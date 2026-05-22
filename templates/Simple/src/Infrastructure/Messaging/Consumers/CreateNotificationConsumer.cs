@@ -1,18 +1,11 @@
 using Core.Common.Messages;
 using Core.Common.UseCases;
 using Core.Notifications;
-using Core.Common.Enums;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Messaging.Consumers;
 
-internal sealed class CreateNotificationConsumer(
-    ILogger<CreateNotificationConsumer> logger,
-    IServiceScopeFactory serviceScopeFactory,
-    IConfiguration configuration
-) : BaseConsumer<CreateNotificationMessage, CreateNotificationConsumer>(logger, serviceScopeFactory, configuration, NotificationType.OrderCreated)
+internal sealed class CreateNotificationConsumer(IServiceScopeFactory serviceScopeFactory) : BaseConsumer<CreateNotificationMessage, CreateNotificationConsumer>(serviceScopeFactory)
 {
     protected override async Task HandleUseCaseAsync(
         IServiceProvider serviceProvider,

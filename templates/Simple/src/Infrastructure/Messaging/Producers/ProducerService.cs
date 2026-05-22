@@ -1,69 +1,36 @@
 using System.Diagnostics;
-using System.Text.Json;
-using Application.Common.Helpers;
-using Application.Common.Messages;
-using Application.Common.Services;
-using Domain.Common;
-using Domain.Common.Extensions;
-using Microsoft.Extensions.Configuration;
+using Core.Common.Helpers;
+using Core.Common.Messages;
+using Core.Common.Services;
+using Core.Common;
+using Core.Common.Extensions;
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
+using Microsoft.Extensions.DependencyInjection;
+using System.Threading.Channels;
 
 namespace Infrastructure.Messaging.Producers;
 
-public sealed class ProducerService : IProduceService
+public sealed class ProducerService(IServiceProvider serviceProvider) : IProduceService
 {
-    private readonly ILogger<ProducerService> _logger;
-    private readonly ConnectionFactory _factory;
+    private readonly ILogger<ProducerService> _logger = serviceProvider.GetRequiredService<ILogger<ProducerService>>();
     private readonly ActivitySource _activities = DefaultConfigurations.ActivitySource;
 
-    public ProducerService(ILogger<ProducerService> logger, IConfiguration configuration)
-    {
-        _logger = logger;
-
-        var connectionString = configuration.GetConnectionString("RabbitMQ");
-
-        if (string.IsNullOrWhiteSpace(connectionString))
-        {
-            throw new ArgumentException("Invalid RabbitMQ connection string.");
-        }
-
-        _factory = new() { Uri = new(connectionString) };
-    }
-
-    public async Task HandleAsync<TMessage>(
-        TMessage message,
-        CancellationToken cancellationToken,
-        string queue = "",
-        string exchange = ""
-    ) where TMessage : BaseMessage
+    public async Task HandleAsync<TMessage>(TMessage message, CancellationToken cancellationToken) where TMessage : BaseMessage
     {
         await Task.Yield();
 
         using var activity = _activities.StartActivity($"{nameof(ProducerService)}.{nameof(HandleAsync)}.{typeof(TMessage).Name}");
+        
         activity.SetDefaultTags();
-
-        using var connection = await _factory.CreateConnectionAsync(cancellationToken);
-        using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
 
         Logs.DebugStartingOperation(_logger, message.CorrelationId, typeof(TMessage).Name + " publishing started.");
 
-        await channel.BasicPublishAsync(
-            exchange: exchange,
-            routingKey: queue,
-            body: JsonSerializer.SerializeToUtf8Bytes(message),
-            cancellationToken: cancellationToken
-        );
+        await serviceProvider.GetRequiredService<Channel<TMessage>>().Writer.WriteAsync(message, cancellationToken);
 
         Logs.DebugFinishedOperation(_logger, message.CorrelationId, typeof(TMessage).Name + " published.");
     }
 
-    public async Task HandleAsync<TMessage>(
-        IEnumerable<TMessage> messages,
-        CancellationToken cancellationToken,
-        string queue = "",
-        string exchange = ""
-    ) where TMessage : BaseMessage
+    public async Task HandleAsync<TMessage>(IEnumerable<TMessage> messages, CancellationToken cancellationToken) where TMessage : BaseMessage
     {
         await Task.Yield();
 
@@ -72,19 +39,12 @@ public sealed class ProducerService : IProduceService
 
         Logs.Debug(_logger, messages.FirstOrDefault()?.CorrelationId ?? Guid.Empty, typeof(TMessage).Name + " batch publishing started.");
 
-        using var connection = await _factory.CreateConnectionAsync(cancellationToken);
-        using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
 
         foreach (var message in messages)
         {
             Logs.DebugStartingOperation(_logger, message.CorrelationId, typeof(TMessage).Name + " batch publishing started.");
 
-            await channel.BasicPublishAsync(
-                exchange: exchange,
-                routingKey: queue,
-                body: JsonSerializer.SerializeToUtf8Bytes(message),
-                cancellationToken: cancellationToken
-            );
+            await serviceProvider.GetRequiredService<Channel<TMessage>>().Writer.WriteAsync(message, cancellationToken);
 
             Logs.DebugFinishedOperation(_logger, message.CorrelationId, typeof(TMessage).Name + " batch published.");
         }

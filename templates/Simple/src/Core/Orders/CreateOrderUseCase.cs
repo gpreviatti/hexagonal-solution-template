@@ -2,7 +2,6 @@
 using Core.Common.Requests;
 using Core.Common.UseCases;
 using Core.Common.Enums;
-using Core.Orders;
 
 namespace Core.Orders;
 
@@ -41,15 +40,15 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
             request.CreatedBy, request.TimezoneId
         );
         if (createResult.IsFailure)
-            return HandleFailedResponse<CreateOrderRequest, BaseResponse<OrderDto>>(
-                request, correlationId, _notificationType,
+            return HandleFailedResponse<BaseResponse<OrderDto>>(
+                correlationId, _notificationType,
                 request.CreatedBy, createResult.Message
             );
 
         var newOrder = createResult.Value;
         if (await Repository.AddAsync(newOrder, correlationId, cancellationToken) == 0)
-            return HandleFailedResponse<CreateOrderRequest, BaseResponse<OrderDto>>(
-                request, correlationId, _notificationType,
+            return HandleFailedResponse<BaseResponse<OrderDto>>(
+                correlationId, _notificationType,
                 request.CreatedBy, "Failed to create order."
             );
 
