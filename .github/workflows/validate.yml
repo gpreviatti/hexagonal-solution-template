@@ -9,6 +9,11 @@ on:
         required: true
         default: true
         type: boolean
+      run_simple:
+        description: 'Run Simple Template validation'
+        required: true
+        default: true
+        type: boolean
       run_bff:
         description: 'Run BFF Template validation'
         required: true
@@ -43,6 +48,17 @@ jobs:
       docker_compose_file_path: "./templates/Full/docker-compose.yml"
     secrets:
       sonar_token: ${{ secrets.SONAR_TOKEN }}
+      stryker_dashboard_api_key: ${{ secrets.STRYKER_DASHBOARD }}
+
+  validate-template-simple:
+    name: Validate Simple Template
+    if: github.event_name == 'pull_request' || inputs.run_simple
+    uses: gpreviatti/github-actions-templates/.github/workflows/dotnet-validate-contracts.yml@v1
+    with:
+      build_path: "./templates/Simple"
+      dotnet_version: "${{ vars.PROJECT_DOTNET_VERSION }}"
+      test_project_path: "./templates/Simple/tests/UnitTests/"
+    secrets:
       stryker_dashboard_api_key: ${{ secrets.STRYKER_DASHBOARD }}
 
   validate-template-bff:
