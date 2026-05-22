@@ -110,6 +110,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.MockLogger.VerifyWarning("Order must have at least one item.", 1);
         _fixture.MockLogger.VerifyWarning("Failed to create order.", 0);
         _fixture.MockRepository.VerifyAddAsync<Order>(0);
+
         _fixture.VerifyProduce<CreateNotificationMessage>();
     }
 
@@ -175,6 +176,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         Assert.Equal("Item2", dtoItem2.Name);
         Assert.Equal("Description2", dtoItem2.Description);
         Assert.Equal(200m, dtoItem2.Value);
+
+        _fixture.VerifyProduce<CreateNotificationMessage>();
     }
 
     [Fact(DisplayName = nameof(GivenAValidRequestWhenSuccessThenResponseContainsOrderDtoWithCorrectTotal))]
@@ -197,6 +200,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         Assert.NotNull(result.Data);
         Assert.Equal(400m, result.Data.Total);
         Assert.NotNull(result.Data.PeriodSinceWasCreated);
+
+        _fixture.VerifyProduce<CreateNotificationMessage>();
     }
 
     [Fact(DisplayName = nameof(GivenAValidRequestWhenSuccessThenShouldPublishSuccessNotification))]
@@ -213,7 +218,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         // Assert
         Assert.NotNull(result);
         Assert.True(result.Success);
-        _fixture.VerifyProduce<CreateNotificationMessage>(1);
+        _fixture.VerifyProduce<CreateNotificationMessage>();
     }
 
     [Fact(DisplayName = nameof(GivenAValidRequestWhenFailureThenShouldPublishFailureNotification))]
@@ -227,7 +232,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
 
         // Assert
         Assert.False(result.Success);
-        _fixture.VerifyProduce<CreateNotificationMessage>(1);
+        _fixture.VerifyProduce<CreateNotificationMessage>();
     }
 
     [Fact(DisplayName = nameof(GivenAValidRequestWhenSuccessThenShouldPublishSuccessNotificationWithExpectedStatus))]
@@ -241,30 +246,21 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
             "TestUser"
         );
         CreateNotificationMessage? publishedMessage = null;
-        string? publishedQueue = null;
 
         _fixture.MockRepository.SetSuccessfulAddAsync<Order>();
-        _fixture.MockProduceService
-            .Setup(p => p.HandleAsync(
-                It.IsAny<CreateNotificationMessage>(),
-                It.IsAny<CancellationToken>()
-            )).Callback<CreateNotificationMessage, CancellationToken, string, string>((message, _, queue, _) =>
-            {
-                publishedMessage = message;
-                publishedQueue = queue;
-            })
-            .Returns(Task.CompletedTask);
+        _fixture.SetPublishAsyncWithMessage<CreateNotificationMessage>(message => publishedMessage = message);
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
 
         // Assert
         Assert.True(result.Success);
+
+        _fixture.VerifyProduce<CreateNotificationMessage>();
         Assert.NotNull(publishedMessage);
         Assert.Equal(NotificationStatus.Success, publishedMessage!.NotificationStatus);
         Assert.Equal(NotificationType.OrderCreated, publishedMessage.NotificationType);
         Assert.Equal("TestUser", publishedMessage.CreatedBy);
-        Assert.Equal(NotificationType.OrderCreated.ToString(), publishedQueue);
     }
 
     [Fact(DisplayName = nameof(GivenAInvalidRequestWithNoItemsThenShouldPublishFailureNotificationWithExpectedStatus))]
@@ -278,22 +274,15 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
             "TestUser"
         );
         CreateNotificationMessage? publishedMessage = null;
-
-        _fixture.MockProduceService
-            .Setup(p => p.HandleAsync(
-                It.IsAny<CreateNotificationMessage>(),
-                It.IsAny<CancellationToken>()
-            )).Callback<CreateNotificationMessage, CancellationToken, string, string>((message, _, _, _) =>
-            {
-                publishedMessage = message;
-            })
-            .Returns(Task.CompletedTask);
+        _fixture.SetPublishAsyncWithMessage<CreateNotificationMessage>(message => publishedMessage = message);
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
 
         // Assert
         Assert.False(result.Success);
+
+        _fixture.VerifyProduce<CreateNotificationMessage>();
         Assert.NotNull(publishedMessage);
         Assert.Equal(NotificationStatus.Failed, publishedMessage!.NotificationStatus);
         Assert.Equal(NotificationType.OrderCreated, publishedMessage.NotificationType);
@@ -313,15 +302,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         CreateNotificationMessage? publishedMessage = null;
 
         _fixture.MockRepository.SetFailedAddAsync<Order>();
-        _fixture.MockProduceService
-            .Setup(p => p.HandleAsync(
-                It.IsAny<CreateNotificationMessage>(),
-                It.IsAny<CancellationToken>()
-            )).Callback<CreateNotificationMessage, CancellationToken, string, string>((message, _, _, _) =>
-            {
-                publishedMessage = message;
-            })
-            .Returns(Task.CompletedTask);
+        _fixture.SetPublishAsyncWithMessage<CreateNotificationMessage>(message => publishedMessage = message);
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
@@ -329,6 +310,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         // Assert
         Assert.False(result.Success);
         Assert.Equal("Failed to create order.", result.Message);
+
+        _fixture.VerifyProduce<CreateNotificationMessage>();
         Assert.NotNull(publishedMessage);
         Assert.Equal(NotificationStatus.Failed, publishedMessage!.NotificationStatus);
         Assert.Equal(NotificationType.OrderCreated, publishedMessage.NotificationType);
@@ -367,6 +350,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         var itemsList = result.Data.Items.ToList();
         Assert.Single(itemsList);
         Assert.Equal(99.99m, result.Data.Total);
+
+        _fixture.VerifyProduce<CreateNotificationMessage>();
     }
 
     [Fact(DisplayName = nameof(GivenAValidRequestWithMultipleItemsThenShouldCreateOrderWithAllItems))]
@@ -394,5 +379,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         Assert.NotNull(result.Data.Items);
         Assert.Equal(5, result.Data.Items.Count);
         Assert.Equal(1500m, result.Data.Total);
+
+        _fixture.VerifyProduce<CreateNotificationMessage>();
     }
 }
