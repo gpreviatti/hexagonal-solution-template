@@ -1,10 +1,10 @@
 using System.Diagnostics;
 using System.Text.Json;
-using Core.Common.Helpers;
-using Core.Common.Messages;
-using Core.Common.Services;
-using Core.Common;
-using Core.Common.Extensions;
+using Application.Common.Helpers;
+using Application.Common.Messages;
+using Application.Common.Services;
+using Domain.Common;
+using Domain.Common.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
@@ -38,6 +38,8 @@ public sealed class ProducerService : IProduceService
         string exchange = ""
     ) where TMessage : BaseMessage
     {
+        await Task.Yield();
+
         using var activity = _activities.StartActivity($"{nameof(ProducerService)}.{nameof(HandleAsync)}.{typeof(TMessage).Name}");
         activity.SetDefaultTags();
 
@@ -63,17 +65,19 @@ public sealed class ProducerService : IProduceService
         string exchange = ""
     ) where TMessage : BaseMessage
     {
+        await Task.Yield();
+
         using var activity = _activities.StartActivity($"{nameof(ProducerService)}.{nameof(HandleAsync)}.{typeof(TMessage).Name}.Batch");
         activity.SetDefaultTags();
+
+        Logs.Debug(_logger, messages.FirstOrDefault()?.CorrelationId ?? Guid.Empty, typeof(TMessage).Name + " batch publishing started.");
 
         using var connection = await _factory.CreateConnectionAsync(cancellationToken);
         using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
 
-        Logs.Debug(_logger, messages.FirstOrDefault()?.CorrelationId ?? Guid.Empty, typeof(TMessage).Name + " batch publishing started.");
-
         foreach (var message in messages)
         {
-            Logs.DebugStartingOperation(_logger, message.CorrelationId, typeof(TMessage).Name + " publishing started.");
+            Logs.DebugStartingOperation(_logger, message.CorrelationId, typeof(TMessage).Name + " batch publishing started.");
 
             await channel.BasicPublishAsync(
                 exchange: exchange,
@@ -82,7 +86,7 @@ public sealed class ProducerService : IProduceService
                 cancellationToken: cancellationToken
             );
 
-            Logs.DebugFinishedOperation(_logger, message.CorrelationId, typeof(TMessage).Name + " published.");
+            Logs.DebugFinishedOperation(_logger, message.CorrelationId, typeof(TMessage).Name + " batch published.");
         }
 
         Logs.Debug(_logger, messages.FirstOrDefault()?.CorrelationId ?? Guid.Empty, typeof(TMessage).Name + " batch publishing finished.");
