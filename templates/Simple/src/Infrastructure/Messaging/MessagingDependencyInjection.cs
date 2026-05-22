@@ -25,6 +25,6 @@ internal static class MessagingDependencyInjection
         IServiceCollection AddProducers() => services.AddScoped<IProduceService, ProducerService>();
 
         IServiceCollection AddConsumers() => services
-            .AddScoped<BaseConsumer<CreateNotificationMessage, CreateNotificationConsumer>, CreateNotificationConsumer>();
+            .AddHostedService<CreateNotificationConsumer>();
     }
 }

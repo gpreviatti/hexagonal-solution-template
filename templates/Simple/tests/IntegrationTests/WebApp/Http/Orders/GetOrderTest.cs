@@ -8,7 +8,7 @@ using WebApp;
 
 namespace IntegrationTests.WebApp.Http.Orders;
 
-[Collection("WebApplicationFactoryCollectionDefinition")]
+[Collection(nameof(WebApplicationFactoryCollectionDefinition))]
 public class GetOrderTest : IClassFixture<BaseHttpFixture>
 {
     private readonly BaseHttpFixture _fixture;

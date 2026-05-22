@@ -3,7 +3,6 @@ using Core.Common.Helpers;
 using Core.Common.Requests;
 using Core.Common.UseCases;
 using Core.Common.Enums;
-using Core.Notifications;
 
 namespace Core.Notifications;
 

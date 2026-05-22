@@ -8,10 +8,8 @@
             "preLaunchTask": "build",
             "program": "${workspaceFolder}/src/WebApp/bin/Debug/net10.0/WebApp.dll",
             "cwd": "${workspaceFolder}/src/WebApp",
-            "stopAtEntry": false,
-            "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
-            }
+            "launchSettingsProfile": "Development",
+            "stopAtEntry": false
         }
     ]
 }

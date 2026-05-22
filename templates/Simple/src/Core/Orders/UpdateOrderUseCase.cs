@@ -38,7 +38,7 @@ public sealed class UpdateOrderUseCase(IServiceProvider serviceProvider)
             .FirstOrDefaultAsync(x => x.Id == request.OrderId, cancellationToken);
 
         if (order is null)
-            return HandleFailedResponse<BaseResponse<OrderDto>>(
+            return await HandleFailedResponse<BaseResponse<OrderDto>>(
                 correlationId, _notificationType,
                 request.ModifiedBy, "Order not found."
             );
@@ -49,13 +49,13 @@ public sealed class UpdateOrderUseCase(IServiceProvider serviceProvider)
 
         var updateResult = order.Update(request.Description, items, request.ModifiedBy, request.TimezoneId);
         if (updateResult.IsFailure)
-            return HandleFailedResponse<BaseResponse<OrderDto>>(
+            return await HandleFailedResponse<BaseResponse<OrderDto>>(
                 correlationId, _notificationType,
                 request.ModifiedBy, updateResult.Message
             );
 
         if (await Repository.UpdateAsync(order, correlationId, cancellationToken) == 0)
-            return HandleFailedResponse<BaseResponse<OrderDto>>(
+            return await HandleFailedResponse<BaseResponse<OrderDto>>(
                 correlationId, _notificationType,
                 request.ModifiedBy, "Failed to update order."
             );
@@ -75,7 +75,7 @@ public sealed class UpdateOrderUseCase(IServiceProvider serviceProvider)
             })]
         });
 
-        HandleNotification(correlationId, NotificationStatus.Success, request.ModifiedBy, _notificationType, response);
+        await HandleNotification(correlationId, NotificationStatus.Success, request.ModifiedBy, _notificationType, response);
 
         return response;
     }

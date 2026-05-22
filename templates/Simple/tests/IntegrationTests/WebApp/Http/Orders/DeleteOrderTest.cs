@@ -35,7 +35,7 @@ public class DeleteOrderTestFixture : BaseHttpFixture
     }
 }
 
-[Collection("WebApplicationFactoryCollectionDefinition")]
+[Collection(nameof(WebApplicationFactoryCollectionDefinition))]
 public sealed class DeleteOrderTest : IClassFixture<DeleteOrderTestFixture>
 {
     private readonly DeleteOrderTestFixture _fixture;

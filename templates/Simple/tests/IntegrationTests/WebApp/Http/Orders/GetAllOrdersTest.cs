@@ -14,7 +14,7 @@ public class GetAllOrdersTestFixture : BaseHttpFixture
     public static BasePaginatedRequest SetInvalidPageSizeRequest() => new(Guid.NewGuid(), 1, 0);
 }
 
-[Collection("WebApplicationFactoryCollectionDefinition")]
+[Collection(nameof(WebApplicationFactoryCollectionDefinition))]
 public class GetAllOrdersTest : IClassFixture<GetAllOrdersTestFixture>
 {
     private readonly GetAllOrdersTestFixture _fixture;

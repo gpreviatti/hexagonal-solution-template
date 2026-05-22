@@ -248,7 +248,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         CreateNotificationMessage? publishedMessage = null;
 
         _fixture.MockRepository.SetSuccessfulAddAsync<Order>();
-        _fixture.SetPublishAsyncWithMessage<CreateNotificationMessage>(message => publishedMessage = message);
+        _fixture.SetPublishAsyncWithMessageAsync<CreateNotificationMessage>(message => publishedMessage = message);
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
@@ -274,7 +274,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
             "TestUser"
         );
         CreateNotificationMessage? publishedMessage = null;
-        _fixture.SetPublishAsyncWithMessage<CreateNotificationMessage>(message => publishedMessage = message);
+        _fixture.SetPublishAsyncWithMessageAsync<CreateNotificationMessage>(message => publishedMessage = message);
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);
@@ -302,7 +302,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         CreateNotificationMessage? publishedMessage = null;
 
         _fixture.MockRepository.SetFailedAddAsync<Order>();
-        _fixture.SetPublishAsyncWithMessage<CreateNotificationMessage>(message => publishedMessage = message);
+        _fixture.SetPublishAsyncWithMessageAsync<CreateNotificationMessage>(message => publishedMessage = message);
 
         // Act
         var result = await _fixture.UseCase.HandleAsync(request, _fixture.CancellationToken);

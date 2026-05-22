@@ -37,7 +37,7 @@ public class CreateOrderTestFixture : BaseHttpFixture
     }
 }
 
-[Collection("WebApplicationFactoryCollectionDefinition")]
+[Collection(nameof(WebApplicationFactoryCollectionDefinition))]
 public sealed class CreateOrderTest : IClassFixture<CreateOrderTestFixture>
 {
     private readonly CreateOrderTestFixture _fixture;

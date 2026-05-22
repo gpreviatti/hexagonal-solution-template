@@ -1,4 +1,4 @@
-@WebApp_HostAddress = https://localhost:7175
+@WebApp_HostAddress = https://localhost:5001
 # @WebApp_HostAddress = http://localhost:5000
 
 ###
@@ -20,7 +20,7 @@ Accept: Core/json
 
 ###
 POST {{WebApp_HostAddress}}/orders HTTP/2
-Content-Type: Core/json
+Content-Type: application/json
 
 {
   "CorrelationId": "{{$guid}}",
@@ -41,7 +41,7 @@ Content-Type: Core/json
 
 ###
 POST {{WebApp_HostAddress}}/orders/paginated HTTP/2
-Content-Type: Core/json
+Content-Type: application/json
 
 {
   "CorrelationId": "{{$guid}}",
@@ -51,7 +51,7 @@ Content-Type: Core/json
 
 ###
 POST {{WebApp_HostAddress}}/orders/paginated HTTP/2
-Content-Type: Core/json
+Content-Type: application/json
 
 {
   "CorrelationId": "{{$guid}}",
@@ -64,7 +64,7 @@ Content-Type: Core/json
 
 ###
 PUT {{WebApp_HostAddress}}/orders/1 HTTP/2
-Content-Type: Core/json
+Content-Type: application/json
 
 {
   "CorrelationId": "{{$guid}}",

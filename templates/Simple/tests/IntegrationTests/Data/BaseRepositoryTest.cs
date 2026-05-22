@@ -5,7 +5,7 @@ using WebApp;
 
 namespace IntegrationTests.Data;
 
-[Collection("WebApplicationFactoryCollectionDefinition")]
+[Collection(nameof(WebApplicationFactoryCollectionDefinition))]
 public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
 {
     private readonly BaseDataFixture? _fixture;

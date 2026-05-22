@@ -48,7 +48,7 @@ public class UpdateOrderTestFixture : BaseHttpFixture
         );
 }
 
-[Collection("WebApplicationFactoryCollectionDefinition")]
+[Collection(nameof(WebApplicationFactoryCollectionDefinition))]
 public sealed class UpdateOrderTest : IClassFixture<UpdateOrderTestFixture>
 {
     private readonly UpdateOrderTestFixture _fixture;

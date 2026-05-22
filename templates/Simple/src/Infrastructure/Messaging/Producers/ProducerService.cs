@@ -20,7 +20,7 @@ public sealed class ProducerService(IServiceProvider serviceProvider) : IProduce
         await Task.Yield();
 
         using var activity = _activities.StartActivity($"{nameof(ProducerService)}.{nameof(HandleAsync)}.{typeof(TMessage).Name}");
-        
+
         activity.SetDefaultTags();
 
         Logs.DebugStartingOperation(_logger, message.CorrelationId, typeof(TMessage).Name + " publishing started.");

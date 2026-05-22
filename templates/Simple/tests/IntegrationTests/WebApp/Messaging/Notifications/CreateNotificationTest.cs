@@ -23,7 +23,7 @@ public class CreateNotificationTestFixture : BaseMessagingFixture
         .Create();
 }
 
-[Collection("WebApplicationFactoryCollectionDefinition")]
+[Collection(nameof(WebApplicationFactoryCollectionDefinition))]
 public sealed class CreateNotificationTest : IClassFixture<CreateNotificationTestFixture>
 {
     private readonly CreateNotificationTestFixture _fixture;

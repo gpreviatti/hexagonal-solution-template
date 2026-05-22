@@ -30,8 +30,7 @@ public sealed class Program
             options.SerializerOptions.PropertyNameCaseInsensitive = true;
         });
 
-        builder.Services
-            .AddCore();
+        builder.Services.AddCore();
         builder.AddInfrastructure();
 
         builder.WebHost.ConfigureKestrel(options =>
