@@ -40,7 +40,7 @@ public sealed class ApiHelper(HttpClient httpClient)
     public static StringContent SerializeRequest(dynamic data)
     {
         var json = JsonSerializer.Serialize(data);
-        return new StringContent(json, Encoding.UTF8, "Core/json");
+        return new StringContent(json, Encoding.UTF8, "application/json");
     }
 
     public static async Task<T?> DeSerializeResponse<T>(HttpResponseMessage response)
