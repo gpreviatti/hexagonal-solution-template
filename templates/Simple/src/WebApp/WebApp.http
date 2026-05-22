@@ -1,0 +1,91 @@
+@WebApp_HostAddress = https://localhost:7175
+# @WebApp_HostAddress = http://localhost:5000
+
+###
+GET {{WebApp_HostAddress}}/health HTTP/2
+Accept: Core/json
+
+###
+GET {{WebApp_HostAddress}}/live HTTP/2
+
+###
+GET {{WebApp_HostAddress}}/ready HTTP/2
+
+###
+GET {{WebApp_HostAddress}}/orders/1 HTTP/2
+CorrelationId: {{$guid}}
+CacheEnabled: false
+Accept-Encoding: gzip, deflate
+Accept: Core/json
+
+###
+POST {{WebApp_HostAddress}}/orders HTTP/2
+Content-Type: Core/json
+
+{
+  "CorrelationId": "{{$guid}}",
+  "Description": "John's computer",
+  "Items": [
+    {
+      "Name": "Computer",
+      "Description": "Surface 2",
+      "Value": 1000
+    },
+    {
+      "Name": "Mouse",
+      "Description": "Microsoft mouse",
+      "Value": 99
+    }
+  ]
+}
+
+###
+POST {{WebApp_HostAddress}}/orders/paginated HTTP/2
+Content-Type: Core/json
+
+{
+  "CorrelationId": "{{$guid}}",
+  "Page": 1,
+  "PageSize": 1
+}
+
+###
+POST {{WebApp_HostAddress}}/orders/paginated HTTP/2
+Content-Type: Core/json
+
+{
+  "CorrelationId": "{{$guid}}",
+  "Page": 1,
+  "PageSize": 10,
+  "SearchByValues": {
+    "Description": "client"
+  }
+}
+
+###
+PUT {{WebApp_HostAddress}}/orders/1 HTTP/2
+Content-Type: Core/json
+
+{
+  "CorrelationId": "{{$guid}}",
+  "Description": "Updated order from WebApp.http",
+  "Items": [
+    {
+      "Name": "Updated computer",
+      "Description": "Surface 3",
+      "Value": 1200
+    },
+    {
+      "Name": "Updated mouse",
+      "Description": "Microsoft updated mouse",
+      "Value": 120
+    }
+  ],
+  "ModifiedBy": "LocalTester",
+  "TimezoneId": "UTC"
+}
+
+###
+DELETE {{WebApp_HostAddress}}/orders/1 HTTP/2
+CorrelationId: {{$guid}}
+

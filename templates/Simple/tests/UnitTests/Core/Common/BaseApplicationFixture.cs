@@ -1,0 +1,92 @@
+﻿using Core.Common.Messages;
+using Core.Common.Repositories;
+using Core.Common.Requests;
+using Core.Common.Services;
+using CommonTests.Fixtures;
+using Microsoft.Extensions.Logging;
+
+namespace UnitTests.Core.Common;
+
+public class BaseCoreFixture<TRequest, TUseCase> : BaseFixture
+    where TRequest : class
+    where TUseCase : class
+{
+    public Mock<IServiceProvider> MockServiceProvider { get; } = new();
+    public Mock<ILogger> MockLogger { get; } = new();
+    public Mock<ILoggerFactory> MockLoggerFactory { get; } = new();
+    public Mock<IProduceService> MockProduceService { get; } = new();
+    public Mock<IBaseRepository> MockRepository { get; } = new();
+    public Mock<IHybridCacheService> MockCache { get; } = new();
+    public TUseCase UseCase { get; set; } = default!;
+
+    public BaseCoreFixture() => MockServiceProviderServices();
+
+    private void MockServiceProviderServices()
+    {
+        MockServiceProvider
+            .Setup(r => r.GetService(typeof(ILoggerFactory)))
+            .Returns(MockLoggerFactory.Object);
+
+        MockLogger.Setup(l => l.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+        MockLoggerFactory
+            .Setup(l => l.CreateLogger(It.IsAny<string>()))
+            .Returns(MockLogger.Object);
+
+        MockServiceProvider
+            .Setup(r => r.GetService(typeof(IHybridCacheService)))
+            .Returns(MockCache.Object);
+
+        MockServiceProvider
+            .Setup(r => r.GetService(typeof(IProduceService)))
+            .Returns(MockProduceService.Object);
+
+        MockServiceProvider
+            .Setup(r => r.GetService(typeof(IBaseRepository)))
+            .Returns(MockRepository.Object);
+    }
+
+    public void ClearInvocations()
+    {
+        MockLogger.Invocations.Clear();
+        MockCache.Reset();
+        MockProduceService.Reset();
+        MockRepository.Reset();
+    }
+
+    public BasePaginatedRequest SetValidBasePaginatedRequest() => new(Guid.NewGuid(), 1, 10);
+
+    public void SetValidGetOrCreateAsync<TResult>(TResult result) => MockCache
+        .Setup(c => c.GetOrCreateAsync(
+            It.IsAny<Guid>(),
+            It.IsAny<string>(),
+            It.IsAny<Func<CancellationToken, ValueTask<TResult>>>(),
+            It.IsAny<CancellationToken>()
+    )).ReturnsAsync(result);
+
+    public void SetInvalidGetOrCreateAsync<TResult>() => MockCache.Setup(c => c.GetOrCreateAsync(
+        It.IsAny<Guid>(),
+        It.IsAny<string>(),
+        It.IsAny<Func<CancellationToken, ValueTask<TResult>>>(),
+        It.IsAny<CancellationToken>()
+    ));
+
+    public void VerifyCache<TResult>(int times) => MockCache.Verify(
+        c => c.GetOrCreateAsync(
+            It.IsAny<Guid>(),
+            It.IsAny<string>(),
+            It.IsAny<Func<CancellationToken, ValueTask<TResult>>>(),
+            It.IsAny<CancellationToken>()
+        ),
+        Times.Exactly(times)
+    );
+
+    public void VerifyProduce<TMessage>(int times = 1) where TMessage : BaseMessage => MockProduceService.Verify(
+        p => p.HandleAsync(
+            It.IsAny<TMessage>(),
+            It.IsAny<CancellationToken>(),
+            It.IsAny<string>(),
+            It.IsAny<string>()
+        ),
+        Times.Exactly(times)
+    );
+}

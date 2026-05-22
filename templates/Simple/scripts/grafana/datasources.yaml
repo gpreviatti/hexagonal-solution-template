@@ -1,0 +1,82 @@
+apiVersion: 1
+
+datasources:
+- name: Tempo
+  type: tempo
+  access: proxy
+  orgId: 1
+  url: http://tempo:3200
+  basicAuth: false
+  isDefault: true
+  version: 1
+  editable: false
+  apiVersion: 1
+  uid: tempo
+  jsonData:
+    httpMethod: GET
+    serviceMap:
+      datasourceUid: prometheus
+    tracesToLogsV2:
+      # Field with an internal link pointing to a logs data source in Grafana.
+      # datasourceUid value must match the uid value of the logs data source.
+      datasourceUid: 'Loki'
+      spanStartTimeShift: '-1h'
+      spanEndTimeShift: '1h'
+      filterByTraceID: true
+      filterBySpanID: true
+      customQuery: false
+      query: 'method="$${__span.tags.method}"'
+    tracesToProfiles:
+      datasourceUid: 'pyroscope'
+      tags:
+        - key: 'service.name'
+          value: 'service_name'
+        - key: 'operation.name'
+          value: 'operation_name'
+        - key: 'trace_id'
+          value: 'trace_id'
+        - key: 'span_id'
+          value: 'span_id'
+      profileTypeId: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds'
+      customQuery: false
+- name: Prometheus
+  type: prometheus
+  uid: prometheus
+  access: proxy
+  orgId: 1
+  url: http://prometheus:9090
+  basicAuth: false
+  isDefault: false
+  version: 1
+  editable: false
+  jsonData:
+    httpMethod: GET
+- name: Loki
+  type: loki
+  access: proxy 
+  orgId: 1
+  url: http://loki:3100
+  basicAuth: false
+  isDefault: false
+  version: 1
+  editable: false
+  jsonData:
+    derivedFields:
+      - datasourceUid: tempo
+        matcherRegex: tid=(\w+)
+        name: TraceId
+        url: $${__value.raw}
+- name: Pyroscope
+  type: grafana-pyroscope-datasource
+  access: proxy
+  orgId: 1
+  url: http://pyroscope:4040
+  basicAuth: false
+  isDefault: false
+  version: 1
+  editable: false
+  apiVersion: 1
+  uid: pyroscope
+  jsonData:
+    httpMethod: GET
+    serviceMapEnabled: true
