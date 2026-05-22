@@ -247,10 +247,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.MockProduceService
             .Setup(p => p.HandleAsync(
                 It.IsAny<CreateNotificationMessage>(),
-                It.IsAny<CancellationToken>(),
-                It.IsAny<string>(),
-                It.IsAny<string>()))
-            .Callback<CreateNotificationMessage, CancellationToken, string, string>((message, _, queue, _) =>
+                It.IsAny<CancellationToken>()
+            )).Callback<CreateNotificationMessage, CancellationToken, string, string>((message, _, queue, _) =>
             {
                 publishedMessage = message;
                 publishedQueue = queue;
@@ -284,10 +282,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.MockProduceService
             .Setup(p => p.HandleAsync(
                 It.IsAny<CreateNotificationMessage>(),
-                It.IsAny<CancellationToken>(),
-                It.IsAny<string>(),
-                It.IsAny<string>()))
-            .Callback<CreateNotificationMessage, CancellationToken, string, string>((message, _, _, _) =>
+                It.IsAny<CancellationToken>()
+            )).Callback<CreateNotificationMessage, CancellationToken, string, string>((message, _, _, _) =>
             {
                 publishedMessage = message;
             })
@@ -320,10 +316,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.MockProduceService
             .Setup(p => p.HandleAsync(
                 It.IsAny<CreateNotificationMessage>(),
-                It.IsAny<CancellationToken>(),
-                It.IsAny<string>(),
-                It.IsAny<string>()))
-            .Callback<CreateNotificationMessage, CancellationToken, string, string>((message, _, _, _) =>
+                It.IsAny<CancellationToken>()
+            )).Callback<CreateNotificationMessage, CancellationToken, string, string>((message, _, _, _) =>
             {
                 publishedMessage = message;
             })

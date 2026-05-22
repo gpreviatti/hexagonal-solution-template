@@ -11,15 +11,6 @@
           "Npgsql": "8.0.3"
         }
       },
-      "AspNetCore.HealthChecks.Rabbitmq": {
-        "type": "Direct",
-        "requested": "[9.0.0, )",
-        "resolved": "9.0.0",
-        "contentHash": "7WSQ7EwioA5niakzzLtGVcZMEOh+42fSwrI24vnNsT7gZuVGOViNekyz38G6wBPYKcpL/lUkMdg3ZaCiZTi/Dw==",
-        "dependencies": {
-          "RabbitMQ.Client": "7.0.0"
-        }
-      },
       "AspNetCore.HealthChecks.Redis": {
         "type": "Direct",
         "requested": "[9.0.0, )",
@@ -115,9 +106,7 @@
           "OpenTelemetry.Instrumentation.Process": "[1.15.1-beta.1, )",
           "OpenTelemetry.Instrumentation.Runtime": "[1.15.1, )",
           "OpenTelemetry.Instrumentation.StackExchangeRedis": "[1.15.1-beta.1, )",
-          "Pyroscope.OpenTelemetry": "[0.4.0, )",
-          "RabbitMQ.Client": "[7.2.1, )",
-          "RabbitMQ.Client.OpenTelemetry": "[1.0.0-rc.2, )"
+          "Pyroscope.OpenTelemetry": "[0.4.0, )"
         }
       },
       "Microsoft.EntityFrameworkCore": {
@@ -270,22 +259,6 @@
         "dependencies": {
           "OpenTelemetry": "1.8.0",
           "Pyroscope": "0.13.0"
-        }
-      },
-      "RabbitMQ.Client": {
-        "type": "CentralTransitive",
-        "requested": "[7.2.1, )",
-        "resolved": "7.2.1",
-        "contentHash": "YKXEfg9fVQiTKgZlvIhAfPSFaamEgi8DsQmisCH0IAsU4FYLrtoguDrDj6JtJVGUt40QPnBLRH6fTQcAC4qsOg=="
-      },
-      "RabbitMQ.Client.OpenTelemetry": {
-        "type": "CentralTransitive",
-        "requested": "[1.0.0-rc.2, )",
-        "resolved": "1.0.0-rc.2",
-        "contentHash": "fVjEZ8DsLDw3EEp/Q5XGFhk7Rvluh32n+38kyBcCdZu/F7cOuj6ETo+pYMhXHtcKGk856sEEOaEWR+alsETv9w==",
-        "dependencies": {
-          "OpenTelemetry.Api": "1.9.0",
-          "RabbitMQ.Client": "7.2.0"
         }
       }
     }

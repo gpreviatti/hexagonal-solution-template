@@ -20,7 +20,7 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
             if (string.Equals(environment, "IntegrationTests", StringComparison.OrdinalIgnoreCase))
                 return builder;
 
-            var serviceName = DefaultConfigurations.CoreName;
+            var serviceName = DefaultConfigurations.ApplicationName;
             var serviceVersion = DefaultConfigurations.Version;
             var resourceBuilder = ResourceBuilder
                 .CreateDefault()
@@ -46,7 +46,6 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
                     .AddSource(serviceName)
                     .SetResourceBuilder(resourceBuilder)
                     .AddRedisInstrumentation()
-                    .AddRabbitMQInstrumentation()
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
                     .AddEntityFrameworkCoreInstrumentation()

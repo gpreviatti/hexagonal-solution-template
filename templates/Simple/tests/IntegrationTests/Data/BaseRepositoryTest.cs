@@ -1,5 +1,4 @@
 ﻿using Core.Orders;
-using Core.Orders;
 using IntegrationTests.Common;
 using Microsoft.EntityFrameworkCore;
 using WebApp;

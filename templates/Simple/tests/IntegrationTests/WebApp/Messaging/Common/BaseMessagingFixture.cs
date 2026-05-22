@@ -32,7 +32,7 @@ public class BaseMessagingFixture : BaseFixture
         int delay = 1500
     ) where TMessage : BaseMessage
     {
-        await ProduceService.HandleAsync(message, CancellationToken, queueName);
+        await ProduceService.HandleAsync(message, CancellationToken);
 
         await Task.Delay(delay, CancellationToken);
     }

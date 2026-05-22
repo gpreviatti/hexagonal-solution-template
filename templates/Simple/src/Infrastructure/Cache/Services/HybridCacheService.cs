@@ -25,7 +25,7 @@ internal sealed class HybridCacheService(HybridCache cache, ILogger<HybridCacheS
         activity.SetDefaultTags();
 
         Logs.DebugStartingOperation(_logger, correlationId, key);
-        var result = await _cache.GetOrCreateAsync($"{DefaultConfigurations.CoreName}:{key}", factory, cancellationToken: cancellationToken);
+        var result = await _cache.GetOrCreateAsync($"{DefaultConfigurations.ApplicationName}:{key}", factory, cancellationToken: cancellationToken);
 
         Logs.DebugFinishedOperation(_logger, correlationId, $"Cached hit: {result} for key: {key}");
 
@@ -41,7 +41,7 @@ internal sealed class HybridCacheService(HybridCache cache, ILogger<HybridCacheS
 
         Logs.DebugStartingOperation(_logger, correlationId, key);
 
-        await _cache.SetAsync($"{DefaultConfigurations.CoreName}:{key}", value, cancellationToken: cancellationToken);
+        await _cache.SetAsync($"{DefaultConfigurations.ApplicationName}:{key}", value, cancellationToken: cancellationToken);
 
         Logs.DebugFinishedOperation(_logger, correlationId, $"Cached hit: {value} for key: {key}");
 
@@ -55,7 +55,7 @@ internal sealed class HybridCacheService(HybridCache cache, ILogger<HybridCacheS
 
         Logs.DebugStartingOperation(_logger, correlationId, key);
 
-        await _cache.RemoveAsync($"{DefaultConfigurations.CoreName}:{key}", cancellationToken);
+        await _cache.RemoveAsync($"{DefaultConfigurations.ApplicationName}:{key}", cancellationToken);
 
         Logs.DebugFinishedOperation(_logger, correlationId, $"Cache entry removed for key: {key}");
 

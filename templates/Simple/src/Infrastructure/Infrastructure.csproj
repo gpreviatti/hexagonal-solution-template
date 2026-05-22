@@ -21,8 +21,6 @@
     <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" />
     <PackageReference Include="OpenTelemetry.Instrumentation.StackExchangeRedis" />
     <PackageReference Include="Pyroscope.OpenTelemetry" />
-    <PackageReference Include="RabbitMQ.Client.OpenTelemetry" />
-    <PackageReference Include="RabbitMQ.Client" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
