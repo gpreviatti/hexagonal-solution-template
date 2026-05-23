@@ -481,3 +481,6 @@ $RECYCLE.BIN/
 
 !Logs
 *.lscache
+
+*.remember
+*.claude

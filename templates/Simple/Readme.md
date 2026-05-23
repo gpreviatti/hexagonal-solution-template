@@ -1,6 +1,6 @@
 # 🏗️ Hexagonal Architecture Solution Template
 
-A production-ready .NET template for building Cores following [Hexagonal Architecture](https://alistair.cockburn.us/hexagonal-architecture/) (also known as Ports and Adapters). It ships with Domain-Driven Design (DDD) patterns, CQRS-style use cases, full observability, and a complete multi-layer testing strategy out of the box.
+A production-ready .NET template for building services following [Hexagonal Architecture](https://alistair.cockburn.us/hexagonal-architecture/) (also known as Ports and Adapters). It ships with Domain-Driven Design (DDD) patterns, CQRS-style use cases, full observability, and a complete multi-layer testing strategy out of the box.
 
 ---
 
@@ -9,11 +9,10 @@ A production-ready .NET template for building Cores following [Hexagonal Archite
 1. [Project Overview](#-project-overview)
 2. [Project Structure](#-project-structure)
 3. [Getting Started](#-getting-started)
-4. [Running the Core](#-running-the-Core)
+4. [Running the App](#-running-the-app)
 5. [Testing Strategy](#-testing-strategy)
 6. [Development Workflow](#-development-workflow)
-7. [AI Agent Skills](#-ai-agent-skills)
-8. [Helper Commands](#-helper-commands)
+7. [Helper Commands](#-helper-commands)
 9. [Docker Setup](#-docker-setup)
 10. [Monitoring & Telemetry](#-monitoring--telemetry)
 11. [Contributing](#-contributing)
@@ -30,28 +29,22 @@ Hexagonal Architecture isolates the core business logic from external concerns (
 flowchart TD
     subgraph ExternalWorld["External World"]
         HTTP["HTTP"]
-        gRPC["gRPC"]
-        MessageBus["Message Bus"]
         DB["Database"]
+        Cache["Cache"]
+        InProcMessaging["In-Process Messaging"]
     end
 
     subgraph AppLayer["Core Layer"]
-        UseCases["Use Cases / Ports / Orchestration"]
-    end
-
-    subgraph DomainLayer["Domain Layer"]
-        Entities["Entities / Rules / Domain Events"]
+        UseCases["Use Cases / Ports / Orchestration / Entities / Rules "]
     end
 
     Adapters["Adapters"]
 
     ExternalWorld --> Adapters
     Adapters --> AppLayer
-    AppLayer --> DomainLayer
 
     style ExternalWorld fill:#e1f5ff
     style AppLayer fill:#f3e5f5
-    style DomainLayer fill:#fff3e0
     style Adapters fill:#f0f4c3
 ```
 
@@ -59,14 +52,14 @@ flowchart TD
 
 | Concern | Approach |
 |---|---|
-| Business rules | Encapsulated in `Domain` aggregates and entities |
+| Business rules & domain | Encapsulated in aggregates and entities inside `Core` |
 | Orchestration | Single-responsibility `UseCase` classes in `Core` |
 | Persistence | Repository pattern with EF Core (PostgreSQL) |
 | Caching | Hybrid cache (Redis + in-memory) via `IHybridCacheService` |
-| Messaging | RabbitMQ producers/consumers via MassTransit |
-| API surface | ASP.NET Minimal API (REST) + gRPC |
-| Observability | OpenTelemetry → Grafana / Loki / Tempo / Prometheus |
-| Validation | FluentValidation, validated at the Core boundary |
+| Messaging | In-process `System.Threading.Channels` producers/consumers |
+| API surface | ASP.NET Minimal API (REST) |
+| Observability | OpenTelemetry → Grafana / Loki / Tempo / Prometheus / Pyroscope |
+| Validation | DataAnnotations, validated automatically at the use case boundary |
 
 ---
 
@@ -75,10 +68,9 @@ flowchart TD
 ```
 .
 ├── src/
-│   ├── Domain/                 # Core business logic – no external dependencies
-│   ├── Core/            # Use cases, ports (interfaces), DTOs
-│   ├── Infrastructure/         # Adapters: EF Core, Redis, RabbitMQ, OpenTelemetry
-│   └── WebApp/                 # Entry point: Minimal API + gRPC
+│   ├── Core/                   # Domain entities, use cases, ports (interfaces), DTOs
+│   ├── Infrastructure/         # Adapters: EF Core, Redis, in-process messaging, OpenTelemetry
+│   └── WebApp/                 # Entry point: Minimal API endpoints
 ├── tests/
 │   ├── CommonTests/            # Shared test utilities and base fixtures
 │   ├── UnitTests/              # Isolated unit + architecture tests
@@ -89,68 +81,58 @@ flowchart TD
     └── grafana/                # Alloy, Loki, Prometheus, Tempo configs
 ```
 
-### `src/Domain/`
-
-The innermost layer. Has **zero dependencies** on any other project or NuGet infrastructure package.
-
-```
-Domain/
-├── Common/
-│   ├── DomainEntity.cs         # Base class for all domain entities (Id, timestamps)
-│   ├── Result.cs               # Railway-oriented Result<T> type for error handling
-│   ├── DefaultConfigurations.cs
-│   ├── Enums/                  # Domain-scoped enumerations
-│   ├── Exceptions/             # Domain-specific exceptions
-│   └── Extensions/             # Pure domain extension methods
-├── Orders/                     # Orders aggregate (entity, value objects, domain events)
-└── Notifications/              # Notifications aggregate
-```
-
-> **Design note:** All business invariants are enforced inside domain entities and aggregates — never in services or controllers.
-
 ### `src/Core/`
 
-Orchestrates domain objects and coordinates infrastructure through **ports (interfaces)**. Each use case lives in its own file and does exactly one thing.
+The innermost layer. Contains both domain logic and use case orchestration. Has **zero dependencies** on Infrastructure or WebApp.
 
 ```
 Core/
 ├── Common/
-│   ├── UseCases/               # BaseUseCase<TRequest, TResponse> base class
-│   ├── Repositories/           # IBaseRepository<T> port interface
-│   ├── Services/               # IHybridCacheService, IProduceService ports
-│   ├── Requests/               # Shared request base types
-│   ├── Messages/               # Integration message contracts (RabbitMQ)
-│   └── Helpers/                # Mapping helpers, extension methods
-├── Orders/
-│   ├── CreateOrderUseCase.cs
-│   ├── GetOrderUseCase.cs
-│   ├── GetAllOrdersUseCase.cs
-│   └── OrderDto.cs
-└── Notifications/
-    ├── CreateNotificationUseCase.cs
-    ├── GetNotificationUseCase.cs
-    ├── GetAllNotificationsUseCase.cs
-    └── NotificationDto.cs
+│   ├── DomainEntity.cs         # Base class for all entities (Id, audit fields, soft-delete)
+│   ├── Result.cs               # Railway-oriented Result<T> type for domain outcomes
+│   ├── DefaultConfigurations.cs# App name, ActivitySource, Meter
+│   ├── Attributes/             # Custom validation attributes (e.g. [NotDefault])
+│   ├── Enums/                  # Domain-scoped enumerations
+│   ├── Exceptions/             # Domain-specific exceptions
+│   ├── Extensions/             # Pure domain extension methods
+│   ├── Helpers/                # Structured logging helpers
+│   ├── Messages/               # In-process message contracts (BaseMessage)
+│   ├── Repositories/           # IBaseRepository port interface
+│   ├── Requests/               # BaseRequest, BaseResponse, BasePaginatedRequest/Response
+│   ├── Services/               # IHybridCacheService, IProduceService port interfaces
+│   └── UseCases/               # BaseUseCase, BaseInOutUseCase, BaseInUseCase, BaseOutUseCase
+├── Orders/                     # Orders aggregate + use cases + DTO
+└── Notifications/              # Notifications aggregate + use cases + DTO
 ```
 
-> **Design note:** Use cases accept a `Request` record and return a `Result<Response>`. They validate input via FluentValidation, call the domain, persist through the repository port, and optionally publish messages.
+> **Design note:** All business invariants are enforced inside domain entities. Entity creation/mutations return `Result<T>` — always check `IsFailure` before using `.Value`.
 
 ### `src/Infrastructure/`
 
-Contains all **adapter implementations**. Depends on Core (for port interfaces) and Core.
+Contains all **adapter implementations**. Depends only on Core.
 
 ```
 Infrastructure/
 ├── Data/
 │   ├── MyDbContext.cs          # EF Core DbContext
+│   ├── MyDbContextFactory.cs   # Design-time factory for EF CLI
 │   ├── Migrations/             # EF Core migrations
 │   ├── Mapping/                # Fluent API entity configurations
-│   └── Repositories/           # IBaseRepository<T> implementations
-├── Cache/                      # IHybridCacheService implementation (Redis + IMemoryCache)
+│   └── Common/
+│       └── BaseRepository.cs   # IBaseRepository implementation
+├── Cache/
+│   └── Services/
+│       └── HybridCacheService.cs   # IHybridCacheService implementation (Redis + IMemoryCache)
 ├── Messaging/
-│   ├── Producers/              # RabbitMQ message publishers (MassTransit)
-│   └── Consumers/              # RabbitMQ message consumers (MassTransit)
-└── OpenTelemetry/              # Tracing, metrics, logging wiring (OTLP exporter)
+│   ├── Producers/
+│   │   └── ProducerService.cs  # IProduceService — writes to Channel<TMessage>
+│   └── Consumers/
+│       ├── BaseConsumer.cs     # BackgroundService reading from Channel<TMessage>, idempotent
+│       └── CreateNotificationConsumer.cs
+├── Common/
+│   ├── BaseBackgroundService.cs
+│   └── BaseBackgroundChannelService.cs
+└── OpenTelemetry/              # Tracing, metrics, logging wiring (OTLP + Pyroscope)
 ```
 
 ### `src/WebApp/`
@@ -161,11 +143,12 @@ The outermost adapter layer. Composes everything together and exposes the API.
 WebApp/
 ├── Program.cs                  # DI registration & middleware pipeline
 ├── Endpoints/
+│   ├── EndpointExtensions.cs   # Route registration entry point
 │   └── OrderEndpoints.cs       # Minimal API route definitions
-├── GrpcServices/               # gRPC service implementations
-├── Protos/                     # .proto definition files
-├── Middlewares/                # Custom middleware (error handling, correlation IDs, etc.)
-└── Extensions/                 # WebCore builder helpers
+├── Middlewares/
+│   └── ExceptionHandlingMiddleware.cs
+└── Extensions/
+    └── HealthCheckExtensions.cs
 ```
 
 ---
@@ -176,9 +159,9 @@ WebApp/
 
 | Tool | Minimum Version | Notes |
 |---|---|---|
-| [.NET SDK](https://dotnet.microsoft.com/download) | 9.0 | `dotnet --version` |
+| [.NET SDK](https://dotnet.microsoft.com/download) | 10.0 | `dotnet --version` |
 | [Docker Desktop](https://www.docker.com/products/docker-desktop) | 4.x | For all backing services |
-| [EF Core CLI](https://learn.microsoft.com/en-us/ef/core/cli/dotnet) | 9.0 | `dotnet tool install --global dotnet-ef` |
+| [EF Core CLI](https://learn.microsoft.com/en-us/ef/core/cli/dotnet) | latest | `dotnet tool install --global dotnet-ef` |
 | [k6](https://k6.io/docs/get-started/installation/) | ≥ 0.50 | For load tests only |
 | [Stryker.NET](https://stryker-mutator.io/docs/stryker-net/getting-started/) | latest | `dotnet tool install --global dotnet-stryker` |
 
@@ -188,62 +171,52 @@ WebApp/
 # 1. Restore NuGet packages
 dotnet restore
 
-# 2. Start backing services (PostgreSQL, Redis, RabbitMQ)
+# 2. Start backing services (PostgreSQL, Redis, full observability stack)
 docker compose -f docker-compose-local.yml up -d
 
 # 3. Apply database migrations
-dotnet ef database update --project src/Infrastructure --startup-project src/Infrastructure
+dotnet ef database update --project src/Infrastructure --startup-project src/WebApp
 
-# 4. Run the Core
+# 4. Run the app
 dotnet run --project src/WebApp
 ```
 
-> ⚠️ **Note:** `docker-compose-local.yml` also starts **pgAdmin** on port `5050` (credentials: `admin@admin.com` / `admin`). Use it to browse the database during development.
+> ⚠️ **Note:** `docker-compose-local.yml` also starts **pgAdmin** on port `5050` (credentials: `admin@admin.com` / `admin`) and the full observability stack (Grafana, Prometheus, Loki, Tempo, Pyroscope). The `postgres-init` container automatically runs `scripts/sql/migrations.sql` and `scripts/sql/seeds.sql` on first start.
 
 ---
 
-## ▶️ Running the Core
+## ▶️ Running the App
 
 ```bash
 dotnet run --project src/WebApp
 ```
 
 By default the app listens on:
-- **REST API:** `https://localhost:7000` (check `Properties/launchSettings.json`)
-- **gRPC:** configured in `WebApp/GrpcServices/`
+- **REST API:** `https://localhost:7175` / `http://localhost:5010`
 - **Health check:** `/health`
-- **Swagger / OpenAPI:** `/swagger`
-
-You can also use the included `.http` file for quick manual testing:
-
-```
-src/WebApp/WebApp.http
-```
 
 ---
 
 ## 🧪 Testing Strategy
 
-This template enforces a multi-layer testing strategy. See [TEST_STRUCTURE_GUIDE.md](TEST_STRUCTURE_GUIDE.md) for detailed patterns and conventions.
-
 ### Test Projects
 
 | Project | Purpose | Runner |
 |---|---|---|
-| `CommonTests` | Shared fixtures, `BaseFixture`, `BaseCoreFixture<T>` | — (library) |
+| `CommonTests` | Shared fixtures and `BaseFixture` | — (library) |
 | `UnitTests` | Domain logic, use case orchestration, architecture rules | `dotnet test` |
-| `IntegrationTests` | Full HTTP/gRPC slice tests against a real DB | `dotnet test` |
-| `LoadTests` | Performance and throughput benchmarks | `k6` |
+| `IntegrationTests` | Full HTTP slice tests against a real DB | `dotnet test` |
+| `LoadTests` | HTTP performance benchmarks | `k6` |
 
 ### Unit Tests (`tests/UnitTests/`)
 
 ```
 UnitTests/
-├── Domain/                     # Entity invariants, Result type, value objects
 ├── Core/
+│   ├── Common/                 # DomainEntity tests, mock extensions
 │   ├── Orders/                 # CreateOrderUseCaseTests, GetOrderUseCaseTests, …
 │   └── Notifications/          # CreateNotificationUseCaseTests, …
-└── Architecture/               # ArchUnit-style dependency direction rules
+└── Architecture/               # Layer dependency and naming convention enforcement
 ```
 
 **Naming convention:** `GivenContext_WhenCondition_ThenExpectedResult`
@@ -251,19 +224,19 @@ UnitTests/
 ```csharp
 [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
 public async Task GivenAValidRequestThenPass() { ... }
-
-[Fact(DisplayName = nameof(GivenAValidRequestWhenOrderNotFoundThenFails))]
-public async Task GivenAValidRequestWhenOrderNotFoundThenFails() { ... }
 ```
 
-**Run unit tests:**
 ```bash
+# All unit tests
 dotnet test tests/UnitTests
+
+# Single test class
+dotnet test tests/UnitTests --filter "FullyQualifiedName~CreateOrderUseCaseTest"
 ```
 
 ### Integration Tests (`tests/IntegrationTests/`)
 
-Spin up a real WebApp using `WebCoreFactory<Program>` against a PostgreSQL test database.
+Spin up a real WebApp using `CustomWebApplicationFactory<Program>` against a local PostgreSQL instance (`Host=127.0.0.1;Port=5432;Database=OrderDb`).
 
 ```bash
 dotnet test tests/IntegrationTests
@@ -271,31 +244,23 @@ dotnet test tests/IntegrationTests
 
 ### Load Tests (`tests/LoadTests/`)
 
-Uses [k6](https://k6.io) to simulate concurrent traffic against the running Core.
+Uses [k6](https://k6.io) to simulate concurrent HTTP traffic.
 
 ```bash
-# REST API load test
+# Run locally against the running app
 k6 run tests/LoadTests/scriptHttp.js --summary-mode=full
 
-# gRPC load test
-k6 run tests/LoadTests/scriptGrpc.js --summary-mode=full
-
-# Start full monitoring stack first for metrics in Grafana
-docker compose up -d
+# Or use the dedicated load test compose environment
+docker compose -f docker-compose-load-tests.yml up -d
 ```
 
 ### Mutation Tests (Stryker.NET)
 
-Mutation testing validates test suite quality by introducing code faults and checking that tests catch them. Thresholds: **high ≥ 90%, low ≥ 80%, break < 50%**.
+Thresholds: **high ≥ 90%, low ≥ 80%, break < 50%**.
 
 ```bash
 cd tests/UnitTests
-
-# Mutate Core layer
-dotnet stryker --config-file stryker-config-Core.json
-
-# Mutate Domain layer
-dotnet stryker --config-file stryker-config-Core.json
+dotnet stryker --config-file stryker-config-core.json
 ```
 
 HTML reports are written to `tests/UnitTests/StrykerOutput/`.
@@ -312,88 +277,48 @@ dotnet test
 
 ### Adding a New Feature (e.g., `Products`)
 
-Follow the dependency direction: **Domain → Core → Infrastructure → WebApp**.
+Follow the dependency direction: **Core → Infrastructure → WebApp**.
 
-**1. Domain — define the entity**
+**1. Core — define the entity and use cases**
 ```
-src/Domain/Products/Product.cs          # Entity with invariants
-```
-
-**2. Core — add use case(s)**
-```
+src/Core/Products/Product.cs                  # Entity with invariants
 src/Core/Products/CreateProductUseCase.cs
 src/Core/Products/GetProductUseCase.cs
 src/Core/Products/ProductDto.cs
 ```
 
-**3. Infrastructure — add persistence**
+Use cases extending `BaseInOutUseCase` are **auto-registered** by `CoreDependencyInjection.AddCore()` — no manual DI wiring needed.
+
+**2. Infrastructure — add persistence mapping**
 ```
-src/Infrastructure/Data/Mapping/ProductConfiguration.cs   # EF Core config
-```
-Then create and apply a migration:
-```bash
-dotnet ef migrations add AddProduct --project src/Infrastructure --startup-project src/Infrastructure --output-dir Data/Migrations
-dotnet ef database update --project src/Infrastructure --startup-project src/Infrastructure
+src/Infrastructure/Data/Mapping/ProductDbMapping.cs   # EF Core fluent config
 ```
 
-**4. WebApp — expose the endpoint**
+Create and apply the migration:
+```bash
+dotnet ef migrations add AddProduct \
+  --project src/Infrastructure \
+  --startup-project src/WebApp \
+  --output-dir Data/Migrations
+
+dotnet ef database update \
+  --project src/Infrastructure \
+  --startup-project src/WebApp
+```
+
+**3. WebApp — expose the endpoint**
 ```
 src/WebApp/Endpoints/ProductEndpoints.cs
 ```
 Register routes in `EndpointExtensions.cs`.
 
-**5. Tests — cover every layer**
+**4. Tests — cover every layer**
 ```
-tests/UnitTests/Domain/Products/
 tests/UnitTests/Core/Products/
-tests/IntegrationTests/WebApp/Products/
+tests/IntegrationTests/WebApp/Http/Products/
 ```
 
-> ✅ **Tip:** Architecture tests in `tests/UnitTests/Architecture/` will automatically enforce that your new code respects the dependency rules.
-
----
-
-## 🤖 AI Agent Skills
-
-This template includes prebuilt Copilot skills to standardize generation and reduce implementation drift across contributors.
-
-### Skills location
-
-All skills are stored under:
-
-```
-.github/skills/
-```
-
-Each skill contains:
-- `SKILL.md` — behavior, activation criteria, and conventions
-- `references/` — local templates and snippets used by the skill (self-contained)
-
-### Available skills
-
-| Skill | Purpose |
-|---|---|
-| `entity-generator` | Generate domain entities with DDD patterns, tests, and persistence guidance |
-| `use-case-generator` | Generate Core use cases (`BaseInOutUseCase`, `BaseInUseCase`, `BaseOutUseCase`) with validators, notification patterns, and xUnit unit tests with fixtures, mocks, and logging/repository verification |
-| `endpoints-generator` | Generate ASP.NET Minimal API endpoints with cache, correlation ID, status code conventions, and mandatory `src/WebApp/WebApp.http` samples for local endpoint testing |
-| `consumers-generator` | Generate RabbitMQ consumers and message contracts using `BaseConsumer<TMessage, TConsumer>` patterns |
-| `ef-mapper` | Generate/update EF Core mapping classes with precision, enum conversion, relationships, and migration guidance |
-| `integration-tests-generator` | Generate integration tests for HTTP, gRPC, and messaging flows using `WebCoreFactory` conventions |
-| `load-tests-generator` | Generate k6 load test scripts for HTTP/gRPC with thresholds, metrics, and env-driven profiles |
-
-### How to use
-
-Ask Copilot with intent that matches the skill. Examples:
-
-- "Create a new domain entity with tests for Product"
-- "Generate a use case and validator for updating product prices"
-- "Add minimal API endpoints for Products"
-- "Create integration tests for the new endpoint"
-- "Generate a k6 script for the products GET endpoint"
-
-> ✅ **Best practice:** Keep skill templates and references in `./references` inside each skill folder. This prevents breakage if source files are moved or renamed.
-
-> 🧪 **Endpoint skill rule:** Whenever `endpoints-generator` creates a new endpoint route, add/update the corresponding request sample in `src/WebApp/WebApp.http` so local manual tests stay in sync with the API contract.
+> ✅ Architecture tests in `tests/UnitTests/Architecture/` automatically enforce that new code respects the dependency rules and naming conventions.
 
 ---
 
@@ -405,25 +330,19 @@ Ask Copilot with intent that matches the skill. Examples:
 # Apply pending migrations
 dotnet ef database update \
   --project src/Infrastructure \
-  --startup-project src/Infrastructure
+  --startup-project src/WebApp
 
 # Create a new migration
 dotnet ef migrations add <MigrationName> \
   --project src/Infrastructure \
-  --startup-project src/Infrastructure \
+  --startup-project src/WebApp \
   --output-dir Data/Migrations
 
 # Generate idempotent SQL script (for CI/CD deployments)
-dotnet ef migrations script --idempotent --project src/Infrastructure --startup-project src/Infrastructure --output scripts/sql/migrations.sql
-```
-
-### Running the App
-
-```bash
-dotnet run --project src/WebApp
-
-# Hot reload during development
-dotnet watch run --project src/WebApp
+dotnet ef migrations script --idempotent \
+  --project src/Infrastructure \
+  --startup-project src/WebApp \
+  --output scripts/sql/migrations.sql
 ```
 
 ### Running Tests
@@ -446,15 +365,13 @@ dotnet test --collect:"XPlat Code Coverage"
 
 ```bash
 cd tests/UnitTests
-dotnet stryker --config-file stryker-config-Core.json
-dotnet stryker --config-file stryker-config-Core.json
+dotnet stryker --config-file stryker-config-core.json
 ```
 
 ### Load Tests
 
 ```bash
 k6 run tests/LoadTests/scriptHttp.js --summary-mode=full
-k6 run tests/LoadTests/scriptGrpc.js --summary-mode=full
 ```
 
 ---
@@ -463,14 +380,19 @@ k6 run tests/LoadTests/scriptGrpc.js --summary-mode=full
 
 ### `docker-compose-local.yml` — Development environment
 
-Starts all backing services for local development:
+Starts all backing services for local development, including the full observability stack:
 
 | Service | Port(s) | Purpose |
 |---|---|---|
 | PostgreSQL 17 | `5432` | Primary database |
-| pgAdmin | `5050` | Database GUI |
+| pgAdmin | `5050` | Database GUI (`admin@admin.com` / `admin`) |
 | Redis 8 | `6379` | Distributed cache |
-| RabbitMQ | `5672` / `15672` | Message broker / Management UI |
+| Grafana Alloy | `4317`, `4318` | Telemetry collector (OTLP) |
+| Prometheus | `9090` | Metrics |
+| Loki | `3100` | Log aggregation |
+| Grafana | `3000` | Dashboards |
+| Tempo | `3200` | Distributed tracing |
+| Pyroscope | `4040` | Continuous profiling |
 
 ```bash
 docker compose -f docker-compose-local.yml up -d
@@ -482,19 +404,9 @@ docker compose -f docker-compose-local.yml down
 docker compose -f docker-compose-local.yml down -v
 ```
 
-> ⚠️ **Note:** On first start, `postgres-init` automatically runs `scripts/sql/migrations.sql` and `scripts/sql/seeds.sql` inside the database container.
+### `docker-compose.yml` — Minimal environment (no observability)
 
-### `docker-compose.yml` — Full stack (with observability)
-
-Adds the complete monitoring stack on top of the local services:
-
-| Service | Port | Purpose |
-|---|---|---|
-| Grafana | `3000` | Dashboards |
-| Prometheus | `9090` | Metrics scraping |
-| Loki | `3100` | Log aggregation |
-| Tempo | `4317` | Distributed tracing (OTLP) |
-| Grafana Alloy | — | Telemetry collector |
+Starts only PostgreSQL, Redis, and pgAdmin — useful when you don't need the monitoring stack.
 
 ```bash
 docker compose up -d
@@ -502,18 +414,17 @@ docker compose up -d
 
 ### `docker-compose-load-tests.yml` — Load test environment
 
-Spins up a stable environment optimized for k6 load tests.
+Spins up the full stack plus the app container and runs k6 automatically.
 
 ```bash
 docker compose -f docker-compose-load-tests.yml up -d
-k6 run tests/LoadTests/scriptHttp.js --summary-mode=full
 ```
 
-### Build & run the Core in Docker
+### Build & run the app in Docker
 
 ```bash
 docker build -t hexagonal-template .
-docker run -p 8080:8080 hexagonal-template
+docker run -p 5000:5000 hexagonal-template
 ```
 
 ---
@@ -522,8 +433,6 @@ docker run -p 8080:8080 hexagonal-template
 
 The template uses **OpenTelemetry** with OTLP exporters, collected and routed by **Grafana Alloy**.
 
-### Stack
-
 ```mermaid
 graph TB
     WebApp["WebApp<br/>(OTLP)"]
@@ -531,12 +440,14 @@ graph TB
     Loki["Loki<br/>(Logs)"]
     Tempo["Tempo<br/>(Traces)"]
     Prometheus["Prometheus<br/>(Metrics)"]
+    Pyroscope["Pyroscope<br/>(Profiles)"]
     Grafana["Grafana<br/>(Dashboards)"]
 
     WebApp -->|OTLP| Alloy
     Alloy -->|logs| Loki
     Alloy -->|traces| Tempo
     Alloy -->|metrics| Prometheus
+    Alloy -->|profiles| Pyroscope
     Prometheus --> Grafana
     Loki --> Grafana
     Tempo --> Grafana
@@ -546,24 +457,23 @@ graph TB
     style Loki fill:#fff9c4
     style Tempo fill:#ffe0b2
     style Prometheus fill:#f8bbd0
+    style Pyroscope fill:#e1bee7
     style Grafana fill:#d1c4e9
 ```
 
 ### Accessing the dashboards
 
-Start the full stack first:
-
 ```bash
-docker compose up -d
+docker compose -f docker-compose-local.yml up -d
 dotnet run --project src/WebApp
 ```
 
 | Dashboard | URL | Credentials |
 |---|---|---|
-| Grafana | <http://localhost:3000> | `admin` / `admin` |
+| Grafana | <http://localhost:3000> | anonymous (admin role) |
 | Prometheus | <http://localhost:9090> | — |
-| RabbitMQ | <http://localhost:15672> | `guest` / `guest` |
 | pgAdmin | <http://localhost:5050> | `admin@admin.com` / `admin` |
+| Pyroscope | <http://localhost:4040> | — |
 
 ### Configuration files
 
@@ -575,19 +485,18 @@ dotnet run --project src/WebApp
 | `scripts/grafana/loki-config.yaml` | Loki storage configuration |
 | `scripts/grafana/tempo.yaml` | Tempo trace storage configuration |
 
-> ✅ **Tip:** Structured logs from the Core include a `CorrelationId` that can be used to pivot from a log entry directly to the trace in Tempo's Explore view in Grafana.
+> ✅ **Tip:** Structured logs include a `CorrelationId` that can be used to pivot from a log entry directly to the trace in Tempo's Explore view in Grafana.
 
 ---
 
+## 🤝 Contributing
 
 ### Guidelines
 
 1. Follow the layer dependency rules enforced by the architecture tests.
 2. Every new use case must have unit tests following the `GivenContext_WhenCondition_ThenExpectedResult` naming convention.
-3. Run `dotnet test` and both Stryker configs before opening a pull request.
-4. Keep domain entities free from infrastructure concerns — no EF Core attributes inside `Domain/`.
-
-## 🤝 Contributing
+3. Run `dotnet test` and the Stryker config before opening a pull request.
+4. Keep domain entities free from infrastructure concerns — no EF Core attributes on entities in `Core`.
 
 Have a feature request or found a bug? We'd love to hear from you!
 
