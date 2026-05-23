@@ -6,7 +6,7 @@
             "dotnetRunMessages": true,
             "sqlDebugging": true,
             "launchBrowser": false,
-            "CoreUrl": "https://*:7175;http://*:5010",
+            "applicationUrl": "https://*:7175;http://*:5010",
             "environmentVariables": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
                 "OTEL_EXPORTER_OTLP_ENDPOINT": "http://localhost:4317",

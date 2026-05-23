@@ -15,7 +15,7 @@ services:
       - K6_SUMMARY_MODE=full
       - K6_WEB_DASHBOARD=true
       - K6_WEB_DASHBOARD_EXPORT=html-report.html
-      - VUS=1000
+      - VUS=500
       - DURATION=180s
       - GRACEFUL_STOP=10s
     command: ["run", "/LoadTests/scriptHttp.js", ]
@@ -34,8 +34,6 @@ services:
       postgres:
         condition: service_healthy
       redis:
-        condition: service_healthy
-      rabbitmq:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health" ]
