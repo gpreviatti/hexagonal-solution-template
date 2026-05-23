@@ -1,0 +1,91 @@
+using Core.Common.Requests;
+using Core.Common.Services;
+using Core.Common.UseCases;
+using Core.Orders;
+using Microsoft.AspNetCore.Mvc;
+
+namespace WebApp.Endpoints;
+
+internal static class OrderEndpoints
+{
+    public static WebApplication MapOrderEndpoints(this WebApplication app)
+    {
+        var cache = app.Services.GetRequiredService<IHybridCacheService>();
+
+        var ordersGroup = app.MapGroup("/orders")
+            .WithTags("Orders");
+
+        ordersGroup.MapGet("/{id}", async (
+            [FromServices] IBaseInOutUseCase<GetOrderRequest, BaseResponse<OrderDto>> useCase,
+            [FromHeader] Guid correlationId,
+            [FromRoute] int id,
+            CancellationToken cancellationToken,
+            [FromHeader] bool cacheEnabled = true
+        ) =>
+        {
+            var response = cacheEnabled switch
+            {
+                true => await cache.GetOrCreateAsync(
+                    correlationId,
+                    $"{nameof(OrderEndpoints)}-{id}",
+                    async (cancellationToken) => await useCase.HandleAsync(new(correlationId, id), cancellationToken),
+                    cancellationToken
+                ),
+                false or _ => await useCase.HandleAsync(new(correlationId, id), cancellationToken),
+            };
+
+            return response.Success ? Results.Ok(response) : Results.NotFound(response);
+        });
+
+        ordersGroup.MapPost("/", async (
+            [FromServices] IBaseInOutUseCase<CreateOrderRequest, BaseResponse<OrderDto>> useCase,
+            [FromBody] CreateOrderRequest request,
+            CancellationToken cancellationToken
+        ) =>
+        {
+            var response = await useCase.HandleAsync(request, cancellationToken);
+
+            if (!response.Success || response.Data == null)
+                return Results.BadRequest(response);
+
+            return Results.Created($"/orders/{response.Data.Id}", response);
+        });
+
+        ordersGroup.MapPost("/paginated", async (
+            [FromServices] IBaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<OrderDto>> useCase,
+            [FromBody] BasePaginatedRequest request,
+            CancellationToken cancellationToken
+        ) =>
+        {
+            var response = await useCase.HandleAsync(request, cancellationToken);
+
+            return response.Success ? Results.Ok(response) : Results.BadRequest(response);
+        });
+
+        ordersGroup.MapPut("/{id}", async (
+            [FromServices] IBaseInOutUseCase<UpdateOrderRequest, BaseResponse<OrderDto>> useCase,
+            [FromBody] UpdateOrderRequest request,
+            [FromRoute] int id,
+            CancellationToken cancellationToken
+        ) =>
+        {
+            var response = await useCase.HandleAsync(request with { OrderId = id }, cancellationToken);
+
+            return response.Success ? Results.Ok(response) : Results.BadRequest(response);
+        });
+
+        ordersGroup.MapDelete("/{id}", async (
+            [FromServices] IBaseInOutUseCase<DeleteOrderRequest, BaseResponse> useCase,
+            [FromHeader] Guid correlationId,
+            [FromRoute] int id,
+            CancellationToken cancellationToken
+        ) =>
+        {
+            var response = await useCase.HandleAsync(new(correlationId, id), cancellationToken);
+
+            return response.Success ? Results.Ok(response) : Results.BadRequest(response);
+        });
+
+        return app;
+    }
+}

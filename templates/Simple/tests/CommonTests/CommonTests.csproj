@@ -1,0 +1,7 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="AutoFixture" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="xunit.extensibility.core" />
+  </ItemGroup>
+</Project>

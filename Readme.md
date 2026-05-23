@@ -31,6 +31,7 @@ The package `GPreviatti.Template.Hexagonal.Solution` lets you quickly create sol
 
 ## Available templates
 
+- `hexagonal-solution-simple`: streamlined hexagonal solution with `Core`, `Infrastructure`, and `WebApp` layers plus unit/integration/load test projects — ideal for straightforward applications.
 - `hexagonal-solution-full`: complete hexagonal solution with `Domain`, `Application`, `Infrastructure`, `WebApp`, and test/load test projects.
 - `hexagonal-solution-bff`: Backend-for-Frontend oriented solution with HTTP/gRPC adapters, integration tests, and load tests.
 - `hexagonal-solution-webui`: Blazor Web App oriented solution with contracts/infrastructure separation and bUnit component unit tests.
@@ -40,6 +41,7 @@ The package `GPreviatti.Template.Hexagonal.Solution` lets you quickly create sol
 
 Each template has its own README with architecture details, structure, and helper commands:
 
+- Simple template: [`templates/Simple/Readme.md`](templates/Simple/Readme.md)
 - Full template: [`templates/Full/Readme.md`](templates/Full/Readme.md)
 - BFF template: [`templates/Bff/Readme.md`](templates/Bff/Readme.md)
 - Web UI template: [`templates/WebUi/Readme.md`](templates/WebUi/Readme.md)
@@ -70,6 +72,7 @@ dotnet new install GPreviatti.Template.Hexagonal.Solution
 Create a new solution from each template:
 
 ```bash
+dotnet new hexagonal-solution-simple -n HexagonalSolution
 dotnet new hexagonal-solution-full -n HexagonalSolution
 dotnet new hexagonal-solution-bff -n HexagonalSolution
 dotnet new hexagonal-solution-webui -n HexagonalSolution
@@ -81,6 +84,7 @@ dotnet new hexagonal-solution-contracts -n HexagonalSolution
 Use `-h` to list available options for each template:
 
 ```bash
+dotnet new hexagonal-solution-simple -h
 dotnet new hexagonal-solution-full -h
 dotnet new hexagonal-solution-bff -h
 dotnet new hexagonal-solution-webui -h

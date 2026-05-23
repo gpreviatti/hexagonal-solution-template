@@ -1,0 +1,110 @@
+name: hexagonal-solution-template-simple-load-tests
+
+services:
+  k6:
+    container_name: k6
+    image: grafana/k6:1.4.2
+    depends_on:
+      webapp:
+        condition: service_healthy
+    ports:
+      - "6565:6565"
+      - "5665:5665"
+    environment:
+      - WEBAPP_URL=http://webapp:5000
+      - K6_SUMMARY_MODE=full
+      - K6_WEB_DASHBOARD=true
+      - K6_WEB_DASHBOARD_EXPORT=html-report.html
+      - VUS=500
+      - DURATION=180s
+      - GRACEFUL_STOP=10s
+    command: ["run", "/LoadTests/scriptHttp.js", ]
+    volumes:
+      - ./tests/LoadTests:/LoadTests
+
+  webapp:
+    container_name: webapp
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health" ]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 30s
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Logging__LogLevel__Microsoft.EntityFrameworkCore=Warning
+      - Logging__LogLevel__Microsoft.EntityFrameworkCore.Database.Command=Warning
+      - ENABLE_SENSITIVE_DATA_LOGGING=false
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4317
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      - ConnectionStrings__OrderDb=Host=postgres;Port=5432;Database=OrderDb;Username=postgres;Password=cY5VvZkkh4AzES
+      - ConnectionStrings__Redis=redis:6379
+      - ConnectionStrings__RabbitMQ=amqp://guest:guest@rabbitmq:5672/
+      - PYROSCOPE_Core_NAME=Hexagonal.Solution.Template
+      - PYROSCOPE_SERVER_ADDRESS=http://alloy:9999
+
+  postgres:
+    extends:
+      file: docker-compose-local.yml
+      service: postgres
+
+  postgres-init:
+    extends:
+      file: docker-compose-local.yml
+      service: postgres-init
+
+  pgadmin:
+    extends:
+      file: docker-compose-local.yml
+      service: pgadmin
+
+  redis:
+    extends:
+      file: docker-compose-local.yml
+      service: redis
+
+  alloy:
+    extends:
+      file: docker-compose-local.yml
+      service: alloy
+
+  prometheus:
+    extends:
+      file: docker-compose-local.yml
+      service: prometheus
+
+  loki:
+    extends:
+      file: docker-compose-local.yml
+      service: loki
+
+  grafana:
+    extends:
+      file: docker-compose-local.yml
+      service: grafana
+
+  tempo-init:
+    extends:
+      file: docker-compose-local.yml
+      service: tempo-init
+
+  tempo:
+    extends:
+      file: docker-compose-local.yml
+      service: tempo
+
+  pyroscope:
+    extends:
+      file: docker-compose-local.yml
+      service: pyroscope

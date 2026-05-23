@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "WebApp [Development]",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/WebApp/bin/Debug/net10.0/WebApp.dll",
+            "cwd": "${workspaceFolder}/src/WebApp",
+            "launchSettingsProfile": "Development",
+            "stopAtEntry": false
+        }
+    ]
+}
