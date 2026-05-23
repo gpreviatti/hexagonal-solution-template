@@ -5,27 +5,27 @@ on:
   workflow_dispatch:
     inputs:
       run_full:
-        description: 'Run Full Template validation'
+        description: 'Run Full Template'
         required: true
         default: true
         type: boolean
       run_simple:
-        description: 'Run Simple Template validation'
+        description: 'Run Simple Template'
         required: true
         default: true
         type: boolean
       run_bff:
-        description: 'Run BFF Template validation'
+        description: 'Run BFF Template'
         required: true
         default: true
         type: boolean
       run_contracts:
-        description: 'Run Contracts Template validation'
+        description: 'Run Contracts Template'
         required: true
         default: true
         type: boolean
       run_webui:
-        description: 'Run WebUi Template validation'
+        description: 'Run WebUi Template'
         required: true
         default: true
         type: boolean

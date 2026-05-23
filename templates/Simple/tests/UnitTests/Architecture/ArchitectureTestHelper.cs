@@ -84,7 +84,7 @@ internal static class ArchitectureTestHelper
             .Descendants("ProjectReference")
             .Select(static node => (string?) node.Attribute("Include"))
             .OfType<string>()
-            .Select(reference => NormalizePath(Path.GetFullPath(Path.Combine(projectDirectory, reference))))
+            .Select(reference => NormalizePath(Path.GetFullPath(Path.Combine(projectDirectory, reference.Replace('\\', Path.DirectorySeparatorChar)))))
             .OrderBy(static path => path, StringComparer.OrdinalIgnoreCase)
             .ToArray();
 
