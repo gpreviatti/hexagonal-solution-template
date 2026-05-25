@@ -3,9 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data;
 
-public sealed class MyDbContext : DbContext
+public sealed class MyDbContext(DbContextOptions<MyDbContext> options) : DbContext(options)
 {
-    public MyDbContext(DbContextOptions<MyDbContext> options) : base(options) => Database.Migrate();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) => modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
