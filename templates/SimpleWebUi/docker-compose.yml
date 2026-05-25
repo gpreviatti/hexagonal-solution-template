@@ -1,4 +1,4 @@
-name: hexagonal-solution-template-simple-WebUi
+name: hexagonal-solution-template-simple-webui
 
 services:
   postgres:
@@ -16,3 +16,13 @@ services:
       start_period: 10s
     ports:
       - "5432:5432"
+
+  db-migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile.migrate
+    environment:
+      - ConnectionStrings__OrderDb=Host=postgres;Port=5432;Database=OrderDb;Username=postgres;Password=cY5VvZkkh4AzES
+    depends_on:
+      postgres:
+        condition: service_healthy

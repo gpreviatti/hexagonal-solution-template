@@ -12,6 +12,7 @@ public partial class OrderSeed : Migration
     {
         var utcNow = DateTime.UtcNow;
         var defaultTimezoneId = "UTC";
+
         migrationBuilder.InsertData(
             table: "Order",
             columns: ["Id", "Description", "CreatedAt", "CreatedBy", "CreatedByTimezoneId", "DeletedAt", "DeletedBy", "IsDeleted", "Total", "UpdatedAt", "UpdatedBy", "UpdatedByTimezoneId"],

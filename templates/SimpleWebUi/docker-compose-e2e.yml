@@ -1,17 +1,28 @@
-name: hexagonal-solution-template-simple-WebUi-e2e
+name: hexagonal-solution-template-simple-webui-e2e
 
 services:
-  WebUi:
+  webui:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "5015:5015"
     depends_on:
-      - postgres
+      db-migrate:
+        condition: service_completed_successfully
     environment:
       - ASPNETCORE_ENVIRONMENT=E2E
       - ConnectionStrings__OrderDb=Host=postgres;Port=5432;Database=OrderDb;Username=postgres;Password=cY5VvZkkh4AzES
+
+  db-migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile.migrate
+    environment:
+      - ConnectionStrings__OrderDb=Host=postgres;Port=5432;Database=OrderDb;Username=postgres;Password=cY5VvZkkh4AzES
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   postgres:
     image: &postgresImage postgres:17-alpine
