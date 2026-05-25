@@ -1,0 +1,28 @@
+name: hexagonal-solution-template-simple-webui
+
+services:
+  postgres:
+    image: &postgresImage postgres:17-alpine
+    container_name: postgres
+    environment:
+      POSTGRES_PASSWORD: "cY5VvZkkh4AzES"
+      POSTGRES_USER: "postgres"
+      POSTGRES_DB: "OrderDb"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+    ports:
+      - "5432:5432"
+
+  db-migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile.migrate
+    environment:
+      - ConnectionStrings__OrderDb=Host=postgres;Port=5432;Database=OrderDb;Username=postgres;Password=cY5VvZkkh4AzES
+    depends_on:
+      postgres:
+        condition: service_healthy

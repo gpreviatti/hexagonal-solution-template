@@ -1,0 +1,14 @@
+html, body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.table-actions a,
+.table-actions button {
+    margin-right: 0.25rem;
+}

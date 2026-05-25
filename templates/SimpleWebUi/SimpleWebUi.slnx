@@ -1,0 +1,21 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="docker-compose.yml" />
+    <File Path="scripts/migrations.sql" />
+    <File Path="scripts/seeds.sql" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/WebUi/WebUi.csproj" />
+    <Project Path="src/Core/Core.csproj" />
+    <Project Path="src/Infrastructure/Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CommonTests/CommonTests.csproj" />
+    <Project Path="tests/E2eTests/E2eTests.csproj" />
+    <Project Path="tests/UnitTests/UnitTests.csproj" />
+  </Folder>
+</Solution>

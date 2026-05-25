@@ -1,0 +1,79 @@
+@page "/orders/{Id:int}"
+@rendermode InteractiveServer
+
+<PageTitle>Order #@Id</PageTitle>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Order <span class="text-muted">#@Id</span></h1>
+    <div>
+        <a class="btn btn-outline-secondary me-1" href="/orders">
+            <i class="bi bi-arrow-left me-1"></i>Back
+        </a>
+        <a class="btn btn-outline-primary me-1" href="/orders/@Id/edit">
+            <i class="bi bi-pencil me-1"></i>Edit
+        </a>
+        <button class="btn btn-outline-danger" @onclick="() => _dialog.Show()">
+            <i class="bi bi-trash me-1"></i>Delete
+        </button>
+    </div>
+</div>
+
+<ErrorAlert Message="@_errorMessage" @bind-Show="_showError" />
+
+@if (_loading)
+{
+    <div class="loading-spinner">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else if (_order is not null)
+{
+    <div class="card mb-4">
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">Description</dt>
+                <dd class="col-sm-9">@_order.Description</dd>
+
+                <dt class="col-sm-3">Total</dt>
+                <dd class="col-sm-9">@_order.Total.ToString("C")</dd>
+
+                <dt class="col-sm-3">Created</dt>
+                <dd class="col-sm-9">@_order.PeriodSinceWasCreated</dd>
+            </dl>
+        </div>
+    </div>
+
+    <h4>Items</h4>
+    @if (_order.Items is { Count: > 0 })
+    {
+        <table class="table table-striped">
+            <thead class="table-secondary">
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th class="text-end">Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in _order.Items)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.Name</td>
+                        <td>@item.Description</td>
+                        <td class="text-end">@item.Value.ToString("C")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="text-muted">No items.</p>
+    }
+}
+
+<DeleteConfirmDialog @ref="_dialog" OrderId="Id" OnConfirmed="ConfirmDeleteAsync" OnCancelled="() => {}" />

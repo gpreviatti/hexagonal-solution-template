@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "WebUi [Development]",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/WebUi/bin/Debug/net10.0/WebUi.dll",
+            "cwd": "${workspaceFolder}/src/WebUi",
+            "launchSettingsProfile": "Development",
+            "stopAtEntry": false
+        }
+    ]
+}
