@@ -1,0 +1,94 @@
+@page "/orders/{Id:int}/edit"
+@rendermode InteractiveServer
+
+<PageTitle>Edit Order #@Id</PageTitle>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Edit Order <span class="text-muted">#@Id</span></h1>
+    <a class="btn btn-outline-secondary" href="/orders/@Id">
+        <i class="bi bi-arrow-left me-1"></i>Back
+    </a>
+</div>
+
+<ErrorAlert Message="@_errorMessage" @bind-Show="_showError" />
+
+@if (_loading)
+{
+    <div class="loading-spinner">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else if (_items is not null)
+{
+    <EditForm Model="this" OnValidSubmit="SubmitAsync">
+        <DataAnnotationsValidator />
+
+        <div class="card mb-4">
+            <div class="card-header">Order Details</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Description <span class="text-danger">*</span></label>
+                    <InputText class="form-control" @bind-Value="Description" placeholder="Order description" />
+                    <ValidationMessage For="() => Description" class="text-danger small" />
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Items</span>
+                <button type="button" class="btn btn-sm btn-outline-success" @onclick="AddItem">
+                    <i class="bi bi-plus-lg me-1"></i>Add Item
+                </button>
+            </div>
+            <div class="card-body">
+                @for (int i = 0; i < _items.Count; i++)
+                {
+                    var idx = i;
+                    <div class="border rounded p-3 mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <strong>Item @(idx + 1)</strong>
+                            @if (_items.Count > 1)
+                            {
+                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                        @onclick="() => RemoveItem(idx)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            }
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <label class="form-label">Name <span class="text-danger">*</span></label>
+                                <input class="form-control" type="text" placeholder="Item name"
+                                       value="@_items[idx].Name"
+                                       @oninput="e => UpdateItemName(idx, e.Value?.ToString() ?? string.Empty)" />
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">Description</label>
+                                <input class="form-control" type="text" placeholder="Item description"
+                                       value="@_items[idx].Description"
+                                       @oninput="e => UpdateItemDescription(idx, e.Value?.ToString() ?? string.Empty)" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Value <span class="text-danger">*</span></label>
+                                <input class="form-control" type="number" step="0.01" min="0.01"
+                                       placeholder="0.00" value="@_items[idx].Value"
+                                       @oninput="e => UpdateItemValue(idx, e.Value?.ToString() ?? string.Empty)" />
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" disabled="@_submitting">
+            @if (_submitting)
+            {
+                <span class="spinner-border spinner-border-sm me-1"></span>
+            }
+            <i class="bi bi-check-lg me-1"></i>Save Changes
+        </button>
+    </EditForm>
+}

@@ -1,0 +1,31 @@
+﻿using System.Reflection;
+using Microsoft.EntityFrameworkCore;
+
+namespace Infrastructure.Data;
+
+public sealed class MyDbContext : DbContext
+{
+    public MyDbContext(DbContextOptions<MyDbContext> options) : base(options) => Database.Migrate();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder) => modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder
+            .Properties<string>()
+            .HaveColumnType("text")
+            .HaveMaxLength(50);
+
+        configurationBuilder
+            .Properties<decimal>()
+            .HavePrecision(18, 2);
+
+        configurationBuilder
+            .Properties<float>()
+            .HavePrecision(18, 2);
+
+        configurationBuilder
+            .Properties<DateTime>()
+            .HaveColumnType("timestamp with time zone");
+    }
+}

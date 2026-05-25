@@ -1,0 +1,29 @@
+{
+  "stryker-config": {
+    "reporters": [
+      "progress",
+      "html"
+    ],
+    "project": "Core.csproj",
+    "report-file-name": "mutation-tests-Core-result",
+    "thresholds": {
+      "high": 90,
+      "low": 80,
+      "break": 50
+    },
+    "ignore-mutations": [
+      "linq.First",
+      "linq.Sum"
+    ],
+    "ignore-methods": [
+      "StartActivity",
+      "SetTag",
+      "SetDefaultTags",
+      "UseCaseFailedMetric.Add"
+    ],
+    "mutate": [
+      "!**/*CoreDependencyInjection.cs",
+      "!**/*Common/**"
+    ]
+  }
+}
