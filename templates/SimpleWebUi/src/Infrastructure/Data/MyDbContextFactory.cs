@@ -15,7 +15,7 @@ public sealed class ContextFactory : IDesignTimeDbContextFactory<MyDbContext>
     {
         var builder = new DbContextOptionsBuilder<MyDbContext>();
 
-        builder.UseNpgsql("Host=127.0.0.1;Port=5432;Database=OrderDb;Username=postgres;Password=yourStrong(!)Password");
+        builder.UseNpgsql("Host=127.0.0.1;Port=5432;Database=OrderDb;Username=postgres;Password=cY5VvZkkh4AzES");
 
         return new MyDbContext(builder.Options);
     }
