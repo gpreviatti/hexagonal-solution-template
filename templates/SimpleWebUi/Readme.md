@@ -284,14 +284,9 @@ src/Infrastructure/Data/Mapping/ProductDbMapping.cs   # EF Core fluent config
 
 Create and apply the migration:
 ```bash
-dotnet ef migrations add AddProduct \
-  --project src/Infrastructure \
-  --startup-project src/WebUi \
-  --output-dir Data/Migrations
+dotnet ef migrations add AddProduct --project src/Infrastructure --startup-project src/WebUi --output-dir Data/Migrations
 
-dotnet ef database update \
-  --project src/Infrastructure \
-  --startup-project src/WebUi
+dotnet ef database update --project src/Infrastructure --startup-project src/WebUi
 ```
 
 **3. WebUi — add Blazor pages**

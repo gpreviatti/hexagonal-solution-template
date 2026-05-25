@@ -17,24 +17,6 @@ services:
     ports:
       - "5432:5432"
 
-  postgres-init:
-    image: *postgresImage
-    container_name: postgres-init
-    depends_on:
-      postgres:
-        condition: service_healthy
-    volumes:
-      - ./scripts/sql/migrations.sql:/tmp/migrations.sql
-      - ./scripts/sql/seeds.sql:/tmp/seeds.sql
-    command:
-      - /bin/sh
-      - -c
-      - |
-        psql -h postgres -U postgres -d OrderDb -f /tmp/migrations.sql &&
-        psql -h postgres -U postgres -d OrderDb -f /tmp/seeds.sql
-    environment:
-      PGPASSWORD: "cY5VvZkkh4AzES"
-
   pgadmin:
     image: dpage/pgadmin4:9.12.0
     container_name: pgadmin
