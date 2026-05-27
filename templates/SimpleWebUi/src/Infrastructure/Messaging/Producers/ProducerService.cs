@@ -19,7 +19,7 @@ public sealed class ProducerService(IServiceProvider serviceProvider) : IProduce
     {
         await Task.Yield();
 
-        using var activity = _activities.StartActivity($"{nameof(ProducerService)}.{nameof(HandleAsync)}.{typeof(TMessage).Name}");
+        using var activity = _activities.StartActivity($"{nameof(ProducerService)}.{nameof(HandleAsync)}.{typeof(TMessage).Name}", ActivityKind.Producer);
 
         activity.SetDefaultTags();
 
@@ -34,7 +34,7 @@ public sealed class ProducerService(IServiceProvider serviceProvider) : IProduce
     {
         await Task.Yield();
 
-        using var activity = _activities.StartActivity($"{nameof(ProducerService)}.{nameof(HandleAsync)}.{typeof(TMessage).Name}.Batch");
+        using var activity = _activities.StartActivity($"{nameof(ProducerService)}.{nameof(HandleAsync)}.{typeof(TMessage).Name}.Batch", ActivityKind.Producer);
         activity.SetDefaultTags();
 
         Logs.Debug(_logger, messages.FirstOrDefault()?.CorrelationId ?? Guid.Empty, typeof(TMessage).Name + " batch publishing started.");

@@ -15,10 +15,7 @@ internal static class InfrastructureOpenTelemetryDependencyInjection
     {
         public WebApplicationBuilder AddOpenTelemetry()
         {
-            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            if (string.Equals(environment, "IntegrationTests", StringComparison.OrdinalIgnoreCase))
-                return builder;
-
+            var environment = builder.Environment.EnvironmentName;
             var serviceName = DefaultConfigurations.ApplicationName;
             var serviceVersion = DefaultConfigurations.Version;
             var resourceBuilder = ResourceBuilder
