@@ -11,8 +11,6 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using Polly;
-using Polly.Extensions.Http;
 using Pyroscope.OpenTelemetry;
 
 namespace Infrastructure;
@@ -113,7 +111,6 @@ public static class InfrastructureDependencyInjection
 
         internal IServiceCollection AddHttp(List<ServiceConfiguration> serviceConfiguration)
         {
-
             var serviceKeys = Enum.GetValues<ServicesKey>();
 
             foreach (var serviceKey in serviceKeys)
@@ -134,9 +131,7 @@ public static class InfrastructureDependencyInjection
                     if (serviceConfig.Headers is Dictionary<string, string> headers && headers.Count > 0)
                         foreach (var header in headers)
                             client.DefaultRequestHeaders.Add(header.Key, header.Value);
-                })
-                .SetHandlerLifetime(TimeSpan.FromMinutes(5))
-                .AddPolicyHandler(GetRetryPolicy());
+                });
 
                 services.AddKeyedScoped<BaseHttpService>(serviceKey, (serviceProvider, _) =>
                 {
@@ -154,25 +149,18 @@ public static class InfrastructureDependencyInjection
         internal IServiceCollection AddGrpc(List<ServiceConfiguration> serviceConfiguration)
         {
             services.AddGrpc();
-            services
-                .AddGrpcClient<PaymentService.PaymentServiceClient>(nameof(PaymentsService), o =>
-                {
-                    var paymentsConfiguration = serviceConfiguration.FirstOrDefault(x =>
-                        string.Equals(x.Name, ServicesKey.Payments.ToString(), StringComparison.OrdinalIgnoreCase))
-                        ?? throw new ArgumentNullException($"{ServicesKey.Payments} gRPC service configuration is not configured.");
+            services.AddGrpcClient<PaymentService.PaymentServiceClient>(nameof(PaymentsService), o =>
+            {
+                var paymentsConfiguration = serviceConfiguration.FirstOrDefault(x =>
+                    string.Equals(x.Name, ServicesKey.Payments.ToString(), StringComparison.OrdinalIgnoreCase))
+                    ?? throw new ArgumentNullException($"{ServicesKey.Payments} gRPC service configuration is not configured.");
 
-                    o.Address = new Uri(paymentsConfiguration.BaseAddress);
-                })
-                .SetHandlerLifetime(TimeSpan.FromMinutes(5))
-                .AddPolicyHandler(GetRetryPolicy());
+                o.Address = new Uri(paymentsConfiguration.BaseAddress);
+            });
 
             services.AddScoped<PaymentsService>();
 
             return services;
         }
-
-        internal static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy() => HttpPolicyExtensions
-            .HandleTransientHttpError()
-            .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
     }
 }
