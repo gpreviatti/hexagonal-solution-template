@@ -18,7 +18,7 @@
     <RepositoryUrl>git://github.com/gpreviatti/hexagonal-solution-template</RepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>
-     - Update templates libraries
+     - Remove unnecessary library from Bff project
     </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
