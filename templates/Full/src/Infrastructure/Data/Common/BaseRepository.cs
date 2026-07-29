@@ -108,47 +108,6 @@ public class BaseRepository(
         return await _dbContext.SaveChangesAsync(cancellationToken);
     }, correlationId, newContext);
 
-    public async Task<(IEnumerable<TEntity> Items, int TotalRecords)> GetAllPaginatedAsync<TEntity>(
-        Guid correlationId,
-        int page,
-        int pageSize,
-        CancellationToken cancellationToken,
-        string? sortBy = null!,
-        bool sortDescending = false,
-        Dictionary<string, string>? searchByValues = null!,
-        bool? newContext = null,
-        params Expression<Func<TEntity, object>>[]? includes
-    ) where TEntity : DomainEntity => await HandleBaseQueryAsync<TEntity, (IEnumerable<TEntity> Items, int TotalRecords)>(async dbEntitySet =>
-    {
-        var query = dbEntitySet.AsNoTracking();
-
-        if (includes is not null)
-            foreach (var include in includes)
-                query = query.Include(include);
-
-        if (!string.IsNullOrWhiteSpace(sortBy))
-            query = sortDescending
-                ? query.OrderByDescending(e => EF.Property<object>(e, sortBy))
-                : query.OrderBy(e => EF.Property<object>(e, sortBy));
-        else
-            query = query.OrderBy(e => e.CreatedAt);
-
-        var totalRecords = await query.CountAsync(cancellationToken);
-
-        if (searchByValues != null && searchByValues.Count != 0)
-            foreach (var searchByValue in searchByValues)
-                query = query.Where(e =>
-                    EF.Functions.ILike(EF.Property<string>(e, searchByValue.Key), $"%{searchByValue.Value}%")
-                );
-
-        var items = await query
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync(cancellationToken);
-
-        return (items, totalRecords);
-    }, correlationId, newContext);
-
     public async Task<(IEnumerable<TResult> Items, int TotalRecords)> GetAllFullTextSearchPaginatedAsync<TEntity, TResult>(
         Guid correlationId,
         int page,

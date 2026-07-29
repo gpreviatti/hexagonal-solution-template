@@ -12,17 +12,6 @@ public interface IBaseRepository
     Task<int> RemoveAsync<TEntity>(TEntity entity, Guid correlationId, CancellationToken cancellationToken, bool? newContext = null) where TEntity : DomainEntity;
     Task<int> RemoveRangeAsync<TEntity>(TEntity[] entities, Guid correlationId, CancellationToken cancellationToken, bool? newContext = null) where TEntity : DomainEntity;
     IQueryable<TEntity> GetQueryable<TEntity>(Guid correlationId, bool? newContext = null, [CallerMemberName] string methodName = null!) where TEntity : DomainEntity;
-    Task<(IEnumerable<TEntity> Items, int TotalRecords)> GetAllPaginatedAsync<TEntity>(
-        Guid correlationId,
-        int page,
-        int pageSize,
-        CancellationToken cancellationToken,
-        string? sortBy = null,
-        bool sortDescending = false,
-        Dictionary<string, string>? searchByValues = null,
-        bool? newContext = null,
-        params Expression<Func<TEntity, object>>[]? includes
-    ) where TEntity : DomainEntity;
 
     Task<(IEnumerable<TResult> Items, int TotalRecords)> GetAllFullTextSearchPaginatedAsync<TEntity, TResult>(
         Guid correlationId,
