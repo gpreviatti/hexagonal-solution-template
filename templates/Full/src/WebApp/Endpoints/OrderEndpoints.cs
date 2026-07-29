@@ -62,6 +62,17 @@ internal static class OrderEndpoints
             return response.Success ? Results.Ok(response) : Results.BadRequest(response);
         });
 
+        ordersGroup.MapPost("/full-text-search-paginated", async (
+            [FromServices] IBaseInOutUseCase<BaseFullTextSearchPaginatedRequest, BasePaginatedResponse<OrderDto>> useCase,
+            [FromBody] BaseFullTextSearchPaginatedRequest request,
+            CancellationToken cancellationToken
+        ) =>
+        {
+            var response = await useCase.HandleAsync(request, cancellationToken);
+
+            return response.Success ? Results.Ok(response) : Results.BadRequest(response);
+        });
+
         ordersGroup.MapPut("/{id}", async (
             [FromServices] IBaseInOutUseCase<UpdateOrderRequest, BaseResponse<OrderDto>> useCase,
             [FromBody] UpdateOrderRequest request,

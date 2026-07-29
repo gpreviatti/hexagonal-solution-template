@@ -149,6 +149,47 @@ public class BaseRepository(
         return (items, totalRecords);
     }, correlationId, newContext);
 
+    public async Task<(IEnumerable<TResult> Items, int TotalRecords)> GetAllFullTextSearchPaginatedAsync<TEntity, TResult>(
+        Guid correlationId,
+        int page,
+        int pageSize,
+        Expression<Func<TEntity, TResult>> selector,
+        CancellationToken cancellationToken,
+        string? sortBy = null!,
+        bool sortDescending = false,
+        string searchQuery = null!,
+        string searchValue = null!,
+        string searchLanguage = "english",
+        Expression<Func<TEntity, bool>> predicate = null!,
+        bool? newContext = null
+    ) where TEntity : DomainEntity => await HandleBaseQueryAsync<TEntity, (IEnumerable<TResult> Items, int TotalRecords)>(async dbEntitySet =>
+    {
+        var query = dbEntitySet.AsQueryable();
+
+        if (predicate != null)
+            query = query.Where(predicate);
+
+        if (!string.IsNullOrWhiteSpace(sortBy))
+            query = sortDescending
+                ? query.OrderByDescending(e => EF.Property<object>(e, sortBy))
+                : query.OrderBy(e => EF.Property<object>(e, sortBy));
+        else
+            query = query.OrderBy(e => e.CreatedAt);
+
+        var totalRecords = await query.CountAsync(cancellationToken);
+
+        if (!string.IsNullOrWhiteSpace(searchQuery) && !string.IsNullOrWhiteSpace(searchValue))
+            query = query.Where(e => EF.Functions.ToTsVector(searchLanguage, searchQuery).Matches(searchValue));
+
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(selector)
+            .ToListAsync(cancellationToken);
+
+        return (items, totalRecords);
+    }, correlationId, newContext);
+
     public async Task<(IEnumerable<TResult> Items, int TotalRecords)> GetAllPaginatedAsync<TEntity, TResult>(
         Guid correlationId,
         int page,
