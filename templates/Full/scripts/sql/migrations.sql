@@ -84,7 +84,32 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260418162254_CreateTables') THEN
     INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20260418162254_CreateTables', '10.0.5');
+    VALUES ('20260418162254_CreateTables', '10.0.10');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260729195925_FullTextSearchSupport') THEN
+    CREATE INDEX "IX_Order_Description" ON "Order" USING GIN (to_tsvector('english', "Description"));
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260729195925_FullTextSearchSupport') THEN
+    CREATE INDEX "IX_Item_Name_Description" ON "Item" USING GIN (to_tsvector('english', "Name" || ' ' || "Description"));
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM "__EFMigrationsHistory" WHERE "MigrationId" = '20260729195925_FullTextSearchSupport') THEN
+    INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20260729195925_FullTextSearchSupport', '10.0.10');
     END IF;
 END $EF$;
 COMMIT;
