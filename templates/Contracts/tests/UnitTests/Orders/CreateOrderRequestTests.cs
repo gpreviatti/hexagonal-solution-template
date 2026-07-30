@@ -1,3 +1,4 @@
+using Contracts.Common;
 using Contracts.Orders;
 
 namespace UnitTests.Orders;
@@ -29,5 +30,58 @@ public sealed class CreateOrderRequestTests
         Assert.Equal(correlationId, request.CorrelationId);
         Assert.Equal("Order description", request.Description);
         Assert.Equal(items, request.Items);
+    }
+
+    [Fact(DisplayName = nameof(GivenACreateOrderRequestWhenInstantiatedWithDefaultOptionalParamsThenShouldAssignEmptyStrings))]
+    public void GivenACreateOrderRequestWhenInstantiatedWithDefaultOptionalParamsThenShouldAssignEmptyStrings()
+    {
+        var request = new CreateOrderRequest(Guid.NewGuid(), "Order description", []);
+
+        Assert.Equal(string.Empty, request.CreatedBy);
+        Assert.Equal(string.Empty, request.TimezoneId);
+    }
+
+    [Fact(DisplayName = nameof(GivenACreateOrderRequestWhenInstantiatedWithCustomCreatedByAndTimezoneThenShouldAssignValues))]
+    public void GivenACreateOrderRequestWhenInstantiatedWithCustomCreatedByAndTimezoneThenShouldAssignValues()
+    {
+        var request = new CreateOrderRequest(
+            Guid.NewGuid(),
+            "Order description",
+            [],
+            CreatedBy: "alice",
+            TimezoneId: "America/Sao_Paulo"
+        );
+
+        Assert.Equal("alice", request.CreatedBy);
+        Assert.Equal("America/Sao_Paulo", request.TimezoneId);
+    }
+
+    [Fact(DisplayName = nameof(GivenACreateOrderRequestThenShouldInheritFromBaseRequest))]
+    public void GivenACreateOrderRequestThenShouldInheritFromBaseRequest()
+    {
+        var request = new CreateOrderRequest(Guid.NewGuid(), "desc", []);
+
+        Assert.IsAssignableFrom<BaseRequest>(request);
+    }
+
+    [Fact(DisplayName = nameof(GivenACreateOrderRequestWhenCreatedByIsSetThenUserPropertyShouldMatchCreatedBy))]
+    public void GivenACreateOrderRequestWhenCreatedByIsSetThenUserPropertyShouldMatchCreatedBy()
+    {
+        var request = new CreateOrderRequest(
+            Guid.NewGuid(),
+            "desc",
+            [],
+            CreatedBy: "bob"
+        );
+
+        Assert.Equal("bob", request.User);
+    }
+
+    [Fact(DisplayName = nameof(GivenACreateOrderRequestWhenInstantiatedWithEmptyItemsThenItemsShouldBeEmpty))]
+    public void GivenACreateOrderRequestWhenInstantiatedWithEmptyItemsThenItemsShouldBeEmpty()
+    {
+        var request = new CreateOrderRequest(Guid.NewGuid(), "desc", []);
+
+        Assert.Empty(request.Items);
     }
 }
