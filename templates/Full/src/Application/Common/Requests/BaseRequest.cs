@@ -24,7 +24,6 @@ public record BasePaginatedRequest(
 /// <param name="PageSize"></param>
 /// <param name="SortBy"></param>
 /// <param name="SortDescending"></param>
-/// <param name="SearchQuery">The full-text search query e.g. "Column1", "Column2 & Column3"</param>
 /// <param name="SearchValue">The value to search for within the full-text index e.g. "search term"</param>
 /// <param name="SearchLanguage">The language to use for the full-text search</param>
 /// <param name="User"></param>
@@ -35,9 +34,7 @@ public record BaseFullTextSearchPaginatedRequest(
     [property: Range(1, 100, ErrorMessage = "PageSize must be between 1 and 100")] int PageSize = 10,
     string? SortBy = null,
     bool SortDescending = false,
-    string SearchQuery = "",
     string SearchValue = "",
-    string SearchLanguage = "english",
     string User = "",
     string TimezoneId = ""
 ) : BaseRequest(CorrelationId, User, TimezoneId);

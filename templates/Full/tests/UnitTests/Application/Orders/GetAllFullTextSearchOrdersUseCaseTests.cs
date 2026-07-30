@@ -9,11 +9,7 @@ public sealed class GetAllFullTextSearchOrdersUseCaseFixture : BaseApplicationFi
 {
     public GetAllFullTextSearchOrdersUseCaseFixture() => UseCase = new(MockServiceProvider.Object);
 
-    public static BaseFullTextSearchPaginatedRequest SetValidRequest(
-        string searchQuery = "Description",
-        string searchValue = "client",
-        string searchLanguage = "english"
-    ) => new(Guid.NewGuid(), 1, 10, SearchQuery: searchQuery, SearchValue: searchValue, SearchLanguage: searchLanguage);
+    public static BaseFullTextSearchPaginatedRequest SetValidRequest(string searchValue = "client") => new(Guid.NewGuid(), 1, 10, SearchValue: searchValue);
 
     public static BaseFullTextSearchPaginatedRequest SetInvalidPageRequest() => new(Guid.NewGuid(), 0, 10);
 }

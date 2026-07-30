@@ -26,9 +26,8 @@ public sealed class GetAllFullTextSearchOrdersUseCase(IServiceProvider servicePr
             cancellationToken,
             request.SortBy,
             request.SortDescending,
-            request.SearchQuery,
-            request.SearchValue,
-            request.SearchLanguage
+            nameof(Order.Description),
+            request.SearchValue
         );
 
         if (orders is null || !orders.Any())
