@@ -35,7 +35,7 @@ tests/UnitTests/
 
 ### C# Contracts
 - All contracts are `sealed record` — immutable, serialization-safe, value-equal by default
-- All requests **must** extend `BaseRequest(Guid CorrelationId)` or `BasePaginatedRequest`
+- All requests **must** extend `BaseRequest(Guid CorrelationId)` or `BasePaginatedRequest` or `BaseFullTextSearchPaginatedRequest`
 - All responses **must** extend `BaseResponse(bool IsSuccess, string Message)`
 - Use file-scoped namespaces (`namespace Contracts.[Domain];`)
 - Nullable reference types are enabled — annotate all nullable properties with `?`
