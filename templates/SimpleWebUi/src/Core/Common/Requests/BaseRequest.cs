@@ -15,3 +15,14 @@ public record BasePaginatedRequest(
     string User = "",
     string TimezoneId = ""
 ) : BaseRequest(CorrelationId, User, TimezoneId);
+
+public record BaseFullTextSearchPaginatedRequest(
+    Guid CorrelationId,
+    [property: Range(1, int.MaxValue, ErrorMessage = "Page must be greater than 0")] int Page = 1,
+    [property: Range(1, 100, ErrorMessage = "PageSize must be between 1 and 100")] int PageSize = 10,
+    string? SortBy = null,
+    bool SortDescending = false,
+    string SearchValue = "",
+    string User = "",
+    string TimezoneId = ""
+) : BaseRequest(CorrelationId, User, TimezoneId);
