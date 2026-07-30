@@ -155,6 +155,46 @@ Orchestrates domain objects and coordinates infrastructure through **ports (inte
 - **Logging:** Use structured logging with `ILogger<UseCase>`
 - **Notification publishing:** Use `CreateNotification()` helper or `IProduceService.ProduceAsync()` for async messaging
 
+#### Full-Text Search Use Cases (returning multiple records)
+
+When a use case must return **more than one record**, use the full-text search paginated pattern:
+
+- **Request:** Use `BaseFullTextSearchPaginatedRequest` (provides `Page`, `PageSize`, `SortBy`, `SortDescending`, `SearchValue`)
+- **Response:** Return `BasePaginatedResponse<TDto>`
+- **Repository call:** `GetAllFullTextSearchPaginatedAsync<TEntity, TDto>`, passing `nameof(Entity.ColumnName)` as `searchQuery` and `request.SearchValue` as `searchValue`
+- **Language:** Defaults to `"english"` inside the repository — do not pass it from the request
+- **⚠️ Index required:** A GIN tsvector index **must** exist on the searched column(s) for the query to work — see Step 3 below
+
+```csharp
+public sealed class GetAllOrdersUseCase : BaseInOutUseCase<BaseFullTextSearchPaginatedRequest, BasePaginatedResponse<OrderDto>>
+{
+    private readonly IBaseRepository<Order> _repository;
+
+    public GetAllOrdersUseCase(IBaseRepository<Order> repository) : base(validator)
+        => _repository = repository;
+
+    public override async Task<Result<BasePaginatedResponse<OrderDto>>> Execute(
+        BaseFullTextSearchPaginatedRequest request, CancellationToken cancellationToken)
+    {
+        var (items, total) = await _repository.GetAllFullTextSearchPaginatedAsync<Order, OrderDto>(
+            request.CorrelationId,
+            request.Page,
+            request.PageSize,
+            o => new() { Id = o.Id, Description = o.Description },
+            cancellationToken,
+            request.SortBy,
+            request.SortDescending,
+            nameof(Order.Description),   // column to search within
+            request.SearchValue
+        );
+
+        return items.Any()
+            ? Result.Success(new BasePaginatedResponse<OrderDto>(items, total, request.Page, request.PageSize))
+            : Result.Failure<BasePaginatedResponse<OrderDto>>("No orders found.");
+    }
+}
+```
+
 **Example use case structure:**
 ```csharp
 namespace Application.Orders;
@@ -226,8 +266,9 @@ Implements ports from Application. Contains all adapters for data, caching, mess
 - Use Fluent API for all configuration
 - Configure: primary key, columns, relationships, enums, precision, and default values
 - Use `builder.HasQueryFilter(p => !p.IsDeleted)` for soft delete filtering
+- **Full-text search index:** When an entity is used with `GetAllFullTextSearchPaginatedAsync`, add a GIN tsvector index on the searched column(s)
 
-**Example mapping:**
+**Example mapping (with full-text search index):**
 ```csharp
 public sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
 {
@@ -238,9 +279,21 @@ public sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.Property(x => x.TotalAmount).HasPrecision(18, 2);
         builder.Property(x => x.Status).HasConversion<string>();
         builder.HasQueryFilter(p => !p.IsDeleted);
+
+        // Required for GetAllFullTextSearchPaginatedAsync — single column
+        builder.HasIndex(p => new { p.Description })
+            .HasMethod("GIN")
+            .IsTsVectorExpressionIndex("english");
+
+        // Multi-column variant
+        // builder.HasIndex(p => new { p.Name, p.Description })
+        //     .HasMethod("GIN")
+        //     .IsTsVectorExpressionIndex("english");
     }
 }
 ```
+
+> The GIN index must be created via migration before the endpoint is used in any environment. Without it, full-text search queries will either fail or fall back to a sequential scan.
 
 #### RabbitMQ Consumers
 - Inherit from `BaseConsumer<TMessage, TConsumer>` where `TMessage` is the integration message and `TConsumer` is the consumer class itself
@@ -284,6 +337,7 @@ Entry point for HTTP/gRPC requests. Minimal API endpoints.
   - `PUT /{id}` → `200 OK` or `400 BadRequest`
   - `DELETE /{id}` → `200 OK` or `400 BadRequest`
   - `POST /paginated` → `200 OK` or `400 BadRequest`
+  - `POST /full-text-search-paginated` → `200 OK` or `400 BadRequest`
 - **Sealed classes:** Endpoint handler classes should be sealed
 - **Request/Response types:** Use `BaseResponse<T>` for single items, `BasePaginatedResponse<T>` for lists
 
@@ -881,18 +935,21 @@ Always follow the dependency direction: **Domain → Application → Infrastruct
 - **Validators:** Create `{Operation}RequestValidator.cs` inheriting from `AbstractValidator<TRequest>`
 - **Port usage:** Inject `IBaseRepository<T>`, `IProduceService`, `IHybridCacheService` as needed
 - **Example:** `CreateProductUseCase.cs`, `GetProductUseCase.cs`, `UpdateProductUseCase.cs`
+- **Returning multiple records?** Use `BaseFullTextSearchPaginatedRequest` + `GetAllFullTextSearchPaginatedAsync` — see [Full-Text Search Use Cases](#full-text-search-use-cases-returning-multiple-records)
 
 ### Step 3: Infrastructure Persistence
 - **EF Core mapping:** `src/Infrastructure/Data/Mapping/{Entity}Configuration.cs`
   - Implement `IEntityTypeConfiguration<T>`
   - Configure key, columns, constraints, enums, precision, relationships
   - Always add `builder.HasQueryFilter(p => !p.IsDeleted)` for soft deletes
+  - **If the use case uses full-text search:** add a GIN tsvector index via `HasIndex(...).HasMethod("GIN").IsTsVectorExpressionIndex("english")` — the migration must include this index or queries will fail
 - **Custom repository** (if needed): `src/Infrastructure/Data/Repositories/{Entity}Repository.cs`
 - **Migration:**
   ```bash
   dotnet ef migrations add Add{Feature} --project src/Infrastructure --startup-project src/Infrastructure --output-dir Data/Migrations
   dotnet ef database update --project src/Infrastructure --startup-project src/Infrastructure
   ```
+  > When adding full-text search support to an existing entity, create a dedicated migration (e.g., `Add{Entity}FullTextSearchSupport`) so the index is tracked separately from schema changes.
 
 ### Step 4: WebApp Endpoints
 - **File:** `src/WebApp/Endpoints/{Feature}Endpoints.cs`
