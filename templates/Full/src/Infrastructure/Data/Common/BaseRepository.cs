@@ -138,7 +138,7 @@ public class BaseRepository(
         var totalRecords = await query.CountAsync(cancellationToken);
 
         if (!string.IsNullOrWhiteSpace(searchQuery) && !string.IsNullOrWhiteSpace(searchValue))
-            query = query.Where(e => EF.Functions.ToTsVector(searchLanguage, searchQuery).Matches(searchValue));
+            query = query.Where(e => EF.Functions.ToTsVector(searchLanguage, EF.Property<string>(e, searchQuery)).Matches(searchValue));
 
         var items = await query
             .Skip((page - 1) * pageSize)
