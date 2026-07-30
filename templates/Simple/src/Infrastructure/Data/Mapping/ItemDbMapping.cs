@@ -1,5 +1,6 @@
 ﻿using Core.Orders;
 using Infrastructure.Data.Common;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Data.Mapping;
@@ -19,5 +20,9 @@ internal sealed class ItemDbMapping : BaseDbMapping<Item>
         builder.Property(p => p.Description)
             .HasMaxLength(255)
             .IsRequired();
+
+        builder.HasIndex(p => new { p.Name, p.Description })
+            .HasMethod("GIN")
+            .IsTsVectorExpressionIndex("english");
     }
 }
