@@ -162,6 +162,11 @@ public class BaseRepository(
         bool? newContext = null
     ) where TEntity : DomainEntity => await HandleBaseQueryAsync<TEntity, (IEnumerable<TResult> Items, int TotalRecords)>(async dbEntitySet =>
     {
+        var totalRecords = _dbContextFactory
+            .CreateDbContext()
+            .Set<TEntity>()
+            .CountAsync(cancellationToken);
+
         var query = dbEntitySet.AsQueryable();
 
         if (predicate != null)
@@ -174,7 +179,6 @@ public class BaseRepository(
         else
             query = query.OrderBy(e => e.CreatedAt);
 
-        var totalRecords = await query.CountAsync(cancellationToken);
 
         if (searchByValues != null && searchByValues.Count != 0)
             foreach (var searchByValue in searchByValues)
@@ -182,12 +186,60 @@ public class BaseRepository(
                     EF.Functions.ILike(EF.Property<string>(e, searchByValue.Key), $"%{searchByValue.Value}%")
                 );
 
-        var items = await query
+        var items = query
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .Select(selector)
             .ToListAsync(cancellationToken);
 
-        return (items, totalRecords);
+        await Task.WhenAll(totalRecords, items);
+
+        return (await items, await totalRecords);
+    }, correlationId, newContext);
+
+    public async Task<(IEnumerable<TResult> Items, int TotalRecords)> GetAllFullTextSearchPaginatedAsync<TEntity, TResult>(
+        Guid correlationId,
+        int page,
+        int pageSize,
+        Expression<Func<TEntity, TResult>> selector,
+        CancellationToken cancellationToken,
+        string? sortBy = null!,
+        bool sortDescending = false,
+        string searchQuery = null!,
+        string searchValue = null!,
+        string searchLanguage = "english",
+        Expression<Func<TEntity, bool>> predicate = null!,
+        bool? newContext = null
+    ) where TEntity : DomainEntity => await HandleBaseQueryAsync<TEntity, (IEnumerable<TResult> Items, int TotalRecords)>(async dbEntitySet =>
+    {
+        var totalRecords = _dbContextFactory
+            .CreateDbContext()
+            .Set<TEntity>()
+            .CountAsync(cancellationToken);
+        
+        var query = dbEntitySet.AsQueryable();
+
+        if (predicate != null)
+            query = query.Where(predicate);
+
+        if (!string.IsNullOrWhiteSpace(sortBy))
+            query = sortDescending
+                ? query.OrderByDescending(e => EF.Property<object>(e, sortBy))
+                : query.OrderBy(e => EF.Property<object>(e, sortBy));
+        else
+            query = query.OrderBy(e => e.CreatedAt);
+
+        if (!string.IsNullOrWhiteSpace(searchQuery) && !string.IsNullOrWhiteSpace(searchValue))
+            query = query.Where(e => EF.Functions.ToTsVector(searchLanguage, EF.Property<string>(e, searchQuery)).Matches(searchValue));
+
+        var items = query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(selector)
+            .ToListAsync(cancellationToken);
+
+        await Task.WhenAll(totalRecords, items);
+
+        return (await items, await totalRecords);
     }, correlationId, newContext);
 }

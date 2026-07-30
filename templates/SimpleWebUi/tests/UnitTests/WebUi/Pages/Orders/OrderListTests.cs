@@ -9,7 +9,7 @@ namespace UnitTests.WebUi.Pages.Orders;
 
 public sealed class OrderListFixture : BaseComponentFixture
 {
-    public Mock<IBaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<OrderDto>>> MockGetAllOrders { get; } = new();
+    public Mock<IBaseInOutUseCase<BaseFullTextSearchPaginatedRequest, BasePaginatedResponse<OrderDto>>> MockGetAllOrders { get; } = new();
     public Mock<IBaseInOutUseCase<DeleteOrderRequest, BaseResponse>> MockDeleteOrder { get; } = new();
 
     public OrderListFixture()
@@ -20,7 +20,7 @@ public sealed class OrderListFixture : BaseComponentFixture
 
     public void SetupGetAll(BasePaginatedResponse<OrderDto> response) =>
         MockGetAllOrders
-            .Setup(u => u.HandleAsync(It.IsAny<BasePaginatedRequest>(), It.IsAny<CancellationToken>()))
+            .Setup(u => u.HandleAsync(It.IsAny<BaseFullTextSearchPaginatedRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(response);
 
     public static BasePaginatedResponse<OrderDto> SuccessPage(
@@ -78,7 +78,7 @@ public sealed class OrderListTests : IClassFixture<OrderListFixture>
     public void GivenUseCaseFailsThenErrorAlertIsShown()
     {
         _fixture.MockGetAllOrders
-            .Setup(u => u.HandleAsync(It.IsAny<BasePaginatedRequest>(), It.IsAny<CancellationToken>()))
+            .Setup(u => u.HandleAsync(It.IsAny<BaseFullTextSearchPaginatedRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new BasePaginatedResponse<OrderDto>(false, 0, 0, null, "Load failed"));
 
         var component = _fixture.Render<OrderList>();
@@ -97,7 +97,7 @@ public sealed class OrderListTests : IClassFixture<OrderListFixture>
         component.Find(Selectors.ButtonOutlineSecondary).Click();
 
         _fixture.MockGetAllOrders.Verify(u => u.HandleAsync(
-            It.Is<BasePaginatedRequest>(r => r.Page == 1),
+            It.Is<BaseFullTextSearchPaginatedRequest>(r => r.Page == 1),
             It.IsAny<CancellationToken>()),
             Times.AtLeast(2));
     }
@@ -125,7 +125,7 @@ public sealed class OrderListTests : IClassFixture<OrderListFixture>
         component.Find(Selectors.LastChildLi).Click();
 
         _fixture.MockGetAllOrders.Verify(u => u.HandleAsync(
-            It.Is<BasePaginatedRequest>(r => r.Page == 2),
+            It.Is<BaseFullTextSearchPaginatedRequest>(r => r.Page == 2),
             It.IsAny<CancellationToken>()),
             Times.Once);
     }

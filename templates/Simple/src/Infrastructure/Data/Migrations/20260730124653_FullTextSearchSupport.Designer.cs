@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Data.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260730124653_FullTextSearchSupport")]
+    partial class FullTextSearchSupport
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +25,7 @@ namespace Infrastructure.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Domain.Notifications.Notification", b =>
+            modelBuilder.Entity("Core.Notifications.Notification", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -82,7 +85,7 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("Notification");
                 });
 
-            modelBuilder.Entity("Domain.Orders.Item", b =>
+            modelBuilder.Entity("Core.Orders.Item", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -154,7 +157,7 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("Item");
                 });
 
-            modelBuilder.Entity("Domain.Orders.Order", b =>
+            modelBuilder.Entity("Core.Orders.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -216,14 +219,14 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("Order");
                 });
 
-            modelBuilder.Entity("Domain.Orders.Item", b =>
+            modelBuilder.Entity("Core.Orders.Item", b =>
                 {
-                    b.HasOne("Domain.Orders.Order", null)
+                    b.HasOne("Core.Orders.Order", null)
                         .WithMany("Items")
                         .HasForeignKey("OrderId");
                 });
 
-            modelBuilder.Entity("Domain.Orders.Order", b =>
+            modelBuilder.Entity("Core.Orders.Order", b =>
                 {
                     b.Navigation("Items");
                 });

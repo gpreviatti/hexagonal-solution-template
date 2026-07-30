@@ -18,7 +18,9 @@
     <RepositoryUrl>git://github.com/gpreviatti/hexagonal-solution-template</RepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>
-     - Remove unnecessary library from Bff project
+     - Add full text search use case on Full template
+     - Add full text search request and response on Contracts template
+     - Add full text search implementation on Simple template
     </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>

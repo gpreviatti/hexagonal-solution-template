@@ -1,5 +1,6 @@
 ﻿using Domain.Orders;
 using Infrastructure.Data.Common;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Data.Mapping;
@@ -17,5 +18,9 @@ internal sealed class OrderDbMapping : BaseDbMapping<Order>
             .HasPrecision(18, 2);
 
         builder.HasMany(p => p.Items);
+
+        builder.HasIndex(p => new { p.Description })
+            .HasMethod("GIN")
+            .IsTsVectorExpressionIndex("english");
     }
 }

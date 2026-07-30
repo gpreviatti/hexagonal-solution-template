@@ -9,7 +9,7 @@ namespace WebUi.Pages.Orders;
 
 public partial class OrderList : IDisposable
 {
-    [Inject] private IBaseInOutUseCase<BasePaginatedRequest, BasePaginatedResponse<OrderDto>> GetAllOrders { get; set; } = default!;
+    [Inject] private IBaseInOutUseCase<BaseFullTextSearchPaginatedRequest, BasePaginatedResponse<OrderDto>> GetAllOrders { get; set; } = default!;
     [Inject] private IBaseInOutUseCase<DeleteOrderRequest, BaseResponse> DeleteOrder { get; set; } = default!;
     private readonly CancellationTokenSource _cancellationTokenSource = new();
     private List<OrderDto> _orders = [];
@@ -32,11 +32,10 @@ public partial class OrderList : IDisposable
         _loading = true;
         _showError = false;
 
-        Dictionary<string, string>? search = string.IsNullOrWhiteSpace(_searchDescription)
-            ? null
-            : new() { ["Description"] = _searchDescription };
-
-        var result = await GetAllOrders.HandleAsync(new(Guid.NewGuid(), _currentPage, PageSize, SearchByValues: search), _cancellationTokenSource.Token);
+        var result = await GetAllOrders.HandleAsync(
+            new(Guid.NewGuid(), _currentPage, PageSize, SearchValue: _searchDescription),
+            _cancellationTokenSource.Token
+        );
 
         _loading = false;
 

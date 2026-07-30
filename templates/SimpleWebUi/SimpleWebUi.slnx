@@ -9,7 +9,7 @@
     <File Path="scripts/seeds.sql" />
   </Folder>
   <Folder Name="/src/">
-    <Project Path="src/WebUi/WebUi.csproj" />
+    <Project Path="src/WebUI/WebUi.csproj" />
     <Project Path="src/Core/Core.csproj" />
     <Project Path="src/Infrastructure/Infrastructure.csproj" />
   </Folder>

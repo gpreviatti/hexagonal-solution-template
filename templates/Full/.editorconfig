@@ -179,6 +179,7 @@ dotnet_diagnostic.IDE0002.severity = error
 dotnet_diagnostic.IDE0005.severity = error
 dotnet_diagnostic.IDE0051.severity = error
 dotnet_diagnostic.IDE0059.severity = error
+dotnet_diagnostic.IDE0060.severity = error
 
 # Xml project files
 [*.{csproj,vbproj,vcxproj,vcxproj.filters,proj,nativeproj,locproj}]

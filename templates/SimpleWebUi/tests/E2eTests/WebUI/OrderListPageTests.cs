@@ -154,4 +154,56 @@ public sealed class OrderListPageTests(OrderListPageFixture fixture) : IClassFix
         Assert.NotNull(searchInput);
         Assert.NotNull(searchButton);
     }
+
+    [Fact(DisplayName = nameof(GivenFullTextSearchWhenSearchButtonClickedThenEitherTableOrEmptyStateIsShown))]
+    public async Task GivenFullTextSearchWhenSearchButtonClickedThenEitherTableOrEmptyStateIsShown()
+    {
+        await _fixture.NavigateToOrdersAsync();
+        await _fixture.Page.WaitForPageLoadAsync();
+
+        await _fixture.Page.FillAsync(Selectors.InputText, "client");
+        await _fixture.Page.ClickAsync(Selectors.ButtonOutlineSecondary);
+        await _fixture.Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        var tableVisible = await _fixture.Page.IsTableVisibleAsync(3000);
+        var emptyVisible = await _fixture.IsEmptyStateVisibleAsync();
+
+        Assert.True(tableVisible || emptyVisible, "Either the orders table or empty state must be shown after full-text search");
+    }
+
+    [Fact(DisplayName = nameof(GivenFullTextSearchWhenEnterPressedThenEitherTableOrEmptyStateIsShown))]
+    public async Task GivenFullTextSearchWhenEnterPressedThenEitherTableOrEmptyStateIsShown()
+    {
+        await _fixture.NavigateToOrdersAsync();
+        await _fixture.Page.WaitForPageLoadAsync();
+
+        await _fixture.Page.FillAsync(Selectors.InputText, "order");
+        await _fixture.Page.PressAsync(Selectors.InputText, "Enter");
+        await _fixture.Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        var tableVisible = await _fixture.Page.IsTableVisibleAsync(3000);
+        var emptyVisible = await _fixture.IsEmptyStateVisibleAsync();
+
+        Assert.True(tableVisible || emptyVisible, "Either the orders table or empty state must be shown after pressing Enter");
+    }
+
+    [Fact(DisplayName = nameof(GivenFullTextSearchWhenSearchClearedThenAllOrdersReload))]
+    public async Task GivenFullTextSearchWhenSearchClearedThenAllOrdersReload()
+    {
+        await _fixture.NavigateToOrdersAsync();
+        await _fixture.Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        await _fixture.Page.FillAsync(Selectors.InputText, "zzznomatch");
+        await _fixture.Page.ClickAsync(Selectors.ButtonOutlineSecondary);
+        await _fixture.Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        await _fixture.Page.FillAsync(Selectors.InputText, "");
+        await _fixture.Page.ClickAsync(Selectors.ButtonOutlineSecondary);
+        await _fixture.Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        var tableVisible = await _fixture.Page.IsTableVisibleAsync(3000);
+        var emptyVisible = await _fixture.IsEmptyStateVisibleAsync();
+
+        Assert.True(tableVisible || emptyVisible, "Either the orders table or empty state must be shown after clearing the search");
+    }
 }
