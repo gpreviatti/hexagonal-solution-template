@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Domain.Orders;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Infrastructure.Data.Migrations;
 
@@ -9,7 +10,7 @@ public partial class OrderSeed : Migration
     protected override void Up(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.InsertData(
-            table: "Order",
+            table: nameof(Order),
             columns: ["Id", "Description", "Total", "CreatedAt", "CreatedBy", "CreatedByTimezoneId", "UpdatedAt"],
             values: new object[,]
             {
@@ -24,7 +25,7 @@ public partial class OrderSeed : Migration
         );
 
         migrationBuilder.InsertData(
-            table: "Item",
+            table: nameof(Item),
             columns: ["Id", "Name", "Description", "Value", "CreatedAt", "CreatedBy", "CreatedByTimezoneId", "IsDeleted", "OrderId", "UpdatedAt"],
             values: new object [,]
             {
@@ -45,13 +46,13 @@ public partial class OrderSeed : Migration
     protected override void Down(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.DeleteData(
-            table: "Item",
+            table: nameof(Item),
             keyColumn: "Id",
             keyValues: [1, 2, 3, 4, 5, 6, 7, 8, 9]
         );
 
         migrationBuilder.DeleteData(
-            table: "Order",
+            table: nameof(Order),
             keyColumn: "Id",
             keyValues: [1, 2, 3, 4, 5, 6, 7]
         );

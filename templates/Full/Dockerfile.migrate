@@ -1,0 +1,12 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0
+
+WORKDIR /app
+
+COPY . .
+
+RUN dotnet tool install --global dotnet-ef \
+    && dotnet restore src/Infrastructure/Infrastructure.csproj
+
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+ENTRYPOINT dotnet ef database update $MIGRATION --project src/Infrastructure --connection "$CONNECTION_STRING" --verbose
