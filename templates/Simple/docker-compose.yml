@@ -2,7 +2,7 @@ name: hexagonal-solution-template-simple
 
 services:
   postgres:
-    image: &postgresImage postgres:17-alpine
+    image: postgres:17-alpine
     container_name: postgres
     environment:
       POSTGRES_PASSWORD: "cY5VvZkkh4AzES"
@@ -17,23 +17,15 @@ services:
     ports:
       - "5432:5432"
 
-  postgres-init:
-    image: *postgresImage
-    container_name: postgres-init
+  db-migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile.migrate
+    environment:
+      - CONNECTION_STRING=Host=postgres;Port=5432;Database=OrderDb;Username=postgres;Password=cY5VvZkkh4AzES
     depends_on:
       postgres:
         condition: service_healthy
-    volumes:
-      - ./scripts/sql/migrations.sql:/tmp/migrations.sql
-      - ./scripts/sql/seeds.sql:/tmp/seeds.sql
-    command:
-      - /bin/sh
-      - -c
-      - |
-        psql -h postgres -U postgres -d OrderDb -f /tmp/migrations.sql &&
-        psql -h postgres -U postgres -d OrderDb -f /tmp/seeds.sql
-    environment:
-      PGPASSWORD: "cY5VvZkkh4AzES"
 
   redis:
     image: redis:8

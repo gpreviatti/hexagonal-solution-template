@@ -85,7 +85,6 @@ flowchart TD
 │   ├── IntegrationTests/       # End-to-end slice tests with real infra
 │   └── LoadTests/              # k6 performance scripts
 └── scripts/
-    ├── sql/                    # Migrations & seed SQL run by Docker
     └── grafana/                # Alloy, Loki, Prometheus, Tempo configs
 ```
 
@@ -191,14 +190,11 @@ dotnet restore
 # 2. Start backing services (PostgreSQL, Redis, RabbitMQ)
 docker compose -f docker-compose-local.yml up -d
 
-# 3. Apply database migrations
-dotnet ef database update --project src/Infrastructure --startup-project src/Infrastructure
-
-# 4. Run the application
+# 3. Run the application
 dotnet run --project src/WebApp
 ```
 
-> ⚠️ **Note:** `docker-compose-local.yml` also starts **pgAdmin** on port `5050` (credentials: `admin@admin.com` / `admin`). Use it to browse the database during development.
+> ⚠️ **Note:** `docker-compose-local.yml` also starts **pgAdmin** on port `5050` (credentials: `admin@admin.com` / `admin`). The `db-migrate` container automatically applies all pending EF Core migrations and seeds on first start.
 
 ---
 
@@ -333,7 +329,10 @@ src/Infrastructure/Data/Mapping/ProductConfiguration.cs   # EF Core config
 Then create and apply a migration:
 ```bash
 dotnet ef migrations add AddProduct --project src/Infrastructure --startup-project src/Infrastructure --output-dir Data/Migrations
-dotnet ef database update --project src/Infrastructure --startup-project src/Infrastructure
+
+# Apply locally without Docker:
+dotnet ef database update -p src/Infrastructure/ \
+  --connection "Host=127.0.0.1;Port=5432;Database=OrderDb;Username=postgres;Password=cY5VvZkkh4AzES"
 ```
 
 **4. WebApp — expose the endpoint**
@@ -402,20 +401,18 @@ Ask Copilot with intent that matches the skill. Examples:
 ### Database Migrations
 
 ```bash
-# Apply pending migrations
-dotnet ef database update \
-  --project src/Infrastructure \
-  --startup-project src/Infrastructure
+# Apply pending migrations locally (without Docker)
+dotnet ef database update -p src/Infrastructure/ \
+  --connection "Host=127.0.0.1;Port=5432;Database=OrderDb;Username=postgres;Password=cY5VvZkkh4AzES"
 
 # Create a new migration
 dotnet ef migrations add <MigrationName> \
   --project src/Infrastructure \
   --startup-project src/Infrastructure \
   --output-dir Data/Migrations
-
-# Generate idempotent SQL script (for CI/CD deployments)
-dotnet ef migrations script --idempotent --project src/Infrastructure --startup-project src/Infrastructure --output scripts/sql/migrations.sql
 ```
+
+> Migrations and seed data are applied automatically at startup by the `db-migrate` Docker service (`Dockerfile.migrate`). The manual command above is only needed for local development without Docker.
 
 ### Running the App
 
@@ -468,6 +465,7 @@ Starts all backing services for local development:
 | Service | Port(s) | Purpose |
 |---|---|---|
 | PostgreSQL 17 | `5432` | Primary database |
+| db-migrate | — | Runs EF Core migrations and seeds on startup |
 | pgAdmin | `5050` | Database GUI |
 | Redis 8 | `6379` | Distributed cache |
 | RabbitMQ | `5672` / `15672` | Message broker / Management UI |
@@ -482,7 +480,7 @@ docker compose -f docker-compose-local.yml down
 docker compose -f docker-compose-local.yml down -v
 ```
 
-> ⚠️ **Note:** On first start, `postgres-init` automatically runs `scripts/sql/migrations.sql` and `scripts/sql/seeds.sql` inside the database container.
+> ⚠️ **Note:** On first start, `db-migrate` automatically applies all pending EF Core migrations (including seed data migrations) via `dotnet ef database update`.
 
 ### `docker-compose.yml` — Full stack (with observability)
 

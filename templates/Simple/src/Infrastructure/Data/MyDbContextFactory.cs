@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Design;
 namespace Infrastructure.Data;
 
 /// <summary>
-/// This class is used to generate migrations. 
+/// This class is used to generate migrations.
 /// Change the database connection string to your local db connection to generate migrations
 /// </summary>
 [ExcludeFromCodeCoverage]
@@ -15,7 +15,7 @@ public sealed class ContextFactory : IDesignTimeDbContextFactory<MyDbContext>
     {
         var builder = new DbContextOptionsBuilder<MyDbContext>();
 
-        builder.UseNpgsql("Host=127.0.0.1;Port=5432;Database=OrderDb;Username=postgres;Password=yourStrong(!)Password");
+        builder.UseNpgsql();
 
         return new MyDbContext(builder.Options);
     }

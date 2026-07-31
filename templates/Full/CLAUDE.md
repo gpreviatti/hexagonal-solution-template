@@ -947,9 +947,11 @@ Always follow the dependency direction: **Domain → Application → Infrastruct
 - **Migration:**
   ```bash
   dotnet ef migrations add Add{Feature} --project src/Infrastructure --startup-project src/Infrastructure --output-dir Data/Migrations
-  dotnet ef database update --project src/Infrastructure --startup-project src/Infrastructure
+
+  # Apply locally without Docker:
+  dotnet ef database update -p src/Infrastructure/ --connection "Host=127.0.0.1;Port=5432;Database=OrderDb;Username=postgres;Password=cY5VvZkkh4AzES"
   ```
-  > When adding full-text search support to an existing entity, create a dedicated migration (e.g., `Add{Entity}FullTextSearchSupport`) so the index is tracked separately from schema changes.
+  > Migrations are applied automatically by the `db-migrate` Docker service (`Dockerfile.migrate`) on compose startup. The manual command above is only needed for local development without Docker. When adding full-text search support to an existing entity, create a dedicated migration (e.g., `Add{Entity}FullTextSearchSupport`) so the index is tracked separately from schema changes.
 
 ### Step 4: WebApp Endpoints
 - **File:** `src/WebApp/Endpoints/{Feature}Endpoints.cs`
@@ -1025,7 +1027,7 @@ k6 run tests/LoadTests/scriptHttp.js --summary-mode=full
 
 ### Docker Setup
 ```bash
-# Start all backing services (PostgreSQL, Redis, RabbitMQ, monitoring)
+# Start all backing services (PostgreSQL + db-migrate, Redis, RabbitMQ, monitoring)
 docker compose -f docker-compose-local.yml up -d
 
 # Stop
