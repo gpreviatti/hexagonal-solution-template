@@ -59,10 +59,10 @@ services:
       file: docker-compose-local.yml
       service: postgres
 
-  postgres-init:
+  db-migrate:
     extends:
       file: docker-compose-local.yml
-      service: postgres-init
+      service: db-migrate
 
   pgadmin:
     extends:
