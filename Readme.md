@@ -14,6 +14,7 @@ It includes four templates for different scopes: a full application, a BFF-focus
 - [Template documentation](#template-documentation)
 - [Technologies included](#technologies-included)
 - [Quick start](#quick-start)
+- [Database migrations](#database-migrations)
 - [Template options and help](#template-options-and-help)
 - [Update or uninstall](#update-or-uninstall)
 - [Recommendation](#recommendation)
@@ -78,6 +79,42 @@ dotnet new hexagonal-solution-bff -n HexagonalSolution
 dotnet new hexagonal-solution-webui -n HexagonalSolution
 dotnet new hexagonal-solution-contracts -n HexagonalSolution
 ```
+
+Start the backing services (the `db-migrate` container will apply all EF Core migrations and seed data automatically):
+
+```bash
+docker compose -f docker-compose-local.yml up -d
+```
+
+To add a new migration after changing the domain model:
+
+```bash
+dotnet ef migrations add <MigrationName> \
+  --project src/Infrastructure \
+  --startup-project src/WebApp \
+  --output-dir Data/Migrations
+```
+
+The next `docker compose up` will pick up and apply the new migration automatically. For local development without Docker, run:
+
+```bash
+dotnet ef database update -p src/Infrastructure/ \
+  --connection "Host=127.0.0.1;Port=5432;Database=OrderDb;Username=postgres;Password=cY5VvZkkh4AzES"
+```
+
+## Database migrations
+
+The `Simple` and `Full` templates use **EF Core migrations** for all schema changes and seed data. A dedicated `db-migrate` Docker service (built from `Dockerfile.migrate`) runs `dotnet ef database update` on every `docker compose up`, so the database is always in sync with the codebase — no manual SQL files to maintain.
+
+| What | How |
+|---|---|
+| Schema changes and seed data | EF Core migration classes in `src/Infrastructure/Data/Migrations/` |
+| Applied automatically | `db-migrate` service on `docker compose up` |
+| Applied manually (no Docker) | `dotnet ef database update -p src/Infrastructure/ --connection "<connection-string>"` |
+| Create a new migration | `dotnet ef migrations add <Name> --project src/Infrastructure --output-dir Data/Migrations` |
+| Rollback | `dotnet ef database update <PreviousMigrationName> -p src/Infrastructure/ --connection "<connection-string>"` |
+
+Seed data is embedded as regular EF Core migrations (e.g., `OrderSeed`, `NotificationSeed`) with proper `Up()` and `Down()` methods, giving full rollback support alongside schema migrations.
 
 ## Template options and help
 

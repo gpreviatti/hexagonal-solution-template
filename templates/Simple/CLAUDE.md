@@ -24,8 +24,9 @@ dotnet test tests/IntegrationTests/IntegrationTests.csproj
 dotnet stryker --config-file tests/UnitTests/stryker-config-core.json
 
 # EF Core migrations (run from repo root)
+# Note: migrations and seeds are applied automatically by the db-migrate Docker service (Dockerfile.migrate)
 dotnet ef migrations add <MigrationName> --project src/Infrastructure --startup-project src/WebApp
-dotnet ef database update --project src/Infrastructure --startup-project src/WebApp
+dotnet ef database update -p src/Infrastructure/ --connection "Host=127.0.0.1;Port=5432;Database=OrderDb;Username=postgres;Password=cY5VvZkkh4AzES"  # local dev without Docker
 ```
 
 ## Architecture
