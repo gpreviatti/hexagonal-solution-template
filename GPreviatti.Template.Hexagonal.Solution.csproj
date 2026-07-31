@@ -18,9 +18,9 @@
     <RepositoryUrl>git://github.com/gpreviatti/hexagonal-solution-template</RepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>
-     - Add full text search use case on Full template
-     - Add full text search request and response on Contracts template
-     - Add full text search implementation on Simple template
+     - Remove unnecessary activity from templates
+     - Remove unnecessary base repository method
+     - Update packages
     </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>

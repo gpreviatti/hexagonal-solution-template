@@ -19,10 +19,10 @@ internal static class RepositoryMockExtensions
         .ReturnsAsync(0);
 
     public static void SetupQueryable<TEntity>(this Mock<IBaseRepository> mockRepository, ICollection<TEntity> entities) where TEntity : DomainEntity => mockRepository
-            .Setup(r => r.GetQueryable<TEntity>(It.IsAny<Guid>(), It.IsAny<bool?>(), It.IsAny<string>())).Returns(entities.BuildMock());
+            .Setup(r => r.GetQueryable<TEntity>(It.IsAny<Guid>(), It.IsAny<bool?>())).Returns(entities.BuildMock());
 
     public static void SetupQueryable<TEntity>(this Mock<IBaseRepository> mockRepository, Guid correlationId, bool? newContext, ICollection<TEntity> entities) where TEntity : DomainEntity => mockRepository
-            .Setup(r => r.GetQueryable<TEntity>(correlationId, newContext, It.IsAny<string>())).Returns(entities.BuildMock());
+            .Setup(r => r.GetQueryable<TEntity>(correlationId, newContext)).Returns(entities.BuildMock());
 
     public static void VerifyAddAsync<TEntity>(this Mock<IBaseRepository> mockRepository, int times) where TEntity : DomainEntity => mockRepository.Verify(
         d => d.AddAsync(It.IsAny<TEntity>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()),
@@ -134,8 +134,7 @@ internal static class RepositoryMockExtensions
     ), Times.Exactly(times));
 
     public static void VerifyQueryable<TEntity>(this Mock<IBaseRepository> mockRepository, int times = 1) where TEntity : DomainEntity => mockRepository
-        .Verify(r => r.GetQueryable<TEntity>(It.IsAny<Guid>(), It.IsAny<bool?>(), It.IsAny<string>()
-    ), Times.Exactly(times));
+        .Verify(r => r.GetQueryable<TEntity>(It.IsAny<Guid>(), It.IsAny<bool?>()), Times.Exactly(times));
 }
 
 /// <summary>

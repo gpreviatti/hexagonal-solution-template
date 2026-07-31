@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using Domain.Common;
 
 namespace Application.Common.Repositories;
@@ -11,7 +10,7 @@ public interface IBaseRepository
     Task<int> UpdateAsync<TEntity>(TEntity entity, Guid correlationId, CancellationToken cancellationToken, bool? newContext = null) where TEntity : DomainEntity;
     Task<int> RemoveAsync<TEntity>(TEntity entity, Guid correlationId, CancellationToken cancellationToken, bool? newContext = null) where TEntity : DomainEntity;
     Task<int> RemoveRangeAsync<TEntity>(TEntity[] entities, Guid correlationId, CancellationToken cancellationToken, bool? newContext = null) where TEntity : DomainEntity;
-    IQueryable<TEntity> GetQueryable<TEntity>(Guid correlationId, bool? newContext = null, [CallerMemberName] string methodName = null!) where TEntity : DomainEntity;
+    IQueryable<TEntity> GetQueryable<TEntity>(Guid correlationId, bool? newContext = null) where TEntity : DomainEntity;
 
     Task<(IEnumerable<TResult> Items, int TotalRecords)> GetAllFullTextSearchPaginatedAsync<TEntity, TResult>(
         Guid correlationId,

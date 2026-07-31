@@ -1,10 +1,7 @@
-﻿using System.Diagnostics;
-using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
+﻿using System.Linq.Expressions;
 using Core.Common.Helpers;
 using Core.Common.Repositories;
 using Core.Common;
-using Core.Common.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -17,20 +14,12 @@ public class BaseRepository(
 {
     private readonly IDbContextFactory<MyDbContext> _dbContextFactory = dbContextFactory;
     private readonly MyDbContext _dbContext = dbContextFactory.CreateDbContext();
-    private readonly string _className = nameof(BaseRepository);
-    private readonly ActivitySource _activities = DefaultConfigurations.ActivitySource;
-
     private async Task<TResult> HandleBaseQueryAsync<TEntity, TResult>(
         Func<DbSet<TEntity>, Task<TResult>> query,
         Guid correlationId,
-        bool? newContext = false,
-        [CallerMemberName]
-        string methodName = null!
+        bool? newContext = false
     ) where TEntity : DomainEntity
     {
-        using var activity = _activities.StartActivity($"{_className}.{methodName}.{typeof(TEntity).Name}");
-        activity.SetDefaultTags();
-
         Logs.DebugStartingOperation(logger, correlationId);
 
         var dbSet = _dbContext.Set<TEntity>();
@@ -41,22 +30,11 @@ public class BaseRepository(
 
         Logs.DebugFinishedOperation(logger, correlationId);
 
-        activity?.SetTag("correlationId", correlationId);
-        activity?.Stop();
-
         return result;
     }
 
-    public IQueryable<TEntity> GetQueryable<TEntity>(
-        Guid correlationId,
-        bool? newContext = null,
-        [CallerMemberName]
-        string methodName = null!
-    ) where TEntity : DomainEntity
+    public IQueryable<TEntity> GetQueryable<TEntity>(Guid correlationId, bool? newContext = null) where TEntity : DomainEntity
     {
-        using var activity = _activities.StartActivity($"{_className}.{nameof(GetQueryable)}");
-        activity.SetDefaultTags();
-
         Logs.DebugStartingOperation(logger, correlationId);
 
         var dbSet = _dbContext.Set<TEntity>();
@@ -108,47 +86,6 @@ public class BaseRepository(
         return await _dbContext.SaveChangesAsync(cancellationToken);
     }, correlationId, newContext);
 
-    public async Task<(IEnumerable<TEntity> Items, int TotalRecords)> GetAllPaginatedAsync<TEntity>(
-        Guid correlationId,
-        int page,
-        int pageSize,
-        CancellationToken cancellationToken,
-        string? sortBy = null!,
-        bool sortDescending = false,
-        Dictionary<string, string>? searchByValues = null!,
-        bool? newContext = null,
-        params Expression<Func<TEntity, object>>[]? includes
-    ) where TEntity : DomainEntity => await HandleBaseQueryAsync<TEntity, (IEnumerable<TEntity> Items, int TotalRecords)>(async dbEntitySet =>
-    {
-        var query = dbEntitySet.AsNoTracking();
-
-        if (includes is not null)
-            foreach (var include in includes)
-                query = query.Include(include);
-
-        if (!string.IsNullOrWhiteSpace(sortBy))
-            query = sortDescending
-                ? query.OrderByDescending(e => EF.Property<object>(e, sortBy))
-                : query.OrderBy(e => EF.Property<object>(e, sortBy));
-        else
-            query = query.OrderBy(e => e.CreatedAt);
-
-        var totalRecords = await query.CountAsync(cancellationToken);
-
-        if (searchByValues != null && searchByValues.Count != 0)
-            foreach (var searchByValue in searchByValues)
-                query = query.Where(e =>
-                    EF.Functions.ILike(EF.Property<string>(e, searchByValue.Key), $"%{searchByValue.Value}%")
-                );
-
-        var items = await query
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync(cancellationToken);
-
-        return (items, totalRecords);
-    }, correlationId, newContext);
-
     public async Task<(IEnumerable<TResult> Items, int TotalRecords)> GetAllPaginatedAsync<TEntity, TResult>(
         Guid correlationId,
         int page,
@@ -166,7 +103,7 @@ public class BaseRepository(
             .CreateDbContext()
             .Set<TEntity>()
             .CountAsync(cancellationToken);
-            
+
         var query = dbEntitySet.AsQueryable();
 
         if (predicate != null)
