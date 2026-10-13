@@ -4,7 +4,7 @@ using UnitTests.Core.Common;
 
 namespace UnitTests.Core.Orders;
 
-public sealed class GetAllFullTextSearchOrdersUseCaseFixture : BaseCoreFixture<BaseFullTextSearchPaginatedRequest, GetAllFullTextSearchOrdersUseCase>
+public sealed class GetAllFullTextSearchOrdersUseCaseFixture : BaseCoreFixture<GetAllFullTextSearchOrdersUseCase>
 {
     public GetAllFullTextSearchOrdersUseCaseFixture() => UseCase = new(MockServiceProvider.Object);
 
@@ -23,8 +23,8 @@ public sealed class GetAllFullTextSearchOrdersUseCaseTests : IClassFixture<GetAl
         _fixture.ClearInvocations();
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
-    public async Task GivenAValidRequestThenPass()
+    [Fact(DisplayName = nameof(GivenAValidRequestThenPassAsync))]
+    public async Task GivenAValidRequestThenPassAsync()
     {
         // Arrange
         var totalRecords = 5;
@@ -51,8 +51,8 @@ public sealed class GetAllFullTextSearchOrdersUseCaseTests : IClassFixture<GetAl
         _fixture.MockLogger.VerifyFinishOperation();
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWhenNoOrdersFoundThenFails))]
-    public async Task GivenAValidRequestWhenNoOrdersFoundThenFails()
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenNoOrdersFoundThenFailsAsync))]
+    public async Task GivenAValidRequestWhenNoOrdersFoundThenFailsAsync()
     {
         // Arrange
         var request = GetAllFullTextSearchOrdersUseCaseFixture.SetValidRequest();
@@ -73,8 +73,8 @@ public sealed class GetAllFullTextSearchOrdersUseCaseTests : IClassFixture<GetAl
         _fixture.MockLogger.VerifyFinishOperation();
     }
 
-    [Fact(DisplayName = nameof(GivenAnInvalidPageRequestThenFails))]
-    public async Task GivenAnInvalidPageRequestThenFails()
+    [Fact(DisplayName = nameof(GivenAnInvalidPageRequestThenFailsAsync))]
+    public async Task GivenAnInvalidPageRequestThenFailsAsync()
     {
         // Arrange
         var request = GetAllFullTextSearchOrdersUseCaseFixture.SetInvalidPageRequest();

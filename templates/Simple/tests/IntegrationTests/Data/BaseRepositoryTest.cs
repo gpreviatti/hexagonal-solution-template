@@ -16,7 +16,7 @@ public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
     }
 
     [Fact]
-    public async Task GivenAIdThenReturnOrderDtoWithSuccess()
+    public async Task GivenAIdThenReturnOrderDtoWithSuccessAsync()
     {
         // Arrange
         var id = 1;
@@ -44,7 +44,7 @@ public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
     }
 
     [Fact]
-    public async Task GivenAOrderAndNotificationShouldExecuteInParallelWithSuccess()
+    public async Task GivenAOrderAndNotificationShouldExecuteInParallelWithSuccessAsync()
     {
         // Arrange
         var id = 1;
@@ -91,7 +91,7 @@ public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
     }
 
     [Fact]
-    public async Task GivenAValidRequestThenReturnAllOrdersDtosPaginatedWithSuccess()
+    public async Task GivenAValidRequestThenReturnAllOrdersDtosPaginatedWithSuccessAsync()
     {
         // Arrange
         var pageNumber = 1;

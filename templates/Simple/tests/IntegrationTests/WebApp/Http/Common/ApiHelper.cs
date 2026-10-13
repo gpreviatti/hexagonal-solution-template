@@ -7,12 +7,12 @@ public sealed class ApiHelper(HttpClient httpClient)
 {
     public HttpClient HttpClient { get; } = httpClient;
 
-    private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
+    private static readonly JsonSerializerOptions s_jsonSerializerOptions = new()
     {
         PropertyNameCaseInsensitive = true
     };
 
-    public void AddHeaders(Dictionary<string, string> headers)
+    public void AddHeaders(IReadOnlyDictionary<string, string> headers)
     {
         foreach (var header in headers)
         {
@@ -43,10 +43,10 @@ public sealed class ApiHelper(HttpClient httpClient)
         return new StringContent(json, Encoding.UTF8, "application/json");
     }
 
-    public static async Task<T?> DeSerializeResponse<T>(HttpResponseMessage response)
+    public static async Task<T?> DeSerializeResponseAsync<T>(HttpResponseMessage response)
     {
         var content = await response.Content.ReadAsStreamAsync();
 
-        return JsonSerializer.Deserialize<T>(content, _jsonSerializerOptions);
+        return await JsonSerializer.DeserializeAsync<T>(content, s_jsonSerializerOptions);
     }
 }

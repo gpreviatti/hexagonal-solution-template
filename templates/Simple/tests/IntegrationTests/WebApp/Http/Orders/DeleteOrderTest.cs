@@ -24,7 +24,7 @@ public class DeleteOrderTestFixture : BaseHttpFixture
         );
 
         var createResult = await ApiHelper.PostAsync("orders", createRequest);
-        var createResponse = await ApiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(createResult);
+        var createResponse = await ApiHelper.DeSerializeResponseAsync<BaseResponse<OrderDto>>(createResult);
 
         Assert.Equal(HttpStatusCode.Created, createResult.StatusCode);
         Assert.NotNull(createResponse);
@@ -47,20 +47,20 @@ public sealed class DeleteOrderTest : IClassFixture<DeleteOrderTestFixture>
         _fixture.ResourceUrl = "orders/{0}";
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
-    public async Task GivenAValidRequestThenPass()
+    [Fact(DisplayName = nameof(GivenAValidRequestThenPassAsync))]
+    public async Task GivenAValidRequestThenPassAsync()
     {
         // Arrange
         var createdOrder = await _fixture.CreateOrderAsync();
         var url = string.Format(CultureInfo.InvariantCulture, _fixture.ResourceUrl, createdOrder.Id);
-        _fixture.ApiHelper.AddHeaders(new Dictionary<string, string>
+        _fixture.ApiHelper.AddHeaders(new Dictionary<string, string>(StringComparer.Ordinal)
         {
             { "CorrelationId", Guid.NewGuid().ToString() }
         });
 
         // Act
         var result = await _fixture.ApiHelper.DeleteAsync(url);
-        var response = await ApiHelper.DeSerializeResponse<BaseResponse>(result);
+        var response = await ApiHelper.DeSerializeResponseAsync<BaseResponse>(result);
 
         // Assert
         Assert.NotNull(result);
@@ -69,19 +69,19 @@ public sealed class DeleteOrderTest : IClassFixture<DeleteOrderTestFixture>
         Assert.True(response!.Success);
     }
 
-    [Fact(DisplayName = nameof(GivenAInvalidRequestThenFails))]
-    public async Task GivenAInvalidRequestThenFails()
+    [Fact(DisplayName = nameof(GivenAInvalidRequestThenFailsAsync))]
+    public async Task GivenAInvalidRequestThenFailsAsync()
     {
         // Arrange
         var url = string.Format(CultureInfo.InvariantCulture, _fixture.ResourceUrl, 9999999);
-        _fixture.ApiHelper.AddHeaders(new Dictionary<string, string>
+        _fixture.ApiHelper.AddHeaders(new Dictionary<string, string>(StringComparer.Ordinal)
         {
             { "CorrelationId", Guid.NewGuid().ToString() }
         });
 
         // Act
         var result = await _fixture.ApiHelper.DeleteAsync(url);
-        var response = await ApiHelper.DeSerializeResponse<BaseResponse>(result);
+        var response = await ApiHelper.DeSerializeResponseAsync<BaseResponse>(result);
 
         // Assert
         Assert.NotNull(result);
