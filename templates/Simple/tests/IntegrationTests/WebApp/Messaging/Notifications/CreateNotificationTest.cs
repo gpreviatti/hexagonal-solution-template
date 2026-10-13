@@ -34,14 +34,14 @@ public sealed class CreateNotificationTest : IClassFixture<CreateNotificationTes
         _fixture.SetServices(factory);
     }
 
-    [Fact(DisplayName = nameof(GivenAValidMessageThenPass))]
-    public async Task GivenAValidMessageThenPass()
+    [Fact(DisplayName = nameof(GivenAValidMessageThenPassAsync))]
+    public async Task GivenAValidMessageThenPassAsync()
     {
         // Arrange
         var message = _fixture.SetValidMessage();
 
         // Act
-        await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated.ToString());
+        await _fixture.HandleProducerAsync(message);
 
         var notification = await _fixture.Repository.GetQueryable<Notification>(Guid.NewGuid())
             .Where(n => n.NotificationType == message.NotificationType
@@ -54,15 +54,15 @@ public sealed class CreateNotificationTest : IClassFixture<CreateNotificationTes
         Assert.Equal(message.NotificationType, notification.NotificationType);
     }
 
-    [Fact(DisplayName = nameof(GivenADuplicateMessageThenShouldNotCreateDuplicatedMessage))]
-    public async Task GivenADuplicateMessageThenShouldNotCreateDuplicatedMessage()
+    [Fact(DisplayName = nameof(GivenADuplicateMessageThenShouldNotCreateDuplicatedMessageAsync))]
+    public async Task GivenADuplicateMessageThenShouldNotCreateDuplicatedMessageAsync()
     {
         // Arrange
         var message = _fixture.SetValidMessage();
 
         // Act
-        await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated.ToString());
-        await _fixture.HandleProducerAsync(message, NotificationType.OrderCreated.ToString());
+        await _fixture.HandleProducerAsync(message);
+        await _fixture.HandleProducerAsync(message);
 
         var notifications = await _fixture.Repository.GetQueryable<Notification>(Guid.NewGuid())
             .Where(n => n.NotificationType == message.NotificationType

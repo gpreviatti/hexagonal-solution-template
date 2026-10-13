@@ -17,13 +17,13 @@ public sealed class OrderTest : IClassFixture<BaseHttpFixture>
         _fixture.ResourceUrl = "orders/{0}";
     }
 
-    [Fact(DisplayName = nameof(GivenAGetByIdValidRequestThenPass))]
-    public async Task GivenAGetByIdValidRequestThenPass()
+    [Fact(DisplayName = nameof(GivenAGetByIdValidRequestThenPassAsync))]
+    public async Task GivenAGetByIdValidRequestThenPassAsync()
     {
         // Arrange
         var id = 1;
         var url = string.Format(System.Globalization.CultureInfo.InvariantCulture, _fixture.ResourceUrl, id);
-        _fixture.ApiHelper.AddHeaders(new Dictionary<string, string>
+        _fixture.ApiHelper.AddHeaders(new Dictionary<string, string>(StringComparer.Ordinal)
         {
             { "CorrelationId", Guid.NewGuid().ToString() },
             { "CacheEnabled", "false" }
@@ -31,7 +31,7 @@ public sealed class OrderTest : IClassFixture<BaseHttpFixture>
 
         // Act
         var result = await _fixture.ApiHelper.GetAsync(url);
-        var response = await ApiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
+        var response = await ApiHelper.DeSerializeResponseAsync<BaseResponse<OrderDto>>(result);
         var data = response?.Data;
 
         // Assert
@@ -42,13 +42,13 @@ public sealed class OrderTest : IClassFixture<BaseHttpFixture>
         Assert.NotEmpty(data.Items);
     }
 
-    [Fact(DisplayName = nameof(GivenAGetByIdInvalidRequestThenFails))]
-    public async Task GivenAGetByIdInvalidRequestThenFails()
+    [Fact(DisplayName = nameof(GivenAGetByIdInvalidRequestThenFailsAsync))]
+    public async Task GivenAGetByIdInvalidRequestThenFailsAsync()
     {
         // Arrange
         var id = 9999999;
         var url = string.Format(System.Globalization.CultureInfo.InvariantCulture, _fixture.ResourceUrl, id);
-        _fixture.ApiHelper.AddHeaders(new Dictionary<string, string>
+        _fixture.ApiHelper.AddHeaders(new Dictionary<string, string>(StringComparer.Ordinal)
         {
             { "CorrelationId", Guid.NewGuid().ToString() },
             { "CacheEnabled", "false" }
@@ -63,8 +63,8 @@ public sealed class OrderTest : IClassFixture<BaseHttpFixture>
         Assert.False(result.IsSuccessStatusCode);
     }
 
-    [Fact(DisplayName = nameof(GivenAValidCreateRequestThenPass))]
-    public async Task GivenAValidCreateRequestThenPass()
+    [Fact(DisplayName = nameof(GivenAValidCreateRequestThenPassAsync))]
+    public async Task GivenAValidCreateRequestThenPassAsync()
     {
         // Arrange
         var url = string.Format(System.Globalization.CultureInfo.InvariantCulture, _fixture.ResourceUrl, string.Empty);
@@ -76,7 +76,7 @@ public sealed class OrderTest : IClassFixture<BaseHttpFixture>
 
         // Act
         var result = await _fixture.ApiHelper.PostAsync(url, request);
-        var response = await ApiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
+        var response = await ApiHelper.DeSerializeResponseAsync<BaseResponse<OrderDto>>(result);
         var data = response?.Data;
 
         // Assert

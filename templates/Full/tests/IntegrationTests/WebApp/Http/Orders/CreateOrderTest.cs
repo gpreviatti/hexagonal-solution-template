@@ -49,15 +49,15 @@ public sealed class CreateOrderTest : IClassFixture<CreateOrderTestFixture>
         _fixture.ResourceUrl = "orders";
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
-    public async Task GivenAValidRequestThenPass()
+    [Fact(DisplayName = nameof(GivenAValidRequestThenPassAsync))]
+    public async Task GivenAValidRequestThenPassAsync()
     {
         // Arrange
         var request = _fixture.SetValidRequest();
 
         // Act
         var result = await _fixture.ApiHelper.PostAsync(_fixture.ResourceUrl, request);
-        var response = await ApiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
+        var response = await ApiHelper.DeSerializeResponseAsync<BaseResponse<OrderDto>>(result);
 
         // Assert
         Assert.NotNull(result);
@@ -66,15 +66,15 @@ public sealed class CreateOrderTest : IClassFixture<CreateOrderTestFixture>
         Assert.NotNull(response.Data);
     }
 
-    [Fact(DisplayName = nameof(GivenAInvalidRequestThenFails))]
-    public async Task GivenAInvalidRequestThenFails()
+    [Fact(DisplayName = nameof(GivenAInvalidRequestThenFailsAsync))]
+    public async Task GivenAInvalidRequestThenFailsAsync()
     {
         // Arrange
         var request = _fixture.SetInvalidRequest();
 
         // Act
         var result = await _fixture.ApiHelper.PostAsync(_fixture.ResourceUrl, request);
-        var response = await ApiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
+        var response = await ApiHelper.DeSerializeResponseAsync<BaseResponse<OrderDto>>(result);
         // Assert
         Assert.NotNull(response);
         Assert.NotNull(result);

@@ -59,7 +59,7 @@ public static class PlaywrightExtensions
     /// <summary>
     /// Get text content from all cells in a table row
     /// </summary>
-    public static async Task<List<string>> GetRowCellTextsAsync(this IElementHandle row)
+    public static async Task<IReadOnlyList<string>> GetRowCellTextsAsync(this IElementHandle row)
     {
         var cells = await row.QuerySelectorAllAsync("td");
         var texts = new List<string>();
@@ -98,11 +98,11 @@ public static class PlaywrightExtensions
     /// <summary>
     /// Get all visible text content from a table
     /// </summary>
-    public static async Task<List<List<string>>> GetTableDataAsync(this IPage page, string tableSelector)
+    public static async Task<IReadOnlyList<IReadOnlyList<string>>> GetTableDataAsync(this IPage page, string tableSelector)
     {
         var rowSelector = $"{tableSelector} tbody tr";
         var rows = await page.QuerySelectorAllAsync(rowSelector);
-        var tableData = new List<List<string>>();
+        var tableData = new List<IReadOnlyList<string>>();
 
         foreach (var row in rows)
         {

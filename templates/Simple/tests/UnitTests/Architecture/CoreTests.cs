@@ -6,7 +6,7 @@ namespace UnitTests.Architecture;
 
 public sealed class CoreTests
 {
-    private static readonly System.Reflection.Assembly _CoreAssembly = typeof(BaseResponse).Assembly;
+    private static readonly System.Reflection.Assembly s_coreAssembly = typeof(BaseResponse).Assembly;
 
     [Theory(DisplayName = nameof(GivenTheCoreAssemblyWhenCheckingForbiddenClassSuffixesThenItShouldRespectTheLayerNaming))]
     [InlineData("Controller")]
@@ -15,13 +15,13 @@ public sealed class CoreTests
     [InlineData("Mapping")]
     [InlineData("Consumer")]
     [InlineData("Producer")]
-    public void GivenTheCoreAssemblyWhenCheckingForbiddenClassSuffixesThenItShouldRespectTheLayerNaming(string forbiddenSuffix) => ArchitectureTestHelper.AssertClassNamesDoNotEndWith(_CoreAssembly, forbiddenSuffix);
+    public void GivenTheCoreAssemblyWhenCheckingForbiddenClassSuffixesThenItShouldRespectTheLayerNaming(string forbiddenSuffix) => ArchitectureTestHelper.AssertClassNamesDoNotEndWith(s_coreAssembly, forbiddenSuffix);
 
     [Fact(DisplayName = nameof(GivenTheCoreAssemblyWhenCheckingForbiddenDependenciesThenItShouldNotReferenceOuterLayers))]
-    public void GivenTheCoreAssemblyWhenCheckingForbiddenDependenciesThenItShouldNotReferenceOuterLayers() => ArchitectureTestHelper.AssertAssemblyDoesNotReference(_CoreAssembly, "Infrastructure", "WebApp");
+    public void GivenTheCoreAssemblyWhenCheckingForbiddenDependenciesThenItShouldNotReferenceOuterLayers() => ArchitectureTestHelper.AssertAssemblyDoesNotReference(s_coreAssembly, "Infrastructure", "WebApp");
 
     [Fact(DisplayName = nameof(GivenTheCoreAssemblyWhenCheckingNamespacesThenAllTypesShouldRemainInsideTheCoreRoot))]
-    public void GivenTheCoreAssemblyWhenCheckingNamespacesThenAllTypesShouldRemainInsideTheCoreRoot() => ArchitectureTestHelper.AssertNamespacesStartWith(_CoreAssembly, nameof(Core));
+    public void GivenTheCoreAssemblyWhenCheckingNamespacesThenAllTypesShouldRemainInsideTheCoreRoot() => ArchitectureTestHelper.AssertNamespacesStartWith(s_coreAssembly, nameof(Core));
 
     [Fact(DisplayName = nameof(GivenTheCoreProjectWhenCheckingProjectReferencesThenItShouldNotReferenceAnyOtherProject))]
     public void GivenTheCoreProjectWhenCheckingProjectReferencesThenItShouldNotReferenceAnyOtherProject() => ArchitectureTestHelper.AssertProjectReferences(Path.Combine("src", "Core", "Core.csproj"));

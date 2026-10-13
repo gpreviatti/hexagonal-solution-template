@@ -6,7 +6,7 @@ namespace UnitTests.Architecture;
 
 public sealed class ApplicationTests
 {
-    private static readonly System.Reflection.Assembly _applicationAssembly = typeof(BaseResponse).Assembly;
+    private static readonly System.Reflection.Assembly s_applicationAssembly = typeof(BaseResponse).Assembly;
 
     [Theory(DisplayName = nameof(GivenTheApplicationAssemblyWhenCheckingForbiddenClassSuffixesThenItShouldRespectTheLayerNaming))]
     [InlineData("Entity")]
@@ -19,13 +19,13 @@ public sealed class ApplicationTests
     [InlineData("Mapping")]
     [InlineData("Consumer")]
     [InlineData("Producer")]
-    public void GivenTheApplicationAssemblyWhenCheckingForbiddenClassSuffixesThenItShouldRespectTheLayerNaming(string forbiddenSuffix) => ArchitectureTestHelper.AssertClassNamesDoNotEndWith(_applicationAssembly, forbiddenSuffix);
+    public void GivenTheApplicationAssemblyWhenCheckingForbiddenClassSuffixesThenItShouldRespectTheLayerNaming(string forbiddenSuffix) => ArchitectureTestHelper.AssertClassNamesDoNotEndWith(s_applicationAssembly, forbiddenSuffix);
 
     [Fact(DisplayName = nameof(GivenTheApplicationAssemblyWhenCheckingForbiddenDependenciesThenItShouldNotReferenceOuterLayers))]
-    public void GivenTheApplicationAssemblyWhenCheckingForbiddenDependenciesThenItShouldNotReferenceOuterLayers() => ArchitectureTestHelper.AssertAssemblyDoesNotReference(_applicationAssembly, "Infrastructure", "WebApp");
+    public void GivenTheApplicationAssemblyWhenCheckingForbiddenDependenciesThenItShouldNotReferenceOuterLayers() => ArchitectureTestHelper.AssertAssemblyDoesNotReference(s_applicationAssembly, "Infrastructure", "WebApp");
 
     [Fact(DisplayName = nameof(GivenTheApplicationAssemblyWhenCheckingNamespacesThenAllTypesShouldRemainInsideTheApplicationRoot))]
-    public void GivenTheApplicationAssemblyWhenCheckingNamespacesThenAllTypesShouldRemainInsideTheApplicationRoot() => ArchitectureTestHelper.AssertNamespacesStartWith(_applicationAssembly, nameof(Application));
+    public void GivenTheApplicationAssemblyWhenCheckingNamespacesThenAllTypesShouldRemainInsideTheApplicationRoot() => ArchitectureTestHelper.AssertNamespacesStartWith(s_applicationAssembly, nameof(Application));
 
     [Fact(DisplayName = nameof(GivenTheApplicationProjectWhenCheckingProjectReferencesThenItShouldOnlyReferenceTheDomainProject))]
     public void GivenTheApplicationProjectWhenCheckingProjectReferencesThenItShouldOnlyReferenceTheDomainProject() => ArchitectureTestHelper.AssertProjectReferences(

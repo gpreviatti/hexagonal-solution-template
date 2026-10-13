@@ -13,8 +13,8 @@ public sealed class CreateOrderPageTests(CreateOrderPageFixture fixture) : IClas
 {
     private readonly CreateOrderPageFixture _fixture = fixture;
 
-    [Fact(DisplayName = nameof(GivenCreateOrderPageWhenNavigatingThenHeadingIsNewOrder))]
-    public async Task GivenCreateOrderPageWhenNavigatingThenHeadingIsNewOrder()
+    [Fact(DisplayName = nameof(GivenCreateOrderPageWhenNavigatingThenHeadingIsNewOrderAsync))]
+    public async Task GivenCreateOrderPageWhenNavigatingThenHeadingIsNewOrderAsync()
     {
         await _fixture.NavigateToCreateOrderAsync();
         await _fixture.WaitForPageLoadAsync();
@@ -24,8 +24,8 @@ public sealed class CreateOrderPageTests(CreateOrderPageFixture fixture) : IClas
         Assert.Equal("New Order", heading);
     }
 
-    [Fact(DisplayName = nameof(GivenCreateOrderPageWhenLoadedThenDescriptionInputIsPresent))]
-    public async Task GivenCreateOrderPageWhenLoadedThenDescriptionInputIsPresent()
+    [Fact(DisplayName = nameof(GivenCreateOrderPageWhenLoadedThenDescriptionInputIsPresentAsync))]
+    public async Task GivenCreateOrderPageWhenLoadedThenDescriptionInputIsPresentAsync()
     {
         await _fixture.NavigateToCreateOrderAsync();
         await _fixture.WaitForPageLoadAsync();
@@ -35,8 +35,8 @@ public sealed class CreateOrderPageTests(CreateOrderPageFixture fixture) : IClas
         Assert.NotNull(input);
     }
 
-    [Fact(DisplayName = nameof(GivenCreateOrderPageWhenLoadedThenOneItemRowIsPresent))]
-    public async Task GivenCreateOrderPageWhenLoadedThenOneItemRowIsPresent()
+    [Fact(DisplayName = nameof(GivenCreateOrderPageWhenLoadedThenOneItemRowIsPresentAsync))]
+    public async Task GivenCreateOrderPageWhenLoadedThenOneItemRowIsPresentAsync()
     {
         await _fixture.NavigateToCreateOrderAsync();
         await _fixture.WaitForPageLoadAsync();
@@ -46,8 +46,8 @@ public sealed class CreateOrderPageTests(CreateOrderPageFixture fixture) : IClas
         Assert.Equal(1, count);
     }
 
-    [Fact(DisplayName = nameof(GivenCreateOrderPageWhenLoadedThenRemoveButtonIsNotVisible))]
-    public async Task GivenCreateOrderPageWhenLoadedThenRemoveButtonIsNotVisible()
+    [Fact(DisplayName = nameof(GivenCreateOrderPageWhenLoadedThenRemoveButtonIsNotVisibleAsync))]
+    public async Task GivenCreateOrderPageWhenLoadedThenRemoveButtonIsNotVisibleAsync()
     {
         await _fixture.NavigateToCreateOrderAsync();
         await _fixture.WaitForPageLoadAsync();
@@ -57,8 +57,8 @@ public sealed class CreateOrderPageTests(CreateOrderPageFixture fixture) : IClas
         Assert.False(isVisible, "Remove button should not be visible with only one item");
     }
 
-    [Fact(DisplayName = nameof(GivenAddItemClickThenSecondItemRowAppears))]
-    public async Task GivenAddItemClickThenSecondItemRowAppears()
+    [Fact(DisplayName = nameof(GivenAddItemClickThenSecondItemRowAppearsAsync))]
+    public async Task GivenAddItemClickThenSecondItemRowAppearsAsync()
     {
         await _fixture.NavigateToCreateOrderAsync();
         await _fixture.WaitForPageLoadAsync();
@@ -70,8 +70,8 @@ public sealed class CreateOrderPageTests(CreateOrderPageFixture fixture) : IClas
         Assert.Equal(2, count);
     }
 
-    [Fact(DisplayName = nameof(GivenTwoItemsWhenRemoveClickedThenOneItemRemains))]
-    public async Task GivenTwoItemsWhenRemoveClickedThenOneItemRemains()
+    [Fact(DisplayName = nameof(GivenTwoItemsWhenRemoveClickedThenOneItemRemainsAsync))]
+    public async Task GivenTwoItemsWhenRemoveClickedThenOneItemRemainsAsync()
     {
         await _fixture.NavigateToCreateOrderAsync();
         await _fixture.WaitForPageLoadAsync();
@@ -86,8 +86,8 @@ public sealed class CreateOrderPageTests(CreateOrderPageFixture fixture) : IClas
         Assert.Equal(1, count);
     }
 
-    [Fact(DisplayName = nameof(GivenValidFormWhenSubmittedThenNavigatesToOrdersList))]
-    public async Task GivenValidFormWhenSubmittedThenNavigatesToOrdersList()
+    [Fact(DisplayName = nameof(GivenValidFormWhenSubmittedThenNavigatesToOrdersListAsync))]
+    public async Task GivenValidFormWhenSubmittedThenNavigatesToOrdersListAsync()
     {
         await _fixture.NavigateToCreateOrderAsync();
         await _fixture.WaitForPageLoadAsync();
@@ -104,22 +104,22 @@ public sealed class CreateOrderPageTests(CreateOrderPageFixture fixture) : IClas
         await _fixture.Page.ClickSubmitAsync();
         await _fixture.Page.WaitForURLAsync("**/orders", new() { Timeout = 10000 });
 
-        Assert.EndsWith("/orders", _fixture.Page.Url);
+        Assert.EndsWith("/orders", _fixture.Page.Url, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = nameof(GivenBackButtonClickThenNavigatesToOrdersList))]
-    public async Task GivenBackButtonClickThenNavigatesToOrdersList()
+    [Fact(DisplayName = nameof(GivenBackButtonClickThenNavigatesToOrdersListAsync))]
+    public async Task GivenBackButtonClickThenNavigatesToOrdersListAsync()
     {
         await _fixture.NavigateToCreateOrderAsync();
         await _fixture.WaitForPageLoadAsync();
 
         await _fixture.Page.ClickAndWaitForLoadAsync(Selectors.LinkButtonOutlineSecondary);
 
-        Assert.EndsWith("/orders", _fixture.Page.Url);
+        Assert.EndsWith("/orders", _fixture.Page.Url, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = nameof(GivenCreateOrderPageWhenLoadedThenSubmitButtonIsPresentAndEnabled))]
-    public async Task GivenCreateOrderPageWhenLoadedThenSubmitButtonIsPresentAndEnabled()
+    [Fact(DisplayName = nameof(GivenCreateOrderPageWhenLoadedThenSubmitButtonIsPresentAndEnabledAsync))]
+    public async Task GivenCreateOrderPageWhenLoadedThenSubmitButtonIsPresentAndEnabledAsync()
     {
         await _fixture.NavigateToCreateOrderAsync();
         await _fixture.WaitForPageLoadAsync();

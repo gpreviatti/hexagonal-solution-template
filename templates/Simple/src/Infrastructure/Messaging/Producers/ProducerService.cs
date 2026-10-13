@@ -30,25 +30,25 @@ public sealed class ProducerService(IServiceProvider serviceProvider) : IProduce
         Logs.DebugFinishedOperation(_logger, message.CorrelationId, typeof(TMessage).Name + " published.");
     }
 
-    public async Task HandleAsync<TMessage>(IEnumerable<TMessage> messages, CancellationToken cancellationToken) where TMessage : BaseMessage
+    public async Task HandleAsync<TMessage>(IEnumerable<TMessage> message, CancellationToken cancellationToken) where TMessage : BaseMessage
     {
         await Task.Yield();
 
         using var activity = _activities.StartActivity($"{nameof(ProducerService)}.{nameof(HandleAsync)}.{typeof(TMessage).Name}.Batch");
         activity.SetDefaultTags();
 
-        Logs.Debug(_logger, messages.FirstOrDefault()?.CorrelationId ?? Guid.Empty, typeof(TMessage).Name + " batch publishing started.");
+        Logs.Debug(_logger, message.FirstOrDefault()?.CorrelationId ?? Guid.Empty, typeof(TMessage).Name + " batch publishing started.");
 
 
-        foreach (var message in messages)
+        foreach (var item in message)
         {
-            Logs.DebugStartingOperation(_logger, message.CorrelationId, typeof(TMessage).Name + " batch publishing started.");
+            Logs.DebugStartingOperation(_logger, item.CorrelationId, typeof(TMessage).Name + " batch publishing started.");
 
-            await serviceProvider.GetRequiredService<Channel<TMessage>>().Writer.WriteAsync(message, cancellationToken);
+            await serviceProvider.GetRequiredService<Channel<TMessage>>().Writer.WriteAsync(item, cancellationToken);
 
-            Logs.DebugFinishedOperation(_logger, message.CorrelationId, typeof(TMessage).Name + " batch published.");
+            Logs.DebugFinishedOperation(_logger, item.CorrelationId, typeof(TMessage).Name + " batch published.");
         }
 
-        Logs.Debug(_logger, messages.FirstOrDefault()?.CorrelationId ?? Guid.Empty, typeof(TMessage).Name + " batch publishing finished.");
+        Logs.Debug(_logger, message.FirstOrDefault()?.CorrelationId ?? Guid.Empty, typeof(TMessage).Name + " batch publishing finished.");
     }
 }

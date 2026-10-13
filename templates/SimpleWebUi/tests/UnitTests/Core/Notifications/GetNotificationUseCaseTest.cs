@@ -27,8 +27,8 @@ public sealed class GetNotificationUseCaseTests : IClassFixture<GetNotificationU
         _fixture.ClearInvocations();
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
-    public async Task GivenAValidRequestThenPass()
+    [Fact(DisplayName = nameof(GivenAValidRequestThenPassAsync))]
+    public async Task GivenAValidRequestThenPassAsync()
     {
         // Arrange
         var request = _fixture.SetValidRequest();
@@ -55,8 +55,8 @@ public sealed class GetNotificationUseCaseTests : IClassFixture<GetNotificationU
         _fixture.MockLogger.VerifyFinishOperation();
     }
 
-    [Fact(DisplayName = nameof(GivenAnInvalidRequestThenFails))]
-    public async Task GivenAnInvalidRequestThenFails()
+    [Fact(DisplayName = nameof(GivenAnInvalidRequestThenFailsAsync))]
+    public async Task GivenAnInvalidRequestThenFailsAsync()
     {
         // Arrange
         var request = GetNotificationUseCaseFixture.SetInvalidRequest();
@@ -75,8 +75,8 @@ public sealed class GetNotificationUseCaseTests : IClassFixture<GetNotificationU
         _fixture.MockLogger.VerifyFinishOperation(0);
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWhenNotificationNotFoundThenFails))]
-    public async Task GivenAValidRequestWhenNotificationNotFoundThenFails()
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenNotificationNotFoundThenFailsAsync))]
+    public async Task GivenAValidRequestWhenNotificationNotFoundThenFailsAsync()
     {
         // Arrange
         var request = _fixture.SetValidRequest();

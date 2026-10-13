@@ -57,14 +57,12 @@ public abstract class BaseUseCase
         queue: notificationType.ToString()
     );
 
-    protected TResponse HandleFailedResponse<TRequest, TResponse>(
-        TRequest request,
+    protected TResponse HandleFailedResponse<TResponse>(
         Guid correlationId,
         NotificationType notificationType,
         string user = "System",
         string message = "Failed."
     )
-    where TRequest : BaseRequest
     where TResponse : BaseResponse, new()
     {
         Logs.FailedOperation(Logger, correlationId, message);

@@ -70,7 +70,7 @@ public class BaseCoreFixture<TRequest, TUseCase> : BaseFixture
         It.IsAny<CancellationToken>()
     ));
 
-    public async void SetPublishAsyncWithMessageAsync<TMessage>(Action<TMessage> callback) where TMessage : BaseMessage => MockProduceService
+    public void SetPublishAsyncWithMessageAsync<TMessage>(Action<TMessage> callback) where TMessage : BaseMessage => MockProduceService
         .Setup(p => p.HandleAsync(It.IsAny<TMessage>(), It.IsAny<CancellationToken>()
         ))
         .Callback<TMessage, CancellationToken>((message, _) => callback(message))

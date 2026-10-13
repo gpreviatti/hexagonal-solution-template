@@ -6,6 +6,6 @@ namespace IntegrationTests.Common;
 [CollectionDefinition("WebApplicationFactoryCollectionDefinition")]
 public sealed class WebApplicationFactoryCollectionDefinition : IClassFixture<CustomWebApplicationFactory<Program>>;
 
-public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram>, IDisposable where TProgram : class
+public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram> where TProgram : class
 {
 }

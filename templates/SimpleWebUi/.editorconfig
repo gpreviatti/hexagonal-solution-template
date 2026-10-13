@@ -176,10 +176,77 @@ dotnet_diagnostic.CA1502.severity = error
 dotnet_diagnostic.IDE0002.severity = error
 
 # Using directive is unnecessary
-dotnet_diagnostic.IDE0005.severity = error
+dotnet_diagnostic.IDE0005.severity = none
 dotnet_diagnostic.IDE0051.severity = error
 dotnet_diagnostic.IDE0059.severity = error
 dotnet_diagnostic.IDE0060.severity = error
+
+dotnet_diagnostic.IDE1006.severity = error
+
+# Nullable reference types
+dotnet_diagnostic.CS8600.severity = error
+dotnet_diagnostic.CS8601.severity = error
+dotnet_diagnostic.CS8602.severity = error
+dotnet_diagnostic.CS8603.severity = error
+dotnet_diagnostic.CS8604.severity = error
+
+# Meziantou.Analyzer
+dotnet_diagnostic.MA0004.severity = none
+dotnet_diagnostic.MA0048.severity = none
+dotnet_diagnostic.MA0051.severity = none
+
+# Roslynator.Analyzers
+dotnet_diagnostic.RCS1194.severity = none
+dotnet_diagnostic.RCS1001.severity = none
+
+# S3881: Blazor components use a simplified IDisposable pattern
+dotnet_diagnostic.S3881.severity = none
+
+# S1118: Program entry-point class is intentionally non-static (used as type marker)
+dotnet_diagnostic.S1118.severity = none
+
+# S2094: Empty abstract fixture base class is intentional (shared inheritance anchor)
+dotnet_diagnostic.S2094.severity = none
+
+# S2326: Generic type parameter used by derived fixture classes, not the base class body
+dotnet_diagnostic.S2326.severity = none
+
+# Naming: private constants should be PascalCase
+dotnet_naming_rule.private_constants_should_be_pascal_case.severity = error
+dotnet_naming_rule.private_constants_should_be_pascal_case.symbols = private_constants
+dotnet_naming_rule.private_constants_should_be_pascal_case.style = pascal_case_style
+
+dotnet_naming_symbols.private_constants.applicable_kinds = field
+dotnet_naming_symbols.private_constants.required_modifiers = const
+
+dotnet_naming_style.pascal_case_style.capitalization = pascal_case
+
+# Code style rules
+dotnet_style_qualification_for_field = false:warning
+dotnet_style_qualification_for_property = false:warning
+dotnet_style_qualification_for_method = false:warning
+dotnet_style_qualification_for_event = false:warning
+
+# Naming conventions
+dotnet_naming_rule.interface_should_begin_with_i.severity = error
+dotnet_naming_rule.interface_should_begin_with_i.symbols = interface
+dotnet_naming_rule.interface_should_begin_with_i.style = begins_with_i
+
+dotnet_naming_symbols.interface.applicable_kinds = interface
+dotnet_naming_style.begins_with_i.required_prefix = I
+dotnet_naming_style.begins_with_i.capitalization = pascal_case
+
+# Async methods should end with Async
+dotnet_naming_rule.async_methods_end_in_async.severity = error
+dotnet_naming_rule.async_methods_end_in_async.symbols = any_async_methods
+dotnet_naming_rule.async_methods_end_in_async.style = end_in_async
+
+dotnet_naming_symbols.any_async_methods.applicable_kinds = method
+dotnet_naming_symbols.any_async_methods.applicable_accessibilities = *
+dotnet_naming_symbols.any_async_methods.required_modifiers = async
+
+dotnet_naming_style.end_in_async.required_suffix = Async
+dotnet_naming_style.end_in_async.capitalization = pascal_case
 
 # Xml project files
 [*.{csproj,vbproj,vcxproj,vcxproj.filters,proj,nativeproj,locproj}]

@@ -27,48 +27,48 @@ public sealed class CreateOrderTests : IClassFixture<CreateOrderFixture>
         _fixture.ClearInvocations();
     }
 
-    [Fact(DisplayName = nameof(GivenInitialRenderThenOneItemRowIsPresent))]
-    public void GivenInitialRenderThenOneItemRowIsPresent()
+    [Fact(DisplayName = nameof(GivenInitialRenderThenOneItemRowIsPresentAsync))]
+    public async Task GivenInitialRenderThenOneItemRowIsPresentAsync()
     {
         var component = _fixture.Render<CreateOrder>();
 
-        Assert.Contains("Item 1", component.Markup);
-        Assert.DoesNotContain("Item 2", component.Markup);
+        Assert.Contains("Item 1", component.Markup, StringComparison.Ordinal);
+        Assert.DoesNotContain("Item 2", component.Markup, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = nameof(GivenAddItemClickThenSecondItemRowAppears))]
-    public void GivenAddItemClickThenSecondItemRowAppears()
+    [Fact(DisplayName = nameof(GivenAddItemClickThenSecondItemRowAppearsAsync))]
+    public async Task GivenAddItemClickThenSecondItemRowAppearsAsync()
     {
         var component = _fixture.Render<CreateOrder>();
 
-        component.Find(Selectors.ButtonOutlineSuccess).Click();
+        await component.Find(Selectors.ButtonOutlineSuccess).ClickAsync();
 
-        Assert.Contains("Item 2", component.Markup);
+        Assert.Contains("Item 2", component.Markup, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = nameof(GivenOneItemThenRemoveButtonIsHidden))]
-    public void GivenOneItemThenRemoveButtonIsHidden()
+    [Fact(DisplayName = nameof(GivenOneItemThenRemoveButtonIsHiddenAsync))]
+    public async Task GivenOneItemThenRemoveButtonIsHiddenAsync()
     {
         var component = _fixture.Render<CreateOrder>();
 
         Assert.Empty(component.FindAll(Selectors.ButtonOutlineDanger));
     }
 
-    [Fact(DisplayName = nameof(GivenRemoveItemClickThenRowIsRemoved))]
-    public void GivenRemoveItemClickThenRowIsRemoved()
+    [Fact(DisplayName = nameof(GivenRemoveItemClickThenRowIsRemovedAsync))]
+    public async Task GivenRemoveItemClickThenRowIsRemovedAsync()
     {
         var component = _fixture.Render<CreateOrder>();
 
-        component.Find(Selectors.ButtonOutlineSuccess).Click();
-        Assert.Contains("Item 2", component.Markup);
+        await component.Find(Selectors.ButtonOutlineSuccess).ClickAsync();
+        Assert.Contains("Item 2", component.Markup, StringComparison.Ordinal);
 
-        component.FindAll(Selectors.ButtonOutlineDanger)[0].Click();
+        await component.FindAll(Selectors.ButtonOutlineDanger)[0].ClickAsync();
 
-        Assert.DoesNotContain("Item 2", component.Markup);
+        Assert.DoesNotContain("Item 2", component.Markup, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = nameof(GivenSuccessfulSubmitThenNavigatesToOrders))]
-    public async Task GivenSuccessfulSubmitThenNavigatesToOrders()
+    [Fact(DisplayName = nameof(GivenSuccessfulSubmitThenNavigatesToOrdersAsync))]
+    public async Task GivenSuccessfulSubmitThenNavigatesToOrdersAsync()
     {
         _fixture.MockCreateOrder
             .Setup(u => u.HandleAsync(It.IsAny<CreateOrderRequest>(), It.IsAny<CancellationToken>()))
@@ -76,17 +76,17 @@ public sealed class CreateOrderTests : IClassFixture<CreateOrderFixture>
 
         var component = _fixture.Render<CreateOrder>();
 
-        component.Find(Selectors.InputFormControl).Change("My new order");
-        component.Find(Selectors.ButtonSubmit).Click();
+        await component.Find(Selectors.InputFormControl).ChangeAsync("My new order");
+        await component.Find(Selectors.ButtonSubmit).ClickAsync();
 
         await Task.Delay(50);
 
         var nav = _fixture.Services.GetRequiredService<BunitNavigationManager>();
-        Assert.EndsWith("/orders", nav.Uri);
+        Assert.EndsWith("/orders", nav.Uri, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = nameof(GivenFailedSubmitThenErrorAlertIsShown))]
-    public async Task GivenFailedSubmitThenErrorAlertIsShown()
+    [Fact(DisplayName = nameof(GivenFailedSubmitThenErrorAlertIsShownAsync))]
+    public async Task GivenFailedSubmitThenErrorAlertIsShownAsync()
     {
         _fixture.MockCreateOrder
             .Setup(u => u.HandleAsync(It.IsAny<CreateOrderRequest>(), It.IsAny<CancellationToken>()))
@@ -94,16 +94,16 @@ public sealed class CreateOrderTests : IClassFixture<CreateOrderFixture>
 
         var component = _fixture.Render<CreateOrder>();
 
-        component.Find(Selectors.InputFormControl).Change("My order");
-        component.Find(Selectors.ButtonSubmit).Click();
+        await component.Find(Selectors.InputFormControl).ChangeAsync("My order");
+        await component.Find(Selectors.ButtonSubmit).ClickAsync();
 
         await Task.Delay(50);
 
-        Assert.Contains("Creation failed", component.Markup);
+        Assert.Contains("Creation failed", component.Markup, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = nameof(GivenSubmitInProgressThenButtonIsDisabled))]
-    public void GivenSubmitInProgressThenButtonIsDisabled()
+    [Fact(DisplayName = nameof(GivenSubmitInProgressThenButtonIsDisabledAsync))]
+    public async Task GivenSubmitInProgressThenButtonIsDisabledAsync()
     {
         var tcs = new TaskCompletionSource<BaseResponse<OrderDto>>();
         _fixture.MockCreateOrder
@@ -112,8 +112,8 @@ public sealed class CreateOrderTests : IClassFixture<CreateOrderFixture>
 
         var component = _fixture.Render<CreateOrder>();
 
-        component.Find(Selectors.InputFormControl).Change("My order");
-        component.Find(Selectors.ButtonSubmit).Click();
+        await component.Find(Selectors.InputFormControl).ChangeAsync("My order");
+        await component.Find(Selectors.ButtonSubmit).ClickAsync();
 
         Assert.True(component.Find(Selectors.ButtonSubmit).HasAttribute("disabled"));
 

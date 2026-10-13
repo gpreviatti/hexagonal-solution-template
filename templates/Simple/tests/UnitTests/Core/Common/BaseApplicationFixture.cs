@@ -7,8 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace UnitTests.Core.Common;
 
-public class BaseCoreFixture<TRequest, TUseCase> : BaseFixture
-    where TRequest : class
+public class BaseCoreFixture<TUseCase> : BaseFixture
     where TUseCase : class
 {
     public Mock<IServiceProvider> MockServiceProvider { get; } = new();
@@ -70,7 +69,7 @@ public class BaseCoreFixture<TRequest, TUseCase> : BaseFixture
         It.IsAny<CancellationToken>()
     ));
 
-    public async void SetPublishAsyncWithMessageAsync<TMessage>(Action<TMessage> callback) where TMessage : BaseMessage => MockProduceService
+    public void SetPublishAsyncWithMessageAsync<TMessage>(Action<TMessage> callback) where TMessage : BaseMessage => MockProduceService
         .Setup(p => p.HandleAsync(It.IsAny<TMessage>(), It.IsAny<CancellationToken>()
         ))
         .Callback<TMessage, CancellationToken>((message, _) => callback(message))

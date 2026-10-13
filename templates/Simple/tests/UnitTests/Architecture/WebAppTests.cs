@@ -4,7 +4,7 @@ namespace UnitTests.Architecture;
 
 public sealed class WebAppTests
 {
-    private static readonly System.Reflection.Assembly _webAppAssembly = typeof(Program).Assembly;
+    private static readonly System.Reflection.Assembly s_webAppAssembly = typeof(Program).Assembly;
 
     [Theory(DisplayName = nameof(GivenTheWebAppAssemblyWhenCheckingForbiddenClassSuffixesThenItShouldRespectTheEntryPointNaming))]
     [InlineData("Entity")]
@@ -15,10 +15,10 @@ public sealed class WebAppTests
     [InlineData("Mapping")]
     [InlineData("Consumer")]
     [InlineData("Producer")]
-    public void GivenTheWebAppAssemblyWhenCheckingForbiddenClassSuffixesThenItShouldRespectTheEntryPointNaming(string forbiddenSuffix) => ArchitectureTestHelper.AssertClassNamesDoNotEndWith(_webAppAssembly, forbiddenSuffix);
+    public void GivenTheWebAppAssemblyWhenCheckingForbiddenClassSuffixesThenItShouldRespectTheEntryPointNaming(string forbiddenSuffix) => ArchitectureTestHelper.AssertClassNamesDoNotEndWith(s_webAppAssembly, forbiddenSuffix);
 
     [Fact(DisplayName = nameof(GivenTheWebAppAssemblyWhenCheckingNamespacesThenAllTypesShouldRemainInsideTheWebAppRoot))]
-    public void GivenTheWebAppAssemblyWhenCheckingNamespacesThenAllTypesShouldRemainInsideTheWebAppRoot() => ArchitectureTestHelper.AssertNamespacesStartWith(_webAppAssembly, nameof(WebApp), "GrpcOrder");
+    public void GivenTheWebAppAssemblyWhenCheckingNamespacesThenAllTypesShouldRemainInsideTheWebAppRoot() => ArchitectureTestHelper.AssertNamespacesStartWith(s_webAppAssembly, nameof(WebApp), "GrpcOrder");
 
     [Fact(DisplayName = nameof(GivenTheWebAppProjectWhenCheckingProjectReferencesThenItShouldOnlyReferenceTheInfrastructureProject))]
     public void GivenTheWebAppProjectWhenCheckingProjectReferencesThenItShouldOnlyReferenceTheInfrastructureProject() => ArchitectureTestHelper.AssertProjectReferences(

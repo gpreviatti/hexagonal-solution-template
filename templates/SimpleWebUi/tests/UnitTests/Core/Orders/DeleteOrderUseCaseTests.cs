@@ -27,8 +27,8 @@ public sealed class DeleteOrderUseCaseTest : IClassFixture<DeleteOrderUseCaseFix
         _fixture.ClearInvocations();
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
-    public async Task GivenAValidRequestThenPass()
+    [Fact(DisplayName = nameof(GivenAValidRequestThenPassAsync))]
+    public async Task GivenAValidRequestThenPassAsync()
     {
         // Arrange
         var order = DeleteOrderUseCaseFixture.CreateOrder();
@@ -53,8 +53,8 @@ public sealed class DeleteOrderUseCaseTest : IClassFixture<DeleteOrderUseCaseFix
         _fixture.VerifyProduce<CreateNotificationMessage>();
     }
 
-    [Fact(DisplayName = nameof(GivenAnInvalidRequestThenFails))]
-    public async Task GivenAnInvalidRequestThenFails()
+    [Fact(DisplayName = nameof(GivenAnInvalidRequestThenFailsAsync))]
+    public async Task GivenAnInvalidRequestThenFailsAsync()
     {
         // Arrange
         var request = DeleteOrderUseCaseFixture.SetInvalidRequest();
@@ -74,8 +74,8 @@ public sealed class DeleteOrderUseCaseTest : IClassFixture<DeleteOrderUseCaseFix
         _fixture.VerifyProduce<CreateNotificationMessage>(0);
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWhenOrderNotFoundThenFails))]
-    public async Task GivenAValidRequestWhenOrderNotFoundThenFails()
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenOrderNotFoundThenFailsAsync))]
+    public async Task GivenAValidRequestWhenOrderNotFoundThenFailsAsync()
     {
         // Arrange
         var request = DeleteOrderUseCaseFixture.SetValidRequest();
@@ -97,8 +97,8 @@ public sealed class DeleteOrderUseCaseTest : IClassFixture<DeleteOrderUseCaseFix
         _fixture.VerifyProduce<CreateNotificationMessage>();
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWhenOrderAlreadyDeletedThenFails))]
-    public async Task GivenAValidRequestWhenOrderAlreadyDeletedThenFails()
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenOrderAlreadyDeletedThenFailsAsync))]
+    public async Task GivenAValidRequestWhenOrderAlreadyDeletedThenFailsAsync()
     {
         // Arrange
         var order = DeleteOrderUseCaseFixture.CreateOrder();
@@ -122,8 +122,8 @@ public sealed class DeleteOrderUseCaseTest : IClassFixture<DeleteOrderUseCaseFix
         _fixture.VerifyProduce<CreateNotificationMessage>();
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWhenRepositoryReturnsZeroThenFails))]
-    public async Task GivenAValidRequestWhenRepositoryReturnsZeroThenFails()
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenRepositoryReturnsZeroThenFailsAsync))]
+    public async Task GivenAValidRequestWhenRepositoryReturnsZeroThenFailsAsync()
     {
         // Arrange
         var order = DeleteOrderUseCaseFixture.CreateOrder();

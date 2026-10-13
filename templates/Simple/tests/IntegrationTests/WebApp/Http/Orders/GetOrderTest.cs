@@ -19,20 +19,20 @@ public class GetOrderTest : IClassFixture<BaseHttpFixture>
         _fixture.ResourceUrl = "orders/{0}";
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
-    public async Task GivenAValidRequestThenPass()
+    [Fact(DisplayName = nameof(GivenAValidRequestThenPassAsync))]
+    public async Task GivenAValidRequestThenPassAsync()
     {
         // Arrange
         var id = 1;
         var url = string.Format(CultureInfo.InvariantCulture, _fixture.ResourceUrl, id);
-        _fixture.ApiHelper.AddHeaders(new Dictionary<string, string>
+        _fixture.ApiHelper.AddHeaders(new Dictionary<string, string>(StringComparer.Ordinal)
         {
             { "CorrelationId", Guid.NewGuid().ToString() }
         });
 
         // Act
         var result = await _fixture.ApiHelper.GetAsync(url);
-        var response = await ApiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
+        var response = await ApiHelper.DeSerializeResponseAsync<BaseResponse<OrderDto>>(result);
         var data = response?.Data;
 
         // Assert
@@ -47,20 +47,20 @@ public class GetOrderTest : IClassFixture<BaseHttpFixture>
         Assert.NotEmpty(data.Items);
     }
 
-    [Fact(DisplayName = nameof(GivenAInvalidRequestThenFails))]
-    public async Task GivenAInvalidRequestThenFails()
+    [Fact(DisplayName = nameof(GivenAInvalidRequestThenFailsAsync))]
+    public async Task GivenAInvalidRequestThenFailsAsync()
     {
         // Arrange
         var id = 9999999;
         var url = string.Format(CultureInfo.InvariantCulture, _fixture.ResourceUrl, id);
-        _fixture.ApiHelper.AddHeaders(new Dictionary<string, string>
+        _fixture.ApiHelper.AddHeaders(new Dictionary<string, string>(StringComparer.Ordinal)
         {
             { "CorrelationId", Guid.NewGuid().ToString() }
         });
 
         // Act
         var result = await _fixture.ApiHelper.GetAsync(url);
-        var response = await ApiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
+        var response = await ApiHelper.DeSerializeResponseAsync<BaseResponse<OrderDto>>(result);
 
         // Assert
         Assert.NotNull(result);

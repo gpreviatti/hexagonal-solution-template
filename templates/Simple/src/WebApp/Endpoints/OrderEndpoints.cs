@@ -8,7 +8,9 @@ namespace WebApp.Endpoints;
 
 internal static class OrderEndpoints
 {
+#pragma warning disable MA0051 // Method is too long
     public static WebApplication MapOrderEndpoints(this WebApplication app)
+#pragma warning restore MA0051 // Method is too long
     {
         var cache = app.Services.GetRequiredService<IHybridCacheService>();
 

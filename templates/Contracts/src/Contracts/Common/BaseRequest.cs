@@ -25,7 +25,7 @@ public record BasePaginatedRequest(
     int PageSize = 10,
     string? SortBy = null,
     bool SortDescending = false,
-    Dictionary<string, string>? SearchByValues = null,
+    IReadOnlyDictionary<string, string>? SearchByValues = null,
     string User = "",
     string TimezoneId = ""
 ) : BaseRequest(CorrelationId, User, TimezoneId);

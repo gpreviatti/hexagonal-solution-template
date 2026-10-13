@@ -5,7 +5,7 @@ using UnitTests.Application.Common;
 
 namespace UnitTests.Application.Orders;
 
-public sealed class GetAllOrdersUseCaseFixture : BaseApplicationFixture<BasePaginatedRequest, GetAllOrdersUseCase>
+public sealed class GetAllOrdersUseCaseFixture : BaseApplicationFixture<GetAllOrdersUseCase>
 {
     public GetAllOrdersUseCaseFixture() => UseCase = new(MockServiceProvider.Object);
 
@@ -22,8 +22,8 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         _fixture.ClearInvocations();
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
-    public async Task GivenAValidRequestThenPass()
+    [Fact(DisplayName = nameof(GivenAValidRequestThenPassAsync))]
+    public async Task GivenAValidRequestThenPassAsync()
     {
         // Arrange
         var totalRecords = 5;
@@ -50,8 +50,8 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         _fixture.MockLogger.VerifyFinishOperation();
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWhenNoOrdersFoundThenFails))]
-    public async Task GivenAValidRequestWhenNoOrdersFoundThenFails()
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenNoOrdersFoundThenFailsAsync))]
+    public async Task GivenAValidRequestWhenNoOrdersFoundThenFailsAsync()
     {
         // Arrange
         var request = _fixture.SetValidBasePaginatedRequest();
@@ -72,8 +72,8 @@ public sealed class GetAllOrdersUseCaseTest : IClassFixture<GetAllOrdersUseCaseF
         _fixture.MockLogger.VerifyFinishOperation();
     }
 
-    [Fact(DisplayName = nameof(GivenAnInvalidRequestThenFails))]
-    public async Task GivenAnInvalidRequestThenFails()
+    [Fact(DisplayName = nameof(GivenAnInvalidRequestThenFailsAsync))]
+    public async Task GivenAnInvalidRequestThenFailsAsync()
     {
         // Arrange
         var request = GetAllOrdersUseCaseFixture.SetInvalidBasePaginatedRequest();

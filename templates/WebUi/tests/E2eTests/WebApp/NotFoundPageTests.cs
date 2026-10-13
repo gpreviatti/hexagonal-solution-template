@@ -31,8 +31,8 @@ public class NotFoundPageFixture : BrowserFixture
 
 public sealed class NotFoundPageTests : NotFoundPageFixture
 {
-    [Fact(DisplayName = nameof(GivenNotFoundPageWhenNavigatingToInvalidRouteThenShouldDisplayNotFoundMessage))]
-    public async Task GivenNotFoundPageWhenNavigatingToInvalidRouteThenShouldDisplayNotFoundMessage()
+    [Fact(DisplayName = nameof(GivenNotFoundPageWhenNavigatingToInvalidRouteThenShouldDisplayNotFoundMessageAsync))]
+    public async Task GivenNotFoundPageWhenNavigatingToInvalidRouteThenShouldDisplayNotFoundMessageAsync()
     {
         // Arrange, Act
         await GotoInvalidPageAsync();
@@ -43,11 +43,11 @@ public sealed class NotFoundPageTests : NotFoundPageFixture
         Assert.NotEmpty(heading);
         Assert.NotEmpty(message);
         Assert.Equal("Not Found", heading);
-        Assert.Contains("content you are looking for does not exist", message);
+        Assert.Contains("content you are looking for does not exist", message, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = nameof(GivenNotFoundPageThenShouldDisplayCorrectHeading))]
-    public async Task GivenNotFoundPageThenShouldDisplayCorrectHeading()
+    [Fact(DisplayName = nameof(GivenNotFoundPageThenShouldDisplayCorrectHeadingAsync))]
+    public async Task GivenNotFoundPageThenShouldDisplayCorrectHeadingAsync()
     {
         // Arrange, Act
         await GotoInvalidPageAsync();
@@ -58,8 +58,8 @@ public sealed class NotFoundPageTests : NotFoundPageFixture
         Assert.Equal("Not Found", heading);
     }
 
-    [Fact(DisplayName = nameof(GivenNotFoundPageThenShouldDisplayHelpfulErrorMessage))]
-    public async Task GivenNotFoundPageThenShouldDisplayHelpfulErrorMessage()
+    [Fact(DisplayName = nameof(GivenNotFoundPageThenShouldDisplayHelpfulErrorMessageAsync))]
+    public async Task GivenNotFoundPageThenShouldDisplayHelpfulErrorMessageAsync()
     {
         // Arrange, Act
         await GotoInvalidPageAsync();
@@ -68,12 +68,12 @@ public sealed class NotFoundPageTests : NotFoundPageFixture
         // Assert
         Assert.NotNull(message);
         Assert.False(string.IsNullOrWhiteSpace(message), "Error message should not be empty");
-        Assert.Contains("Sorry", message);
-        Assert.Contains("does not exist", message);
+        Assert.Contains("Sorry", message, StringComparison.Ordinal);
+        Assert.Contains("does not exist", message, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = nameof(GivenNotFoundPageWhenNavigatingDirectlyToNotFoundRouteThenShouldDisplayPage))]
-    public async Task GivenNotFoundPageWhenNavigatingDirectlyToNotFoundRouteThenShouldDisplayPage()
+    [Fact(DisplayName = nameof(GivenNotFoundPageWhenNavigatingDirectlyToNotFoundRouteThenShouldDisplayPageAsync))]
+    public async Task GivenNotFoundPageWhenNavigatingDirectlyToNotFoundRouteThenShouldDisplayPageAsync()
     {
         // Arrange, Act
         await GotoInvalidPageAsync();

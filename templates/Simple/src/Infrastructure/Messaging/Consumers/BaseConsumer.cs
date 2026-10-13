@@ -16,7 +16,7 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundChanne
     protected Counter<int> ConsumerErrorMetric { get; }
     protected Counter<int> ConsumerDuplicatedMessageMetric { get; }
 
-    public BaseConsumer(IServiceScopeFactory serviceScopeFactory) : base(serviceScopeFactory)
+    protected BaseConsumer(IServiceScopeFactory serviceScopeFactory) : base(serviceScopeFactory)
     {
         ConsumerErrorMetric = DefaultConfigurations.Meter
             .CreateCounter<int>($"{DefaultConfigurations.ApplicationName}.{_consumerName}.Error", "total", "Number of times the consumer encountered an error");

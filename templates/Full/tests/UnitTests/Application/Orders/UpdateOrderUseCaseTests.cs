@@ -5,7 +5,7 @@ using UnitTests.Application.Common;
 
 namespace UnitTests.Application.Orders;
 
-public sealed class UpdateOrderUseCaseFixture : BaseApplicationFixture<UpdateOrderRequest, UpdateOrderUseCase>
+public sealed class UpdateOrderUseCaseFixture : BaseApplicationFixture<UpdateOrderUseCase>
 {
     public UpdateOrderUseCaseFixture() => UseCase = new(MockServiceProvider.Object);
 
@@ -35,8 +35,8 @@ public sealed class UpdateOrderUseCaseTest : IClassFixture<UpdateOrderUseCaseFix
         _fixture.ClearInvocations();
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
-    public async Task GivenAValidRequestThenPass()
+    [Fact(DisplayName = nameof(GivenAValidRequestThenPassAsync))]
+    public async Task GivenAValidRequestThenPassAsync()
     {
         // Arrange
         var order = UpdateOrderUseCaseFixture.CreateOrder();
@@ -62,8 +62,8 @@ public sealed class UpdateOrderUseCaseTest : IClassFixture<UpdateOrderUseCaseFix
         _fixture.VerifyProduce<CreateNotificationMessage>();
     }
 
-    [Fact(DisplayName = nameof(GivenAnInvalidRequestThenFails))]
-    public async Task GivenAnInvalidRequestThenFails()
+    [Fact(DisplayName = nameof(GivenAnInvalidRequestThenFailsAsync))]
+    public async Task GivenAnInvalidRequestThenFailsAsync()
     {
         // Arrange
         var request = UpdateOrderUseCaseFixture.SetInvalidRequest();
@@ -83,8 +83,8 @@ public sealed class UpdateOrderUseCaseTest : IClassFixture<UpdateOrderUseCaseFix
         _fixture.VerifyProduce<CreateNotificationMessage>(0);
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWhenOrderNotFoundThenFails))]
-    public async Task GivenAValidRequestWhenOrderNotFoundThenFails()
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenOrderNotFoundThenFailsAsync))]
+    public async Task GivenAValidRequestWhenOrderNotFoundThenFailsAsync()
     {
         // Arrange
         var request = _fixture.SetValidRequest();
@@ -105,8 +105,8 @@ public sealed class UpdateOrderUseCaseTest : IClassFixture<UpdateOrderUseCaseFix
         _fixture.VerifyProduce<CreateNotificationMessage>();
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWhenOrderIsDeletedThenFails))]
-    public async Task GivenAValidRequestWhenOrderIsDeletedThenFails()
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenOrderIsDeletedThenFailsAsync))]
+    public async Task GivenAValidRequestWhenOrderIsDeletedThenFailsAsync()
     {
         // Arrange
         var order = UpdateOrderUseCaseFixture.CreateOrder();
@@ -129,8 +129,8 @@ public sealed class UpdateOrderUseCaseTest : IClassFixture<UpdateOrderUseCaseFix
         _fixture.VerifyProduce<CreateNotificationMessage>();
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWhenRepositoryReturnsZeroThenFails))]
-    public async Task GivenAValidRequestWhenRepositoryReturnsZeroThenFails()
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenRepositoryReturnsZeroThenFailsAsync))]
+    public async Task GivenAValidRequestWhenRepositoryReturnsZeroThenFailsAsync()
     {
         // Arrange
         var order = UpdateOrderUseCaseFixture.CreateOrder();
@@ -153,8 +153,8 @@ public sealed class UpdateOrderUseCaseTest : IClassFixture<UpdateOrderUseCaseFix
         _fixture.VerifyProduce<CreateNotificationMessage>();
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWhenSuccessThenResponseContainsUpdatedFields))]
-    public async Task GivenAValidRequestWhenSuccessThenResponseContainsUpdatedFields()
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenSuccessThenResponseContainsUpdatedFieldsAsync))]
+    public async Task GivenAValidRequestWhenSuccessThenResponseContainsUpdatedFieldsAsync()
     {
         // Arrange
         var order = UpdateOrderUseCaseFixture.CreateOrder();
@@ -176,8 +176,8 @@ public sealed class UpdateOrderUseCaseTest : IClassFixture<UpdateOrderUseCaseFix
         Assert.Equal(2, result.Data.Items!.Count);
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWhenItemsAreEmptyThenFails))]
-    public async Task GivenAValidRequestWhenItemsAreEmptyThenFails()
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenItemsAreEmptyThenFailsAsync))]
+    public async Task GivenAValidRequestWhenItemsAreEmptyThenFailsAsync()
     {
         // Arrange
         var order = UpdateOrderUseCaseFixture.CreateOrder();

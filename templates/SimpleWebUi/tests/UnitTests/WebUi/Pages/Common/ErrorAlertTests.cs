@@ -44,7 +44,7 @@ public sealed class ErrorAlertTests : BaseComponentFixture
             .Add(c => c.Message, "Something went wrong"));
 
         var alert = component.Find(".alert");
-        Assert.Contains("Something went wrong", alert.TextContent);
+        Assert.Contains("Something went wrong", alert.TextContent, StringComparison.Ordinal);
     }
 
     [Fact(DisplayName = nameof(GivenDismissClickThenShowChangedIsFalse))]

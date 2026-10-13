@@ -26,15 +26,15 @@ public class GetAllFullTextSearchOrdersTest : IClassFixture<GetAllFullTextSearch
         _fixture.ResourceUrl = "orders/full-text-search-paginated";
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
-    public async Task GivenAValidRequestThenPass()
+    [Fact(DisplayName = nameof(GivenAValidRequestThenPassAsync))]
+    public async Task GivenAValidRequestThenPassAsync()
     {
         // Arrange
         var request = GetAllFullTextSearchOrdersTestFixture.SetValidRequest();
 
         // Act
         var result = await _fixture.ApiHelper.PostAsync(_fixture.ResourceUrl, request);
-        var response = await ApiHelper.DeSerializeResponse<BasePaginatedResponse<OrderDto>>(result);
+        var response = await ApiHelper.DeSerializeResponseAsync<BasePaginatedResponse<OrderDto>>(result);
 
         // Assert
         Assert.NotNull(result);
@@ -45,49 +45,49 @@ public class GetAllFullTextSearchOrdersTest : IClassFixture<GetAllFullTextSearch
         Assert.True(response.TotalRecords >= 0);
     }
 
-    [Fact(DisplayName = nameof(GivenAnInvalidPageRequestThenFails))]
-    public async Task GivenAnInvalidPageRequestThenFails()
+    [Fact(DisplayName = nameof(GivenAnInvalidPageRequestThenFailsAsync))]
+    public async Task GivenAnInvalidPageRequestThenFailsAsync()
     {
         // Arrange
         var request = GetAllFullTextSearchOrdersTestFixture.SetInvalidPageRequest();
 
         // Act
         var result = await _fixture.ApiHelper.PostAsync(_fixture.ResourceUrl, request);
-        var response = await ApiHelper.DeSerializeResponse<BasePaginatedResponse<OrderDto>>(result);
+        var response = await ApiHelper.DeSerializeResponseAsync<BasePaginatedResponse<OrderDto>>(result);
 
         // Assert
         Assert.NotNull(result);
         Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
         Assert.False(response!.Success);
-        Assert.Contains("Page must be greater than 0", response.Message);
+        Assert.Contains("Page must be greater than 0", response.Message, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = nameof(GivenAnInvalidPageSizeRequestThenFails))]
-    public async Task GivenAnInvalidPageSizeRequestThenFails()
+    [Fact(DisplayName = nameof(GivenAnInvalidPageSizeRequestThenFailsAsync))]
+    public async Task GivenAnInvalidPageSizeRequestThenFailsAsync()
     {
         // Arrange
         var request = GetAllFullTextSearchOrdersTestFixture.SetInvalidPageSizeRequest();
 
         // Act
         var result = await _fixture.ApiHelper.PostAsync(_fixture.ResourceUrl, request);
-        var response = await ApiHelper.DeSerializeResponse<BasePaginatedResponse<OrderDto>>(result);
+        var response = await ApiHelper.DeSerializeResponseAsync<BasePaginatedResponse<OrderDto>>(result);
 
         // Assert
         Assert.NotNull(result);
         Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
         Assert.False(response!.Success);
-        Assert.Contains("PageSize must be between 1 and 100", response.Message);
+        Assert.Contains("PageSize must be between 1 and 100", response.Message, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWithSearchValueThenPass))]
-    public async Task GivenAValidRequestWithSearchValueThenPass()
+    [Fact(DisplayName = nameof(GivenAValidRequestWithSearchValueThenPassAsync))]
+    public async Task GivenAValidRequestWithSearchValueThenPassAsync()
     {
         // Arrange
         var request = GetAllFullTextSearchOrdersTestFixture.SetValidRequest(searchValue: "client");
 
         // Act
         var result = await _fixture.ApiHelper.PostAsync(_fixture.ResourceUrl, request);
-        var response = await ApiHelper.DeSerializeResponse<BasePaginatedResponse<OrderDto>>(result);
+        var response = await ApiHelper.DeSerializeResponseAsync<BasePaginatedResponse<OrderDto>>(result);
 
         // Assert
         Assert.NotNull(result);

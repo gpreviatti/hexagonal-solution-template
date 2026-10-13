@@ -12,7 +12,9 @@ namespace IntegrationTests.Common;
 [CollectionDefinition(nameof(WebApplicationFactoryCollectionDefinition))]
 public sealed class WebApplicationFactoryCollectionDefinition : IClassFixture<CustomWebApplicationFactory<Program>>;
 
+#pragma warning disable S3881 // "IDisposable" should be implemented correctly
 public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram>, IDisposable where TProgram : class
+#pragma warning restore S3881 // "IDisposable" should be implemented correctly
 {
     protected string? ConnectionString { get; } = "Host=127.0.0.1;Port=5432;Database=OrderDb;Username=postgres;Password=cY5VvZkkh4AzES";
 

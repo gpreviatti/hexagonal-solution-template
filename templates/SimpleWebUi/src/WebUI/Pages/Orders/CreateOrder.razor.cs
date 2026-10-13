@@ -39,7 +39,7 @@ public partial class CreateOrder : IDisposable
 
     private void UpdateItemValue(int index, string value)
     {
-        if (decimal.TryParse(value, out var parsed))
+        if (decimal.TryParse(value, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out var parsed))
             _items[index] = _items[index] with { Value = parsed };
     }
 

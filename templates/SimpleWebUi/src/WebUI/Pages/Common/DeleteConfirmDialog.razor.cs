@@ -12,13 +12,13 @@ public partial class DeleteConfirmDialog
 
     public void Show() => _visible = true;
 
-    private void Cancel()
+    private async Task CancelAsync()
     {
         _visible = false;
-        OnCancelled.InvokeAsync();
+        await OnCancelled.InvokeAsync();
     }
 
-    private async Task Confirm()
+    private async Task ConfirmAsync()
     {
         _visible = false;
         await OnConfirmed.InvokeAsync();

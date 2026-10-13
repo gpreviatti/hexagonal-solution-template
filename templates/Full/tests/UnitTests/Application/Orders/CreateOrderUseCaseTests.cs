@@ -6,7 +6,7 @@ using UnitTests.Application.Common;
 
 namespace UnitTests.Application.Orders;
 
-public sealed class CreateOrderUseCaseFixture : BaseApplicationFixture<CreateOrderRequest, CreateOrderUseCase>
+public sealed class CreateOrderUseCaseFixture : BaseApplicationFixture<CreateOrderUseCase>
 {
     public CreateOrderUseCaseFixture() => UseCase = new(MockServiceProvider.Object);
 
@@ -38,8 +38,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.ClearInvocations();
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
-    public async Task GivenAValidRequestThenPass()
+    [Fact(DisplayName = nameof(GivenAValidRequestThenPassAsync))]
+    public async Task GivenAValidRequestThenPassAsync()
     {
         // Arrange
         var request = _fixture.SetValidRequest();
@@ -62,8 +62,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyProduce<CreateNotificationMessage>();
     }
 
-    [Fact(DisplayName = nameof(GivenAnInvalidRequestThenFails))]
-    public async Task GivenAnInvalidRequestThenFails()
+    [Fact(DisplayName = nameof(GivenAnInvalidRequestThenFailsAsync))]
+    public async Task GivenAnInvalidRequestThenFailsAsync()
     {
         // Arrange
         var request = CreateOrderUseCaseFixture.SetInvalidRequest();
@@ -87,8 +87,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyProduce<CreateNotificationMessage>(0);
     }
 
-    [Fact(DisplayName = nameof(GivenAInvalidRequestThenFailsWhenThereIsNoItems))]
-    public async Task GivenAInvalidRequestThenFailsWhenThereIsNoItems()
+    [Fact(DisplayName = nameof(GivenAInvalidRequestThenFailsWhenThereIsNoItemsAsync))]
+    public async Task GivenAInvalidRequestThenFailsWhenThereIsNoItemsAsync()
     {
         // Arrange
         var request = CreateOrderUseCaseFixture.SetInvalidRequestWithNoItems();
@@ -114,8 +114,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyProduce<CreateNotificationMessage>();
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestThenFailsWhenRepositoryReturnsZero))]
-    public async Task GivenAValidRequestThenFailsWhenRepositoryReturnsZero()
+    [Fact(DisplayName = nameof(GivenAValidRequestThenFailsWhenRepositoryReturnsZeroAsync))]
+    public async Task GivenAValidRequestThenFailsWhenRepositoryReturnsZeroAsync()
     {
         // Arrange
         var request = _fixture.SetValidRequest();
@@ -142,8 +142,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyProduce<CreateNotificationMessage>();
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWhenSuccessThenResponseContainsAllItemDtoFields))]
-    public async Task GivenAValidRequestWhenSuccessThenResponseContainsAllItemDtoFields()
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenSuccessThenResponseContainsAllItemDtoFieldsAsync))]
+    public async Task GivenAValidRequestWhenSuccessThenResponseContainsAllItemDtoFieldsAsync()
     {
         // Arrange
         var item1 = new CreateOrderItemRequest("Item1", "Description1", 100m);
@@ -178,8 +178,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         Assert.Equal(200m, dtoItem2.Value);
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWhenSuccessThenResponseContainsOrderDtoWithCorrectTotal))]
-    public async Task GivenAValidRequestWhenSuccessThenResponseContainsOrderDtoWithCorrectTotal()
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenSuccessThenResponseContainsOrderDtoWithCorrectTotalAsync))]
+    public async Task GivenAValidRequestWhenSuccessThenResponseContainsOrderDtoWithCorrectTotalAsync()
     {
         // Arrange
         var item1 = new CreateOrderItemRequest("Item1", "Description1", 150m);
@@ -200,8 +200,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         Assert.NotNull(result.Data.PeriodSinceWasCreated);
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWhenSuccessThenShouldPublishSuccessNotification))]
-    public async Task GivenAValidRequestWhenSuccessThenShouldPublishSuccessNotification()
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenSuccessThenShouldPublishSuccessNotificationAsync))]
+    public async Task GivenAValidRequestWhenSuccessThenShouldPublishSuccessNotificationAsync()
     {
         // Arrange
         var request = _fixture.SetValidRequest();
@@ -217,8 +217,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyProduce<CreateNotificationMessage>(1);
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWhenFailureThenShouldPublishFailureNotification))]
-    public async Task GivenAValidRequestWhenFailureThenShouldPublishFailureNotification()
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenFailureThenShouldPublishFailureNotificationAsync))]
+    public async Task GivenAValidRequestWhenFailureThenShouldPublishFailureNotificationAsync()
     {
         // Arrange
         var request = CreateOrderUseCaseFixture.SetInvalidRequestWithNoItems();
@@ -231,8 +231,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.VerifyProduce<CreateNotificationMessage>(1);
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWhenSuccessThenShouldPublishSuccessNotificationWithExpectedStatus))]
-    public async Task GivenAValidRequestWhenSuccessThenShouldPublishSuccessNotificationWithExpectedStatus()
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenSuccessThenShouldPublishSuccessNotificationWithExpectedStatusAsync))]
+    public async Task GivenAValidRequestWhenSuccessThenShouldPublishSuccessNotificationWithExpectedStatusAsync()
     {
         // Arrange
         var request = new CreateOrderRequest(
@@ -270,8 +270,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         Assert.Equal(NotificationType.OrderCreated.ToString(), publishedQueue);
     }
 
-    [Fact(DisplayName = nameof(GivenAInvalidRequestWithNoItemsThenShouldPublishFailureNotificationWithExpectedStatus))]
-    public async Task GivenAInvalidRequestWithNoItemsThenShouldPublishFailureNotificationWithExpectedStatus()
+    [Fact(DisplayName = nameof(GivenAInvalidRequestWithNoItemsThenShouldPublishFailureNotificationWithExpectedStatusAsync))]
+    public async Task GivenAInvalidRequestWithNoItemsThenShouldPublishFailureNotificationWithExpectedStatusAsync()
     {
         // Arrange
         var request = new CreateOrderRequest(
@@ -305,8 +305,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         Assert.Equal("TestUser", publishedMessage.CreatedBy);
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWhenRepositoryReturnsZeroThenShouldPublishFailureNotificationWithExpectedStatus))]
-    public async Task GivenAValidRequestWhenRepositoryReturnsZeroThenShouldPublishFailureNotificationWithExpectedStatus()
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenRepositoryReturnsZeroThenShouldPublishFailureNotificationWithExpectedStatusAsync))]
+    public async Task GivenAValidRequestWhenRepositoryReturnsZeroThenShouldPublishFailureNotificationWithExpectedStatusAsync()
     {
         // Arrange
         var request = new CreateOrderRequest(
@@ -342,8 +342,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         Assert.Equal("TestUser", publishedMessage.CreatedBy);
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWithEmptyDescriptionThenValidationShouldFail))]
-    public async Task GivenAValidRequestWithEmptyDescriptionThenValidationShouldFail()
+    [Fact(DisplayName = nameof(GivenAValidRequestWithEmptyDescriptionThenValidationShouldFailAsync))]
+    public async Task GivenAValidRequestWithEmptyDescriptionThenValidationShouldFailAsync()
     {
         // Arrange
         var request = new CreateOrderRequest(Guid.NewGuid(), "", [new("Item1", "Desc1", 100m)]);
@@ -356,8 +356,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         _fixture.MockRepository.VerifyAddAsync<Order>(0);
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWithSingleItemThenShouldCreateOrderSuccessfully))]
-    public async Task GivenAValidRequestWithSingleItemThenShouldCreateOrderSuccessfully()
+    [Fact(DisplayName = nameof(GivenAValidRequestWithSingleItemThenShouldCreateOrderSuccessfullyAsync))]
+    public async Task GivenAValidRequestWithSingleItemThenShouldCreateOrderSuccessfullyAsync()
     {
         // Arrange
         var request = new CreateOrderRequest(Guid.NewGuid(), "Single Item Order", [new("Item1", "Description1", 99.99m)]);
@@ -376,8 +376,8 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
         Assert.Equal(99.99m, result.Data.Total);
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWithMultipleItemsThenShouldCreateOrderWithAllItems))]
-    public async Task GivenAValidRequestWithMultipleItemsThenShouldCreateOrderWithAllItems()
+    [Fact(DisplayName = nameof(GivenAValidRequestWithMultipleItemsThenShouldCreateOrderWithAllItemsAsync))]
+    public async Task GivenAValidRequestWithMultipleItemsThenShouldCreateOrderWithAllItemsAsync()
     {
         // Arrange
         var items = new[]

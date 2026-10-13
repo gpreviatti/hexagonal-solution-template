@@ -4,7 +4,7 @@ namespace UnitTests.Architecture;
 
 public sealed class WebUiTests
 {
-    private static readonly System.Reflection.Assembly _assembly = typeof(Program).Assembly;
+    private static readonly System.Reflection.Assembly s_assembly = typeof(Program).Assembly;
 
     [Theory(DisplayName = nameof(GivenTheWebUiAssemblyWhenCheckingForbiddenClassSuffixesThenItShouldRespectTheEntryPointNaming))]
     [InlineData("Entity")]
@@ -15,7 +15,7 @@ public sealed class WebUiTests
     [InlineData("Mapping")]
     [InlineData("Consumer")]
     [InlineData("Producer")]
-    public void GivenTheWebUiAssemblyWhenCheckingForbiddenClassSuffixesThenItShouldRespectTheEntryPointNaming(string forbiddenSuffix) => ArchitectureTestHelper.AssertClassNamesDoNotEndWith(_assembly, forbiddenSuffix);
+    public void GivenTheWebUiAssemblyWhenCheckingForbiddenClassSuffixesThenItShouldRespectTheEntryPointNaming(string forbiddenSuffix) => ArchitectureTestHelper.AssertClassNamesDoNotEndWith(s_assembly, forbiddenSuffix);
 
     [Fact(DisplayName = nameof(GivenTheWebUiProjectWhenCheckingProjectReferencesThenItShouldOnlyReferenceTheInfrastructureProject))]
     public void GivenTheWebUiProjectWhenCheckingProjectReferencesThenItShouldOnlyReferenceTheInfrastructureProject() => ArchitectureTestHelper.AssertProjectReferences(

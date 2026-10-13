@@ -7,8 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace UnitTests.Application.Common;
 
-public class BaseApplicationFixture<TRequest, TUseCase> : BaseFixture
-    where TRequest : class
+public class BaseApplicationFixture<TUseCase> : BaseFixture
     where TUseCase : class
 {
     public Mock<IServiceProvider> MockServiceProvider { get; } = new();

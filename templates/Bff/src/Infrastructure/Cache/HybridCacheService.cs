@@ -23,7 +23,7 @@ public sealed class HybridCacheService(HybridCache cache, ILogger<HybridCacheSer
 
         var result = await _cache.GetOrCreateAsync($"{DefaultConfigurations.ApplicationName}:{key}", factory, cancellationToken: cancellationToken);
 
-        Logs.DebugFinishedOperation(_logger, $"Cache hit: {result != null} for key: {key}");
+        Logs.DebugFinishedOperation(_logger, $"Cache hit for key: {key}");
 
         activity?.SetTag("key", key);
 
@@ -38,7 +38,7 @@ public sealed class HybridCacheService(HybridCache cache, ILogger<HybridCacheSer
 
         await _cache.SetAsync($"{DefaultConfigurations.ApplicationName}:{key}", value, cancellationToken: cancellationToken);
 
-        Logs.DebugFinishedOperation(_logger, $"Cached hit: {value != null} for key: {key}");
+        Logs.DebugFinishedOperation(_logger, $"Cache value set for key: {key}");
 
         activity?.SetTag("key", key);
     }

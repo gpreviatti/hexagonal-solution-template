@@ -13,7 +13,7 @@ internal abstract class BaseBackgroundChannelService<TService, TMessage>(IServic
     protected IConfiguration configuration;
     private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
 
-    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         try
         {
@@ -24,11 +24,11 @@ internal abstract class BaseBackgroundChannelService<TService, TMessage>(IServic
 
             var channel = serviceProvider.GetRequiredService<Channel<TMessage>>();
 
-            while (await channel.Reader.WaitToReadAsync(cancellationToken))
+            while (await channel.Reader.WaitToReadAsync(stoppingToken))
             {
-                var message = await channel.Reader.ReadAsync(cancellationToken);
-                await ExecuteInternalAsync(serviceProvider, message, cancellationToken);
-                await Task.Delay(1000, cancellationToken);
+                var message = await channel.Reader.ReadAsync(stoppingToken);
+                await ExecuteInternalAsync(serviceProvider, message, stoppingToken);
+                await Task.Delay(1000, stoppingToken);
             }
         }
         catch (Exception ex)

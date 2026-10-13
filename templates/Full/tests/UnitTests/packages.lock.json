@@ -18,6 +18,12 @@
           "Moq": "4.18.0"
         }
       },
+      "Meziantou.Analyzer": {
+        "type": "Direct",
+        "requested": "[2.0.257, )",
+        "resolved": "2.0.257",
+        "contentHash": "HADbzZ4rto3boQpWyXIFFc9bxDPviscCXiSQWOTICKD1OJ4gwa9aMfANoQngOk/2en3I9YAHwQ0WXxVMzCTJ+A=="
+      },
       "Microsoft.NET.Test.Sdk": {
         "type": "Direct",
         "requested": "[18.8.1, )",
@@ -46,6 +52,18 @@
           "Mono.Cecil": "0.11.3"
         }
       },
+      "Roslynator.Analyzers": {
+        "type": "Direct",
+        "requested": "[4.14.1, )",
+        "resolved": "4.14.1",
+        "contentHash": "yMSjze/xMYDF6PCE60/ULWx0tttNyKAndw2KijNxbKil0FX8nvDeEneDZGma8Uifk17RlfZqIXxf1mmBmhRHjg=="
+      },
+      "SonarAnalyzer.CSharp": {
+        "type": "Direct",
+        "requested": "[10.18.0.131500, )",
+        "resolved": "10.18.0.131500",
+        "contentHash": "Rbad71/k5e8MfG81i03Yh2YQQgovIdmyhWcLRevrcW4h9i1DUB3kKX9O1QiOGXcULLjkTdRAXdR8A8XtinL3Pg=="
+      },
       "xunit": {
         "type": "Direct",
         "requested": "[2.9.3, )",
@@ -56,6 +74,12 @@
           "xunit.assert": "2.9.3",
           "xunit.core": "[2.9.3]"
         }
+      },
+      "xunit.analyzers": {
+        "type": "Direct",
+        "requested": "[1.26.0, )",
+        "resolved": "1.26.0",
+        "contentHash": "YrWZOfuU1Scg4iGizAlMNALOxVS+HPSVilfscNDEJAyrTIVdF4c+8o+Aerw2RYnrJxafj/F56YkJOKCURUWQmA=="
       },
       "xunit.runner.visualstudio": {
         "type": "Direct",
@@ -430,11 +454,6 @@
         "resolved": "2.0.3",
         "contentHash": "pot1I4YOxlWjIb5jmwvvQNbTrZ3lJQ+jUGkGjWE3hEFM0l5gOnBWS+H3qsex68s5cO52g+44vpGzhAt+42vwKg=="
       },
-      "xunit.analyzers": {
-        "type": "Transitive",
-        "resolved": "1.18.0",
-        "contentHash": "OtFMHN8yqIcYP9wcVIgJrq01AfTxijjAqVDy/WeQVSyrDC1RzBWeQPztL49DN2syXRah8TYnfvk035s7L95EZQ=="
-      },
       "xunit.assert": {
         "type": "Transitive",
         "resolved": "2.9.3",
@@ -461,28 +480,41 @@
         "type": "Project",
         "dependencies": {
           "Domain": "[1.0.0, )",
+          "Meziantou.Analyzer": "[2.0.257, )",
           "Microsoft.EntityFrameworkCore": "[10.0.10, )",
-          "Microsoft.Extensions.Logging": "[10.0.10, )"
+          "Microsoft.Extensions.Logging": "[10.0.10, )",
+          "Roslynator.Analyzers": "[4.14.1, )",
+          "SonarAnalyzer.CSharp": "[10.18.0.131500, )",
+          "xunit.analyzers": "[1.26.0, )"
         }
       },
       "commontests": {
         "type": "Project",
         "dependencies": {
           "AutoFixture": "[4.18.1, )",
+          "Meziantou.Analyzer": "[2.0.257, )",
           "Newtonsoft.Json": "[13.0.4, )",
+          "Roslynator.Analyzers": "[4.14.1, )",
+          "SonarAnalyzer.CSharp": "[10.18.0.131500, )",
+          "xunit.analyzers": "[1.26.0, )",
           "xunit.extensibility.core": "[2.9.3, )"
         }
       },
       "domain": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.Extensions.DependencyInjection": "[10.0.10, )"
+          "Meziantou.Analyzer": "[2.0.257, )",
+          "Microsoft.Extensions.DependencyInjection": "[10.0.10, )",
+          "Roslynator.Analyzers": "[4.14.1, )",
+          "SonarAnalyzer.CSharp": "[10.18.0.131500, )",
+          "xunit.analyzers": "[1.26.0, )"
         }
       },
       "infrastructure": {
         "type": "Project",
         "dependencies": {
           "Application": "[1.0.0, )",
+          "Meziantou.Analyzer": "[2.0.257, )",
           "Microsoft.Extensions.Caching.Hybrid": "[10.8.0, )",
           "Microsoft.Extensions.Caching.StackExchangeRedis": "[10.0.10, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.0.3, )",
@@ -499,7 +531,10 @@
           "OpenTelemetry.Instrumentation.StackExchangeRedis": "[1.17.0-beta.1, )",
           "Pyroscope.OpenTelemetry": "[0.5.1, )",
           "RabbitMQ.Client": "[7.2.1, )",
-          "RabbitMQ.Client.OpenTelemetry": "[1.0.0-rc.2, )"
+          "RabbitMQ.Client.OpenTelemetry": "[1.0.0-rc.2, )",
+          "Roslynator.Analyzers": "[4.14.1, )",
+          "SonarAnalyzer.CSharp": "[10.18.0.131500, )",
+          "xunit.analyzers": "[1.26.0, )"
         }
       },
       "webapp": {
@@ -510,7 +545,11 @@
           "AspNetCore.HealthChecks.Redis": "[9.0.0, )",
           "AspNetCore.HealthChecks.UI.Client": "[9.0.0, )",
           "Grpc.AspNetCore": "[2.80.0, )",
-          "Infrastructure": "[1.0.0, )"
+          "Infrastructure": "[1.0.0, )",
+          "Meziantou.Analyzer": "[2.0.257, )",
+          "Roslynator.Analyzers": "[4.14.1, )",
+          "SonarAnalyzer.CSharp": "[10.18.0.131500, )",
+          "xunit.analyzers": "[1.26.0, )"
         }
       },
       "AspNetCore.HealthChecks.NpgSql": {

@@ -9,7 +9,9 @@ namespace Infrastructure.Data.Migrations;
 public partial class CreateTables : Migration
 {
     /// <inheritdoc />
+#pragma warning disable MA0051 // Method is too long
     protected override void Up(MigrationBuilder migrationBuilder)
+#pragma warning restore MA0051 // Method is too long
     {
         migrationBuilder.CreateTable(
             name: "Notification",

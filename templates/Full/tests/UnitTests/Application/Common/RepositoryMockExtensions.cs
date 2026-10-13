@@ -198,7 +198,7 @@ internal abstract class TestQueryProvider<T, TExpressionVisitor> : IOrderedQuery
         if (expression is MethodCallExpression methodCallExpression)
         {
             var resultType = methodCallExpression.Method.ReturnType;
-            var elementType = resultType.GetGenericArguments().First();
+            var elementType = resultType.GetGenericArguments()[0];
             return (IQueryable) CreateInstance(elementType, expression);
         }
 
@@ -269,7 +269,7 @@ internal sealed class TestAsyncEnumerableEfCore<T, TExpressionVisitor> : TestQue
         var expectedResultType = typeof(TResult).GetGenericArguments()[0];
         var executionResult = typeof(IQueryProvider)
             .GetMethods()
-            .First(method => method.Name == nameof(IQueryProvider.Execute) && method.IsGenericMethod)
+            .First(method => string.Equals(method.Name, nameof(IQueryProvider.Execute), StringComparison.Ordinal) && method.IsGenericMethod)
             .MakeGenericMethod(expectedResultType)
             .Invoke(this, [expression]);
 
@@ -289,12 +289,12 @@ internal sealed class TestAsyncEnumerableEfCore<T, TExpressionVisitor> : TestQue
         {
             var affectedItems = base.Execute<IEnumerable<T>>(Expression).ToList();
 
-            if (methodCallExpression.Method.Name == nameof(EntityFrameworkQueryableExtensions.ExecuteUpdate))
+            if (string.Equals(methodCallExpression.Method.Name, nameof(EntityFrameworkQueryableExtensions.ExecuteUpdate), StringComparison.Ordinal))
             {
                 ApplyUpdateChanges(affectedItems, methodCallExpression);
             }
 
-            if (methodCallExpression.Method.Name == nameof(EntityFrameworkQueryableExtensions.ExecuteDelete))
+            if (string.Equals(methodCallExpression.Method.Name, nameof(EntityFrameworkQueryableExtensions.ExecuteDelete), StringComparison.Ordinal))
             {
                 foreach (var item in affectedItems)
                 {
@@ -394,7 +394,9 @@ internal sealed class TestAsyncEnumerableEfCore<T, TExpressionVisitor> : TestQue
         if (value is not null && !propertyInfo.PropertyType.IsInstanceOfType(value))
         {
 #pragma warning disable CA1305 // Specify IFormatProvider
+#pragma warning disable MA0011 // IFormatProvider is missing
             convertedValue = Convert.ChangeType(value, propertyInfo.PropertyType);
+#pragma warning restore MA0011 // IFormatProvider is missing
 #pragma warning restore CA1305 // Specify IFormatProvider
         }
 

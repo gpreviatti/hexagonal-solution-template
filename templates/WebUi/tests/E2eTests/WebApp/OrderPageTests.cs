@@ -4,16 +4,16 @@ namespace E2eTests.WebApp;
 
 public class OrderPageFixture : BrowserFixture
 {
-    private const string LoadingSummarySelector = "[data-testid='loading-summary']";
-    private const string SummaryTotalOrdersSelector = "[data-testid='total-orders']";
-    private const string SummaryRevenueSelector = "[data-testid='total-revenue']";
-    private const string OrdersTableSelector = "[data-testid='orders-table']";
-    private const string OrdersTableRowsSelector = "[data-testid='orders-table'] tbody tr";
-    private const string OrderItemsTableSelector = "[data-testid='order-items-table']";
-    private const string OrderItemsTableRowsSelector = "[data-testid='order-items-table'] tbody tr";
+    private const string s_loadingSummarySelector = "[data-testid='loading-summary']";
+    private const string s_summaryTotalOrdersSelector = "[data-testid='total-orders']";
+    private const string s_summaryRevenueSelector = "[data-testid='total-revenue']";
+    private const string s_ordersTableSelector = "[data-testid='orders-table']";
+    private const string s_ordersTableRowsSelector = "[data-testid='orders-table'] tbody tr";
+    private const string s_orderItemsTableSelector = "[data-testid='order-items-table']";
+    private const string s_orderItemsTableRowsSelector = "[data-testid='order-items-table'] tbody tr";
 
     public async Task WaitForSummaryAsync() => await Page.WaitForSelectorAsync(
-        SummaryTotalOrdersSelector,
+        s_summaryTotalOrdersSelector,
         new() { Timeout = WaitForSelectorTimeoutMs }
     );
 
@@ -21,7 +21,7 @@ public class OrderPageFixture : BrowserFixture
     {
         try
         {
-            await Page.WaitForSelectorAsync(LoadingSummarySelector, new() { Timeout = 1000 });
+            await Page.WaitForSelectorAsync(s_loadingSummarySelector, new() { Timeout = 1000 });
             return true;
         }
         catch
@@ -32,7 +32,7 @@ public class OrderPageFixture : BrowserFixture
 
     public async Task<string> GetSummaryTotalOrdersAsync()
     {
-        var element = await Page.QuerySelectorAsync(SummaryTotalOrdersSelector);
+        var element = await Page.QuerySelectorAsync(s_summaryTotalOrdersSelector);
         Assert.NotNull(element);
 
         var textContent = await element.TextContentAsync();
@@ -41,20 +41,20 @@ public class OrderPageFixture : BrowserFixture
 
     public async Task<string> GetSummaryRevenueAsync()
     {
-        var element = await Page.QuerySelectorAsync(SummaryRevenueSelector);
+        var element = await Page.QuerySelectorAsync(s_summaryRevenueSelector);
         Assert.NotNull(element);
 
         var textContent = await element.TextContentAsync();
         return textContent?.Trim() ?? string.Empty;
     }
 
-    public async Task<IReadOnlyList<IElementHandle>> GetOrderTableRowsAsync() => await Page.QuerySelectorAllAsync(OrdersTableRowsSelector);
+    public async Task<IReadOnlyList<IElementHandle>> GetOrderTableRowsAsync() => await Page.QuerySelectorAllAsync(s_ordersTableRowsSelector);
 
     public async Task<bool> IsOrdersTableVisibleAsync()
     {
         try
         {
-            await Page.WaitForSelectorAsync(OrdersTableSelector, new() { Timeout = WaitForSelectorTimeoutMs });
+            await Page.WaitForSelectorAsync(s_ordersTableSelector, new() { Timeout = WaitForSelectorTimeoutMs });
             return true;
         }
         catch
@@ -76,16 +76,16 @@ public class OrderPageFixture : BrowserFixture
 
         await buttons[0].ClickAsync();
 
-        await Page.WaitForSelectorAsync(OrderItemsTableSelector, new() { Timeout = WaitForSelectorTimeoutMs });
+        await Page.WaitForSelectorAsync(s_orderItemsTableSelector, new() { Timeout = WaitForSelectorTimeoutMs });
     }
 
-    public async Task<IReadOnlyList<IElementHandle>> GetOrderItemsTableRowsAsync() => await Page.QuerySelectorAllAsync(OrderItemsTableRowsSelector);
+    public async Task<IReadOnlyList<IElementHandle>> GetOrderItemsTableRowsAsync() => await Page.QuerySelectorAllAsync(s_orderItemsTableRowsSelector);
 
     public async Task<bool> IsOrderItemsTableVisibleAsync()
     {
         try
         {
-            await Page.WaitForSelectorAsync(OrderItemsTableSelector, new() { Timeout = WaitForSelectorTimeoutMs });
+            await Page.WaitForSelectorAsync(s_orderItemsTableSelector, new() { Timeout = WaitForSelectorTimeoutMs });
             return true;
         }
         catch
@@ -98,8 +98,8 @@ public class OrderPageFixture : BrowserFixture
 public sealed class OrderPageTests : OrderPageFixture
 {
 
-    [Fact(DisplayName = nameof(GivenOrderPageWhenNavigatingThenShouldLoadSummaryAndOrdersTable))]
-    public async Task GivenOrderPageWhenNavigatingThenShouldLoadSummaryAndOrdersTable()
+    [Fact(DisplayName = nameof(GivenOrderPageWhenNavigatingThenShouldLoadSummaryAndOrdersTableAsync))]
+    public async Task GivenOrderPageWhenNavigatingThenShouldLoadSummaryAndOrdersTableAsync()
     {
         // Arrange, Act
         var isLoading = await IsLoadingDisplayedAsync();
@@ -117,8 +117,8 @@ public sealed class OrderPageTests : OrderPageFixture
         Assert.NotEmpty(rows);
     }
 
-    [Fact(DisplayName = nameof(GivenOrderPageWhenLoadedThenShouldDisplayOrderSummary))]
-    public async Task GivenOrderPageWhenLoadedThenShouldDisplayOrderSummary()
+    [Fact(DisplayName = nameof(GivenOrderPageWhenLoadedThenShouldDisplayOrderSummaryAsync))]
+    public async Task GivenOrderPageWhenLoadedThenShouldDisplayOrderSummaryAsync()
     {
         // Arrange, Act
         await WaitForSummaryAsync();
@@ -134,8 +134,8 @@ public sealed class OrderPageTests : OrderPageFixture
         Assert.False(string.IsNullOrWhiteSpace(revenueText));
     }
 
-    [Fact(DisplayName = nameof(GivenOrderPageWhenLoadedThenShouldDisplayOrdersTableWithData))]
-    public async Task GivenOrderPageWhenLoadedThenShouldDisplayOrdersTableWithData()
+    [Fact(DisplayName = nameof(GivenOrderPageWhenLoadedThenShouldDisplayOrdersTableWithDataAsync))]
+    public async Task GivenOrderPageWhenLoadedThenShouldDisplayOrdersTableWithDataAsync()
     {
         // Arrange, Act
         await WaitForSummaryAsync();
@@ -159,8 +159,8 @@ public sealed class OrderPageTests : OrderPageFixture
         Assert.False(string.IsNullOrWhiteSpace(secondCellText), "Second cell (Description) should have content");
     }
 
-    [Fact(DisplayName = nameof(GivenOrderRowWhenExpandingItemsThenShouldDisplayOrderItemsTable))]
-    public async Task GivenOrderRowWhenExpandingItemsThenShouldDisplayOrderItemsTable()
+    [Fact(DisplayName = nameof(GivenOrderRowWhenExpandingItemsThenShouldDisplayOrderItemsTableAsync))]
+    public async Task GivenOrderRowWhenExpandingItemsThenShouldDisplayOrderItemsTableAsync()
     {
         // Arrange, Act
         await WaitForSummaryAsync();

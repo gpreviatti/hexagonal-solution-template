@@ -19,75 +19,78 @@ internal static class OrderEndpoints
             .WithTags(serviceKey)
             .RequireRateLimiting(serviceKey);
 
-        ordersGroup.MapGet("/{id}", async (
-            [FromKeyedServices(ServicesKey.Orders)] BaseHttpService httpService,
-            [FromRoute] int id,
-            [FromServices] HybridCacheService cache,
-            CancellationToken cancellationToken,
-            [FromHeader] Guid? correlationId = null,
-            [FromHeader] bool cacheEnabled = true
-        ) =>
-        {
-            using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{nameof(OrderEndpoints)}.GetById");
+        ordersGroup.MapGet("/{id}", GetByIdAsync)
+            .Produces<BaseResponse<OrderDto>>(StatusCodes.Status200OK)
+            .Produces<BaseResponse>(StatusCodes.Status404NotFound)
+            .Produces<BaseResponse>(StatusCodes.Status400BadRequest)
+            .Produces<BaseResponse>(StatusCodes.Status500InternalServerError)
+            .WithDescription("Gets an order by its identifier")
+            .WithName("GetById");
 
-            var response = cacheEnabled switch
-            {
-                true => await cache.GetOrCreateAsync(
-                    $"{nameof(OrderEndpoints)}-{id}",
-                    async (cancellationToken) => await httpService.SendAsync<BaseResponse<OrderDto>>($"/orders/{id}", HttpMethod.Get, cancellationToken, headers: new()
-                    {
-                        { "CorrelationId", (correlationId ?? Guid.NewGuid()).ToString() }
-                    }),
-                    cancellationToken
-                ),
-                false or _ => await httpService.SendAsync<BaseResponse<OrderDto>>($"/orders/{id}", HttpMethod.Get, cancellationToken, headers: new()
-                {
-                    { "CorrelationId", (correlationId ?? Guid.NewGuid()).ToString() }
-                }),
-            };
-
-            activity?.SetTag(nameof(id), id);
-            activity?.SetTag(nameof(cacheEnabled), cacheEnabled);
-            activity?.SetStatus(response != null ? ActivityStatusCode.Ok : ActivityStatusCode.Error);
-
-            return response != null ? Results.Ok(response) : Results.NotFound(response);
-        })
-        .Produces<BaseResponse<OrderDto>>(StatusCodes.Status200OK)
-        .Produces<BaseResponse>(StatusCodes.Status404NotFound)
-        .Produces<BaseResponse>(StatusCodes.Status400BadRequest)
-        .Produces<BaseResponse>(StatusCodes.Status500InternalServerError)
-        .WithDescription("Gets an order by its identifier")
-        .WithName("GetById");
-
-        ordersGroup.MapPost("/", async (
-            [FromBody] CreateOrderRequest request,
-            [FromKeyedServices(ServicesKey.Orders)] BaseHttpService httpService,
-            CancellationToken cancellationToken
-        ) =>
-        {
-            using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{nameof(OrderEndpoints)}.Create");
-
-            var response = await httpService.SendAsync<CreateOrderRequest, BaseResponse<OrderDto>>(
-                "orders", HttpMethod.Post, request,
-                cancellationToken: cancellationToken
-            );
-
-            if (response == null)
-                return Results.BadRequest();
-
-            var id = response.Data?.Id.ToString(CultureInfo.InvariantCulture) ?? "unknown";
-
-            activity?.SetTag(nameof(id), id);
-            activity?.SetStatus(ActivityStatusCode.Ok);
-
-            return Results.Created($"/orders/{id}", response);
-        })
-        .Produces<BaseResponse<OrderDto>>(StatusCodes.Status201Created)
-        .Produces<BaseResponse>(StatusCodes.Status400BadRequest)
-        .Produces<BaseResponse>(StatusCodes.Status500InternalServerError)
-        .WithDescription("Creates a new order")
-        .WithName("Create");
+        ordersGroup.MapPost("/", CreateAsync)
+            .Produces<BaseResponse<OrderDto>>(StatusCodes.Status201Created)
+            .Produces<BaseResponse>(StatusCodes.Status400BadRequest)
+            .Produces<BaseResponse>(StatusCodes.Status500InternalServerError)
+            .WithDescription("Creates a new order")
+            .WithName("Create");
 
         return app;
+    }
+
+    private static async Task<IResult> GetByIdAsync(
+        [FromKeyedServices(ServicesKey.Orders)] BaseHttpService httpService,
+        [FromRoute] int id,
+        [FromServices] HybridCacheService cache,
+        CancellationToken cancellationToken,
+        [FromHeader] Guid? correlationId = null,
+        [FromHeader] bool cacheEnabled = true
+    )
+    {
+        using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{nameof(OrderEndpoints)}.GetById");
+
+        var headers = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            { "CorrelationId", (correlationId ?? Guid.NewGuid()).ToString() }
+        };
+
+        var response = cacheEnabled switch
+        {
+            true => await cache.GetOrCreateAsync(
+                $"{nameof(OrderEndpoints)}-{id}",
+                async ct => await httpService.SendAsync<BaseResponse<OrderDto>>($"/orders/{id}", HttpMethod.Get, ct, headers: headers),
+                cancellationToken
+            ),
+            _ => await httpService.SendAsync<BaseResponse<OrderDto>>($"/orders/{id}", HttpMethod.Get, cancellationToken, headers: headers),
+        };
+
+        activity?.SetTag(nameof(id), id);
+        activity?.SetTag(nameof(cacheEnabled), cacheEnabled);
+        activity?.SetStatus(response != null ? ActivityStatusCode.Ok : ActivityStatusCode.Error);
+
+        return response != null ? Results.Ok(response) : Results.NotFound(response);
+    }
+
+    private static async Task<IResult> CreateAsync(
+        [FromBody] CreateOrderRequest request,
+        [FromKeyedServices(ServicesKey.Orders)] BaseHttpService httpService,
+        CancellationToken cancellationToken
+    )
+    {
+        using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{nameof(OrderEndpoints)}.Create");
+
+        var response = await httpService.SendAsync<CreateOrderRequest, BaseResponse<OrderDto>>(
+            "orders", HttpMethod.Post, request,
+            cancellationToken: cancellationToken
+        );
+
+        if (response == null)
+            return Results.BadRequest();
+
+        var id = response.Data?.Id.ToString(CultureInfo.InvariantCulture) ?? "unknown";
+
+        activity?.SetTag(nameof(id), id);
+        activity?.SetStatus(ActivityStatusCode.Ok);
+
+        return Results.Created($"/orders/{id}", response);
     }
 }

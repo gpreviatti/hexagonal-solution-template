@@ -28,7 +28,6 @@ public class BaseMessagingFixture : BaseFixture
 
     public async Task HandleProducerAsync<TMessage>(
         TMessage message,
-        string queueName,
         int delay = 1500
     ) where TMessage : BaseMessage
     {

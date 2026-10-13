@@ -4,7 +4,7 @@ using UnitTests.Application.Common;
 
 namespace UnitTests.Application.Orders;
 
-public sealed class GetOrderUseCaseFixture : BaseApplicationFixture<GetOrderRequest, GetOrderUseCase>
+public sealed class GetOrderUseCaseFixture : BaseApplicationFixture<GetOrderUseCase>
 {
     public GetOrderUseCaseFixture() => UseCase = new(MockServiceProvider.Object);
     public GetOrderRequest SetValidRequest(int? id = null) => new(Guid.NewGuid(), id ?? AutoFixture.Create<int>());
@@ -21,8 +21,8 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.ClearInvocations();
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
-    public async Task GivenAValidRequestThenPass()
+    [Fact(DisplayName = nameof(GivenAValidRequestThenPassAsync))]
+    public async Task GivenAValidRequestThenPassAsync()
     {
         // Arrange
         var resultCreateOrder = Order.Create(
@@ -57,8 +57,8 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.MockLogger.VerifyFinishOperation();
     }
 
-    [Fact(DisplayName = nameof(GivenAInvalidRequestThenFails))]
-    public async Task GivenAInvalidRequestThenFails()
+    [Fact(DisplayName = nameof(GivenAInvalidRequestThenFailsAsync))]
+    public async Task GivenAInvalidRequestThenFailsAsync()
     {
         // Arrange
         var request = GetOrderUseCaseFixture.SetInvalidRequest();
@@ -77,8 +77,8 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.MockLogger.VerifyFinishOperation(0);
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWhenOrderNotFoundThenFails))]
-    public async Task GivenAValidRequestWhenOrderNotFoundThenFails()
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenOrderNotFoundThenFailsAsync))]
+    public async Task GivenAValidRequestWhenOrderNotFoundThenFailsAsync()
     {
         // Arrange
         var request = _fixture.SetValidRequest();
@@ -99,8 +99,8 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         _fixture.MockLogger.VerifyFinishOperation();
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWhenOrderExistsThenResponseContainsAllOrderDtoFields))]
-    public async Task GivenAValidRequestWhenOrderExistsThenResponseContainsAllOrderDtoFields()
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenOrderExistsThenResponseContainsAllOrderDtoFieldsAsync))]
+    public async Task GivenAValidRequestWhenOrderExistsThenResponseContainsAllOrderDtoFieldsAsync()
     {
         // Arrange
         var resultCreateOrder = Order.Create(
@@ -127,8 +127,8 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         Assert.NotEmpty(result.Data.PeriodSinceWasCreated);
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWhenOrderExistsThenResponseContainsAllItemDtoFields))]
-    public async Task GivenAValidRequestWhenOrderExistsThenResponseContainsAllItemDtoFields()
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenOrderExistsThenResponseContainsAllItemDtoFieldsAsync))]
+    public async Task GivenAValidRequestWhenOrderExistsThenResponseContainsAllItemDtoFieldsAsync()
     {
         // Arrange
         var resultCreateOrder = Order.Create(
@@ -167,8 +167,8 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         }
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestOnMultipleCallsThenShouldReturnConsistentResults))]
-    public async Task GivenAValidRequestOnMultipleCallsThenShouldReturnConsistentResults()
+    [Fact(DisplayName = nameof(GivenAValidRequestOnMultipleCallsThenShouldReturnConsistentResultsAsync))]
+    public async Task GivenAValidRequestOnMultipleCallsThenShouldReturnConsistentResultsAsync()
     {
         // Arrange
         var resultCreateOrder = Order.Create(
@@ -202,8 +202,8 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         Assert.Equal(result1.Data!.Items.Count, result2.Data!.Items.Count);
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWhenOrderHasNoItemsThenShouldReturnEmptyItemList))]
-    public async Task GivenAValidRequestWhenOrderHasNoItemsThenShouldReturnEmptyItemList()
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenOrderHasNoItemsThenShouldReturnEmptyItemListAsync))]
+    public async Task GivenAValidRequestWhenOrderHasNoItemsThenShouldReturnEmptyItemListAsync()
     {
         // Arrange
         var resultCreateOrder = Order.Create(

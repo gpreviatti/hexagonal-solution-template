@@ -25,15 +25,15 @@ public class GetAllOrdersTest : IClassFixture<GetAllOrdersTestFixture>
         _fixture.ResourceUrl = "orders/paginated";
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
-    public async Task GivenAValidRequestThenPass()
+    [Fact(DisplayName = nameof(GivenAValidRequestThenPassAsync))]
+    public async Task GivenAValidRequestThenPassAsync()
     {
         // Arrange
         var request = GetAllOrdersTestFixture.SetValidRequest();
 
         // Act
         var result = await _fixture.ApiHelper.PostAsync(_fixture.ResourceUrl, request);
-        var response = await ApiHelper.DeSerializeResponse<BasePaginatedResponse<OrderDto>>(result);
+        var response = await ApiHelper.DeSerializeResponseAsync<BasePaginatedResponse<OrderDto>>(result);
 
         // Assert
         Assert.NotNull(result);
@@ -44,52 +44,52 @@ public class GetAllOrdersTest : IClassFixture<GetAllOrdersTestFixture>
         Assert.True(response.TotalRecords >= 0);
     }
 
-    [Fact(DisplayName = nameof(GivenAnInvalidPageRequestThenFails))]
-    public async Task GivenAnInvalidPageRequestThenFails()
+    [Fact(DisplayName = nameof(GivenAnInvalidPageRequestThenFailsAsync))]
+    public async Task GivenAnInvalidPageRequestThenFailsAsync()
     {
         // Arrange
         var request = GetAllOrdersTestFixture.SetInvalidPageRequest();
 
         // Act
         var result = await _fixture.ApiHelper.PostAsync(_fixture.ResourceUrl, request);
-        var response = await ApiHelper.DeSerializeResponse<BasePaginatedResponse<OrderDto>>(result);
+        var response = await ApiHelper.DeSerializeResponseAsync<BasePaginatedResponse<OrderDto>>(result);
 
         // Assert
         Assert.NotNull(result);
         Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
         Assert.False(response!.Success);
-        Assert.Contains("Page must be greater than 0", response.Message);
+        Assert.Contains("Page must be greater than 0", response.Message, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = nameof(GivenAnInvalidPageSizeRequestThenFails))]
-    public async Task GivenAnInvalidPageSizeRequestThenFails()
+    [Fact(DisplayName = nameof(GivenAnInvalidPageSizeRequestThenFailsAsync))]
+    public async Task GivenAnInvalidPageSizeRequestThenFailsAsync()
     {
         // Arrange
         var request = GetAllOrdersTestFixture.SetInvalidPageSizeRequest();
 
         // Act
         var result = await _fixture.ApiHelper.PostAsync(_fixture.ResourceUrl, request);
-        var response = await ApiHelper.DeSerializeResponse<BasePaginatedResponse<OrderDto>>(result);
+        var response = await ApiHelper.DeSerializeResponseAsync<BasePaginatedResponse<OrderDto>>(result);
 
         // Assert
         Assert.NotNull(result);
         Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
         Assert.False(response!.Success);
-        Assert.Contains("PageSize must be between 1 and 100", response.Message);
+        Assert.Contains("PageSize must be between 1 and 100", response.Message, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = nameof(GivenAnValidRequestWhenPassSearchByValuesFilterThenPass))]
-    public async Task GivenAnValidRequestWhenPassSearchByValuesFilterThenPass()
+    [Fact(DisplayName = nameof(GivenAnValidRequestWhenPassSearchByValuesFilterThenPassAsync))]
+    public async Task GivenAnValidRequestWhenPassSearchByValuesFilterThenPassAsync()
     {
         // Arrange
         var request = new BasePaginatedRequest(
             Guid.NewGuid(), 1, 10,
-            SearchByValues: new Dictionary<string, string> { { "Description", "client" } }
+            SearchByValues: new Dictionary<string, string>(StringComparer.Ordinal) { { "Description", "client" } }
         );
 
         // Act
         var result = await _fixture.ApiHelper.PostAsync(_fixture.ResourceUrl, request);
-        var response = await ApiHelper.DeSerializeResponse<BasePaginatedResponse<OrderDto>>(result);
+        var response = await ApiHelper.DeSerializeResponseAsync<BasePaginatedResponse<OrderDto>>(result);
 
         // Assert
         Assert.NotNull(result);

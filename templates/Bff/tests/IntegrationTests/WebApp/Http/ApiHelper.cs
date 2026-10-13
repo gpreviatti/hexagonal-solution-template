@@ -8,12 +8,12 @@ public sealed class ApiHelper(HttpClient httpClient)
 {
     readonly HttpClient _httpClient = httpClient;
 
-    private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
+    private static readonly JsonSerializerOptions s_jsonSerializerOptions = new()
     {
         PropertyNameCaseInsensitive = true
     };
 
-    public void AddHeaders(Dictionary<string, string> headers)
+    public void AddHeaders(IReadOnlyDictionary<string, string> headers)
     {
         foreach (var header in headers)
         {
@@ -44,14 +44,14 @@ public sealed class ApiHelper(HttpClient httpClient)
         return new StringContent(json, Encoding.UTF8, "application/json");
     }
 
-    public static async Task<T?> DeSerializeResponse<T>(HttpResponseMessage response)
+    public static async Task<T?> DeSerializeResponseAsync<T>(HttpResponseMessage response)
     {
         if (response.Content == null)
             return default;
 
         var content = await response.Content.ReadAsStreamAsync();
 
-        return JsonSerializer.Deserialize<T>(content, _jsonSerializerOptions);
+        return await JsonSerializer.DeserializeAsync<T>(content, s_jsonSerializerOptions);
     }
 
     public GrpcChannel AsGrpcClientChannel() => GrpcChannel.ForAddress(_httpClient.BaseAddress!, new GrpcChannelOptions

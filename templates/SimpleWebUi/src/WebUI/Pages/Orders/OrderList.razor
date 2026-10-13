@@ -15,7 +15,7 @@
 <div class="row g-2 mb-3">
     <div class="col-md-4">
         <input class="form-control" type="text" placeholder="Search by description..."
-               @bind="_searchDescription" @bind:event="oninput" @onkeyup="OnSearchKeyUp" />
+               @bind="_searchDescription" @bind:event="oninput" @onkeyup="OnSearchKeyUpAsync" />
     </div>
     <div class="col-auto">
         <button class="btn btn-outline-secondary" @onclick="SearchAsync">
@@ -74,13 +74,13 @@ else
     <nav>
         <ul class="pagination">
             <li class="page-item @(_currentPage <= 1 ? "disabled" : "")">
-                <button class="page-link" @onclick="PreviousPage">Previous</button>
+                <button class="page-link" @onclick="PreviousPageAsync">Previous</button>
             </li>
             <li class="page-item disabled">
                 <span class="page-link">Page @_currentPage of @_totalPages (@_totalRecords total)</span>
             </li>
             <li class="page-item @(_currentPage >= _totalPages ? "disabled" : "")">
-                <button class="page-link" @onclick="NextPage">Next</button>
+                <button class="page-link" @onclick="NextPageAsync">Next</button>
             </li>
         </ul>
     </nav>
