@@ -24,7 +24,7 @@ public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> log
         string requestUri,
         HttpMethod httpMethod,
         TRequest request,
-        Dictionary<string, string>? headers = null,
+        IReadOnlyDictionary<string, string>? headers = null,
         string contentType = "application/json",
         CancellationToken cancellationToken = default
     ) where TRequest : class where TResponse : class
@@ -51,8 +51,11 @@ public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> log
         requestContent.Headers.ContentType = new(contentType);
         requestMessage.Content = requestContent;
 
-        if (headers != null) foreach (var header in headers)
-            requestMessage.Headers.Add(header.Key, header.Value);
+        if (headers != null)
+        {
+            foreach (var header in headers)
+                requestMessage.Headers.Add(header.Key, header.Value);
+        }
 
         using var response = await HttpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseContentRead, cancellationToken);
 
@@ -77,7 +80,7 @@ public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> log
         string requestUri,
         HttpMethod httpMethod,
         CancellationToken cancellationToken,
-        Dictionary<string, string>? headers = null
+        IReadOnlyDictionary<string, string>? headers = null
     ) where TResponse : class
     {
         using var activity = DefaultConfigurations.ActivitySource.StartActivity($"{nameof(BaseHttpService)}.{nameof(SendAsync)}");
@@ -93,8 +96,11 @@ public class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpService> log
             VersionPolicy = HttpVersionPolicy.RequestVersionOrHigher
         };
 
-        if (headers != null) foreach (var header in headers)
-            requestMessage.Headers.Add(header.Key, header.Value);
+        if (headers != null)
+        {
+            foreach (var header in headers)
+                requestMessage.Headers.Add(header.Key, header.Value);
+        }
 
         using var response = await HttpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
 

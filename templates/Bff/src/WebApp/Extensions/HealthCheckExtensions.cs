@@ -26,7 +26,7 @@ internal static class HealthCheckExtensions
         {
             var baseAddress = configuration.GetSection("Http")
                 .GetChildren()
-                .FirstOrDefault(x => x["Name"] == serviceKey.ToString())?["BaseAddress"];
+                .FirstOrDefault(x => string.Equals(x["Name"], serviceKey.ToString(), StringComparison.Ordinal))?["BaseAddress"];
 
             if (!string.IsNullOrEmpty(baseAddress))
             {

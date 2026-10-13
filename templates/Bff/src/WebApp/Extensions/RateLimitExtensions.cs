@@ -17,9 +17,9 @@ internal static class RateLimitExtensions
             {
                 var serviceConfig = configuration.GetSection("Services")
                     .GetChildren()
-                    .FirstOrDefault(x => x["Name"] == serviceKey.ToString());
+                    .FirstOrDefault(x => string.Equals(x["Name"], serviceKey.ToString(), StringComparison.Ordinal));
 
-                if (serviceConfig != null && int.TryParse(serviceConfig["LimitPerMinute"], out int limitPerMinute))
+                if (serviceConfig != null && int.TryParse(serviceConfig["LimitPerMinute"], System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out int limitPerMinute))
                 {
                     services.AddRateLimiter(options =>
                     {
