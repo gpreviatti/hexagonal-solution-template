@@ -4,8 +4,8 @@ namespace E2eTests.WebApp;
 
 public sealed class HomePageTests : BrowserFixture
 {
-    [Fact(DisplayName = nameof(GivenHomePageWhenStartsThenShouldDisplayHomePageContent))]
-    public async Task GivenHomePageWhenStartsThenShouldDisplayHomePageContent()
+    [Fact(DisplayName = nameof(GivenHomePageWhenStartsThenShouldDisplayHomePageContentAsync))]
+    public async Task GivenHomePageWhenStartsThenShouldDisplayHomePageContentAsync()
     {
         // Arrange, Act, Assert
         var heading = await Page.TextContentAsync("title");

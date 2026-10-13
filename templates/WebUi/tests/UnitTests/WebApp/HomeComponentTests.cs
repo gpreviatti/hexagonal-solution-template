@@ -25,7 +25,7 @@ public sealed class HomeComponentTests(HomeComponentTestFixture fixture) : IClas
         var component = _fixture.Render<Home>();
 
         // Assert
-        component.Markup.Contains("Hexagonal Web UI Dashboard");
-        component.FindComponent<PageTitle>().Markup.Contains("Home");
+        Assert.Contains("Hexagonal Web UI Dashboard", component.Markup, StringComparison.Ordinal);
+        Assert.Contains("Home", component.FindComponent<PageTitle>().Markup, StringComparison.Ordinal);
     }
 }
