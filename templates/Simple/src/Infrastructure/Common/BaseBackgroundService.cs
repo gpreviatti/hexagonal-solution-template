@@ -15,16 +15,16 @@ internal abstract class BaseBackgroundService<TService>(
     protected readonly ILogger<BaseBackgroundService<TService>> logger = logger;
     protected readonly IConfiguration configuration = configuration;
 
-    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         try
         {
             using var scope = serviceScopeFactory.CreateScope();
 
-            await ExecuteInternalAsync(scope.ServiceProvider, cancellationToken);
+            await ExecuteInternalAsync(scope.ServiceProvider, stoppingToken);
 
-            while (!cancellationToken.IsCancellationRequested)
-                await Task.Delay(10000, cancellationToken);
+            while (!stoppingToken.IsCancellationRequested)
+                await Task.Delay(10000, stoppingToken);
         }
         catch (Exception ex)
         {

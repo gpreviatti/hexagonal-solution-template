@@ -5,7 +5,7 @@ namespace UnitTests.Architecture;
 
 internal static class ArchitectureTestHelper
 {
-    private static readonly string _repositoryRoot = FindRepositoryRoot();
+    private static readonly string s_repositoryRoot = FindRepositoryRoot();
 
     public static void AssertClassNamesDoNotEndWith(Assembly assembly, params string[] forbiddenSuffixes)
     {
@@ -72,7 +72,7 @@ internal static class ArchitectureTestHelper
 
     public static void AssertProjectReferences(string projectRelativePath, params string[] expectedProjectRelativePaths)
     {
-        var projectFilePath = Path.Combine(_repositoryRoot, projectRelativePath);
+        var projectFilePath = Path.Combine(s_repositoryRoot, projectRelativePath);
 
         Assert.True(File.Exists(projectFilePath), $"The project file '{projectFilePath}' was not found.");
 
@@ -89,7 +89,7 @@ internal static class ArchitectureTestHelper
             .ToArray();
 
         var expectedReferences = expectedProjectRelativePaths
-            .Select(relativePath => NormalizePath(Path.GetFullPath(Path.Combine(_repositoryRoot, relativePath))))
+            .Select(relativePath => NormalizePath(Path.GetFullPath(Path.Combine(s_repositoryRoot, relativePath))))
             .OrderBy(static path => path, StringComparer.OrdinalIgnoreCase)
             .ToArray();
 
