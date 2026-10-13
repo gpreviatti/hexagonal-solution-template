@@ -46,6 +46,7 @@ public static class PlaywrightExtensions
     /// Wait for the main heading (h1) to be present, indicating that the page has loaded. This is a common pattern for our pages, but can be customized as needed.
     /// </summary>
     /// <param name="page"></param>
+    /// <param name="timeoutMs">Optional timeout in milliseconds</param>
     /// <returns></returns>
     public static async Task WaitForPageLoadAsync(this IPage page, int timeoutMs = 10000) => await page.WaitForSelectorAsync("h1", new() { Timeout = timeoutMs });
 
@@ -67,7 +68,7 @@ public static class PlaywrightExtensions
     /// Wait for the form to be ready by waiting for the submit button to be present. This is a common pattern for our forms, but can be customized as needed.
     /// </summary>
     /// <param name="page"></param>
-    /// <param name="timeoutMs"></param>
+    /// <param name="timeoutMs">Optional timeout in milliseconds</param>
     /// <returns></returns>
     public static async Task WaitForFormAsync(this IPage page, int timeoutMs = 10000) => await page.WaitForSelectorAsync(Selectors.ButtonSubmit, new() { Timeout = timeoutMs });
 
@@ -75,7 +76,7 @@ public static class PlaywrightExtensions
     /// Check if the main table is visible on the page. This can be used to verify that data is being displayed correctly. The selector can be customized as needed.
     /// </summary>
     /// <param name="page"></param>
-    /// <param name="timeoutMs"></param>
+    /// <param name="timeoutMs">Optional timeout in milliseconds</param>
     /// <returns></returns>
     public static async Task<bool> IsTableVisibleAsync(this IPage page, int timeoutMs = 10000)
     {
@@ -94,7 +95,7 @@ public static class PlaywrightExtensions
     /// Check if the empty state message is visible on the page. This can be used to verify that the correct message is shown when there is no data. The implementation can be customized as needed based on how the empty state is rendered in the application.
     /// </summary>
     /// <param name="page"></param>
-    /// <param name="timeoutMs"></param>
+    /// <param name="timeoutMs">Optional timeout in milliseconds</param>
     /// <returns></returns>
     public static async Task<bool> IsOrderCardVisibleAsync(this IPage page, int timeoutMs = 10000)
     {

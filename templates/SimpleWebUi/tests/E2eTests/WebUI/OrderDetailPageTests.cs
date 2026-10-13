@@ -20,20 +20,20 @@ public sealed class OrderDetailPageTests(OrderDetailPageFixture fixture) : IClas
 {
     private readonly OrderDetailPageFixture _fixture = fixture;
 
-    [Fact(DisplayName = nameof(GivenOrderDetailPageWhenNavigatingWithValidIdThenHeadingContainsOrderId))]
-    public async Task GivenOrderDetailPageWhenNavigatingWithValidIdThenHeadingContainsOrderId()
+    [Fact(DisplayName = nameof(GivenOrderDetailPageWhenNavigatingWithValidIdThenHeadingContainsOrderIdAsync))]
+    public async Task GivenOrderDetailPageWhenNavigatingWithValidIdThenHeadingContainsOrderIdAsync()
     {
         await _fixture.NavigateToFirstOrderAsync();
         await _fixture.Page.WaitForPageLoadAsync();
 
         var heading = await _fixture.Page.GetHeadingTextAsync();
 
-        Assert.Contains("Order", heading);
-        Assert.Contains("#", heading);
+        Assert.Contains("Order", heading, StringComparison.Ordinal);
+        Assert.Contains("#", heading, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = nameof(GivenOrderDetailPageWhenLoadedThenOrderCardIsVisible))]
-    public async Task GivenOrderDetailPageWhenLoadedThenOrderCardIsVisible()
+    [Fact(DisplayName = nameof(GivenOrderDetailPageWhenLoadedThenOrderCardIsVisibleAsync))]
+    public async Task GivenOrderDetailPageWhenLoadedThenOrderCardIsVisibleAsync()
     {
         await _fixture.NavigateToFirstOrderAsync();
         await _fixture.Page.WaitForPageLoadAsync();
@@ -43,21 +43,21 @@ public sealed class OrderDetailPageTests(OrderDetailPageFixture fixture) : IClas
         Assert.True(cardVisible, "Order details card should be visible");
     }
 
-    [Fact(DisplayName = nameof(GivenOrderDetailPageWhenLoadedThenDescriptionTotalAndCreatedArePresent))]
-    public async Task GivenOrderDetailPageWhenLoadedThenDescriptionTotalAndCreatedArePresent()
+    [Fact(DisplayName = nameof(GivenOrderDetailPageWhenLoadedThenDescriptionTotalAndCreatedArePresentAsync))]
+    public async Task GivenOrderDetailPageWhenLoadedThenDescriptionTotalAndCreatedArePresentAsync()
     {
         await _fixture.NavigateToFirstOrderAsync();
         await _fixture.Page.WaitForPageLoadAsync();
 
         var bodyText = await _fixture.Page.TextContentAsync("body");
 
-        Assert.Contains("Description", bodyText);
-        Assert.Contains("Total", bodyText);
-        Assert.Contains("Created", bodyText);
+        Assert.Contains("Description", bodyText, StringComparison.Ordinal);
+        Assert.Contains("Total", bodyText, StringComparison.Ordinal);
+        Assert.Contains("Created", bodyText, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = nameof(GivenOrderDetailPageWhenLoadedThenEitherItemsTableOrNoItemsTextIsShown))]
-    public async Task GivenOrderDetailPageWhenLoadedThenEitherItemsTableOrNoItemsTextIsShown()
+    [Fact(DisplayName = nameof(GivenOrderDetailPageWhenLoadedThenEitherItemsTableOrNoItemsTextIsShownAsync))]
+    public async Task GivenOrderDetailPageWhenLoadedThenEitherItemsTableOrNoItemsTextIsShownAsync()
     {
         await _fixture.NavigateToFirstOrderAsync();
         await _fixture.Page.WaitForPageLoadAsync();
@@ -69,19 +69,19 @@ public sealed class OrderDetailPageTests(OrderDetailPageFixture fixture) : IClas
         Assert.True(hasRows || hasNoItemsText, "Either items table or 'No items.' text must be shown");
     }
 
-    [Fact(DisplayName = nameof(GivenOrderDetailPageWhenBackButtonClickedThenNavigatesToOrderList))]
-    public async Task GivenOrderDetailPageWhenBackButtonClickedThenNavigatesToOrderList()
+    [Fact(DisplayName = nameof(GivenOrderDetailPageWhenBackButtonClickedThenNavigatesToOrderListAsync))]
+    public async Task GivenOrderDetailPageWhenBackButtonClickedThenNavigatesToOrderListAsync()
     {
         await _fixture.NavigateToFirstOrderAsync();
         await _fixture.Page.WaitForPageLoadAsync();
 
         await _fixture.Page.ClickAndWaitForLoadAsync(Selectors.LinkButtonOutlineSecondary);
 
-        Assert.EndsWith("/orders", _fixture.Page.Url);
+        Assert.EndsWith("/orders", _fixture.Page.Url, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = nameof(GivenOrderDetailPageWhenEditButtonClickedThenNavigatesToEditPage))]
-    public async Task GivenOrderDetailPageWhenEditButtonClickedThenNavigatesToEditPage()
+    [Fact(DisplayName = nameof(GivenOrderDetailPageWhenEditButtonClickedThenNavigatesToEditPageAsync))]
+    public async Task GivenOrderDetailPageWhenEditButtonClickedThenNavigatesToEditPageAsync()
     {
         await _fixture.NavigateToFirstOrderAsync();
         await _fixture.Page.WaitForPageLoadAsync();
@@ -91,8 +91,8 @@ public sealed class OrderDetailPageTests(OrderDetailPageFixture fixture) : IClas
         Assert.Matches(@"/orders/\d+/edit$", _fixture.Page.Url);
     }
 
-    [Fact(DisplayName = nameof(GivenOrderDetailPageWhenNavigatingToInvalidIdThenErrorIsShown))]
-    public async Task GivenOrderDetailPageWhenNavigatingToInvalidIdThenErrorIsShown()
+    [Fact(DisplayName = nameof(GivenOrderDetailPageWhenNavigatingToInvalidIdThenErrorIsShownAsync))]
+    public async Task GivenOrderDetailPageWhenNavigatingToInvalidIdThenErrorIsShownAsync()
     {
         await _fixture.Page.NavigateAsync($"{_fixture.WebAppUrl}/orders/99999");
         await _fixture.Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
@@ -103,8 +103,8 @@ public sealed class OrderDetailPageTests(OrderDetailPageFixture fixture) : IClas
         Assert.True(errorVisible || !cardVisible, "An error should be shown for a non-existent order");
     }
 
-    [Fact(DisplayName = nameof(GivenOrderDetailPageWhenLoadedThenDeleteButtonIsPresent))]
-    public async Task GivenOrderDetailPageWhenLoadedThenDeleteButtonIsPresent()
+    [Fact(DisplayName = nameof(GivenOrderDetailPageWhenLoadedThenDeleteButtonIsPresentAsync))]
+    public async Task GivenOrderDetailPageWhenLoadedThenDeleteButtonIsPresentAsync()
     {
         await _fixture.NavigateToFirstOrderAsync();
         await _fixture.Page.WaitForPageLoadAsync();

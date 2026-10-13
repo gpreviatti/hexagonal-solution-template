@@ -4,7 +4,7 @@ namespace UnitTests.Architecture;
 
 public sealed class InfrastructureTests
 {
-    private static readonly System.Reflection.Assembly _assembly = typeof(InfrastructureDependencyInjection).Assembly;
+    private static readonly System.Reflection.Assembly s_assembly = typeof(InfrastructureDependencyInjection).Assembly;
 
     [Theory(DisplayName = nameof(GivenTheInfrastructureAssemblyWhenCheckingForbiddenClassSuffixesThenItShouldRespectTheAdapterNaming))]
     [InlineData("UseCase")]
@@ -13,13 +13,13 @@ public sealed class InfrastructureTests
     [InlineData("Response")]
     [InlineData("Endpoint")]
     [InlineData("Controller")]
-    public void GivenTheInfrastructureAssemblyWhenCheckingForbiddenClassSuffixesThenItShouldRespectTheAdapterNaming(string forbiddenSuffix) => ArchitectureTestHelper.AssertClassNamesDoNotEndWith(_assembly, forbiddenSuffix);
+    public void GivenTheInfrastructureAssemblyWhenCheckingForbiddenClassSuffixesThenItShouldRespectTheAdapterNaming(string forbiddenSuffix) => ArchitectureTestHelper.AssertClassNamesDoNotEndWith(s_assembly, forbiddenSuffix);
 
     [Fact(DisplayName = nameof(GivenTheInfrastructureAssemblyWhenCheckingForbiddenDependenciesThenItShouldNotReferenceTheWebLayer))]
-    public void GivenTheInfrastructureAssemblyWhenCheckingForbiddenDependenciesThenItShouldNotReferenceTheWebLayer() => ArchitectureTestHelper.AssertAssemblyDoesNotReference(_assembly, "WebUi");
+    public void GivenTheInfrastructureAssemblyWhenCheckingForbiddenDependenciesThenItShouldNotReferenceTheWebLayer() => ArchitectureTestHelper.AssertAssemblyDoesNotReference(s_assembly, "WebUi");
 
     [Fact(DisplayName = nameof(GivenTheInfrastructureAssemblyWhenCheckingNamespacesThenAllTypesShouldRemainInsideTheInfrastructureRoot))]
-    public void GivenTheInfrastructureAssemblyWhenCheckingNamespacesThenAllTypesShouldRemainInsideTheInfrastructureRoot() => ArchitectureTestHelper.AssertNamespacesStartWith(_assembly, nameof(Infrastructure));
+    public void GivenTheInfrastructureAssemblyWhenCheckingNamespacesThenAllTypesShouldRemainInsideTheInfrastructureRoot() => ArchitectureTestHelper.AssertNamespacesStartWith(s_assembly, nameof(Infrastructure));
 
     [Fact(DisplayName = nameof(GivenTheInfrastructureProjectWhenCheckingProjectReferencesThenItShouldOnlyReferenceTheCoreProject))]
     public void GivenTheInfrastructureProjectWhenCheckingProjectReferencesThenItShouldOnlyReferenceTheCoreProject() => ArchitectureTestHelper.AssertProjectReferences(

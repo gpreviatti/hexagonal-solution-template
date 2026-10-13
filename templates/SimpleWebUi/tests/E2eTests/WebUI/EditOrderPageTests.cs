@@ -22,19 +22,19 @@ public sealed class EditOrderPageTests(EditOrderPageFixture fixture) : IClassFix
 {
     private readonly EditOrderPageFixture _fixture = fixture;
 
-    [Fact(DisplayName = nameof(GivenEditOrderPageWhenNavigatingThenHeadingContainsEditOrder))]
-    public async Task GivenEditOrderPageWhenNavigatingThenHeadingContainsEditOrder()
+    [Fact(DisplayName = nameof(GivenEditOrderPageWhenNavigatingThenHeadingContainsEditOrderAsync))]
+    public async Task GivenEditOrderPageWhenNavigatingThenHeadingContainsEditOrderAsync()
     {
         await _fixture.NavigateToFirstOrderEditAsync();
         await _fixture.Page.WaitForPageLoadAsync();
 
         var heading = await _fixture.Page.GetHeadingTextAsync();
 
-        Assert.Contains("Edit Order", heading);
+        Assert.Contains("Edit Order", heading, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = nameof(GivenEditOrderPageWhenLoadedThenDescriptionIsPrePopulated))]
-    public async Task GivenEditOrderPageWhenLoadedThenDescriptionIsPrePopulated()
+    [Fact(DisplayName = nameof(GivenEditOrderPageWhenLoadedThenDescriptionIsPrePopulatedAsync))]
+    public async Task GivenEditOrderPageWhenLoadedThenDescriptionIsPrePopulatedAsync()
     {
         await _fixture.NavigateToFirstOrderEditAsync();
         await _fixture.Page.WaitForFormAsync();
@@ -44,8 +44,8 @@ public sealed class EditOrderPageTests(EditOrderPageFixture fixture) : IClassFix
         Assert.False(string.IsNullOrWhiteSpace(description), "Description field should be pre-populated");
     }
 
-    [Fact(DisplayName = nameof(GivenEditOrderPageWhenLoadedThenItemRowsArePresent))]
-    public async Task GivenEditOrderPageWhenLoadedThenItemRowsArePresent()
+    [Fact(DisplayName = nameof(GivenEditOrderPageWhenLoadedThenItemRowsArePresentAsync))]
+    public async Task GivenEditOrderPageWhenLoadedThenItemRowsArePresentAsync()
     {
         await _fixture.NavigateToFirstOrderEditAsync();
         await _fixture.Page.WaitForFormAsync();
@@ -55,8 +55,8 @@ public sealed class EditOrderPageTests(EditOrderPageFixture fixture) : IClassFix
         Assert.True(count >= 1, "At least one item row should be present");
     }
 
-    [Fact(DisplayName = nameof(GivenEditOrderPageWhenLoadedThenAddItemButtonIsPresent))]
-    public async Task GivenEditOrderPageWhenLoadedThenAddItemButtonIsPresent()
+    [Fact(DisplayName = nameof(GivenEditOrderPageWhenLoadedThenAddItemButtonIsPresentAsync))]
+    public async Task GivenEditOrderPageWhenLoadedThenAddItemButtonIsPresentAsync()
     {
         await _fixture.NavigateToFirstOrderEditAsync();
         await _fixture.Page.WaitForFormAsync();
@@ -66,8 +66,8 @@ public sealed class EditOrderPageTests(EditOrderPageFixture fixture) : IClassFix
         Assert.NotNull(button);
     }
 
-    [Fact(DisplayName = nameof(GivenAddItemClickThenNewRowAppears))]
-    public async Task GivenAddItemClickThenNewRowAppears()
+    [Fact(DisplayName = nameof(GivenAddItemClickThenNewRowAppearsAsync))]
+    public async Task GivenAddItemClickThenNewRowAppearsAsync()
     {
         await _fixture.NavigateToFirstOrderEditAsync();
         await _fixture.Page.WaitForFormAsync();
@@ -80,8 +80,8 @@ public sealed class EditOrderPageTests(EditOrderPageFixture fixture) : IClassFix
         Assert.Equal(beforeCount + 1, afterCount);
     }
 
-    [Fact(DisplayName = nameof(GivenValidFormWhenSubmittedThenNavigatesToOrdersList))]
-    public async Task GivenValidFormWhenSubmittedThenNavigatesToOrdersList()
+    [Fact(DisplayName = nameof(GivenValidFormWhenSubmittedThenNavigatesToOrdersListAsync))]
+    public async Task GivenValidFormWhenSubmittedThenNavigatesToOrdersListAsync()
     {
         await _fixture.NavigateToFirstOrderEditAsync();
         await _fixture.Page.WaitForFormAsync();
@@ -95,11 +95,11 @@ public sealed class EditOrderPageTests(EditOrderPageFixture fixture) : IClassFix
         await _fixture.Page.ClickSubmitAsync();
         await _fixture.Page.WaitForURLAsync("**/orders", new() { Timeout = 10000 });
 
-        Assert.EndsWith("/orders", _fixture.Page.Url);
+        Assert.EndsWith("/orders", _fixture.Page.Url, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = nameof(GivenBackButtonClickThenNavigatesToOrderDetail))]
-    public async Task GivenBackButtonClickThenNavigatesToOrderDetail()
+    [Fact(DisplayName = nameof(GivenBackButtonClickThenNavigatesToOrderDetailAsync))]
+    public async Task GivenBackButtonClickThenNavigatesToOrderDetailAsync()
     {
         await _fixture.NavigateToFirstOrderEditAsync();
         await _fixture.Page.WaitForFormAsync();
@@ -109,8 +109,8 @@ public sealed class EditOrderPageTests(EditOrderPageFixture fixture) : IClassFix
         Assert.Matches(@"/orders/\d+$", _fixture.Page.Url);
     }
 
-    [Fact(DisplayName = nameof(GivenEditOrderPageWhenNavigatingToInvalidIdThenErrorOrLoadingIsShown))]
-    public async Task GivenEditOrderPageWhenNavigatingToInvalidIdThenErrorOrLoadingIsShown()
+    [Fact(DisplayName = nameof(GivenEditOrderPageWhenNavigatingToInvalidIdThenErrorOrLoadingIsShownAsync))]
+    public async Task GivenEditOrderPageWhenNavigatingToInvalidIdThenErrorOrLoadingIsShownAsync()
     {
         await _fixture.Page.NavigateAsync($"{_fixture.WebAppUrl}/orders/{int.MaxValue}/edit");
         await _fixture.Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
@@ -121,8 +121,8 @@ public sealed class EditOrderPageTests(EditOrderPageFixture fixture) : IClassFix
         Assert.True(errorVisible || !formVisible, "An error should be shown for a non-existent order");
     }
 
-    [Fact(DisplayName = nameof(GivenOneItemWhenLoadedThenRemoveButtonIsHidden))]
-    public async Task GivenOneItemWhenLoadedThenRemoveButtonIsHidden()
+    [Fact(DisplayName = nameof(GivenOneItemWhenLoadedThenRemoveButtonIsHiddenAsync))]
+    public async Task GivenOneItemWhenLoadedThenRemoveButtonIsHiddenAsync()
     {
         await _fixture.NavigateToFirstOrderEditAsync();
         await _fixture.Page.WaitForFormAsync();

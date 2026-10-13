@@ -61,8 +61,8 @@ public sealed class OrderDetailTests : IClassFixture<OrderDetailFixture>
 
         var component = _fixture.Render<OrderDetail>(p => p.Add(c => c.Id, 42));
 
-        Assert.Contains("Test Order", component.Markup);
-        Assert.Contains("2 days ago", component.Markup);
+        Assert.Contains("Test Order", component.Markup, StringComparison.Ordinal);
+        Assert.Contains("2 days ago", component.Markup, StringComparison.Ordinal);
     }
 
     [Fact(DisplayName = nameof(GivenOrderWithItemsThenItemsTableIsRendered))]
@@ -72,8 +72,8 @@ public sealed class OrderDetailTests : IClassFixture<OrderDetailFixture>
 
         var component = _fixture.Render<OrderDetail>(p => p.Add(c => c.Id, 1));
 
-        Assert.Contains("Widget", component.Markup);
-        Assert.Contains("A widget", component.Markup);
+        Assert.Contains("Widget", component.Markup, StringComparison.Ordinal);
+        Assert.Contains("A widget", component.Markup, StringComparison.Ordinal);
     }
 
     [Fact(DisplayName = nameof(GivenOrderWithNoItemsThenNoItemsTextIsShown))]
@@ -83,7 +83,7 @@ public sealed class OrderDetailTests : IClassFixture<OrderDetailFixture>
 
         var component = _fixture.Render<OrderDetail>(p => p.Add(c => c.Id, 1));
 
-        Assert.Contains("No items.", component.Markup);
+        Assert.Contains("No items.", component.Markup, StringComparison.Ordinal);
     }
 
     [Fact(DisplayName = nameof(GivenLoadFailsThenErrorAlertIsShown))]
@@ -95,7 +95,7 @@ public sealed class OrderDetailTests : IClassFixture<OrderDetailFixture>
 
         var component = _fixture.Render<OrderDetail>(p => p.Add(c => c.Id, 99));
 
-        Assert.Contains("Not found", component.Markup);
+        Assert.Contains("Not found", component.Markup, StringComparison.Ordinal);
     }
 
     [Fact(DisplayName = nameof(GivenConfirmDeleteThenNavigatesToOrders))]
@@ -114,7 +114,7 @@ public sealed class OrderDetailTests : IClassFixture<OrderDetailFixture>
         dialog.Find(Selectors.ButtonDanger).Click();
 
         var nav = _fixture.Services.GetRequiredService<BunitNavigationManager>();
-        Assert.EndsWith("/orders", nav.Uri);
+        Assert.EndsWith("/orders", nav.Uri, StringComparison.Ordinal);
     }
 
     [Fact(DisplayName = nameof(GivenDeleteFailsThenErrorAlertIsShown))]
@@ -132,6 +132,6 @@ public sealed class OrderDetailTests : IClassFixture<OrderDetailFixture>
         dialog.Render();
         dialog.Find(Selectors.ButtonDanger).Click();
 
-        Assert.Contains("Cannot delete", component.Markup);
+        Assert.Contains("Cannot delete", component.Markup, StringComparison.Ordinal);
     }
 }

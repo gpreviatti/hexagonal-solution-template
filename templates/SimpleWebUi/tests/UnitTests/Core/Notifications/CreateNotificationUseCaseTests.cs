@@ -28,8 +28,8 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
         _fixture.ClearInvocations();
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
-    public async Task GivenAValidRequestThenPass()
+    [Fact(DisplayName = nameof(GivenAValidRequestThenPassAsync))]
+    public async Task GivenAValidRequestThenPassAsync()
     {
         // Arrange
         var request = CreateNotificationUseCaseFixture.SetValidRequest();
@@ -45,8 +45,8 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
         _fixture.MockRepository.VerifyAddAsync<Notification>(1);
     }
 
-    [Fact(DisplayName = nameof(GivenAnInvalidRequestThenFails))]
-    public async Task GivenAnInvalidRequestThenFails()
+    [Fact(DisplayName = nameof(GivenAnInvalidRequestThenFailsAsync))]
+    public async Task GivenAnInvalidRequestThenFailsAsync()
     {
         // Arrange
         var request = CreateNotificationUseCaseFixture.SetInvalidRequest();
@@ -61,8 +61,8 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
         _fixture.MockRepository.VerifyAddAsync<Notification>(0);
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWhenRepositoryFailsThenFails))]
-    public async Task GivenAValidRequestWhenRepositoryFailsThenFails()
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenRepositoryFailsThenFailsAsync))]
+    public async Task GivenAValidRequestWhenRepositoryFailsThenFailsAsync()
     {
         // Arrange
         var request = CreateNotificationUseCaseFixture.SetValidRequest();
@@ -78,8 +78,8 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
         _fixture.MockRepository.VerifyAddAsync<Notification>(1);
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWhenRepositoryFailsThenShouldLogExactFailureMessage))]
-    public async Task GivenAValidRequestWhenRepositoryFailsThenShouldLogExactFailureMessage()
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenRepositoryFailsThenShouldLogExactFailureMessageAsync))]
+    public async Task GivenAValidRequestWhenRepositoryFailsThenShouldLogExactFailureMessageAsync()
     {
         // Arrange
         var request = CreateNotificationUseCaseFixture.SetValidRequest();
@@ -92,8 +92,8 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
         _fixture.MockLogger.VerifyWarning("Failed to create notification. No rows affected.");
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWithSuccessStatusThenShouldCreateNotification))]
-    public async Task GivenAValidRequestWithSuccessStatusThenShouldCreateNotification()
+    [Fact(DisplayName = nameof(GivenAValidRequestWithSuccessStatusThenShouldCreateNotificationAsync))]
+    public async Task GivenAValidRequestWithSuccessStatusThenShouldCreateNotificationAsync()
     {
         // Arrange
         var request = new CreateNotificationRequest(
@@ -114,8 +114,8 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
         _fixture.MockRepository.VerifyAddAsync<Notification>(1);
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWithDifferentStatusesThenShouldHandleAllStatuses))]
-    public async Task GivenAValidRequestWithDifferentStatusesThenShouldHandleAllStatuses()
+    [Fact(DisplayName = nameof(GivenAValidRequestWithDifferentStatusesThenShouldHandleAllStatusesAsync))]
+    public async Task GivenAValidRequestWithDifferentStatusesThenShouldHandleAllStatusesAsync()
     {
         // Test that different statuses are handled correctly
         var statuses = new[] { NotificationStatus.Pending, NotificationStatus.Success, NotificationStatus.Failed };
@@ -142,8 +142,8 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
         }
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWithNullMessageThenShouldStoreEmptyString))]
-    public async Task GivenAValidRequestWithNullMessageThenShouldStoreEmptyString()
+    [Fact(DisplayName = nameof(GivenAValidRequestWithNullMessageThenShouldStoreEmptyStringAsync))]
+    public async Task GivenAValidRequestWithNullMessageThenShouldStoreEmptyStringAsync()
     {
         // Arrange
         var request = new CreateNotificationRequest(
@@ -164,8 +164,8 @@ public sealed class CreateNotificationUseCaseTests : IClassFixture<CreateNotific
         _fixture.MockRepository.VerifyAddAsync<Notification>(1);
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWithObjectMessageThenShouldSerializeToJson))]
-    public async Task GivenAValidRequestWithObjectMessageThenShouldSerializeToJson()
+    [Fact(DisplayName = nameof(GivenAValidRequestWithObjectMessageThenShouldSerializeToJsonAsync))]
+    public async Task GivenAValidRequestWithObjectMessageThenShouldSerializeToJsonAsync()
     {
         // Arrange
         var messageObject = new { OrderId = 456, Status = "Completed", Amount = 1500.50 };

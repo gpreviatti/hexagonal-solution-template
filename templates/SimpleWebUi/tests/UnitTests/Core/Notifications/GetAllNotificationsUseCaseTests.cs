@@ -28,8 +28,8 @@ public sealed class GetAllNotificationsUseCaseTests : IClassFixture<GetAllNotifi
         _fixture.ClearInvocations();
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
-    public async Task GivenAValidRequestThenPass()
+    [Fact(DisplayName = nameof(GivenAValidRequestThenPassAsync))]
+    public async Task GivenAValidRequestThenPassAsync()
     {
         // Arrange
         var totalRecords = 5;
@@ -55,8 +55,8 @@ public sealed class GetAllNotificationsUseCaseTests : IClassFixture<GetAllNotifi
         _fixture.MockLogger.VerifyFinishOperation();
     }
 
-    [Fact(DisplayName = nameof(GivenAnInvalidRequestThenFails))]
-    public async Task GivenAnInvalidRequestThenFails()
+    [Fact(DisplayName = nameof(GivenAnInvalidRequestThenFailsAsync))]
+    public async Task GivenAnInvalidRequestThenFailsAsync()
     {
         // Arrange
         var request = GetAllNotificationsUseCaseFixture.SetInvalidBasePaginatedRequest();
@@ -74,8 +74,8 @@ public sealed class GetAllNotificationsUseCaseTests : IClassFixture<GetAllNotifi
         _fixture.MockLogger.VerifyFinishOperation(0);
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestWhenNoNotificationsFoundThenFails))]
-    public async Task GivenAValidRequestWhenNoNotificationsFoundThenFails()
+    [Fact(DisplayName = nameof(GivenAValidRequestWhenNoNotificationsFoundThenFailsAsync))]
+    public async Task GivenAValidRequestWhenNoNotificationsFoundThenFailsAsync()
     {
         // Arrange
         var request = GetAllNotificationsUseCaseFixture.SetValidBasePaginatedRequest();

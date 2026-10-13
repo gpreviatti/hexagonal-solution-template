@@ -31,7 +31,6 @@ public sealed class OrderTests
         // Act
         var result = Order.Create("Amazing Computer", items, "John Doe", "America/New_York");
         var order = result.Value;
-        var initialUpdatedAt = order.UpdatedAt;
 
         // Assert
         Assert.NotNull(result);
@@ -63,7 +62,6 @@ public sealed class OrderTests
         // Act
         var result = Order.Create("Amazing Computer", items);
         var order = result.Value;
-        var initialUpdatedAt = order.UpdatedAt;
 
         // Assert
         Assert.NotNull(result);
@@ -145,7 +143,7 @@ public sealed class OrderTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.EndsWith(expectedUnit, result);
+        Assert.EndsWith(expectedUnit, result, StringComparison.Ordinal);
     }
 
     [Theory(DisplayName = nameof(GivenANewOrderWhenRequestingPeriodBoundaryThenShouldReturnExpectedUnit))]
@@ -177,7 +175,7 @@ public sealed class OrderTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.Contains(expectedUnit, result);
+        Assert.Contains(expectedUnit, result, StringComparison.Ordinal);
     }
 
     [Fact(DisplayName = nameof(GivenANewOrderWithExact60SecondsBoundaryThenShouldReturnMinutes))]
@@ -189,8 +187,8 @@ public sealed class OrderTests
 
             var result = order.GetPeriodSinceWasCreated();
 
-            Assert.DoesNotContain("seconds ago", result);
-            Assert.Contains("minutes ago", result);
+            Assert.DoesNotContain("seconds ago", result, StringComparison.Ordinal);
+            Assert.Contains("minutes ago", result, StringComparison.Ordinal);
         }
     }
 
@@ -203,8 +201,8 @@ public sealed class OrderTests
 
             var result = order.GetPeriodSinceWasCreated();
 
-            Assert.DoesNotContain("minutes ago", result);
-            Assert.Contains("hours ago", result);
+            Assert.DoesNotContain("minutes ago", result, StringComparison.Ordinal);
+            Assert.Contains("hours ago", result, StringComparison.Ordinal);
         }
     }
 
@@ -217,8 +215,8 @@ public sealed class OrderTests
 
             var result = order.GetPeriodSinceWasCreated();
 
-            Assert.DoesNotContain("hours ago", result);
-            Assert.Contains("days ago", result);
+            Assert.DoesNotContain("hours ago", result, StringComparison.Ordinal);
+            Assert.Contains("days ago", result, StringComparison.Ordinal);
         }
     }
 
@@ -231,8 +229,8 @@ public sealed class OrderTests
 
             var result = order.GetPeriodSinceWasCreated();
 
-            Assert.DoesNotContain("days ago", result);
-            Assert.Contains("months ago", result);
+            Assert.DoesNotContain("days ago", result, StringComparison.Ordinal);
+            Assert.Contains("months ago", result, StringComparison.Ordinal);
         }
     }
 
@@ -245,8 +243,8 @@ public sealed class OrderTests
 
             var result = order.GetPeriodSinceWasCreated();
 
-            Assert.DoesNotContain("months ago", result);
-            Assert.Contains("years ago", result);
+            Assert.DoesNotContain("months ago", result, StringComparison.Ordinal);
+            Assert.Contains("years ago", result, StringComparison.Ordinal);
         }
     }
 

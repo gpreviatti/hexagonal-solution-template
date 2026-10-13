@@ -18,8 +18,8 @@ public sealed class OrderListPageTests(OrderListPageFixture fixture) : IClassFix
     private readonly OrderListPageFixture _fixture = fixture;
 
 
-    [Fact(DisplayName = nameof(GivenOrdersPageWhenNavigatingThenHeadingIsOrders))]
-    public async Task GivenOrdersPageWhenNavigatingThenHeadingIsOrders()
+    [Fact(DisplayName = nameof(GivenOrdersPageWhenNavigatingThenHeadingIsOrdersAsync))]
+    public async Task GivenOrdersPageWhenNavigatingThenHeadingIsOrdersAsync()
     {
         await _fixture.NavigateToOrdersAsync();
         await _fixture.Page.WaitForPageLoadAsync();
@@ -29,8 +29,8 @@ public sealed class OrderListPageTests(OrderListPageFixture fixture) : IClassFix
         Assert.Equal("Orders", heading);
     }
 
-    [Fact(DisplayName = nameof(GivenOrdersPageWhenLoadedThenNewOrderButtonIsPresent))]
-    public async Task GivenOrdersPageWhenLoadedThenNewOrderButtonIsPresent()
+    [Fact(DisplayName = nameof(GivenOrdersPageWhenLoadedThenNewOrderButtonIsPresentAsync))]
+    public async Task GivenOrdersPageWhenLoadedThenNewOrderButtonIsPresentAsync()
     {
         await _fixture.NavigateToOrdersAsync();
         await _fixture.Page.WaitForPageLoadAsync();
@@ -40,8 +40,8 @@ public sealed class OrderListPageTests(OrderListPageFixture fixture) : IClassFix
         Assert.NotNull(button);
     }
 
-    [Fact(DisplayName = nameof(GivenOrdersPageWhenLoadedThenEitherTableOrEmptyStateIsShown))]
-    public async Task GivenOrdersPageWhenLoadedThenEitherTableOrEmptyStateIsShown()
+    [Fact(DisplayName = nameof(GivenOrdersPageWhenLoadedThenEitherTableOrEmptyStateIsShownAsync))]
+    public async Task GivenOrdersPageWhenLoadedThenEitherTableOrEmptyStateIsShownAsync()
     {
         await _fixture.NavigateToOrdersAsync();
         await _fixture.Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
@@ -52,8 +52,8 @@ public sealed class OrderListPageTests(OrderListPageFixture fixture) : IClassFix
         Assert.True(tableVisible || emptyVisible, "Either the orders table or empty state must be shown");
     }
 
-    [Fact(DisplayName = nameof(GivenOrdersExistWhenLoadedThenTableRowsArePresent))]
-    public async Task GivenOrdersExistWhenLoadedThenTableRowsArePresent()
+    [Fact(DisplayName = nameof(GivenOrdersExistWhenLoadedThenTableRowsArePresentAsync))]
+    public async Task GivenOrdersExistWhenLoadedThenTableRowsArePresentAsync()
     {
         await _fixture.NavigateToOrdersAsync();
 
@@ -65,8 +65,8 @@ public sealed class OrderListPageTests(OrderListPageFixture fixture) : IClassFix
         Assert.NotEmpty(rows);
     }
 
-    [Fact(DisplayName = nameof(GivenOrdersTableWhenLoadedThenRowsHaveExpectedColumns))]
-    public async Task GivenOrdersTableWhenLoadedThenRowsHaveExpectedColumns()
+    [Fact(DisplayName = nameof(GivenOrdersTableWhenLoadedThenRowsHaveExpectedColumnsAsync))]
+    public async Task GivenOrdersTableWhenLoadedThenRowsHaveExpectedColumnsAsync()
     {
         await _fixture.NavigateToOrdersAsync();
 
@@ -81,8 +81,8 @@ public sealed class OrderListPageTests(OrderListPageFixture fixture) : IClassFix
         Assert.True(cells.Count >= 3, "Each row should have at least 3 columns (Id, Description, Total)");
     }
 
-    [Fact(DisplayName = nameof(GivenFirstPageThenPreviousButtonIsDisabled))]
-    public async Task GivenFirstPageThenPreviousButtonIsDisabled()
+    [Fact(DisplayName = nameof(GivenFirstPageThenPreviousButtonIsDisabledAsync))]
+    public async Task GivenFirstPageThenPreviousButtonIsDisabledAsync()
     {
         await _fixture.NavigateToOrdersAsync();
         await _fixture.Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
@@ -97,19 +97,19 @@ public sealed class OrderListPageTests(OrderListPageFixture fixture) : IClassFix
         Assert.True(className?.Contains("disabled") ?? false, "Previous button should be disabled on page 1");
     }
 
-    [Fact(DisplayName = nameof(GivenNewOrderButtonClickThenNavigatesToCreatePage))]
-    public async Task GivenNewOrderButtonClickThenNavigatesToCreatePage()
+    [Fact(DisplayName = nameof(GivenNewOrderButtonClickThenNavigatesToCreatePageAsync))]
+    public async Task GivenNewOrderButtonClickThenNavigatesToCreatePageAsync()
     {
         await _fixture.NavigateToOrdersAsync();
         await _fixture.Page.WaitForPageLoadAsync();
 
         await _fixture.Page.ClickAndWaitForLoadAsync(Selectors.ButtonNewOrder);
 
-        Assert.EndsWith("/orders/create", _fixture.Page.Url);
+        Assert.EndsWith("/orders/create", _fixture.Page.Url, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = nameof(GivenViewButtonClickWhenOrdersExistThenNavigatesToDetailPage))]
-    public async Task GivenViewButtonClickWhenOrdersExistThenNavigatesToDetailPage()
+    [Fact(DisplayName = nameof(GivenViewButtonClickWhenOrdersExistThenNavigatesToDetailPageAsync))]
+    public async Task GivenViewButtonClickWhenOrdersExistThenNavigatesToDetailPageAsync()
     {
         await _fixture.NavigateToOrdersAsync();
 
@@ -125,8 +125,8 @@ public sealed class OrderListPageTests(OrderListPageFixture fixture) : IClassFix
         Assert.Matches(@"/orders/\d+$", _fixture.Page.Url);
     }
 
-    [Fact(DisplayName = nameof(GivenEditButtonClickWhenOrdersExistThenNavigatesToEditPage))]
-    public async Task GivenEditButtonClickWhenOrdersExistThenNavigatesToEditPage()
+    [Fact(DisplayName = nameof(GivenEditButtonClickWhenOrdersExistThenNavigatesToEditPageAsync))]
+    public async Task GivenEditButtonClickWhenOrdersExistThenNavigatesToEditPageAsync()
     {
         await _fixture.NavigateToOrdersAsync();
 
@@ -142,8 +142,8 @@ public sealed class OrderListPageTests(OrderListPageFixture fixture) : IClassFix
         Assert.Matches(@"/orders/\d+/edit$", _fixture.Page.Url);
     }
 
-    [Fact(DisplayName = nameof(GivenSearchInputWhenTermEnteredThenSearchButtonIsPresent))]
-    public async Task GivenSearchInputWhenTermEnteredThenSearchButtonIsPresent()
+    [Fact(DisplayName = nameof(GivenSearchInputWhenTermEnteredThenSearchButtonIsPresentAsync))]
+    public async Task GivenSearchInputWhenTermEnteredThenSearchButtonIsPresentAsync()
     {
         await _fixture.NavigateToOrdersAsync();
         await _fixture.Page.WaitForPageLoadAsync();
@@ -155,8 +155,8 @@ public sealed class OrderListPageTests(OrderListPageFixture fixture) : IClassFix
         Assert.NotNull(searchButton);
     }
 
-    [Fact(DisplayName = nameof(GivenFullTextSearchWhenSearchButtonClickedThenEitherTableOrEmptyStateIsShown))]
-    public async Task GivenFullTextSearchWhenSearchButtonClickedThenEitherTableOrEmptyStateIsShown()
+    [Fact(DisplayName = nameof(GivenFullTextSearchWhenSearchButtonClickedThenEitherTableOrEmptyStateIsShownAsync))]
+    public async Task GivenFullTextSearchWhenSearchButtonClickedThenEitherTableOrEmptyStateIsShownAsync()
     {
         await _fixture.NavigateToOrdersAsync();
         await _fixture.Page.WaitForPageLoadAsync();
@@ -171,8 +171,8 @@ public sealed class OrderListPageTests(OrderListPageFixture fixture) : IClassFix
         Assert.True(tableVisible || emptyVisible, "Either the orders table or empty state must be shown after full-text search");
     }
 
-    [Fact(DisplayName = nameof(GivenFullTextSearchWhenEnterPressedThenEitherTableOrEmptyStateIsShown))]
-    public async Task GivenFullTextSearchWhenEnterPressedThenEitherTableOrEmptyStateIsShown()
+    [Fact(DisplayName = nameof(GivenFullTextSearchWhenEnterPressedThenEitherTableOrEmptyStateIsShownAsync))]
+    public async Task GivenFullTextSearchWhenEnterPressedThenEitherTableOrEmptyStateIsShownAsync()
     {
         await _fixture.NavigateToOrdersAsync();
         await _fixture.Page.WaitForPageLoadAsync();
@@ -187,8 +187,8 @@ public sealed class OrderListPageTests(OrderListPageFixture fixture) : IClassFix
         Assert.True(tableVisible || emptyVisible, "Either the orders table or empty state must be shown after pressing Enter");
     }
 
-    [Fact(DisplayName = nameof(GivenFullTextSearchWhenSearchClearedThenAllOrdersReload))]
-    public async Task GivenFullTextSearchWhenSearchClearedThenAllOrdersReload()
+    [Fact(DisplayName = nameof(GivenFullTextSearchWhenSearchClearedThenAllOrdersReloadAsync))]
+    public async Task GivenFullTextSearchWhenSearchClearedThenAllOrdersReloadAsync()
     {
         await _fixture.NavigateToOrdersAsync();
         await _fixture.Page.WaitForLoadStateAsync(LoadState.NetworkIdle);

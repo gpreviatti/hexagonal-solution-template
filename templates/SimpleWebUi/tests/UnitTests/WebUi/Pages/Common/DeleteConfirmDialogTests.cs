@@ -36,7 +36,7 @@ public sealed class DeleteConfirmDialogTests : BaseComponentFixture
         component.Instance.Show();
         component.Render();
 
-        Assert.Contains("#99", component.Find(".modal-body").TextContent);
+        Assert.Contains("#99", component.Find(".modal-body").TextContent, StringComparison.Ordinal);
     }
 
     [Fact(DisplayName = nameof(GivenCancelClickThenDialogIsHiddenAndCallbackFired))]

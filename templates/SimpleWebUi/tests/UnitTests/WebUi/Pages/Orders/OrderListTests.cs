@@ -53,7 +53,7 @@ public sealed class OrderListTests : IClassFixture<OrderListFixture>
 
         var component = _fixture.Render<OrderList>();
 
-        Assert.Contains("No orders found.", component.Markup);
+        Assert.Contains("No orders found.", component.Markup, StringComparison.Ordinal);
     }
 
     [Fact(DisplayName = nameof(GivenOrdersReturnedThenTableRowsAreRendered))]
@@ -70,8 +70,8 @@ public sealed class OrderListTests : IClassFixture<OrderListFixture>
 
         var rows = component.FindAll(Selectors.TableRows);
         Assert.Equal(2, rows.Count);
-        Assert.Contains("First Order", rows[0].TextContent);
-        Assert.Contains("Second Order", rows[1].TextContent);
+        Assert.Contains("First Order", rows[0].TextContent, StringComparison.Ordinal);
+        Assert.Contains("Second Order", rows[1].TextContent, StringComparison.Ordinal);
     }
 
     [Fact(DisplayName = nameof(GivenUseCaseFailsThenErrorAlertIsShown))]
@@ -83,7 +83,7 @@ public sealed class OrderListTests : IClassFixture<OrderListFixture>
 
         var component = _fixture.Render<OrderList>();
 
-        Assert.Contains("Load failed", component.Markup);
+        Assert.Contains("Load failed", component.Markup, StringComparison.Ordinal);
     }
 
     [Fact(DisplayName = nameof(GivenSearchButtonClickThenReloadsFromPageOne))]
@@ -111,7 +111,7 @@ public sealed class OrderListTests : IClassFixture<OrderListFixture>
         var component = _fixture.Render<OrderList>();
 
         var prevItem = component.Find(Selectors.FirstChildLi);
-        Assert.Contains("disabled", prevItem.ClassName);
+        Assert.Contains("disabled", prevItem.ClassName, StringComparison.Ordinal);
     }
 
     [Fact(DisplayName = nameof(GivenNextButtonClickThenNavigatesToNextPage))]
@@ -140,7 +140,7 @@ public sealed class OrderListTests : IClassFixture<OrderListFixture>
 
         component.Find(Selectors.ButtonOutlineDanger).Click();
 
-        Assert.Contains("#7", component.Find(Selectors.ModalBody).TextContent);
+        Assert.Contains("#7", component.Find(Selectors.ModalBody).TextContent, StringComparison.Ordinal);
     }
 
     [Fact(DisplayName = nameof(GivenConfirmDeleteThenUseCaseIsCalledAndListReloads))]
@@ -179,6 +179,6 @@ public sealed class OrderListTests : IClassFixture<OrderListFixture>
         component.Find(Selectors.ButtonOutlineDanger).Click();
         component.Find(Selectors.ButtonDanger).Click();
 
-        Assert.Contains("Delete failed", component.Markup);
+        Assert.Contains("Delete failed", component.Markup, StringComparison.Ordinal);
     }
 }

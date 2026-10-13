@@ -53,8 +53,8 @@ public sealed class EditOrderTests : IClassFixture<EditOrderFixture>
         _fixture.ClearInvocations();
     }
 
-    [Fact(DisplayName = nameof(GivenExistingOrderThenFormIsPrePopulated))]
-    public void GivenExistingOrderThenFormIsPrePopulated()
+    [Fact(DisplayName = nameof(GivenExistingOrderThenFormIsPrePopulatedAsync))]
+    public async Task GivenExistingOrderThenFormIsPrePopulatedAsync()
     {
         _fixture.SetupGetOrderSuccess(EditOrderFixture.SampleOrder(10));
 
@@ -63,19 +63,19 @@ public sealed class EditOrderTests : IClassFixture<EditOrderFixture>
         Assert.Equal("Test Order", component.Find(Selectors.InputFormControl).GetAttribute("value"));
     }
 
-    [Fact(DisplayName = nameof(GivenExistingOrderWithItemsThenItemsAreRendered))]
-    public void GivenExistingOrderWithItemsThenItemsAreRendered()
+    [Fact(DisplayName = nameof(GivenExistingOrderWithItemsThenItemsAreRenderedAsync))]
+    public async Task GivenExistingOrderWithItemsThenItemsAreRenderedAsync()
     {
         _fixture.SetupGetOrderSuccess(EditOrderFixture.SampleOrder(1));
 
         var component = _fixture.Render<EditOrder>(p => p.Add(c => c.Id, 1));
 
-        Assert.Contains("Widget", component.Markup);
-        Assert.Contains("Item 1", component.Markup);
+        Assert.Contains("Widget", component.Markup, StringComparison.Ordinal);
+        Assert.Contains("Item 1", component.Markup, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = nameof(GivenLoadFailsThenErrorAlertIsShown))]
-    public void GivenLoadFailsThenErrorAlertIsShown()
+    [Fact(DisplayName = nameof(GivenLoadFailsThenErrorAlertIsShownAsync))]
+    public async Task GivenLoadFailsThenErrorAlertIsShownAsync()
     {
         _fixture.MockGetOrder
             .Setup(u => u.HandleAsync(It.IsAny<GetOrderRequest>(), It.IsAny<CancellationToken>()))
@@ -83,33 +83,33 @@ public sealed class EditOrderTests : IClassFixture<EditOrderFixture>
 
         var component = _fixture.Render<EditOrder>(p => p.Add(c => c.Id, 99));
 
-        Assert.Contains("Order not found", component.Markup);
+        Assert.Contains("Order not found", component.Markup, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = nameof(GivenOrderWithNoItemsThenEmptyRowIsAdded))]
-    public void GivenOrderWithNoItemsThenEmptyRowIsAdded()
+    [Fact(DisplayName = nameof(GivenOrderWithNoItemsThenEmptyRowIsAddedAsync))]
+    public async Task GivenOrderWithNoItemsThenEmptyRowIsAddedAsync()
     {
         _fixture.SetupGetOrderSuccess(EditOrderFixture.SampleOrder() with { Items = [] });
 
         var component = _fixture.Render<EditOrder>(p => p.Add(c => c.Id, 1));
 
-        Assert.Contains("Item 1", component.Markup);
+        Assert.Contains("Item 1", component.Markup, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = nameof(GivenAddItemClickThenNewRowAppears))]
-    public void GivenAddItemClickThenNewRowAppears()
+    [Fact(DisplayName = nameof(GivenAddItemClickThenNewRowAppearsAsync))]
+    public async Task GivenAddItemClickThenNewRowAppearsAsync()
     {
         _fixture.SetupGetOrderSuccess(EditOrderFixture.SampleOrder(1));
 
         var component = _fixture.Render<EditOrder>(p => p.Add(c => c.Id, 1));
 
-        component.Find(Selectors.ButtonOutlineSuccess).Click();
+        await component.Find(Selectors.ButtonOutlineSuccess).ClickAsync();
 
-        Assert.Contains("Item 2", component.Markup);
+        Assert.Contains("Item 2", component.Markup, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = nameof(GivenSuccessfulSubmitThenNavigatesToOrders))]
-    public async Task GivenSuccessfulSubmitThenNavigatesToOrders()
+    [Fact(DisplayName = nameof(GivenSuccessfulSubmitThenNavigatesToOrdersAsync))]
+    public async Task GivenSuccessfulSubmitThenNavigatesToOrdersAsync()
     {
         _fixture.SetupGetOrderSuccess(EditOrderFixture.SampleOrder(3));
 
@@ -119,16 +119,16 @@ public sealed class EditOrderTests : IClassFixture<EditOrderFixture>
 
         var component = _fixture.Render<EditOrder>(p => p.Add(c => c.Id, 3));
 
-        component.Find(Selectors.ButtonSubmit).Click();
+        await component.Find(Selectors.ButtonSubmit).ClickAsync();
 
         await Task.Delay(50);
 
         var nav = _fixture.Services.GetRequiredService<BunitNavigationManager>();
-        Assert.EndsWith("/orders", nav.Uri);
+        Assert.EndsWith("/orders", nav.Uri, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = nameof(GivenFailedSubmitThenErrorAlertIsShown))]
-    public async Task GivenFailedSubmitThenErrorAlertIsShown()
+    [Fact(DisplayName = nameof(GivenFailedSubmitThenErrorAlertIsShownAsync))]
+    public async Task GivenFailedSubmitThenErrorAlertIsShownAsync()
     {
         _fixture.SetupGetOrderSuccess(EditOrderFixture.SampleOrder(1));
 
@@ -138,15 +138,15 @@ public sealed class EditOrderTests : IClassFixture<EditOrderFixture>
 
         var component = _fixture.Render<EditOrder>(p => p.Add(c => c.Id, 1));
 
-        component.Find(Selectors.ButtonSubmit).Click();
+        await component.Find(Selectors.ButtonSubmit).ClickAsync();
 
         await Task.Delay(50);
 
-        Assert.Contains("Update failed", component.Markup);
+        Assert.Contains("Update failed", component.Markup, StringComparison.Ordinal);
     }
 
-    [Fact(DisplayName = nameof(GivenOneItemThenRemoveButtonIsHidden))]
-    public void GivenOneItemThenRemoveButtonIsHidden()
+    [Fact(DisplayName = nameof(GivenOneItemThenRemoveButtonIsHiddenAsync))]
+    public async Task GivenOneItemThenRemoveButtonIsHiddenAsync()
     {
         _fixture.SetupGetOrderSuccess(EditOrderFixture.SampleOrder(1));
 
@@ -155,18 +155,18 @@ public sealed class EditOrderTests : IClassFixture<EditOrderFixture>
         Assert.Empty(component.FindAll(Selectors.ButtonOutlineDanger));
     }
 
-    [Fact(DisplayName = nameof(GivenRemoveItemClickThenRowIsRemoved))]
-    public void GivenRemoveItemClickThenRowIsRemoved()
+    [Fact(DisplayName = nameof(GivenRemoveItemClickThenRowIsRemovedAsync))]
+    public async Task GivenRemoveItemClickThenRowIsRemovedAsync()
     {
         _fixture.SetupGetOrderSuccess(EditOrderFixture.SampleOrder(1));
 
         var component = _fixture.Render<EditOrder>(p => p.Add(c => c.Id, 1));
 
-        component.Find(Selectors.ButtonOutlineSuccess).Click();
-        Assert.Contains("Item 2", component.Markup);
+        await component.Find(Selectors.ButtonOutlineSuccess).ClickAsync();
+        Assert.Contains("Item 2", component.Markup, StringComparison.Ordinal);
 
-        component.FindAll(Selectors.ButtonOutlineDanger)[0].Click();
+        await component.FindAll(Selectors.ButtonOutlineDanger)[0].ClickAsync();
 
-        Assert.DoesNotContain("Item 2", component.Markup);
+        Assert.DoesNotContain("Item 2", component.Markup, StringComparison.Ordinal);
     }
 }
