@@ -145,7 +145,7 @@ public class BaseRepository(
         CancellationToken cancellationToken,
         string? sortBy = null!,
         bool sortDescending = false,
-        Dictionary<string, string>? searchByValues = null!,
+        IReadOnlyDictionary<string, string>? searchByValues = null!,
         Expression<Func<TEntity, bool>> predicate = null!,
         bool? newContext = null
     ) where TEntity : DomainEntity => await HandleBaseQueryAsync<TEntity, (IEnumerable<TResult> Items, int TotalRecords)>(async dbEntitySet =>
