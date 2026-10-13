@@ -24,7 +24,7 @@ public class UpdateOrderTestFixture : BaseHttpFixture
         );
 
         var createResult = await ApiHelper.PostAsync("orders", createRequest);
-        var createResponse = await ApiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(createResult);
+        var createResponse = await ApiHelper.DeSerializeResponseAsync<BaseResponse<OrderDto>>(createResult);
 
         Assert.Equal(HttpStatusCode.Created, createResult.StatusCode);
         Assert.NotNull(createResponse);
@@ -60,8 +60,8 @@ public sealed class UpdateOrderTest : IClassFixture<UpdateOrderTestFixture>
         _fixture.ResourceUrl = "orders/{0}";
     }
 
-    [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
-    public async Task GivenAValidRequestThenPass()
+    [Fact(DisplayName = nameof(GivenAValidRequestThenPassAsync))]
+    public async Task GivenAValidRequestThenPassAsync()
     {
         // Arrange
         var createdOrder = await _fixture.CreateOrderAsync();
@@ -70,7 +70,7 @@ public sealed class UpdateOrderTest : IClassFixture<UpdateOrderTestFixture>
 
         // Act
         var result = await _fixture.ApiHelper.PutAsync(url, request);
-        var response = await ApiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
+        var response = await ApiHelper.DeSerializeResponseAsync<BaseResponse<OrderDto>>(result);
 
         // Assert
         Assert.NotNull(result);
@@ -83,8 +83,8 @@ public sealed class UpdateOrderTest : IClassFixture<UpdateOrderTestFixture>
         Assert.Equal(2150m, response.Data.Total);
     }
 
-    [Fact(DisplayName = nameof(GivenAInvalidRequestThenFails))]
-    public async Task GivenAInvalidRequestThenFails()
+    [Fact(DisplayName = nameof(GivenAInvalidRequestThenFailsAsync))]
+    public async Task GivenAInvalidRequestThenFailsAsync()
     {
         // Arrange
         var request = UpdateOrderTestFixture.SetValidRequest(9999999);
@@ -92,7 +92,7 @@ public sealed class UpdateOrderTest : IClassFixture<UpdateOrderTestFixture>
 
         // Act
         var result = await _fixture.ApiHelper.PutAsync(url, request);
-        var response = await ApiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
+        var response = await ApiHelper.DeSerializeResponseAsync<BaseResponse<OrderDto>>(result);
 
         // Assert
         Assert.NotNull(result);

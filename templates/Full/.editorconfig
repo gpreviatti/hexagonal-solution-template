@@ -179,7 +179,7 @@ dotnet_diagnostic.CA1502.severity = error
 dotnet_diagnostic.IDE0002.severity = error
 
 # Using directive is unnecessary
-dotnet_diagnostic.IDE0005.severity = error
+dotnet_diagnostic.IDE0005.severity = none
 dotnet_diagnostic.IDE0051.severity = error
 dotnet_diagnostic.IDE0059.severity = error
 dotnet_diagnostic.IDE0060.severity = error
@@ -191,8 +191,14 @@ dotnet_diagnostic.CS8602.severity = error
 dotnet_diagnostic.CS8603.severity = error
 dotnet_diagnostic.CS8604.severity = error
 
-# MA0004: Use Task.ConfigureAwait
+# Meziantou.Analyzer
 dotnet_diagnostic.MA0004.severity = none
+dotnet_diagnostic.MA0048.severity = none
+dotnet_diagnostic.MA0048.severity = none
+
+# Roslynator.Analyzers
+dotnet_diagnostic.RCS1194.severity = none
+dotnet_diagnostic.RCS1001.severity = none
 
 # Code style rules
 dotnet_style_qualification_for_field = false:warning

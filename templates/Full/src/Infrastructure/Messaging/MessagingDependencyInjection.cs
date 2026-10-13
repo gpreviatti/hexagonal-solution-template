@@ -10,7 +10,7 @@ internal static class MessagingDependencyInjection
 {
     extension(IServiceCollection services)
     {
-        public IServiceCollection AddMessaging(IConfiguration configuration)
+        public IServiceCollection AddMessaging()
         {
             services.AddScoped<IProduceService, ProducerService>();
 
@@ -27,7 +27,7 @@ internal static class MessagingDependencyInjection
         var consumerTypes = infrastructureAssembly.GetTypes()
             .Where(t => t.IsClass
                 && !t.IsAbstract
-                && t.Namespace?.Contains("Messaging.Consumers") == true
+                && t.Namespace?.Contains("Messaging.Consumers", StringComparison.Ordinal) == true
                 && typeof(IHostedService).IsAssignableFrom(t))
             .ToList();
 
@@ -35,8 +35,7 @@ internal static class MessagingDependencyInjection
         {
             var addHostedServiceMethod = typeof(ServiceCollectionHostedServiceExtensions)
                 .GetMethods()
-                .First(m => m.Name == nameof(ServiceCollectionHostedServiceExtensions.AddHostedService)
-                    && m.IsGenericMethodDefinition
+                .First(m => string.Equals(m.Name, nameof(ServiceCollectionHostedServiceExtensions.AddHostedService), StringComparison.Ordinal) && m.IsGenericMethodDefinition
                     && m.GetGenericArguments().Length == 1
                     && m.GetParameters().Length == 1
                 )

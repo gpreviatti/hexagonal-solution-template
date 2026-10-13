@@ -5,7 +5,7 @@ using UnitTests.Application.Common;
 
 namespace UnitTests.Application.Orders;
 
-public sealed class DeleteOrderUseCaseFixture : BaseApplicationFixture<DeleteOrderRequest, DeleteOrderUseCase>
+public sealed class DeleteOrderUseCaseFixture : BaseApplicationFixture<DeleteOrderUseCase>
 {
     public DeleteOrderUseCaseFixture() => UseCase = new(MockServiceProvider.Object);
 

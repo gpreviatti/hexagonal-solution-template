@@ -17,7 +17,7 @@ public static class InfrastructureDependencyInjection
             builder.Services
                 .AddData(configuration)
                 .AddCache(configuration)
-                .AddMessaging(configuration);
+                .AddMessaging();
 
             builder.AddOpenTelemetry();
 

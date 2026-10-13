@@ -6,7 +6,7 @@ using UnitTests.Application.Common;
 
 namespace UnitTests.Application.Orders;
 
-public sealed class CreateOrderUseCaseFixture : BaseApplicationFixture<CreateOrderRequest, CreateOrderUseCase>
+public sealed class CreateOrderUseCaseFixture : BaseApplicationFixture<CreateOrderUseCase>
 {
     public CreateOrderUseCaseFixture() => UseCase = new(MockServiceProvider.Object);
 

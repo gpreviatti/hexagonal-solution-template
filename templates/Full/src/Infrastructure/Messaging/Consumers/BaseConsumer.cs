@@ -20,15 +20,13 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
 {
     private readonly string _consumerName = typeof(TConsumer).Name;
     private readonly string _queueName;
-    private readonly IDictionary<string, object?> _arguments;
-    private readonly ConnectionFactory _factory;
-    private IChannel _channel = null!;
+    private readonly IChannel _channel = null!;
     protected IProduceService producerService = null!;
     private readonly ActivitySource _activities = DefaultConfigurations.ActivitySource;
     protected Counter<int> ConsumerErrorMetric { get; }
     protected Counter<int> ConsumerDuplicatedMessageMetric { get; }
 
-    public BaseConsumer(
+    protected BaseConsumer(
         ILogger<BaseConsumer<TMessage, TConsumer>> logger,
         IServiceScopeFactory serviceScopeFactory,
         IConfiguration configuration,
@@ -40,12 +38,10 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
 
         if (string.IsNullOrWhiteSpace(connectionString))
         {
-            throw new ArgumentException("Invalid RabbitMQ connection string.");
+            throw new ArgumentException("Invalid RabbitMQ connection string.", connectionString);
         }
 
         _queueName = queueName.ToString();
-        _arguments = arguments;
-        _factory = new() { Uri = new(connectionString) };
 
         ConsumerErrorMetric = DefaultConfigurations.Meter
             .CreateCounter<int>($"{DefaultConfigurations.ApplicationName}.{_consumerName}.Error", "total", "Number of times the consumer encountered an error");
@@ -53,13 +49,14 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
         ConsumerDuplicatedMessageMetric = DefaultConfigurations.Meter
             .CreateCounter<int>($"{DefaultConfigurations.ApplicationName}.{_consumerName}.DuplicatedMessage", "total", "Number of times the consumer received a duplicated message");
 
-        var connection = _factory.CreateConnectionAsync().GetAwaiter().GetResult();
+        var factory = new ConnectionFactory() { Uri = new(connectionString) };
+        var connection = factory.CreateConnectionAsync().GetAwaiter().GetResult();
         _channel = connection.CreateChannelAsync().GetAwaiter().GetResult();
         var randomGuid = Guid.NewGuid();
         Logs.Debug(logger, randomGuid, "Connected to RabbitMQ. Declaring queues.");
 
-        _channel.QueueDeclareAsync(queue: _queueName, durable: true, exclusive: false, autoDelete: false, arguments: _arguments);
-        _channel.QueueDeclareAsync(queue: _queueName + "_deadLetter", durable: true, exclusive: false, autoDelete: false, arguments: _arguments);
+        _channel.QueueDeclareAsync(queue: _queueName, durable: true, exclusive: false, autoDelete: false, arguments: arguments).GetAwaiter().GetResult();
+        _channel.QueueDeclareAsync(queue: _queueName + "_deadLetter", durable: true, exclusive: false, autoDelete: false, arguments: arguments).GetAwaiter().GetResult();
     }
 
     protected override async Task ExecuteInternalAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken) => await HandleRabbitMqAsync(
@@ -128,7 +125,6 @@ internal abstract class BaseConsumer<TMessage, TConsumer> : BaseBackgroundServic
 
         consumer.ReceivedAsync += async (model, eventArguments) =>
         {
-            var basicProperties = eventArguments.BasicProperties;
             var body = eventArguments.Body.ToArray();
 
             TMessage message = null!;

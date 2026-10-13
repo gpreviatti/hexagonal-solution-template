@@ -25,7 +25,7 @@ public sealed class NotificationTests
         Assert.Equal(createdBy, notification.CreatedBy);
         Assert.Equal(timezoneId, notification.CreatedByTimezoneId);
         Assert.NotNull(notification.Message);
-        Assert.Contains("\"Test\":\"Message\"", notification.Message);
+        Assert.Contains("\"Test\":\"Message\"", notification.Message, StringComparison.Ordinal);
     }
 
     [Fact(DisplayName = nameof(GivenANewNotificationWhenMessageIsNullThenShouldCreateNotificationWithNullMessage))]
@@ -69,6 +69,6 @@ public sealed class NotificationTests
         Assert.Equal("System", notification.CreatedBy);
         Assert.Equal(timezoneId, notification.CreatedByTimezoneId);
         Assert.NotNull(notification.Message);
-        Assert.Contains("\"Test\":\"Message\"", notification.Message);
+        Assert.Contains("\"Test\":\"Message\"", notification.Message, StringComparison.Ordinal);
     }
 }

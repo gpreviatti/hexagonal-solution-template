@@ -43,7 +43,7 @@ public sealed class DomainEntityTests
 
         var result = Assert.Throws<TimeZoneNotFoundException>(() => new TestDomainEntity("TestUser", invalidTimezoneId));
 
-        Assert.Contains("not found on the local computer.", result.Message);
+        Assert.Contains("not found on the local computer.", result.Message, StringComparison.Ordinal);
     }
 
     [Fact(DisplayName = nameof(ConstructorWithNullTimezoneIdShouldDefaultToUtc))]
@@ -107,7 +107,7 @@ public sealed class DomainEntityTests
 
         var result = Assert.Throws<TimeZoneNotFoundException>(() => entity.Update("UpdatedUser", "Invalid/Timezone"));
 
-        Assert.Contains("not found on the local computer.", result.Message);
+        Assert.Contains("not found on the local computer.", result.Message, StringComparison.Ordinal);
     }
 
     [Fact(DisplayName = nameof(UpdateWithEmptyTimezoneIdShouldDefaultToUtc))]

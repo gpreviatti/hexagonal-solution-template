@@ -25,7 +25,7 @@ public sealed class ProducerService : IProduceService
 
         if (string.IsNullOrWhiteSpace(connectionString))
         {
-            throw new ArgumentException("Invalid RabbitMQ connection string.");
+            throw new ArgumentException("Invalid RabbitMQ connection string.", connectionString);
         }
 
         _factory = new() { Uri = new(connectionString) };

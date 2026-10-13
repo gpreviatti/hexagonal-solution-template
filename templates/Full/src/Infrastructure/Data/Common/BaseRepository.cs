@@ -70,7 +70,7 @@ public class BaseRepository(
     public async Task<int> UpdateAsync<TEntity>(TEntity entity, Guid correlationId, CancellationToken cancellationToken, bool? newContext = null) where TEntity : DomainEntity =>
     await HandleBaseQueryAsync<TEntity, int>(async dbEntitySet =>
     {
-        var updatedEntity = dbEntitySet.Update(entity);
+        dbEntitySet.Update(entity);
 
         return await _dbContext.SaveChangesAsync(cancellationToken);
     }, correlationId, newContext);
