@@ -40,14 +40,14 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
             request.CreatedBy, request.TimezoneId
         );
         if (createResult.IsFailure)
-            return await HandleFailedResponse<BaseResponse<OrderDto>>(
+            return await HandleFailedResponseAsync<BaseResponse<OrderDto>>(
                 correlationId, _notificationType,
                 request.CreatedBy, createResult.Message
             );
 
         var newOrder = createResult.Value;
         if (await Repository.AddAsync(newOrder, correlationId, cancellationToken) == 0)
-            return await HandleFailedResponse<BaseResponse<OrderDto>>(
+            return await HandleFailedResponseAsync<BaseResponse<OrderDto>>(
                 correlationId, _notificationType,
                 request.CreatedBy, "Failed to create order."
             );
@@ -66,7 +66,7 @@ public sealed class CreateOrderUseCase(IServiceProvider serviceProvider)
             })]
         });
 
-        await HandleNotification(correlationId, NotificationStatus.Success, request.CreatedBy, _notificationType, response);
+        await HandleNotificationAsync(correlationId, NotificationStatus.Success, request.CreatedBy, _notificationType, response);
 
         return response;
     }

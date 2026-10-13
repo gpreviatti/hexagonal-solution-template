@@ -10,10 +10,10 @@
                     <p>Are you sure you want to delete order <strong>#@OrderId</strong>? This action cannot be undone.</p>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" @onclick="Cancel">
+                    <button class="btn btn-secondary" @onclick="CancelAsync">
                         <i class="bi bi-x-lg me-1"></i>Cancel
                     </button>
-                    <button class="btn btn-danger" @onclick="Confirm">
+                    <button class="btn btn-danger" @onclick="ConfirmAsync">
                         <i class="bi bi-trash me-1"></i>Delete
                     </button>
                 </div>

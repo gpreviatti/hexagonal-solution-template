@@ -38,7 +38,7 @@ public abstract class BaseUseCase
             .CreateCounter<int>($"{DefaultConfigurations.ApplicationName}.{ClassName}.Failed", "total", "Number of times the use case execution failed");
     }
 
-    protected async Task HandleNotification(
+    protected async Task HandleNotificationAsync(
         Guid correlationId,
         NotificationStatus notificationStatus,
         string createdBy,
@@ -55,7 +55,7 @@ public abstract class BaseUseCase
         CancellationToken.None
     );
 
-    protected async Task<TResponse> HandleFailedResponse<TResponse>(
+    protected async Task<TResponse> HandleFailedResponseAsync<TResponse>(
         Guid correlationId,
         NotificationType notificationType,
         string user = "System",
@@ -69,7 +69,7 @@ public abstract class BaseUseCase
         response.Success = false;
         response.Message = message;
 
-        await HandleNotification(correlationId, NotificationStatus.Failed, user, notificationType, response);
+        await HandleNotificationAsync(correlationId, NotificationStatus.Failed, user, notificationType, response);
 
         UseCaseFailedMetric.Add(1);
 

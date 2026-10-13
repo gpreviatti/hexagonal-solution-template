@@ -20,7 +20,7 @@ public partial class OrderList : IDisposable
     private int _currentPage = 1;
     private int _totalPages = 1;
     private int _totalRecords;
-    private const int PageSize = 10;
+    private const int s_pageSize = 10;
 
     private int _deleteTargetId;
     private DeleteConfirmDialog _dialog = default!;
@@ -33,7 +33,7 @@ public partial class OrderList : IDisposable
         _showError = false;
 
         var result = await GetAllOrders.HandleAsync(
-            new(Guid.NewGuid(), _currentPage, PageSize, SearchValue: _searchDescription),
+            new(Guid.NewGuid(), _currentPage, s_pageSize, SearchValue: _searchDescription),
             _cancellationTokenSource.Token
         );
 
@@ -58,17 +58,17 @@ public partial class OrderList : IDisposable
         await LoadAsync();
     }
 
-    private async Task OnSearchKeyUp(KeyboardEventArgs e)
+    private async Task OnSearchKeyUpAsync(KeyboardEventArgs e)
     {
-        if (e.Key == "Enter") await SearchAsync();
+        if (string.Equals(e.Key, "Enter", StringComparison.Ordinal)) await SearchAsync();
     }
 
-    private async Task PreviousPage()
+    private async Task PreviousPageAsync()
     {
         if (_currentPage > 1) { _currentPage--; await LoadAsync(); }
     }
 
-    private async Task NextPage()
+    private async Task NextPageAsync()
     {
         if (_currentPage < _totalPages) { _currentPage++; await LoadAsync(); }
     }
