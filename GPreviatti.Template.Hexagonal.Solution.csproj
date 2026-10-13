@@ -18,8 +18,7 @@
     <RepositoryUrl>git://github.com/gpreviatti/hexagonal-solution-template</RepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>
-    - Simplify migration process to use dotnet ef migrations add command instead of dotnet ef migrations script command.
-    - Standardize templates to use CLAUDE.md files
+    - Add more analyzers to the template projects to improve code quality and maintainability.
     </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
