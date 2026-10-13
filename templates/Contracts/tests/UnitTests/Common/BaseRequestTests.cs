@@ -53,7 +53,7 @@ public sealed class BaseRequestTests
     public void GivenABasePaginatedRequestWhenInstantiatedThenShouldAssignCustomValues()
     {
         var correlationId = Guid.NewGuid();
-        var searchByValues = new Dictionary<string, string>
+        var searchByValues = new Dictionary<string, string>(StringComparer.Ordinal)
         {
             ["status"] = "active"
         };
