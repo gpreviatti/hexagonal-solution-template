@@ -6,7 +6,7 @@ namespace UnitTests.Architecture;
 
 public sealed class DomainTests
 {
-    private static readonly System.Reflection.Assembly _domainAssembly = typeof(Result).Assembly;
+    private static readonly System.Reflection.Assembly s_domainAssembly = typeof(Result).Assembly;
 
     [Theory(DisplayName = nameof(GivenTheDomainAssemblyWhenCheckingForbiddenClassSuffixesThenItShouldRespectTheLayerNaming))]
     [InlineData("Dto")]
@@ -25,13 +25,13 @@ public sealed class DomainTests
     [InlineData("Producer")]
     [InlineData("DbContext")]
     [InlineData("Mapping")]
-    public void GivenTheDomainAssemblyWhenCheckingForbiddenClassSuffixesThenItShouldRespectTheLayerNaming(string forbiddenSuffix) => ArchitectureTestHelper.AssertClassNamesDoNotEndWith(_domainAssembly, forbiddenSuffix);
+    public void GivenTheDomainAssemblyWhenCheckingForbiddenClassSuffixesThenItShouldRespectTheLayerNaming(string forbiddenSuffix) => ArchitectureTestHelper.AssertClassNamesDoNotEndWith(s_domainAssembly, forbiddenSuffix);
 
     [Fact(DisplayName = nameof(GivenTheDomainAssemblyWhenCheckingForbiddenDependenciesThenItShouldNotReferenceOuterLayers))]
-    public void GivenTheDomainAssemblyWhenCheckingForbiddenDependenciesThenItShouldNotReferenceOuterLayers() => ArchitectureTestHelper.AssertAssemblyDoesNotReference(_domainAssembly, "Application", "Infrastructure", "WebApp");
+    public void GivenTheDomainAssemblyWhenCheckingForbiddenDependenciesThenItShouldNotReferenceOuterLayers() => ArchitectureTestHelper.AssertAssemblyDoesNotReference(s_domainAssembly, "Application", "Infrastructure", "WebApp");
 
     [Fact(DisplayName = nameof(GivenTheDomainAssemblyWhenCheckingNamespacesThenAllTypesShouldRemainInsideTheDomainRoot))]
-    public void GivenTheDomainAssemblyWhenCheckingNamespacesThenAllTypesShouldRemainInsideTheDomainRoot() => ArchitectureTestHelper.AssertNamespacesStartWith(_domainAssembly, nameof(Domain));
+    public void GivenTheDomainAssemblyWhenCheckingNamespacesThenAllTypesShouldRemainInsideTheDomainRoot() => ArchitectureTestHelper.AssertNamespacesStartWith(s_domainAssembly, nameof(Domain));
 
     [Fact(DisplayName = nameof(GivenTheDomainProjectWhenCheckingProjectReferencesThenItShouldNotReferenceAnyOtherProject))]
     public void GivenTheDomainProjectWhenCheckingProjectReferencesThenItShouldNotReferenceAnyOtherProject() => ArchitectureTestHelper.AssertProjectReferences(Path.Combine("src", "Domain", "Domain.csproj"));

@@ -7,7 +7,7 @@ public sealed class ApiHelper(HttpClient httpClient)
 {
     public HttpClient HttpClient { get; } = httpClient;
 
-    private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
+    private static readonly JsonSerializerOptions s_jsonSerializerOptions = new()
     {
         PropertyNameCaseInsensitive = true,
     };
@@ -47,6 +47,6 @@ public sealed class ApiHelper(HttpClient httpClient)
     {
         var content = await response.Content.ReadAsStreamAsync();
 
-        return await JsonSerializer.DeserializeAsync<T>(content, _jsonSerializerOptions);
+        return await JsonSerializer.DeserializeAsync<T>(content, s_jsonSerializerOptions);
     }
 }

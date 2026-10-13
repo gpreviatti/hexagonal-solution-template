@@ -157,9 +157,6 @@ csharp_space_between_square_brackets = false
 
 # Dotnet diagnostics
 
-# MA0004: Use Task.ConfigureAwait(false) if the current SynchronizationContext is not needed
-dotnet_diagnostic.MA0004.severity = none
-
 # S3216: "ConfigureAwait(false)" should be used
 dotnet_diagnostic.S3216.severity = none
 
@@ -183,6 +180,8 @@ dotnet_diagnostic.IDE0005.severity = none
 dotnet_diagnostic.IDE0051.severity = error
 dotnet_diagnostic.IDE0059.severity = error
 dotnet_diagnostic.IDE0060.severity = error
+
+dotnet_diagnostic.IDE1006.severity = error
 
 # Nullable reference types
 dotnet_diagnostic.CS8600.severity = error
@@ -226,7 +225,6 @@ dotnet_naming_symbols.any_async_methods.required_modifiers = async
 
 dotnet_naming_style.end_in_async.required_suffix = Async
 dotnet_naming_style.end_in_async.capitalization = pascal_case
-
 
 # Xml project files
 [*.{csproj,vbproj,vcxproj,vcxproj.filters,proj,nativeproj,locproj}]
