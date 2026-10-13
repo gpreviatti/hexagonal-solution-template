@@ -23,14 +23,14 @@ public partial class Order(IServiceProvider serviceProvider) : ComponentBase
     protected override async Task OnInitializedAsync()
     {
         await Task.WhenAll(
-            GetOrderSummary(),
-            GetOrders()
+            GetOrderSummaryAsync(),
+            GetOrdersAsync()
         );
     }
 
-    private async Task GetOrders()
+    private async Task GetOrdersAsync()
     {
-        using var activity = DefaultConfigurations.ActivitySource.StartActivity(nameof(GetOrders));
+        using var activity = DefaultConfigurations.ActivitySource.StartActivity(nameof(GetOrdersAsync));
 
         var response = await _ordersHttpService.SendAsync<BaseResponse<IEnumerable<OrderDto>>>(
             _resourceUrl,
@@ -47,9 +47,9 @@ public partial class Order(IServiceProvider serviceProvider) : ComponentBase
         _orders = response?.Data;
     }
 
-    private async Task GetOrderSummary()
+    private async Task GetOrderSummaryAsync()
     {
-        using var activity = DefaultConfigurations.ActivitySource.StartActivity(nameof(GetOrderSummary));
+        using var activity = DefaultConfigurations.ActivitySource.StartActivity(nameof(GetOrderSummaryAsync));
 
         var response = await _ordersHttpService.SendAsync<GetOrderSummaryResponse>(
             _resourceUrl + "/summary",

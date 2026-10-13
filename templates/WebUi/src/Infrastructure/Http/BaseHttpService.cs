@@ -11,7 +11,7 @@ public interface IBaseHttpService
         string requestUri,
         HttpMethod httpMethod,
         CancellationToken cancellationToken,
-        Dictionary<string, string>? headers = null
+        IReadOnlyDictionary<string, string>? headers = null
     ) where TResponse : class;
 }
 
@@ -36,7 +36,7 @@ public sealed class BaseHttpService(HttpClient httpClient, ILogger<BaseHttpServi
         string requestUri,
         HttpMethod httpMethod,
         CancellationToken cancellationToken,
-        Dictionary<string, string>? headers = null
+        IReadOnlyDictionary<string, string>? headers = null
     ) where TResponse : class
     {
         var requestMessage = new HttpRequestMessage(httpMethod, requestUri)
