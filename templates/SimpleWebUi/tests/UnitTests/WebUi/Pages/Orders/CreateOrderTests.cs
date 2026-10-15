@@ -113,10 +113,15 @@ public sealed class CreateOrderTests : IClassFixture<CreateOrderFixture>
         var component = _fixture.Render<CreateOrder>();
 
         await component.Find(Selectors.InputFormControl).ChangeAsync("My order");
-        await component.Find(Selectors.ButtonSubmit).ClickAsync();
+
+        var clickTask = component.Find(Selectors.ButtonSubmit).ClickAsync();
+
+        await component.WaitForStateAsync(() => component.Find(Selectors.ButtonSubmit).HasAttribute("disabled"));
 
         Assert.True(component.Find(Selectors.ButtonSubmit).HasAttribute("disabled"));
 
         tcs.SetResult(new BaseResponse<OrderDto>(true, new OrderDto { Id = 1, Description = "x", Total = 1, PeriodSinceWasCreated = "now" }));
+
+        await clickTask;
     }
 }

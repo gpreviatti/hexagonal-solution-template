@@ -48,7 +48,7 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         Assert.Equal(expectedOrder.Description, result.Data.Description);
         Assert.Equal(expectedOrder.Total, result.Data.Total);
         Assert.NotNull(result.Data.Items);
-        Assert.Equal(expectedOrder.Items?.Count, result.Data.Items!.Count);
+        Assert.Equal(expectedOrder.Items?.Count, result.Data.Items.Count);
 
         _fixture.MockRepository.VerifyQueryable<Order>();
         _fixture.MockLogger.VerifyStartOperation();
@@ -194,11 +194,11 @@ public sealed class GetOrderUseCaseTest : IClassFixture<GetOrderUseCaseFixture>
         Assert.True(result2.Success);
         Assert.NotNull(result1.Data);
         Assert.NotNull(result2.Data);
-        Assert.Equal(result1.Data!.Id, result2.Data!.Id);
-        Assert.Equal(result1.Data!.Total, result2.Data!.Total);
-        Assert.NotNull(result1.Data!.Items);
-        Assert.NotNull(result2.Data!.Items);
-        Assert.Equal(result1.Data!.Items.Count, result2.Data!.Items.Count);
+        Assert.Equal(result1.Data.Id, result2.Data.Id);
+        Assert.Equal(result1.Data.Total, result2.Data.Total);
+        Assert.NotNull(result1.Data.Items);
+        Assert.NotNull(result2.Data.Items);
+        Assert.Equal(result1.Data.Items.Count, result2.Data.Items.Count);
     }
 
     [Fact(DisplayName = nameof(GivenAValidRequestWhenOrderHasNoItemsThenShouldReturnEmptyItemListAsync))]

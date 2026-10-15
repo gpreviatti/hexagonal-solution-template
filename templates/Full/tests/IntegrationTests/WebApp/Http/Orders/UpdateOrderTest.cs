@@ -28,10 +28,10 @@ public class UpdateOrderTestFixture : BaseHttpFixture
 
         Assert.Equal(HttpStatusCode.Created, createResult.StatusCode);
         Assert.NotNull(createResponse);
-        Assert.True(createResponse!.Success);
+        Assert.True(createResponse.Success);
         Assert.NotNull(createResponse.Data);
 
-        return createResponse.Data!;
+        return createResponse.Data;
     }
 
     public static UpdateOrderRequest SetValidRequest(int orderId) =>
@@ -76,9 +76,9 @@ public sealed class UpdateOrderTest : IClassFixture<UpdateOrderTestFixture>
         Assert.NotNull(result);
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         Assert.NotNull(response);
-        Assert.True(response!.Success);
+        Assert.True(response.Success);
         Assert.NotNull(response.Data);
-        Assert.Equal(createdOrder.Id, response.Data!.Id);
+        Assert.Equal(createdOrder.Id, response.Data.Id);
         Assert.Equal(request.Description, response.Data.Description);
         Assert.Equal(2150m, response.Data.Total);
     }
@@ -98,7 +98,7 @@ public sealed class UpdateOrderTest : IClassFixture<UpdateOrderTestFixture>
         Assert.NotNull(result);
         Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
         Assert.NotNull(response);
-        Assert.False(response!.Success);
+        Assert.False(response.Success);
         Assert.Null(response.Data);
         Assert.Equal("Order not found.", response.Message);
     }

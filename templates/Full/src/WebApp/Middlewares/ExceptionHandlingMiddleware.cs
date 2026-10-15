@@ -29,7 +29,7 @@ internal sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<
 
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
-        await context.Response.WriteAsJsonAsync(response);
+        await context.Response.WriteAsJsonAsync(response, context.RequestAborted);
     }
 }
 
