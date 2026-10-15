@@ -51,7 +51,7 @@ public abstract class BaseInOutUseCase<TRequest, TResponseData>(IServiceProvider
 
             activity?.SetStatus(ActivityStatusCode.Error, errors);
 
-            return response!;
+            return response;
         }
 
         response = await HandleInternalAsync(request, cancellationToken);

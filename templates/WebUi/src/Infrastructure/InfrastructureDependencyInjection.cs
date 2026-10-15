@@ -32,7 +32,7 @@ public static class InfrastructureDependencyInjection
         return builder;
     }
 
-    private static WebApplicationBuilder AddOpenTelemetry(this WebApplicationBuilder builder)
+    private static void AddOpenTelemetry(this WebApplicationBuilder builder)
     {
         var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
         var serviceName = DefaultConfigurations.ApplicationName;
@@ -70,8 +70,6 @@ public static class InfrastructureDependencyInjection
                 .AttachLogsToActivityEvent()
                 .AddOtlpExporter();
         });
-
-        return builder;
     }
 
     private static IServiceCollection AddHttp(this IServiceCollection services, List<ServiceConfiguration> serviceConfiguration)

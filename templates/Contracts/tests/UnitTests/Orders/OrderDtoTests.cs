@@ -64,7 +64,7 @@ public sealed class OrderDtoTests
             Items = items
         };
 
-        Assert.Equal(3, orderDto.Items!.Count);
+        Assert.Equal(3, orderDto.Items.Count);
         Assert.Equal(60m, orderDto.Total);
     }
 

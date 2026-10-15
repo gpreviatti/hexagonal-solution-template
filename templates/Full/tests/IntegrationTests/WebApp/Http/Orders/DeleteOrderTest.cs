@@ -28,10 +28,10 @@ public class DeleteOrderTestFixture : BaseHttpFixture
 
         Assert.Equal(HttpStatusCode.Created, createResult.StatusCode);
         Assert.NotNull(createResponse);
-        Assert.True(createResponse!.Success);
+        Assert.True(createResponse.Success);
         Assert.NotNull(createResponse.Data);
 
-        return createResponse.Data!;
+        return createResponse.Data;
     }
 }
 
@@ -67,7 +67,7 @@ public sealed class DeleteOrderTest : IClassFixture<DeleteOrderTestFixture>
         Assert.NotNull(result);
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         Assert.NotNull(response);
-        Assert.True(response!.Success);
+        Assert.True(response.Success);
     }
 
     [Fact(DisplayName = nameof(GivenAInvalidRequestThenFailsAsync))]
@@ -88,7 +88,7 @@ public sealed class DeleteOrderTest : IClassFixture<DeleteOrderTestFixture>
         Assert.NotNull(result);
         Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
         Assert.NotNull(response);
-        Assert.False(response!.Success);
+        Assert.False(response.Success);
         Assert.Equal("Order not found.", response.Message);
     }
 }

@@ -258,7 +258,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
 
         _fixture.VerifyProduce<CreateNotificationMessage>();
         Assert.NotNull(publishedMessage);
-        Assert.Equal(NotificationStatus.Success, publishedMessage!.NotificationStatus);
+        Assert.Equal(NotificationStatus.Success, publishedMessage.NotificationStatus);
         Assert.Equal(NotificationType.OrderCreated, publishedMessage.NotificationType);
         Assert.Equal("TestUser", publishedMessage.CreatedBy);
     }
@@ -284,7 +284,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
 
         _fixture.VerifyProduce<CreateNotificationMessage>();
         Assert.NotNull(publishedMessage);
-        Assert.Equal(NotificationStatus.Failed, publishedMessage!.NotificationStatus);
+        Assert.Equal(NotificationStatus.Failed, publishedMessage.NotificationStatus);
         Assert.Equal(NotificationType.OrderCreated, publishedMessage.NotificationType);
         Assert.Equal("TestUser", publishedMessage.CreatedBy);
     }
@@ -313,7 +313,7 @@ public sealed class CreateOrderUseCaseTest : IClassFixture<CreateOrderUseCaseFix
 
         _fixture.VerifyProduce<CreateNotificationMessage>();
         Assert.NotNull(publishedMessage);
-        Assert.Equal(NotificationStatus.Failed, publishedMessage!.NotificationStatus);
+        Assert.Equal(NotificationStatus.Failed, publishedMessage.NotificationStatus);
         Assert.Equal(NotificationType.OrderCreated, publishedMessage.NotificationType);
         Assert.Equal("TestUser", publishedMessage.CreatedBy);
     }

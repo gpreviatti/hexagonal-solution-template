@@ -23,7 +23,7 @@ public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
         var id = 1;
 
         // Act
-        var result = await _fixture!.Repository!.GetQueryable<Order>(Guid.NewGuid())
+        var result = await _fixture!.Repository.GetQueryable<Order>(Guid.NewGuid())
             .Where(o => o.Id == id)
             .Select(o => new OrderDto()
             {
@@ -39,7 +39,7 @@ public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(id, result!.Id);
+        Assert.Equal(id, result.Id);
         Assert.NotNull(result.Items);
         Assert.NotEmpty(result.Items);
     }
@@ -51,7 +51,7 @@ public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
         var id = 1;
 
         // Act
-        var orderTask1 = _fixture!.Repository!.GetQueryable<Order>(Guid.NewGuid())
+        var orderTask1 = _fixture!.Repository.GetQueryable<Order>(Guid.NewGuid())
             .Where(o => o.Id == id)
             .Select(o => new OrderDto()
             {
@@ -65,7 +65,7 @@ public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
                 }).ToArray()
             }).FirstOrDefaultAsync(_fixture.CancellationToken);
 
-        var orderTask2 = _fixture!.Repository!.GetQueryable<Order>(Guid.NewGuid(), true)
+        var orderTask2 = _fixture.Repository.GetQueryable<Order>(Guid.NewGuid(), true)
             .Where(n => n.Id == id)
             .Select(o => new OrderDto()
             {
@@ -86,9 +86,9 @@ public sealed class BaseRepositoryTest : IClassFixture<BaseDataFixture>
 
         // Assert
         Assert.NotNull(order1);
-        Assert.Equal(id, order1!.Id);
+        Assert.Equal(id, order1.Id);
         Assert.NotNull(order2);
-        Assert.Equal(id, order2!.Id);
+        Assert.Equal(id, order2.Id);
     }
 
     [Fact]
