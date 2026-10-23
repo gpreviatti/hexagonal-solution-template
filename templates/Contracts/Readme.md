@@ -484,6 +484,19 @@ When adding new contracts or tests:
 5. Ensure all tests pass: `dotnet test`
 6. Verify build without warnings: `dotnet build`
 
+## Reference Examples
+
+Use these files as models when adding contracts and tests:
+
+| Pattern | File |
+|---|---|
+| Sealed request record | [src/Contracts/Orders/CreateOrderRequest.cs](src/Contracts/Orders/CreateOrderRequest.cs) |
+| Base request | [src/Contracts/Common/BaseRequest.cs](src/Contracts/Common/BaseRequest.cs) |
+| Base response | [src/Contracts/Common/BaseResponse.cs](src/Contracts/Common/BaseResponse.cs) |
+| Proto definition | [src/Contracts/Protos/payment.proto](src/Contracts/Protos/payment.proto) |
+| Request test | [tests/UnitTests/Orders/CreateOrderRequestTests.cs](tests/UnitTests/Orders/CreateOrderRequestTests.cs) |
+| Base request test | [tests/UnitTests/Common/BaseRequestTests.cs](tests/UnitTests/Common/BaseRequestTests.cs) |
+
 ## 🤝 Contributing
 
 Have a feature request or found a bug? We'd love to hear from you!

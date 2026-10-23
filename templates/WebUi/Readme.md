@@ -137,6 +137,116 @@ Once the observability stack is running:
 - **Pyroscope:** http://localhost:4040 (continuous profiling)ker-compose up --build
 ```
 
+## Development Guide
+
+The short rules for AI agents are in [AGENTS.md](AGENTS.md).
+
+### Blazor component pattern
+
+Keep markup in `.razor` and state and behavior in the `.razor.cs` partial class. Inject `IServiceProvider` through the primary constructor and resolve keyed services explicitly. Load startup data in `OnInitializedAsync` and run independent requests concurrently with `Task.WhenAll`.
+
+```csharp
+// Home.razor.cs
+public partial class Home(IServiceProvider serviceProvider)
+{
+  private readonly IBaseHttpService _ordersHttpService = serviceProvider
+    .GetRequiredKeyedService<IBaseHttpService>(ServicesKey.Orders.ToString());
+  private readonly ILogger<Home> _logger = serviceProvider.GetRequiredService<ILogger<Home>>();
+  private IEnumerable<OrderDto>? _orders;
+
+  protected override async Task OnInitializedAsync()
+  {
+    await Task.WhenAll(GetOrders(), GetOrderSummary());
+  }
+
+  private async Task GetOrders()
+  {
+    var response = await _ordersHttpService.SendAsync<BaseResponse<IEnumerable<OrderDto>>>(
+      nameof(ServicesKey.Orders), HttpMethod.Get, CancellationToken.None);
+
+    if (response is null || !response.Success)
+    {
+      Logs.FailedOperation(_logger, "Failed to retrieve orders.");
+      return;
+    }
+
+    _orders = response.Data;
+  }
+}
+```
+
+```razor
+@* Home.razor *@
+@if (_orders is null)
+{
+  <p data-testid="loading-orders">Loading orders...</p>
+}
+else
+{
+  <table data-testid="orders-table">
+    ...
+  </table>
+}
+```
+
+On failure, log with `Logs.FailedOperation(...)` and show a loading or fallback state instead of throwing. Add `data-testid` to interactive and validated elements.
+
+### HTTP and observability
+
+- Use `IBaseHttpService` for outbound HTTP. Register one keyed service per integration (for example, Orders) and call it with `SendAsync<TResponse>(route, HttpMethod.Get, cancellationToken)`.
+- Polly retry policies are registered in `InfrastructureDependencyInjection`.
+- OpenTelemetry (traces, metrics, logs) is wired in Infrastructure. Keep it unless the change is about telemetry.
+- On a failed HTTP status, log and return `null` or a fallback instead of throwing.
+
+```csharp
+var response = await _ordersHttpService.SendAsync<GetOrderSummaryResponse>(
+  requestUri: "Orders/summary",
+  httpMethod: HttpMethod.Get,
+  cancellationToken: cancellationToken);
+
+if (response is null || !response.Success)
+{
+  _logger.LogWarning("Failed to retrieve order summary.");
+  return;
+}
+
+Summary = response.Data;
+```
+
+### Unit tests (bUnit)
+
+Stack: xUnit, bUnit, and Moq. Use fixture-based component tests with shared mocks and explicit setup per scenario. Verify HTTP mocks with `Times.Once`.
+
+```csharp
+[Fact]
+public void GivenHomeComponentWhenRenderedThenShouldDisplayOrderSummary()
+{
+    _fixture.SetupHttpServiceMock("Orders", HttpMethod.Get, HomeComponentTestFixture.GetValidOrdersResponse());
+    _fixture.SetupHttpServiceMock("Orders/summary", HttpMethod.Get, HomeComponentTestFixture.GetValidOrderSummaryResponse());
+
+    var component = _fixture.Render<Home>();
+
+    Assert.Contains("17", component.Find("[data-testid='total-orders']").TextContent);
+    Assert.Equal(2, component.FindAll("[data-testid='orders-table'] tbody tr").Count);
+    _fixture.HttpServiceMock.Verify(
+        x => x.SendAsync<BaseResponse<IEnumerable<OrderDto>>>("Orders", HttpMethod.Get, CancellationToken.None, null),
+        Times.Once);
+}
+```
+
+### E2E tests (Playwright)
+
+- Tests live in `tests/E2eTests` and use `Microsoft.Playwright.Xunit` with `BrowserFixture` (`tests/E2eTests/Common/BrowserFixture.cs`).
+- `BrowserFixture` navigates to the app at startup with `WaitUntil = NetworkIdle`. Keep the startup path and initial page behavior compatible with this.
+- Environment variables:
+  - `WEB_APP_URL`: base URL, default `http://localhost:5013`.
+  - `NAVIGATION_TIMEOUT_MS` and `WAIT_FOR_SELECTOR_TIMEOUT_MS`: timeouts.
+- Start `WebApp` and `MockApi` before running E2E tests.
+- Use selector-based waits (`WaitForSelectorAsync`), not sleeps.
+- E2E data comes from MockApi and is non-deterministic. Assert presence, shape, and visibility, not exact totals.
+- The `data-testid` contract used by `OrderPageTests` includes `loading-summary`, `total-orders`, `total-revenue`, `orders-table`, `order-row`, `view-items-*`, `order-items-table`, and `order-item-row`. If you change any of them, update the E2E tests in the same change.
+- Not Found page contract: heading `h3` with text `Not Found`, and a message equivalent to `content you are looking for does not exist`.
+
 ## Notes
 
 - This first version focuses on **Blazor + bUnit** only.

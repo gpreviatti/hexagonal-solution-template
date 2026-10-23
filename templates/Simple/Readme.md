@@ -481,6 +481,63 @@ dotnet run --project src/WebApp
 
 ---
 
+## 🧭 Development Guide
+
+The short rules for AI agents are in [AGENTS.md](AGENTS.md).
+
+### Configuration
+
+| Service | Config key | Default |
+|---|---|---|
+| PostgreSQL | `ConnectionStrings:OrderDb` | `Host=127.0.0.1;Port=5432;Database=OrderDb;Username=postgres;******` |
+| Redis | `ConnectionStrings:Redis` | `localhost:6379` |
+
+- `ENABLE_SENSITIVE_DATA_LOGGING=true` enables EF Core query logging.
+- OpenTelemetry exports via OTLP. Set `ASPNETCORE_ENVIRONMENT=IntegrationTests` to disable it during test runs.
+
+### Use cases
+
+All use cases inherit one of three base classes from `Core.Common.UseCases`:
+
+| Base class | Interface | Use when |
+|---|---|---|
+| `BaseInOutUseCase<TRequest, TResponse>` | `IBaseInOutUseCase<TRequest, TResponse>` | Input and output |
+| `BaseInUseCase<TRequest>` | `IBaseInUseCase<TRequest>` | Input only |
+| `BaseOutUseCase<TResponse>` | `IBaseOutUseCase<TResponse>` | Output only |
+
+- `CoreDependencyInjection.AddCore()` auto-registers every `*UseCase` class. No manual registration is needed.
+- The base classes handle input validation (DataAnnotations on `BaseRequest`), OpenTelemetry tracing, metrics (`UseCaseExecutedMetric` / `UseCaseFailedMetric`), and structured logging. Implement only `HandleInternalAsync`.
+
+### Contracts and domain model
+
+- `BaseRequest` requires a non-default `CorrelationId`, enforced by `[NotDefault]`.
+- `BaseResponse`, `BaseResponse<TData>`, and `BasePaginatedResponse<TData>` are records used at every layer boundary.
+- `Result` / `Result<T>` express domain outcomes. They are not HTTP response types.
+- Entities extend `DomainEntity`, which provides `Id`, audit fields (`CreatedAt/By`, `UpdatedAt/By`), and soft delete (`IsDeleted`, `DeletedAt/By`). Entity factories return `Result<T>`; check `IsFailure` before reading `.Value`.
+
+### Messaging (in-process)
+
+`IProduceService` writes to a typed `Channel<TMessage>`. Consumers extend `BaseConsumer<TMessage, TConsumer>`, a `BackgroundService` that reads from the channel. Idempotency is enforced in `BaseConsumer` through HybridCache, keyed by `{ConsumerName}-{CorrelationId}`.
+
+To add a message type:
+
+1. Create a record extending `BaseMessage` in `Core.Common.Messages`.
+2. Register a `Channel<TMessage>` singleton in `MessagingDependencyInjection`.
+3. Create a consumer extending `BaseConsumer<TMessage, TConsumer>` and register it as `IHostedService`.
+
+### Naming rules
+
+Enforced by the architecture tests in `tests/UnitTests/Architecture/`:
+
+- Core classes must not end in `Controller`, `Endpoint`, `DbContext`, `Mapping`, `Consumer`, or `Producer`.
+- Core must not reference the Infrastructure or WebApp assemblies.
+- All Core types must live in the `Core.*` namespace.
+
+### Test fixtures
+
+- **Unit tests (use cases):** `BaseCoreFixture<TRequest, TUseCase>` pre-wires mocks for `IServiceProvider`, `IBaseRepository`, `IHybridCacheService`, and `IProduceService`. Each test class defines its own fixture subclass. Call `_fixture.ClearInvocations()` in the constructor, not in a `SetUp` method.
+- **Integration tests:** `CustomWebApplicationFactory<Program>` replaces the pooled DbContextFactory with a regular one that targets local PostgreSQL. Group tests with `[Collection(nameof(WebApplicationFactoryCollectionDefinition))]`.
+
 ## 🤝 Contributing
 
 ### Guidelines
