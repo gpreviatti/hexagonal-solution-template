@@ -183,7 +183,7 @@ dotnet test tests/IntegrationTests
 
 ## Development Guide
 
-The short rules for AI agents are in [.github/AGENTS.md](.github/AGENTS.md).
+The short rules for AI agents are in [AGENTS.md](AGENTS.md).
 
 ### Contracts
 
