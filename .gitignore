@@ -480,4 +480,7 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 
+# Keep the release agent skill (the generic [Rr]elease/ rule above would ignore it)
+!.github/skills/release/
+
 !Log

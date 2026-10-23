@@ -585,6 +585,426 @@ dotnet run --project src/WebApp
 3. Run `dotnet test` and both Stryker configs before opening a pull request.
 4. Keep domain entities free from infrastructure concerns — no EF Core attributes inside `Domain/`.
 
+## 🧭 Development Patterns
+
+Detailed patterns and examples for each layer. The short rules for AI agents are in [AGENTS.md](AGENTS.md).
+
+### Domain entities
+
+Entities extend `DomainEntity` (`Id`, `CreatedAt`, `UpdatedAt`, `DeletedAt`). Two patterns are used:
+
+- **Pattern A, aggregate root:** a static `Create()` factory returns `Result<T>`. Business methods return `Result<Unit>`.
+- **Pattern B, child entity or value object:** the constructor validates and throws `DomainException` on invalid input. No factory is needed.
+
+```csharp
+public sealed class Order : DomainEntity
+{
+    public string OrderNumber { get; private set; }
+    public OrderStatus Status { get; private set; }
+    public decimal TotalAmount { get; private set; }
+
+    private Order() { }  // Required by EF Core
+
+    public static Result<Order> Create(string orderNumber, decimal totalAmount)
+    {
+        if (string.IsNullOrWhiteSpace(orderNumber))
+            return Result.Failure<Order>("Order number is required");
+        if (totalAmount <= 0)
+            return Result.Failure<Order>("Total amount must be positive");
+
+        return Result.Success(new Order
+        {
+            OrderNumber = orderNumber,
+            Status = OrderStatus.Pending,
+            TotalAmount = totalAmount
+        });
+    }
+
+    public Result<Unit> MarkAsShipped()
+    {
+        if (Status != OrderStatus.Pending)
+            return Result.Failure<Unit>("Only pending orders can be shipped");
+        Status = OrderStatus.Shipped;
+        return Result.Success(Unit.Value);
+    }
+}
+```
+
+```csharp
+public sealed class OrderItem : DomainEntity
+{
+    public OrderItem() { }  // Required by EF Core
+
+    public OrderItem(string name, decimal price, int quantity)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainException("Item name is required");
+        if (price <= 0)
+            throw new DomainException("Item price must be positive");
+
+        Name = name;
+        Price = price;
+        Quantity = quantity;
+    }
+
+    public string Name { get; private set; }
+    public decimal Price { get; private set; }
+    public int Quantity { get; private set; }
+}
+```
+
+### Use cases
+
+| Base class | Use when |
+|---|---|
+| `BaseInOutUseCase<TRequest, TResponse>` | Create, Get, Update: returns data |
+| `BaseInUseCase<TRequest>` | Delete or other side effects with no response payload |
+| `BaseOutUseCase<TResponse>` | No input, returns data |
+
+- Name by operation: `Create{Entity}UseCase`, `Get{Entity}UseCase`, `Update{Entity}UseCase`, `Delete{Entity}UseCase`, `GetAll{Entity}UseCase`.
+- Requests inherit `BaseRequest`, which provides `CorrelationId`, `User`, and `TimezoneId`.
+- Validators implement `AbstractValidator<TRequest>` in `{Operation}RequestValidator.cs`. DI discovers them and validation runs automatically.
+- Messages are published with `CreateNotification()` or `IProduceService.ProduceAsync()`.
+
+```csharp
+public sealed record CreateOrderRequest(
+    Guid CorrelationId,
+    string Description,
+    CreateOrderItemRequest[] Items,
+    string CreatedBy = "",
+    string TimezoneId = ""
+) : BaseRequest(CorrelationId, CreatedBy, TimezoneId);
+
+public sealed record CreateOrderItemRequest(string Name, string Description, decimal Value);
+
+public sealed class CreateOrderUseCase : BaseInOutUseCase<CreateOrderRequest, OrderDto>
+{
+    private readonly IBaseRepository<Order> _repository;
+    private readonly IProduceService _producer;
+    private readonly ILogger<CreateOrderUseCase> _logger;
+
+    public CreateOrderUseCase(
+        IBaseRepository<Order> repository,
+        IProduceService producer,
+        ILogger<CreateOrderUseCase> logger
+    ) : base(validator)
+    {
+        _repository = repository;
+        _producer = producer;
+        _logger = logger;
+    }
+
+    public override async Task<Result<OrderDto>> Execute(CreateOrderRequest request, CancellationToken cancellationToken)
+    {
+        var orderResult = Order.Create(request.OrderNumber, request.TotalAmount);
+        if (orderResult.IsFailure)
+            return Result.Failure<OrderDto>(orderResult.Error);
+
+        var order = orderResult.Value;
+        await _repository.AddAsync(order, cancellationToken);
+        await _repository.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("Order created: {OrderId}", order.Id);
+        await _producer.ProduceAsync(new OrderCreatedEvent { OrderId = order.Id }, cancellationToken);
+
+        return Result.Success(new OrderDto(order.Id, order.OrderNumber, order.TotalAmount));
+    }
+}
+```
+
+> The example above mirrors the template's original sample. Its request record does not declare `OrderNumber` or `TotalAmount`, so adapt it to your request shape when copying.
+
+DTOs are immutable records used for application responses, for example `public record OrderDto(Guid Id, string OrderNumber, decimal TotalAmount);`. Never serialize entities directly.
+
+### Full-text search (multiple records)
+
+For use cases that return more than one record:
+
+- **Request:** inherit `BaseFullTextSearchPaginatedRequest` (`Page`, `PageSize`, `SortBy`, `SortDescending`, `SearchValue`).
+- **Response:** `BasePaginatedResponse<TDto>`.
+- **Repository call:** `GetAllFullTextSearchPaginatedAsync<TEntity, TDto>`. Pass `nameof(Entity.Column)` as `searchQuery` and `request.SearchValue` as `searchValue`. The language defaults to `"english"` inside the repository; do not pass it from the request.
+- **Index required:** a GIN tsvector index must exist on the searched columns. Without it, queries fail or fall back to a sequential scan.
+
+```csharp
+public sealed class GetAllOrdersUseCase : BaseInOutUseCase<BaseFullTextSearchPaginatedRequest, BasePaginatedResponse<OrderDto>>
+{
+    private readonly IBaseRepository<Order> _repository;
+
+    public GetAllOrdersUseCase(IBaseRepository<Order> repository) : base(validator)
+        => _repository = repository;
+
+    public override async Task<Result<BasePaginatedResponse<OrderDto>>> Execute(
+        BaseFullTextSearchPaginatedRequest request, CancellationToken cancellationToken)
+    {
+        var (items, total) = await _repository.GetAllFullTextSearchPaginatedAsync<Order, OrderDto>(
+            request.CorrelationId,
+            request.Page,
+            request.PageSize,
+            o => new() { Id = o.Id, Description = o.Description },
+            cancellationToken,
+            request.SortBy,
+            request.SortDescending,
+            nameof(Order.Description),
+            request.SearchValue
+        );
+
+        return items.Any()
+            ? Result.Success(new BasePaginatedResponse<OrderDto>(items, total, request.Page, request.PageSize))
+            : Result.Failure<BasePaginatedResponse<OrderDto>>("No orders found.");
+    }
+}
+```
+
+### Persistence
+
+- Repositories inherit `BaseRepository<T>`, which implements `IBaseRepository<T>` on EF Core `DbSet`s.
+- The `IsDeleted` global query filter hides soft-deleted rows.
+- One mapping per entity in `Data/Mapping/{Entity}Configuration.cs`, using the Fluent API for keys, columns, relationships, enums, precision, and defaults.
+- Custom repository logic, when needed, goes in `Data/Repositories/{Entity}Repository.cs`.
+- Entities used with `GetAllFullTextSearchPaginatedAsync` need a GIN tsvector index in their mapping. Create it through a migration before using the endpoint in any environment. When adding full-text search to an existing entity, use a dedicated migration (for example `Add{Entity}FullTextSearchSupport`) so the index is tracked apart from schema changes.
+
+```csharp
+public sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
+{
+    public void Configure(EntityTypeBuilder<Order> builder)
+    {
+        builder.HasKey(x => x.Id);
+        builder.Property(x => x.OrderNumber).IsRequired().HasMaxLength(50);
+        builder.Property(x => x.TotalAmount).HasPrecision(18, 2);
+        builder.Property(x => x.Status).HasConversion<string>();
+        builder.HasQueryFilter(p => !p.IsDeleted);
+
+        // Required for GetAllFullTextSearchPaginatedAsync (single column; use an anonymous type with several properties for multi-column)
+        builder.HasIndex(p => new { p.Description })
+            .HasMethod("GIN")
+            .IsTsVectorExpressionIndex("english");
+    }
+}
+```
+
+### Messaging consumers
+
+- Inherit `BaseConsumer<TMessage, TConsumer>` and implement `HandleUseCaseAsync(IServiceProvider, TMessage, CancellationToken)`.
+- Place consumers in `Messaging/Consumers/`. They are registered automatically when they implement `IHostedService`.
+- Deduplication: `CorrelationId` is the cache key in `IHybridCacheService`. Duplicate messages are skipped.
+- Each message creates a telemetry span and updates error and duplicate counters.
+- Queues: `{QueueName}` and `{QueueName}_deadLetter` are declared on startup. Unhandled exceptions are routed to the dead-letter queue.
+
+Message contracts live in `src/Application/Common/Messages/` and extend `BaseMessage`:
+
+```csharp
+public abstract record BaseMessage(Guid CorrelationId, DateTime CreatedAt);
+
+public sealed record CreateNotificationMessage(
+    Guid CorrelationId,
+    NotificationType NotificationType,
+    NotificationStatus NotificationStatus,
+    string? CreatedBy = null,
+    object? Message = null
+) : BaseMessage(CorrelationId, DateTime.UtcNow);
+```
+
+```csharp
+internal sealed class CreateNotificationConsumer(
+    ILogger<CreateNotificationConsumer> logger,
+    IServiceScopeFactory serviceScopeFactory,
+    IConfiguration configuration
+) : BaseConsumer<CreateNotificationMessage, CreateNotificationConsumer>(
+    logger,
+    serviceScopeFactory,
+    configuration,
+    NotificationType.OrderCreated
+)
+{
+    protected override async Task HandleUseCaseAsync(
+        IServiceProvider serviceProvider,
+        CreateNotificationMessage message,
+        CancellationToken cancellationToken
+    ) => await serviceProvider
+        .GetRequiredService<IBaseInUseCase<CreateNotificationRequest>>()
+        .HandleAsync(new(
+            message.CorrelationId,
+            message.NotificationType,
+            message.NotificationStatus,
+            message.CreatedBy,
+            message.Message
+        ), cancellationToken);
+}
+```
+
+### Endpoints
+
+- **File per resource:** `Endpoints/{Resource}Endpoints.cs`, a static `internal` class with an extension method such as `MapOrderEndpoints`.
+- **Routing:** `MapGroup`, with use cases injected into handlers through `[FromServices]`.
+- **Correlation:** read `[FromHeader] Guid correlationId` and tag the activity with `Activity.Current?.AddTag("correlation-id", correlationId)`.
+- **Caching:** optional `[FromHeader] bool cacheEnabled = true` for hybrid caching.
+- **Responses:** `BaseResponse<T>` for single items, `BasePaginatedResponse<T>` for lists.
+- **Registration:** one line per group in `Endpoints/EndpointExtensions.cs`, for example `app.MapOrderEndpoints();`.
+- **Samples:** add realistic requests to `src/WebApp/WebApp.http` for each new endpoint.
+
+| Route | Success | Failure |
+|---|---|---|
+| `GET /{id}` | `200 OK` | `404 Not Found` |
+| `POST /` | `201 Created` with `Location` | `400 Bad Request` |
+| `PUT /{id}` | `200 OK` | `400 Bad Request` |
+| `DELETE /{id}` | `200 OK` | `400 Bad Request` |
+| `POST /paginated` | `200 OK` | `400 Bad Request` |
+| `POST /full-text-search-paginated` | `200 OK` | `400 Bad Request` |
+
+```csharp
+public sealed class OrderEndpoints
+{
+    private const string BaseRoute = "/api/orders";
+
+    public static void MapOrderEndpoints(this WebApplication app)
+    {
+        var group = app.MapGroup(BaseRoute)
+            .WithName("Orders")
+            .WithTags("Orders");
+
+        group.MapGet("/", GetAll).WithName("GetAllOrders").WithOpenApi();
+        group.MapGet("/{id}", GetById).WithName("GetOrderById").WithOpenApi();
+        group.MapPost("/", Create).WithName("CreateOrder").WithOpenApi();
+        group.MapPut("/{id}", Update).WithName("UpdateOrder").WithOpenApi();
+        group.MapDelete("/{id}", Delete).WithName("DeleteOrder").WithOpenApi();
+    }
+
+    private static async Task<IResult> Create(
+        [FromBody] CreateOrderRequest request,
+        [FromHeader] Guid correlationId,
+        CreateOrderUseCase useCase,
+        CancellationToken cancellationToken
+    )
+    {
+        var result = await useCase.Execute(request, cancellationToken);
+        return result.IsFailure
+            ? Results.BadRequest(result.Error)
+            : Results.CreatedAtRoute("GetOrderById", new { id = result.Value.Id }, result.Value);
+    }
+
+    private static async Task<IResult> GetById(
+        Guid id,
+        [FromHeader] Guid correlationId,
+        [FromHeader] bool cacheEnabled = true,
+        GetOrderUseCase useCase,
+        CancellationToken cancellationToken)
+    {
+        var result = await useCase.Execute(new GetOrderRequest(id), cancellationToken);
+        return result.IsFailure
+            ? Results.NotFound()
+            : Results.Ok(result.Value);
+    }
+
+    // Other handlers omitted
+}
+```
+
+### Dependency injection
+
+- **Auto-discovery:** `Program.cs` registers use cases (classes inheriting a base use case), validators (`AbstractValidator<T>`), and consumers (`IHostedService` in `Messaging.Consumers`). No manual registration is needed.
+- **Manual registration:** only for custom ports and adapters, for example `services.AddScoped<IMyService, MyService>();` in `InfrastructureDependencyInjection.cs`.
+- **Adding a port and adapter:** define the interface in Application under `Common/Services/`, implement it in Infrastructure, and register it in `InfrastructureDependencyInjection.cs`.
+
+Key locations:
+
+- `src/Application/ApplicationDependencyInjection.cs`: use case and validator registration.
+- `src/Infrastructure/InfrastructureDependencyInjection.cs`: repository, cache, and messaging registration.
+- `src/Infrastructure/Data/MyDbContext.cs`: EF Core context.
+- `src/Infrastructure/Cache/Services/HybridCacheService.cs`: Redis and in-memory hybrid cache.
+- `src/Infrastructure/OpenTelemetry/`: tracing, metrics, and logging configuration.
+
+### Testing patterns
+
+**Naming:** `GivenContext_WhenCondition_ThenExpectedResult`.
+
+**Unit test fixtures:** `BaseApplicationFixture<TRequest, TUseCase>` auto-mocks `IBaseRepository<T>`, `IProduceService`, `IHybridCacheService`, and a logger. Shared fixtures live in `tests/CommonTests/Fixtures/`.
+
+```csharp
+public class CreateOrderTestFixture : BaseHttpFixture
+{
+    public CreateOrderRequest SetValidRequest()
+    {
+        var items = AutoFixture.Build<CreateOrderItemRequest>()
+            .With(i => i.Value, AutoFixture.Create<decimal>() + 1)
+            .CreateMany(2)
+            .ToArray();
+
+        return AutoFixture.Build<CreateOrderRequest>()
+            .With(r => r.Items, items)
+            .With(r => r.TimezoneId, "UTC")
+            .Create();
+    }
+
+    public CreateOrderRequest SetInvalidRequest() => AutoFixture
+        .Build<CreateOrderRequest>()
+        .With(r => r.Description, string.Empty)
+        .With(r => r.TimezoneId, "UTC")
+        .Create();
+}
+```
+
+**HTTP integration tests:** run against `WebApplicationFactory<Program>` with a real PostgreSQL database, and clean up data between tests. Annotate with `[Collection("WebApplicationFactoryCollectionDefinition")]`, inherit `BaseHttpFixture`, and call `SetApiHelper` in the constructor. Deserialize responses as `BaseResponse<T>` and cover both success and failure.
+
+```csharp
+[Collection("WebApplicationFactoryCollectionDefinition")]
+public sealed class CreateOrderTest : IClassFixture<CreateOrderTestFixture>
+{
+    private readonly CreateOrderTestFixture _fixture;
+
+    public CreateOrderTest(CustomWebApplicationFactory<Program> factory, CreateOrderTestFixture fixture)
+    {
+        _fixture = fixture;
+        _fixture.SetApiHelper(factory);
+        _fixture.ResourceUrl = "orders";
+    }
+
+    [Fact(DisplayName = nameof(GivenAValidRequestThenPass))]
+    public async Task GivenAValidRequestThenPass()
+    {
+        var request = _fixture.SetValidRequest();
+
+        var result = await _fixture.ApiHelper.PostAsync(_fixture.ResourceUrl, request);
+        var response = await ApiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
+
+        Assert.NotNull(result);
+        Assert.Equal(HttpStatusCode.Created, result.StatusCode);
+        Assert.True(response!.Success);
+        Assert.NotNull(response.Data);
+    }
+
+    [Fact(DisplayName = nameof(GivenAInvalidRequestThenFails))]
+    public async Task GivenAInvalidRequestThenFails()
+    {
+        var request = _fixture.SetInvalidRequest();
+
+        var result = await _fixture.ApiHelper.PostAsync(_fixture.ResourceUrl, request);
+        var response = await ApiHelper.DeSerializeResponse<BaseResponse<OrderDto>>(result);
+
+        Assert.NotNull(response);
+        Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.False(response.Success);
+        Assert.Null(response.Data);
+    }
+}
+```
+
+**Messaging integration tests:** live in `tests/IntegrationTests/WebApp/Messaging/{Feature}/{Operation}Test.cs` and inherit `BaseMessagingFixture`. Publish with `HandleProducerAsync()`, query the database to verify side effects, and verify that two messages with the same `CorrelationId` produce one record.
+
+**Mutation tests:** `stryker-config-application.json` and `stryker-config-domain.json` in `tests/UnitTests/`. Thresholds: high ≥ 90%, low ≥ 80%, break < 50%.
+
+**Load test variables:** scripts in `tests/LoadTests/` (`script{Endpoint}.js`) read these environment variables:
+
+| Variable | Default |
+|---|---|
+| `VUS` | `10` |
+| `DURATION` | `60s` |
+| `WEBAPP_URL` | `https://localhost:7175` |
+| `GRACEFUL_STOP` | `10s` |
+
+```bash
+k6 run tests/LoadTests/scriptHttp.js --env VUS=50 --env DURATION=300s --env WEBAPP_URL=https://localhost:7000 --summary-mode=full
+```
+
 ## 🤝 Contributing
 
 Have a feature request or found a bug? We'd love to hear from you!

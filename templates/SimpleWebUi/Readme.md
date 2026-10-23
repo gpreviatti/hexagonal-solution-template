@@ -453,6 +453,167 @@ dotnet run --project src/WebUi
 
 ---
 
+## 🧭 Development Guide
+
+The short rules for AI agents are in [AGENTS.md](AGENTS.md).
+
+### Configuration
+
+| Service | Config key | Default |
+|---|---|---|
+| PostgreSQL | `ConnectionStrings:OrderDb` | `Host=127.0.0.1;Port=5432;Database=OrderDb;Username=postgres;******` |
+| Redis | `ConnectionStrings:Redis` | `localhost:6379` |
+
+- `ENABLE_SENSITIVE_DATA_LOGGING=true` enables EF Core query logging.
+- OpenTelemetry exports via OTLP. Set `ASPNETCORE_ENVIRONMENT=IntegrationTests` to disable it during test runs.
+
+### Use cases
+
+All use cases inherit one of three base classes from `Core.Common.UseCases`:
+
+| Base class | Interface | Use when |
+|---|---|---|
+| `BaseInOutUseCase<TRequest, TResponse>` | `IBaseInOutUseCase<TRequest, TResponse>` | Input and output |
+| `BaseInUseCase<TRequest>` | `IBaseInUseCase<TRequest>` | Input only |
+| `BaseOutUseCase<TResponse>` | `IBaseOutUseCase<TResponse>` | Output only |
+
+- `CoreDependencyInjection.AddCore()` auto-registers every `*UseCase` class.
+- The base classes handle input validation (DataAnnotations on `BaseRequest`), OpenTelemetry tracing, metrics (`UseCaseExecutedMetric` / `UseCaseFailedMetric`), and structured logging. Implement only `HandleInternalAsync`.
+
+### Contracts and domain model
+
+- `BaseRequest` requires a non-default `CorrelationId`, enforced by `[NotDefault]`.
+- `BaseResponse`, `BaseResponse<TData>`, and `BasePaginatedResponse<TData>` are records used at every layer boundary.
+- `Result` / `Result<T>` express domain outcomes, not HTTP response types.
+- Entities extend `DomainEntity`. Entity factories return `Result<T>`; check `IsFailure` before reading `.Value`.
+
+### Messaging (in-process)
+
+`IProduceService` writes to a typed `Channel<TMessage>`. Consumers extend `BaseConsumer<TMessage, TConsumer>`, a `BackgroundService`. Idempotency uses HybridCache, keyed by `{ConsumerName}-{CorrelationId}`.
+
+To add a message type:
+
+1. Create a record extending `BaseMessage` in `Core.Common.Messages`.
+2. Register a `Channel<TMessage>` singleton in `MessagingDependencyInjection`.
+3. Create a consumer extending `BaseConsumer<TMessage, TConsumer>` and register it as `IHostedService`.
+
+### Naming rules
+
+Enforced by the architecture tests in `tests/UnitTests/Architecture/`:
+
+- Core classes must not end in `Controller`, `Endpoint`, `DbContext`, `Mapping`, `Consumer`, or `Producer`.
+- Core must not reference the Infrastructure or WebUI assemblies.
+- All Core types must live in the `Core.*` namespace.
+
+### Blazor pages
+
+Pages keep markup in `.razor` files and behavior in `.razor.cs` partial classes. Pages that call async use cases implement `IDisposable` and own a `CancellationTokenSource`:
+
+```csharp
+public partial class MyPage : IDisposable
+{
+    private readonly CancellationTokenSource _cancellationTokenSource = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await MyUseCase.HandleAsync(new(...), _cancellationTokenSource.Token);
+    }
+
+    public void Dispose()
+    {
+        _cancellationTokenSource.Cancel();
+        _cancellationTokenSource.Dispose();
+        GC.SuppressFinalize(this);
+    }
+}
+```
+
+Never pass `CancellationToken.None`. Always pass `_cancellationTokenSource.Token`.
+
+### Shared selectors
+
+`tests/CommonTests/WebUI/Selectors.cs` (namespace `CommonTests.WebUi`) holds every CSS selector used by unit and E2E tests. Both projects import it with `global using CommonTests.WebUi`. Add new selectors there, not in test files.
+
+### Unit tests
+
+- **Use cases:** `BaseCoreFixture<TRequest, TUseCase>` pre-wires mocks. Each test class defines its own fixture subclass. Call `_fixture.ClearInvocations()` in the constructor, not in `SetUp`.
+- **Components:** fixtures extend `BaseComponentFixture` (in `tests/UnitTests/WebUi/`), which wraps bUnit's `BunitContext`. Use `Render<T>()`, `Find()`, `FindAll()`, and `FindComponent<T>()` with `Selectors.*` constants.
+
+```csharp
+public class MyComponentFixture : BaseComponentFixture
+{
+    public IRenderedComponent<MyComponent> RenderComponent() =>
+        Render<MyComponent>(p => p.Add(c => c.SomeProp, value));
+}
+
+public sealed class MyComponentTests(MyComponentFixture fixture) : IClassFixture<MyComponentFixture>
+{
+    [Fact(DisplayName = nameof(GivenWhenThen))]
+    public void GivenWhenThen()
+    {
+        var cut = fixture.RenderComponent();
+        var button = cut.Find(Selectors.ButtonSubmit);
+        Assert.NotNull(button);
+    }
+}
+```
+
+### E2E tests
+
+- Tests use Playwright via `Microsoft.Playwright.Xunit`. Each page has a fixture extending `BrowserFixture` and a test class using `IClassFixture<TFixture>`.
+- `BrowserFixture` (in `tests/E2eTests/Common/`) exposes:
+  - `Page`: the Playwright `IPage`.
+  - `WebAppUrl`: `WEB_APP_URL`, default `http://localhost:5015`.
+  - `NavigationTimeoutMs`: `NAVIGATION_TIMEOUT_MS`, default `30000`.
+  - `WaitForSelectorTimeoutMs`: `WAIT_FOR_SELECTOR_TIMEOUT_MS`, default `10000`.
+- `PlaywrightExtensions` adds helpers on `IPage`: `NavigateAsync`, `WaitForPageLoadAsync`, `WaitForFormAsync`, `GetHeadingTextAsync`, `ClickSubmitAsync`, `GetTableRowsAsync`, and `ClickAndWaitForLoadAsync`.
+
+```csharp
+public class MyPageFixture : BrowserFixture
+{
+    public async Task NavigateAsync() => await Page.NavigateAsync($"{WebAppUrl}/my-page");
+}
+
+public sealed class MyPageTests(MyPageFixture fixture) : IClassFixture<MyPageFixture>
+{
+    [Fact(DisplayName = nameof(GivenWhenThen))]
+    public async Task GivenWhenThen()
+    {
+        await fixture.NavigateAsync();
+        await fixture.Page.WaitForPageLoadAsync();
+
+        var heading = await fixture.Page.GetHeadingTextAsync();
+
+        Assert.Equal("Expected Heading", heading);
+    }
+}
+```
+
+**Blazor Server timing.** Blazor Server runs over SignalR, so `WaitForLoadStateAsync(NetworkIdle)` does not detect circuit processing. Use these patterns:
+
+1. **Bound input:** fill it, press `Tab`, then wait for Blazor to process the change.
+   ```csharp
+   var locator = Page.Locator(Selectors.InputOrderDescription);
+   await locator.FillAsync(value);
+   await locator.PressAsync("Tab");
+   await Page.WaitForTimeoutAsync(300);
+   ```
+2. **DOM re-render (for example, adding or removing rows):** wait for the expected state with `WaitForFunctionAsync`.
+   ```csharp
+   await Page.ClickAsync(Selectors.ButtonOutlineSuccess);
+   await Page.WaitForFunctionAsync($"() => document.querySelectorAll('{Selectors.ItemRow}').length === {expectedCount}");
+   ```
+3. **Form submit that navigates away:** use `WaitForURLAsync`.
+   ```csharp
+   await Page.ClickSubmitAsync();
+   await Page.WaitForURLAsync("**/orders", new() { Timeout = 10000 });
+   ```
+4. **Reading a bound input:** use `InputValueAsync`, which reads the DOM property rather than the HTML attribute.
+
+### Test naming
+
+Test methods follow `GivenWhenThen`, declared with `[Fact(DisplayName = nameof(GivenWhenThen))]`. Do not use underscores in method names (CA1707).
+
 ## 🤝 Contributing
 
 ### Guidelines

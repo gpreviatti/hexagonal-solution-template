@@ -57,7 +57,7 @@ TemporaryDependencyNodeTargetIdentifier=net10.0
 obj/Debug/net10.0/GPreviatti.Template.Hexagonal.Solution.AssemblyInfo.cs
 
 [metadataReferences]
-<DOTNET>/packs/Microsoft.NETCore.App.Ref/10.0.12/ref/net10.0/
+<DOTNET>/packs/Microsoft.NETCore.App.Ref/10.0.13/ref/net10.0/
  Microsoft.CSharp.dll
  Microsoft.VisualBasic.Core.dll
  Microsoft.VisualBasic.dll
@@ -227,17 +227,17 @@ obj/Debug/net10.0/GPreviatti.Template.Hexagonal.Solution.AssemblyInfo.cs
  WindowsBase.dll
 
 [analyzerReferences]
-<DOTNET>/packs/Microsoft.NETCore.App.Ref/10.0.12/analyzers/dotnet/cs/
+<DOTNET>/packs/Microsoft.NETCore.App.Ref/10.0.13/analyzers/dotnet/cs/
  Microsoft.Interop.ComInterfaceGenerator.dll
  Microsoft.Interop.JavaScript.JSImportGenerator.dll
  Microsoft.Interop.LibraryImportGenerator.dll
  Microsoft.Interop.SourceGeneration.dll
  System.Text.Json.SourceGeneration.dll
  System.Text.RegularExpressions.Generator.dll
-<DOTNET>/sdk/10.0.401/Sdks/Microsoft.NET.Sdk/analyzers/
+<DOTNET>/sdk/10.0.402/Sdks/Microsoft.NET.Sdk/analyzers/
  Microsoft.CodeAnalysis.CSharp.NetAnalyzers.dll
  Microsoft.CodeAnalysis.NetAnalyzers.dll
 
 [analyzerConfigFiles]
-<DOTNET>/sdk/10.0.401/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_default.globalconfig
+<DOTNET>/sdk/10.0.402/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_default.globalconfig
 obj/Debug/net10.0/GPreviatti.Template.Hexagonal.Solution.GeneratedMSBuildEditorConfig.editorconfig

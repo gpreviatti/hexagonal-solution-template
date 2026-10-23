@@ -5,7 +5,7 @@
 
 This repository provides a reusable .NET template package to bootstrap projects using **Hexagonal Architecture** (Ports and Adapters) and modern engineering practices.
 
-It includes four templates for different scopes: a full application, a BFF-focused application, a Blazor Web UI application, and a contracts-only package.
+It includes six templates for different scopes: a simple application, a full application, a BFF-focused application, a Blazor Web UI application, a simple Blazor Web UI application, and a contracts-only package.
 
 ## Table of contents
 
@@ -36,6 +36,7 @@ The package `GPreviatti.Template.Hexagonal.Solution` lets you quickly create sol
 - `hexagonal-solution-full`: complete hexagonal solution with `Domain`, `Application`, `Infrastructure`, `WebApp`, and test/load test projects.
 - `hexagonal-solution-bff`: Backend-for-Frontend oriented solution with HTTP/gRPC adapters, integration tests, and load tests.
 - `hexagonal-solution-webui`: Blazor Web App oriented solution with contracts/infrastructure separation and bUnit component unit tests.
+- `hexagonal-solution-simple-webui`: streamlined Blazor Web UI solution with `Core`, `Infrastructure`, and `WebUI` layers plus unit and E2E test projects.
 - `hexagonal-solution-contracts`: lightweight contracts package for shared DTOs, request/response models, and protobuf definitions.
 
 ## Template documentation
@@ -46,6 +47,7 @@ Each template has its own README with architecture details, structure, and helpe
 - Full template: [`templates/Full/Readme.md`](templates/Full/Readme.md)
 - BFF template: [`templates/Bff/Readme.md`](templates/Bff/Readme.md)
 - Web UI template: [`templates/WebUi/Readme.md`](templates/WebUi/Readme.md)
+- Simple Web UI template: [`templates/SimpleWebUi/Readme.md`](templates/SimpleWebUi/Readme.md)
 - Contracts template: [`templates/Contracts/Readme.md`](templates/Contracts/Readme.md)
 
 ## Technologies included
@@ -77,6 +79,7 @@ dotnet new hexagonal-solution-simple -n HexagonalSolution
 dotnet new hexagonal-solution-full -n HexagonalSolution
 dotnet new hexagonal-solution-bff -n HexagonalSolution
 dotnet new hexagonal-solution-webui -n HexagonalSolution
+dotnet new hexagonal-solution-simple-webui -n HexagonalSolution
 dotnet new hexagonal-solution-contracts -n HexagonalSolution
 ```
 
@@ -125,6 +128,7 @@ dotnet new hexagonal-solution-simple -h
 dotnet new hexagonal-solution-full -h
 dotnet new hexagonal-solution-bff -h
 dotnet new hexagonal-solution-webui -h
+dotnet new hexagonal-solution-simple-webui -h
 dotnet new hexagonal-solution-contracts -h
 ```
 
