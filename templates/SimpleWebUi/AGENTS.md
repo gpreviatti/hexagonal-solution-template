@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Rules for AI coding agents working in this hexagonal (ports and adapters) Blazor solution. Commands, configuration, and step-by-step guides are in [Readme.md](Readme.md#-development-guide).
+Shared rules for AI coding agents working in this hexagonal (ports and adapters) Blazor solution. Commands, configuration, and step-by-step guides are in [Readme.md](Readme.md#-development-guide). Each project has its own `AGENTS.md` with the rules specific to it, listed below.
 
 ## Quick reference
 
@@ -10,18 +10,15 @@ Rules for AI coding agents working in this hexagonal (ports and adapters) Blazor
 
 ## Layers
 
-- **`src/Core`:** domain, use cases, ports, request and response records, messages. Must not reference Infrastructure or WebUI.
-- **`src/Infrastructure`:** adapters (EF Core, Redis HybridCache, in-process messaging, OpenTelemetry).
-- **`src/WebUI`:** Blazor Server pages and components, health checks, and middleware. References Infrastructure only.
+| Layer | Path | Responsibility | Rules |
+|---|---|---|---|
+| Core | `src/Core` | Domain, use cases, ports, request and response records, messages. Must not reference Infrastructure or WebUI. | [AGENTS.md](src/Core/AGENTS.md) |
+| Infrastructure | `src/Infrastructure` | Adapters: EF Core, Redis HybridCache, in-process messaging, OpenTelemetry. | [AGENTS.md](src/Infrastructure/AGENTS.md) |
+| WebUI | `src/WebUI` | Blazor Server pages and components, health checks, and middleware. References Infrastructure only. | [AGENTS.md](src/WebUI/AGENTS.md) |
+| Unit tests | `tests/UnitTests/` | Core tests, component tests, and architecture tests. | [AGENTS.md](tests/UnitTests/AGENTS.md) |
+| E2E tests | `tests/E2eTests/` | Browser tests against the running app. | [AGENTS.md](tests/E2eTests/AGENTS.md) |
 
 ## Rules
 
 - Keep Core free of infrastructure concerns. Infrastructure implements ports that Core defines.
-- Put every business invariant in a domain entity or use case, never in pages or adapters.
-- Use `Result<T>` for expected failures.
-- Implement only `HandleInternalAsync` in use cases. Do not register use cases manually.
-- Pages that call async use cases must pass `_cancellationTokenSource.Token`, never `CancellationToken.None`.
-- Put every CSS selector in `tests/CommonTests/WebUI/Selectors.cs`. Never hardcode selectors in tests.
 - Keep the architecture rules green. They run with the unit tests in `tests/UnitTests/Architecture/`.
-- Test methods use `GivenWhenThen` names, with no underscores (CA1707).
-- E2E tests must not use `WaitForLoadStateAsync(NetworkIdle)` to detect Blazor processing. Use the Blazor timing patterns in the Readme.

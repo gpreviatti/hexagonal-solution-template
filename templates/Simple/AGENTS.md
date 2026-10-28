@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Rules for AI coding agents working in this hexagonal (ports and adapters) solution. Commands, configuration, and step-by-step guides are in [Readme.md](Readme.md#-development-guide).
+Shared rules for AI coding agents working in this hexagonal (ports and adapters) solution. Commands, configuration, and step-by-step guides are in [Readme.md](Readme.md#-development-guide). Each project has its own `AGENTS.md` with the rules specific to it, listed below.
 
 ## Quick reference
 
@@ -10,22 +10,16 @@ Rules for AI coding agents working in this hexagonal (ports and adapters) soluti
 
 ## Layers
 
-- **`src/Core`:** domain, use cases, ports, request and response records, messages. Must not reference Infrastructure or WebApp.
-- **`src/Infrastructure`:** adapters (EF Core, Redis HybridCache, in-process messaging, OpenTelemetry).
-- **`src/WebApp`:** Minimal API endpoints, health checks, and middleware. References Infrastructure only.
+| Layer | Path | Responsibility | Rules |
+|---|---|---|---|
+| Core | `src/Core` | Domain, use cases, ports, request and response records, messages. Must not reference Infrastructure or WebApp. | [AGENTS.md](src/Core/AGENTS.md) |
+| Infrastructure | `src/Infrastructure` | Adapters: EF Core, Redis HybridCache, in-process messaging, OpenTelemetry. | [AGENTS.md](src/Infrastructure/AGENTS.md) |
+| WebApp | `src/WebApp` | Minimal API endpoints, health checks, and middleware. References Infrastructure only. | [AGENTS.md](src/WebApp/AGENTS.md) |
+| Unit tests | `tests/UnitTests/` | Core tests and architecture tests. | [AGENTS.md](tests/UnitTests/AGENTS.md) |
+| Integration tests | `tests/IntegrationTests/` | HTTP endpoint tests. | [AGENTS.md](tests/IntegrationTests/AGENTS.md) |
 
 ## Rules
 
 - Keep Core free of infrastructure concerns. Infrastructure implements ports that Core defines.
-- Put every business invariant in a domain entity or use case, not in endpoints or adapters.
-- Use `Result<T>` for expected failures. Do not return `Result` from HTTP endpoints; wrap responses in `BaseResponse` types.
-- Implement only `HandleInternalAsync` in use cases. Base classes handle validation, tracing, metrics, and logging.
-- Do not register use cases manually. `AddCore()` discovers them.
-- Core class names must not end in `Controller`, `Endpoint`, `DbContext`, `Mapping`, `Consumer`, or `Producer`. All Core types live in `Core.*`.
 - Do not change the cross-project boundaries that the architecture tests enforce.
-
-## Testing
-
-- Unit tests use `BaseCoreFixture`. Each test class has its own fixture subclass.
-- Integration tests use `CustomWebApplicationFactory<Program>` and the `WebApplicationFactoryCollectionDefinition` collection.
-- Architecture tests in `tests/UnitTests/Architecture/` run with the unit tests and must stay green.
+- The architecture tests in `tests/UnitTests/Architecture/` run with the unit tests and must stay green.
