@@ -8,7 +8,7 @@ description: 'Prepare a new release of the GPreviatti.Template.Hexagonal.Solutio
 Use this skill every time a new version of the template package must be released. It keeps three places in sync:
 
 1. Release notes in [GPreviatti.Template.Hexagonal.Solution.csproj](../../../GPreviatti.Template.Hexagonal.Solution.csproj) (`PackageReleaseNotes`).
-2. Version in [publish.yml](../../workflows/publish.yml) (`package_version` of the `pack-and-publish` job).
+2. Version in [publish.yml](../../../.github/workflows/publish.yml) (`package_version` of the `pack-and-publish` job).
 3. Accuracy of [Readme.md](../../../Readme.md).
 
 The root csproj has no `PackageVersion` property; the published version comes only from `package_version` in `publish.yml`.
@@ -49,7 +49,7 @@ Edit `PackageReleaseNotes` in [GPreviatti.Template.Hexagonal.Solution.csproj](..
 
 ## Step 4: Update the publish workflow version
 
-Edit [publish.yml](../../workflows/publish.yml) and set the new version in the `pack-and-publish` job:
+Edit [publish.yml](../../../.github/workflows/publish.yml) and set the new version in the `pack-and-publish` job:
 
 ```yaml
     with:
