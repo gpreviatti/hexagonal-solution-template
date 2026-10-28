@@ -18,10 +18,9 @@
     <RepositoryUrl>git://github.com/gpreviatti/hexagonal-solution-template</RepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>
-    - Rename CLAUDE.md to AGENTS.md in all templates (Bff, Contracts, Full, Simple, SimpleWebUi, WebUi) for compatibility with other AI agents.
-    - Move detailed agent guidance (code examples, configuration, and step-by-step guides) from AGENTS.md into each template's Readme.md, keeping AGENTS.md to rules and links.
-    - Fix broken references in the agent guidance: missing guide files, wrong project paths, and a nonexistent Stryker config.
-    - Add the release agent skill (.github/skills/release).
+    - Split AGENTS.md in every template into per-project AGENTS.md files (src and tests folders), keeping shared rules and links in the root AGENTS.md.
+    - Move the BFF AGENTS.md to the template root and fix its relative links.
+    - Move the release agent skill to .claude/skills/release.
     </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
